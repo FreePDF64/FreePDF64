@@ -1,6 +1,6 @@
 # FreePDF64 👋
 
-Setup-Datei von FreePDF64: 
+Download von FreePDF64: 
 - https://github.com/FreePDF64/FreePDF64/tree/main/releases/download
 - Zum Download **FreePDF64-Setup.exe** auswählen und danach rechts auf **[ Raw ]** klicken.
 
