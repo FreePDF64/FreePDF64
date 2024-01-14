@@ -14,7 +14,7 @@ Fragen, Anregungen, Wünsche gerne an FreePDF@outlook.com oder hier über GitHub
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
 - Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten Postscript-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
 
-##### Was kann FreePDF64 so alles... :
+##### Funktionen:
 1. Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
 2. Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
 3. Erstellen von JPEG zu PDF-Dateien
