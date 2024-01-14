@@ -1,14 +1,14 @@
-### Hi there 👋 Demnächst hier...
+# FreePDF64 👋
 
-# FreePDF64
+#### Mein Freeware kann PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, Passwortschutz entfernen, verschlüsseln (128-Bit RC4/AES oder 256-Bit AES), PDF-Dateien mit Wasserzeichen oder Stempel versehen, uvm.
 
-Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung:
+##### Das beste Goodie ist: Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung:
 - Einfachste Installation des benötigten Postscript-Druckers (siehe beiliegende Anleitung unter: Hilfe - FreePDF64-HowTo)
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
 - Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten Postscript-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
 
-Funktionen:
+##### Was kann FreePDF64 so alles... :
 1. Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
 2. Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
 3. Erstellen von JPEG zu PDF-Dateien
