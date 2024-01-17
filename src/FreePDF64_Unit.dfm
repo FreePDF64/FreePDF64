@@ -89,7 +89,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
-      ExplicitWidth = 965
+      ExplicitWidth = 967
       object Linker_FolderBtn: TToolButton
         Left = 0
         Top = 0
@@ -464,7 +464,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabStop = False
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
-      ExplicitLeft = 1014
+      ExplicitLeft = 1012
     end
     object StatusBitBtn: TBitBtn
       Left = 974
@@ -492,7 +492,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-      ExplicitLeft = 976
+      ExplicitLeft = 968
     end
   end
   object PanelBottom: TPanel

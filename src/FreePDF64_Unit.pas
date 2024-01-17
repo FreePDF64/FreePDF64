@@ -1767,23 +1767,23 @@ procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
   i: Integer;
 begin
-  Memo1.Clear;
-
   if not FileExists(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe') then
   begin
     MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + ExtractFilePath(Application.ExeName) + 'xpdf\bin64\"!', mtError, [mbOk]);
     Exit;
   end;
 
+  Memo1.Clear;
+
   if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
     for i := 0 to LMDShellList1.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe ' +
-                   BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName, Memo1);
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe "' +
+                   BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
   if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
     for i := 0 to LMDShellList2.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe ' +
-                   BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName, Memo1);
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe "' +
+                   BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
 end;
 
 // PDF-Passwortschutz entfernen
