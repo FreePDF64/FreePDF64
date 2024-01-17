@@ -17,7 +17,10 @@
 // Angefangen im:    Dezember 2021
 // Programmiert mit: Embarcadero Delphi 11 Community Edition
 //
-// Autor: FreePDF64@outlook.com
+// Autor:            M. Tesch
+// Garstedter Feldstraße 12a
+// 22850 Norderstedt
+// eMail:            FreePDF64@outlook.com
 //
 // Hinweis: Wenn ein Formular erzeugt wird und seine Eigenschaft
 // Visible auf True gesetzt ist, werden die folgenden
@@ -316,6 +319,7 @@ end;
     ExtrahiereBilder1: TMenuItem;
     KonvertierezuHTML1: TMenuItem;
     Passwortschutzentfernen1: TMenuItem;
+    PDFInfoBtn: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -475,9 +479,9 @@ end;
     procedure ComboBoxRClick(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure Memo1Click(Sender: TObject);
-    procedure ToolButton2Click(Sender: TObject);
     procedure MainMenu1Change(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
     procedure HTMLBtnClick(Sender: TObject);
+    procedure PDFInfoBtnClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -1481,6 +1485,7 @@ begin
     WriteInteger('Position', 'Left Tree Width', Panel_Left.Width);
     WriteInteger('Position', 'Right Tree Width', Panel_Right.Width);
     WriteInteger('Position', 'Right Panel Width', PanelR.Width);
+    WriteInteger('Position', 'Memo Panel Height', PDFPanel.Height);
     WriteString('Folder', 'Left', Backslash(LMDShellFolder1.ActiveFolder.PathName));
     A_S := Backslash(LMDShellFolder1.ActiveFolder.PathName);
     WriteString('Folder', 'Target', Backslash(Ziel));
@@ -1685,9 +1690,100 @@ begin
   Timer2.Enabled := False;
 end;
 
-procedure TFreePDF64_Form.ToolButton2Click(Sender: TObject);
+// Ausgabe Consolelog -> Memofenster
+procedure RunDosInMemo(DosApp: string; AMemo:TMemo);
+const
+    READ_BUFFER_SIZE = 2400;
+var
+    Security: TSecurityAttributes;
+    readableEndOfPipe, writeableEndOfPipe: THandle;
+    start: TStartUpInfo;
+    ProcessInfo: TProcessInformation;
+    Buffer: PAnsiChar;
+    BytesRead: DWORD;
+    AppRunning: DWORD;
 begin
+    Security.nLength := SizeOf(TSecurityAttributes);
+    Security.bInheritHandle := True;
+    Security.lpSecurityDescriptor := nil;
 
+    if CreatePipe({var}readableEndOfPipe, {var}writeableEndOfPipe, @Security, 0) then
+    begin
+        Buffer := AllocMem(READ_BUFFER_SIZE+1);
+        FillChar(Start, Sizeof(Start), #0);
+        start.cb := SizeOf(start);
+
+        // Set up members of the STARTUPINFO structure.
+        // This structure specifies the STDIN and STDOUT handles for redirection.
+        // - Redirect the output and error to the writeable end of our pipe.
+        // - We must still supply a valid StdInput handle (because we used STARTF_USESTDHANDLES to swear that all three handles will be valid)
+        start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
+        start.hStdInput := GetStdHandle(STD_INPUT_HANDLE); //we're not redirecting stdInput; but we still have to give it a valid handle
+        start.hStdOutput := writeableEndOfPipe; //we give the writeable end of the pipe to the child process; we read from the readable end
+        start.hStdError := writeableEndOfPipe;
+
+        //We can also choose to say that the wShowWindow member contains a value.
+        //In our case we want to force the console window to be hidden.
+        start.dwFlags := start.dwFlags + STARTF_USESHOWWINDOW;
+        start.wShowWindow := SW_HIDE;
+
+        // Don't forget to set up members of the PROCESS_INFORMATION structure.
+        ProcessInfo := Default(TProcessInformation);
+
+        //WARNING: The unicode version of CreateProcess (CreateProcessW) can modify the command-line "DosApp" string.
+        //Therefore "DosApp" cannot be a pointer to read-only memory, or an ACCESS_VIOLATION will occur.
+        //We can ensure it's not read-only with the RTL function: UniqueString
+        UniqueString({var}DosApp);
+
+        if CreateProcess(nil, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS, NIL, NIL, start, {var}ProcessInfo) then
+        begin
+            //Wait for the application to terminate, as it writes it's output to the pipe.
+            //WARNING: If the console app outputs more than 2400 bytes (ReadBuffer),
+            //it will block on writing to the pipe and *never* close.
+            repeat
+                Apprunning := WaitForSingleObject(ProcessInfo.hProcess, 100);
+                Application.ProcessMessages;
+            until (Apprunning <> WAIT_TIMEOUT);
+
+            //Read the contents of the pipe out of the readable end
+            //WARNING: if the console app never writes anything to the StdOutput, then ReadFile will block and never return
+            repeat
+                BytesRead := 0;
+                ReadFile(readableEndOfPipe, Buffer[0], READ_BUFFER_SIZE, {var}BytesRead, NIL);
+                Buffer[BytesRead]:= #0;
+                OemToAnsi(Buffer,Buffer);
+                AMemo.Text := AMemo.text + String(Buffer);
+            until (BytesRead < READ_BUFFER_SIZE);
+        end;
+        FreeMem(Buffer);
+        CloseHandle(ProcessInfo.hProcess);
+        CloseHandle(ProcessInfo.hThread);
+        CloseHandle(readableEndOfPipe);
+        CloseHandle(writeableEndOfPipe);
+    end;
+end;
+
+procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  Memo1.Clear;
+
+  if not FileExists(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe') then
+  begin
+    MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + ExtractFilePath(Application.ExeName) + 'xpdf\bin64\"!', mtError, [mbOk]);
+    Exit;
+  end;
+
+  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe ' +
+                   BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName, Memo1);
+
+  if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
+    for i := 0 to LMDShellList2.SelCount - 1 do
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe ' +
+                   BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName, Memo1);
 end;
 
 // PDF-Passwortschutz entfernen
@@ -2611,6 +2707,7 @@ begin
         Panel_Left.Width := ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
         Panel_Right.Width := ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
         PanelR.Width := ReadInteger('Position', 'Right Panel Width', PanelR.Width);
+        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
         LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', StartFolder);
         A_S := LMDShellFolder1.RootFolder;
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
@@ -3329,8 +3426,8 @@ begin
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
     MonitorBtn.Hint       := 'Überwachung ist AN' + #13 +
-                             '-> Schnelles AN/AUS durch rechte Maustaste' + #13 +
-                             '-> Wechseln des Quellverzeichnisses möglichst vermeiden!';
+                             '- Schnelles AN/AUS durch rechte Maustaste' + #13 +
+                             '- Wechseln des Quellverzeichnisses möglichst vermeiden!';
     MonitorBtn.ImageIndex := 57;
     MonitorBtn.Caption    := '  AN';
     MonitorBtn.ImageIndex := 57;
