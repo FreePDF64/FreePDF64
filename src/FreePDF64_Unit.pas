@@ -551,10 +551,35 @@ begin
   LMDShellList2.Column[0].AutoSize := a;
 end;
 
+// Backslash vorhanden: JA/NEIN
+function BackSlash(const AFilename: String): String;
+begin
+  if Length(AFilename) = 0 then
+  begin
+    Result := AFilename;
+    Exit;
+  end;
+  if AFilename[Length(AFilename)] <> '\' then
+    Result := AFilename + '\'
+  else
+    Result := AFilename;
+end;
+
 // Doppelklick auf Splitter3
 procedure TFreePDF64_Form.SplDblClick3(Sender: TObject);
+var
+  IniDat: TIniFile;
+  IniFile: String;
 begin
-  PDFPanel.Height := 153;
+  if not FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
+    Exit;
+
+  IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
+  IniDat := TIniFile.Create(IniFile);
+  with IniDat do
+    PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
+  // Speicher wird wieder freigeben
+  IniDat.Free;
 end;
 
 procedure TFreePDF64_Form.Status1Click(Sender: TObject);
@@ -577,20 +602,6 @@ begin
   // Form soll mittig angezeigt werden.
   Status_Form.Position := poScreenCenter;
   Status_Form.ShowModal;
-end;
-
-// Backslash vorhanden: JA/NEIN
-function BackSlash(const AFilename: String): String;
-begin
-  if Length(AFilename) = 0 then
-  begin
-    Result := AFilename;
-    Exit;
-  end;
-  if AFilename[Length(AFilename)] <> '\' then
-    Result := AFilename + '\'
-  else
-    Result := AFilename;
 end;
 
 // Dieser Code positioniert die Input Box in die
