@@ -573,6 +573,9 @@ begin
     Exit;
 
   PDFPanel.Height := PDFPanelH;
+
+  Sleep(100);
+  RefreshBt.Click
 end;
 
 procedure TFreePDF64_Form.Status1Click(Sender: TObject);
