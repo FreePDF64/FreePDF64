@@ -320,6 +320,7 @@ end;
     KonvertierezuHTML1: TMenuItem;
     Passwortschutzentfernen1: TMenuItem;
     PDFInfoBtn: TToolButton;
+    PDFInfoanzeigen1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);

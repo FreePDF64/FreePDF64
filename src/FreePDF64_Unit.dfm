@@ -370,9 +370,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFInfoBtn: TToolButton
         Left = 633
         Top = 0
-        Hint = 
-          'Informationen '#252'ber die ausgew'#228'hlte PDF-Datei anzeigen, soweit m'#246 +
-          'glich'
+        Hint = 'Informationen '#252'ber die ausgew'#228'hlte PDF-Datei anzeigen [auch F9]'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -752,6 +750,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1116,7 +1115,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 728
+      Top = 729
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1143,6 +1142,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 667
+      ExplicitTop = 727
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1371,7 +1372,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 732
+        Top = 733
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1398,6 +1399,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 731
       end
       object Ziellabel: TPanel
         Left = 1
@@ -2026,6 +2028,12 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Statusinformationen'
         ShortCut = 16467
         OnClick = Status1Click
+      end
+      object PDFInfoanzeigen1: TMenuItem
+        Caption = 'PDF-Info anzeigen'
+        ShortCut = 120
+        Visible = False
+        OnClick = PDFInfoBtnClick
       end
       object N5: TMenuItem
         Caption = '-'
