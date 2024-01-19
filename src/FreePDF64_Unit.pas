@@ -1799,7 +1799,18 @@ begin
       RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
                    BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
 
-  FreePDF64_Form.Memo1DblClick(Sender);
+  // Markieren im Memofeld verhindern
+  StatusBitBtn.SetFocus;
+
+  if Memo1.Lines.Count > 1 then
+  begin
+    i:= TextHoehe(Memo1.Font, Memo1.Text);
+    i := (i * Memo1.Lines.Count) + 80;
+    if i <= Memo1.Parent.Height then
+      Exit;
+
+    PDFPanel.Height := i;
+  end;
 end;
 
 // PDF-Passwortschutz entfernen
@@ -4180,27 +4191,12 @@ begin
 end;
 
 procedure TFreePDF64_Form.Memo1DblClick(Sender: TObject);
-var
-  i: Integer;
 begin
   // Markieren im Memofeld verhindern
   StatusBitBtn.SetFocus;
 
   if PDFPanelH <> PDFPanel.Height then
-  begin
     PDFPanel.Height := PDFPanelH;
-    Exit;
-  end;
-
-  if Memo1.Lines.Count > 1 then
-  begin
-    i:= TextHoehe(Memo1.Font, Memo1.Text);
-    i := (i * Memo1.Lines.Count) + 80;
-    if i <= Memo1.Parent.Height then
-      Exit;
-
-    PDFPanel.Height := i;
-  end;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);

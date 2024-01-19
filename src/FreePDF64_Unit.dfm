@@ -29,17 +29,18 @@ object FreePDF64_Form: TFreePDF64_Form
   object Splitter1: TSplitter
     Left = 280
     Top = 47
-    Height = 456
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
+    ExplicitHeight = 456
   end
   object Splitter2: TSplitter
     Left = 738
     Top = 47
     Width = 4
-    Height = 456
+    Height = 454
     Hint = 'Doppelklick f'#252'r 50/50'
     Margins.Left = 4
     Margins.Top = 4
@@ -47,12 +48,13 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alRight
     ExplicitLeft = 628
+    ExplicitHeight = 456
   end
   object Splitter3: TSplitter
     Left = 0
-    Top = 538
+    Top = 536
     Width = 1392
-    Height = 4
+    Height = 6
     Cursor = crVSplit
     Hint = 'Doppelklick f'#252'r Startposition'
     Margins.Left = 4
@@ -60,7 +62,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Right = 4
     Margins.Bottom = 4
     Align = alBottom
-    ExplicitWidth = 1282
+    ExplicitTop = 538
   end
   object TopPanel: TPanel
     Left = 0
@@ -497,7 +499,7 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 503
+    Top = 501
     Width = 1392
     Height = 35
     Margins.Left = 4
@@ -511,7 +513,7 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitTop = 502
+    ExplicitTop = 500
     ExplicitWidth = 1386
     object Btn_View: TSpeedButton
       Left = 151
@@ -729,7 +731,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Hint = 
         'Anzeige der Ghostscript-Befehle beim Erstellen der Datei(en)'#13#10'so' +
         'wie Anzeigefenster der Informationen zu einer PDF-Datei'#13#10'- Doppe' +
-        'lklick vergr'#246#223'ert/verkleinert das Fenster'
+        'lklick verkleinert das Fenster'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -868,7 +870,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 283
     Top = 47
     Width = 455
-    Height = 456
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -878,15 +880,15 @@ object FreePDF64_Form: TFreePDF64_Form
     TabOrder = 3
     OnResize = PanelLResize
     ExplicitWidth = 449
-    ExplicitHeight = 455
+    ExplicitHeight = 453
     DesignSize = (
       455
-      456)
+      454)
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 29
       Width = 453
-      Height = 402
+      Height = 400
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1115,7 +1117,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 727
+      Top = 726
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1143,11 +1145,11 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 725
+      ExplicitTop = 724
     end
     object StatusBar_Left: TStatusBar
       Left = 1
-      Top = 431
+      Top = 429
       Width = 453
       Height = 24
       Margins.Left = 4
@@ -1163,7 +1165,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowHint = False
       SimplePanel = True
       SizeGrip = False
-      ExplicitTop = 430
+      ExplicitTop = 428
       ExplicitWidth = 447
     end
   end
@@ -1171,7 +1173,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 742
     Top = 47
     Width = 650
-    Height = 456
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1181,12 +1183,12 @@ object FreePDF64_Form: TFreePDF64_Form
     TabOrder = 4
     OnResize = PanelRResize
     ExplicitLeft = 736
-    ExplicitHeight = 455
+    ExplicitHeight = 453
     object Splitter4: TSplitter
       Left = 281
       Top = 1
       Width = 4
-      Height = 454
+      Height = 452
       Hint = 'Doppelklick f'#252'r 50/50'
       Margins.Left = 4
       Margins.Top = 4
@@ -1199,7 +1201,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 1
       Top = 1
       Width = 280
-      Height = 454
+      Height = 452
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1208,7 +1210,7 @@ object FreePDF64_Form: TFreePDF64_Form
       BevelOuter = bvLowered
       Caption = 'Zielverzeichnis'
       TabOrder = 0
-      ExplicitHeight = 453
+      ExplicitHeight = 451
       object Panel3: TPanel
         Left = 1
         Top = 1
@@ -1233,7 +1235,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 1
         Top = 29
         Width = 278
-        Height = 424
+        Height = 422
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1262,14 +1264,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
-        ExplicitHeight = 423
+        ExplicitHeight = 421
       end
     end
     object PanelLMDShellList2: TPanel
       Left = 285
       Top = 1
       Width = 364
-      Height = 454
+      Height = 452
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1277,15 +1279,15 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 453
+      ExplicitHeight = 451
       DesignSize = (
         364
-        454)
+        452)
       object LMDShellList2: TLMDShellList
         Left = 1
         Top = 29
         Width = 362
-        Height = 401
+        Height = 399
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1372,7 +1374,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 731
+        Top = 730
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1399,7 +1401,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 729
+        ExplicitTop = 728
       end
       object Ziellabel: TPanel
         Left = 1
@@ -1564,7 +1566,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object StatusBar_Right: TStatusBar
         Left = 1
-        Top = 430
+        Top = 428
         Width = 362
         Height = 23
         Margins.Left = 4
@@ -1580,7 +1582,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = False
         SimplePanel = True
         SizeGrip = False
-        ExplicitTop = 429
+        ExplicitTop = 427
       end
     end
   end
@@ -1588,7 +1590,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 0
     Top = 47
     Width = 280
-    Height = 456
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1597,12 +1599,12 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     Caption = 'Quellverzeichnis'
     TabOrder = 5
-    ExplicitHeight = 455
+    ExplicitHeight = 453
     object LMDShellTree1: TLMDShellTree
       Left = 1
       Top = 29
       Width = 278
-      Height = 426
+      Height = 424
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1631,7 +1633,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowNonFolders = False
       AutoContextMenus = False
       AutoSortSupport = False
-      ExplicitHeight = 425
+      ExplicitHeight = 423
     end
     object ListBoxL: TListBox
       Left = 17
