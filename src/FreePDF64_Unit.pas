@@ -1767,6 +1767,16 @@ begin
     end;
 end;
 
+function TextHoehe(Font: TFont; Text: String): Integer;
+var
+  B: TBitMap;
+begin
+  B := TBitMap.Create;
+  B.Canvas.Font := Font;
+  Result := B.Canvas.TextHeight(Text);
+  B.Free;
+end;
+
 procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
   i: Integer;
@@ -1788,6 +1798,8 @@ begin
     for i := 0 to LMDShellList2.SelCount - 1 do
       RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
                    BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
+
+  FreePDF64_Form.Memo1DblClick(Sender);
 end;
 
 // PDF-Passwortschutz entfernen
@@ -4165,16 +4177,6 @@ end;
 procedure TFreePDF64_Form.Memo1Click(Sender: TObject);
 begin
   FavClose;
-end;
-
-function TextHoehe(Font: TFont; Text: String): Integer;
-var
-  B: TBitMap;
-begin
-  B := TBitMap.Create;
-  B.Canvas.Font := Font;
-  Result := B.Canvas.TextHeight(Text);
-  B.Free;
 end;
 
 procedure TFreePDF64_Form.Memo1DblClick(Sender: TObject);
