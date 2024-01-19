@@ -726,7 +726,10 @@ object FreePDF64_Form: TFreePDF64_Form
       Top = 44
       Width = 1392
       Height = 86
-      Hint = 'Anzeige der Ghostscript-Befehle beim Erstellen der Datei(en)'
+      Hint = 
+        'Anzeige der Ghostscript-Befehle beim Erstellen der Datei(en)'#13#10'so' +
+        'wie Anzeigefenster der Informationen zu einer PDF-Datei'#13#10'- Doppe' +
+        'lklick vergr'#246#223'ert/verkleinert das Fenster'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -746,6 +749,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ScrollBars = ssVertical
       TabOrder = 0
       OnClick = Memo1Click
+      OnDblClick = Memo1DblClick
       ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
@@ -1111,7 +1115,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 725
+      Top = 727
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1139,7 +1143,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 723
+      ExplicitTop = 725
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1368,7 +1372,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 729
+        Top = 731
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1395,7 +1399,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 727
+        ExplicitTop = 729
       end
       object Ziellabel: TPanel
         Left = 1

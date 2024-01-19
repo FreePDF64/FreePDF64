@@ -482,6 +482,7 @@ end;
     procedure MainMenu1Change(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
     procedure HTMLBtnClick(Sender: TObject);
     procedure PDFInfoBtnClick(Sender: TObject);
+    procedure Memo1DblClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -505,7 +506,7 @@ var
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
   Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1: String;
-  ParaJN, Versch1, Vol1, Vol2: Integer;
+  ParaJN, Versch1, Vol1, Vol2, PDFPanelH: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
   Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf: Boolean;
@@ -567,19 +568,11 @@ end;
 
 // Doppelklick auf Splitter3
 procedure TFreePDF64_Form.SplDblClick3(Sender: TObject);
-var
-  IniDat: TIniFile;
-  IniFile: String;
 begin
   if not FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
     Exit;
 
-  IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-  IniDat := TIniFile.Create(IniFile);
-  with IniDat do
-    PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
-  // Speicher wird wieder freigeben
-  IniDat.Free;
+  PDFPanel.Height := PDFPanelH;
 end;
 
 procedure TFreePDF64_Form.Status1Click(Sender: TObject);
@@ -1788,12 +1781,12 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
     for i := 0 to LMDShellList1.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe "' +
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
                    BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
   if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
     for i := 0 to LMDShellList2.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe "' +
+      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
                    BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
 end;
 
@@ -2702,6 +2695,8 @@ var
   iec: Array [0 .. 255] of String;
   Log: Boolean;
 begin
+  // PDFPanelH initialisieren
+  PDFPanelH := 0;
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
@@ -2719,6 +2714,7 @@ begin
         Panel_Right.Width := ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
         PanelR.Width := ReadInteger('Position', 'Right Panel Width', PanelR.Width);
         PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
+        PDFPanelH := PDFPanel.Height;
         LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', StartFolder);
         A_S := LMDShellFolder1.RootFolder;
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
@@ -4169,6 +4165,40 @@ end;
 procedure TFreePDF64_Form.Memo1Click(Sender: TObject);
 begin
   FavClose;
+end;
+
+function TextHoehe(Font: TFont; Text: String): Integer;
+var
+  B: TBitMap;
+begin
+  B := TBitMap.Create;
+  B.Canvas.Font := Font;
+  Result := B.Canvas.TextHeight(Text);
+  B.Free;
+end;
+
+procedure TFreePDF64_Form.Memo1DblClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  // Markieren im Memofeld verhindern
+  StatusBitBtn.SetFocus;
+
+  if PDFPanelH <> PDFPanel.Height then
+  begin
+    PDFPanel.Height := PDFPanelH;
+    Exit;
+  end;
+
+  if Memo1.Lines.Count > 1 then
+  begin
+    i:= TextHoehe(Memo1.Font, Memo1.Text);
+    i := (i * Memo1.Lines.Count) + 80;
+    if i <= Memo1.Parent.Height then
+      Exit;
+
+    PDFPanel.Height := i;
+  end;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
