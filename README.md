@@ -20,23 +20,24 @@ Fragen, Anregungen, Wünsche gerne an FreePDF@outlook.com oder hier über GitHub
 3. Erstellen von JPEG zu PDF-Dateien
 4. PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)
 5. PDF-Passwortschutz entfernen
-6. Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
-7. Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
-8. Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
-9. Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
-10. Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
-11. Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
-12. PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
-13. Ausgewählte Seiten entnehmen aus allen Formaten
-14. Schnelle Webanzeige (Optimierung der PDF-Datei)
-15. Schnelle Anzeige der PS/PDF-Dateien im FreePDF64-Hauptprogramm
-16. PDF-Datei(en) komprimieren
-17. Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
-18. Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
-19. Bilder extrahieren aus PDF-Dateien
-20. Konvertieren von PDF zu HTML
-21. E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
-22. Automatische Überwachung auf neue eingehende Dateien (z.B. gedruckt aus den Anwendungen an den Postscript-Drucker) mit sofortiger Erstellung ins gewünschte Format!
+6. Informationen zu einer PDF-Datei anzeigen
+7. Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
+8. Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
+9. Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
+10. Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
+11. Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
+12. Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
+13. PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
+14. Ausgewählte Seiten entnehmen aus allen Formaten
+15. Schnelle Webanzeige (Optimierung der PDF-Datei)
+16. Schnelle Anzeige der PS/PDF-Dateien im FreePDF64-Hauptprogramm
+17. PDF-Datei(en) komprimieren
+18. Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
+19. Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
+20. Bilder extrahieren aus PDF-Dateien
+21. Konvertieren von PDF zu HTML
+22. E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
+23. Automatische Überwachung auf neue eingehende Dateien (z.B. gedruckt aus den Anwendungen an den Postscript-Drucker) mit sofortiger Erstellung ins gewünschte Format!
 ...und vieles mehr.
 
 
