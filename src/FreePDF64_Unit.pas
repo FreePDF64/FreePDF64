@@ -507,7 +507,7 @@ var
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
   Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1: String;
-  ParaJN, Versch1, Vol1, Vol2, PDFPanelH: Integer;
+  ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
   Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf: Boolean;
@@ -1812,7 +1812,7 @@ begin
   if Memo1.Lines.Count > 1 then
   begin
     i:= TextHoehe(Memo1.Font, Memo1.Text);
-    i := (i * Memo1.Lines.Count) + 80;
+    i := (i * Memo1.Lines.Count) + MHA;
     if i <= Memo1.Parent.Height then
       Exit;
     PDFPanel.Height := i;
@@ -2758,6 +2758,14 @@ begin
         Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
         Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
 
+        //Memo Height Addition
+        if not ValueExists('Start', 'Memo Height Addition') then
+        begin
+          MHA := 80;
+          WriteInteger('Start', 'Memo Height Addition', MHA);
+        end else
+          MHA := ReadInteger('Start', 'Memo Height Addition', MHA);
+
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
@@ -3213,6 +3221,7 @@ begin
     // Überwachung ist AUS
     MonitorBtn.ImageIndex := 58;
     MonitorBtn.Caption    := '  AUS';
+    MHA := 80;
 
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
@@ -3288,7 +3297,6 @@ begin
       LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
       LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
       LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
-
       Ziel := ReadString('Folder', 'Target', Ziel);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
