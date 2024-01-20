@@ -551,6 +551,9 @@ begin
 
   LMDShellList1.Column[0].AutoSize := a;
   LMDShellList2.Column[0].AutoSize := a;
+
+  Sleep(100);
+  RefreshBt.Click
 end;
 
 // Backslash vorhanden: JA/NEIN
