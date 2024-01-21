@@ -1940,15 +1940,20 @@ begin
 
   Memo1.Clear;
 
-  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
     for i := 0 to LMDShellList1.SelCount - 1 do
       RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
-                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
-
-  if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
+                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1)
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
     for i := 0 to LMDShellList2.SelCount - 1 do
       RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
-                   LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
+                   LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1)
+  else
+  begin
+    MessageDlgCenter('Informationen zu einer PDF-Datei anzeigen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end;
+
 
   // Markieren im Memofeld verhindern
   StatusBitBtn.SetFocus;

@@ -91,6 +91,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
+      ExplicitWidth = 967
       object Linker_FolderBtn: TToolButton
         Left = 0
         Top = 0
