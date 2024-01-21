@@ -316,6 +316,11 @@ end;
     Passwortschutzentfernen1: TMenuItem;
     PDFInfoBtn: TToolButton;
     PDFInfoanzeigen1: TMenuItem;
+    PDFAttachment: TToolButton;
+    PDFAnlagenanzeigenextrahieren1: TMenuItem;
+    AnlagenBtn: TToolButton;
+    AnlageeinerPDFDateihinzufgen1: TMenuItem;
+    LMDOpenDialog2: TLMDOpenDialog;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -479,6 +484,8 @@ end;
     procedure HTMLBtnClick(Sender: TObject);
     procedure PDFInfoBtnClick(Sender: TObject);
     procedure Memo1DblClick(Sender: TObject);
+    procedure PDFAttachmentClick(Sender: TObject);
+    procedure AnlagenBtnClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -502,7 +509,7 @@ var
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
   Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
-  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info: String;
+  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
@@ -862,6 +869,71 @@ begin
   ProgressBar1.Position := 0;
 end;
 
+// Anlage(n) einer PDF-Datei hinzufügen
+procedure TFreePDF64_Form.AnlagenBtnClick(Sender: TObject);
+var
+  PDFDatei, Zieldatei, Anlage, Zeile, s: String;
+  i: Integer;
+  ProcID: Cardinal;
+  F: TextFile;
+begin
+  FavClose;
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  begin
+    LMDOpenDialog2.InitialDir := LMDShellFolder1.ActiveFolder.PathName;
+    if LMDOpenDialog2.Execute then
+      Anlage := LMDOpenDialog2.Filename
+    else
+      Exit;
+
+    // QPDF-Pfad => Einstellungen_Form.Edit4.Text
+    //
+    // Original-PDF ist Test.pdf
+    // Erstellte PDF wird dann Test_Neu.pdf
+    // Attachment ist die Datei Demodatei.txt
+    // qpdf.exe --add-attachment Demodatei.txt -- Test.pdf Test_Neu.pdf
+    Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment "' + Anlage + '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+                 LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
+                 ChangeFileExt(LMDShellList1.SelectedItems[0].DisplayName, '') + '_NEU.pdf"';
+    PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
+    ZielDatei := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ChangeFileExt(LMDShellList1.SelectedItems[0].DisplayName, '') + '_NEU.pdf';
+
+    // Starte die Erstellung...
+    ProcID := 0;
+    if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
+    begin
+      Memo1.Lines.Text := Zeile;
+      // FreePDF64Log.txt
+      if Logdatei.Checked then
+      begin
+        // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+        AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+        try
+          Append(F);
+        except
+          Rewrite(F)
+        end;
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Anlage hinzufügen: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -               Anlage: ' + Anlage));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(LMDShellFolder2.ActiveFolder.PathName)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
+        Closefile(F);
+
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+      end;
+    end;
+  end else
+  begin
+    MessageDlgCenter('Anlage einer PDF-Datei hinzufügen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end;
+end;
+
 // Aufruf spezieller Ordner, wie z.B. die Netzwerkumgebung, „Eigene Dateien".
 // Nachfolgende Procedure öffnet einen solchen virtuellen Dialog:
 // CSIDL_Controls  für "Systemsteuerung",
@@ -978,11 +1050,11 @@ begin
     + #13 + '12: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen'
     + #13 + '13: Ausgewählte Seiten entnehmen aus allen Formaten'
     + #13 + '14: Schnelle Webanzeige (Optimierung der PDF-Datei)'
-    + #13 + '15: Schnelle Anzeige der PS/PDF-Dateien im FreePDF64-Hauptprogramm'
-    + #13 + '16: Komprimierung der PDF-Datei(en)'
-    + #13 + '17: Hinzufügen eines Wasserzeichens oder Stempels zu einer PDF-Datei'
-    + #13 + '18: Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei'
-    + #13 + '19: Bilder extrahieren aus PDF-Dateien'
+    + #13 + '15: Komprimierung der PDF-Datei(en)'
+    + #13 + '16: Hinzufügen eines Wasserzeichens oder Stempels zu einer PDF-Datei'
+    + #13 + '17: Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei'
+    + #13 + '18: Bilder extrahieren aus PDF-Dateien'
+    + #13 + '19: Anlagen zur PDF-Datei hinzufügen oder extrahieren'
     + #13 + '20: Konvertieren von PDF zu HTML'
     + #13 + '21: E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"'
     + #13 + '22: Automatische Überwachung auf neue eingehende Dateien (z.B. gedruckt aus den Anwendungen an den'
@@ -1780,10 +1852,86 @@ begin
   B.Free;
 end;
 
+// Anlagen zu einer PDF-Datei anzeigen
+procedure TFreePDF64_Form.PDFAttachmentClick(Sender: TObject);
+var
+  i: Integer;
+  PDFDatei, Zeile: String;
+  ProcID: Cardinal;
+  F: TextFile;
+begin
+  FavClose;
+  if not FileExists(XPDF_Detach) then
+  begin
+    MessageDlgCenter('Achtung: Die Datei "pdfdetach.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
+    Exit;
+  end;
+
+  Memo1.Clear;
+
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  begin
+    for i := 0 to LMDShellList1.SelCount - 1 do
+    begin
+      RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
+      PDFDatei := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName + '"';
+      Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel) + '" "' + PDFDatei;
+    end
+  end else
+  begin
+    MessageDlgCenter('Anlage(n) extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end;
+
+  // = Nun Anlagen ins Zielverzeichnis speichern ===============
+  // Starte die Erstellung...
+  ProcID := 0;
+  if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
+  begin
+    // FreePDF64Log.txt
+    if Logdatei.Checked then
+    begin
+      // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+      AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+      try
+        Append(F);
+      except
+        Rewrite(F)
+      end;
+      PDFDatei := ExtractFileName(PDFDatei);
+      Delete(PDFDatei, Length(PDFDatei), 1);
+
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' => Anlage(n) speichern: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + PDFDatei));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(LMDShellFolder2.ActiveFolder.PathName)));
+      Closefile(F);
+
+      if Einstellungen_Form.SystemklangCB.Checked then
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+    end;
+  end;
+
+  if Memo1.Lines.Count > 1 then
+  begin
+    i:= TextHoehe(Memo1.Font, Memo1.Text);
+    i := (i * Memo1.Lines.Count) + MHA;
+    if i <= Memo1.Parent.Height then
+      Exit;
+    PDFPanel.Height := i;
+  end;
+
+  // Markieren im Memofeld verhindern
+  StatusBitBtn.SetFocus;
+end;
+
+// PDF-Informationen anzeigen
 procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
   i: Integer;
 begin
+  FavClose;
   if not FileExists(XPDF_info) then
   begin
     MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
@@ -1830,8 +1978,8 @@ begin
     Exit;
 
   // QPDF-Pfad => Einstellungen_Form.Edit4.Text
-  Zeile := Einstellungen_Form.Edit4.Text + ' --decrypt "' + PDFDatei + '" "' +
-           BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
+  Zeile  := Einstellungen_Form.Edit4.Text + ' --decrypt "' + PDFDatei + '" "' +
+            BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
   EndPDF := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei);
 
   // Starte die Erstellung...
@@ -3203,6 +3351,8 @@ begin
     XPDF_Images := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
     XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
     XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
+    XPDF_Detach := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+
     // XPDFReader
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
@@ -3272,6 +3422,7 @@ begin
   XPDF_Images := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
   XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
   XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
+  XPDF_Detach := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
 
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
@@ -3718,7 +3869,7 @@ begin
   end;
 
   FavClose;
-  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
     // Verzeichnis erstellen "Extrahierte Bilder"
@@ -3765,7 +3916,7 @@ begin
     end;
   end else
   begin
-    MessageDlgCenter('Bilder extrahieren: Bitte eine PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Bilder extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 end;
@@ -3787,7 +3938,7 @@ begin
   HTMLZiel := BackSlash(Ziel) + 'HTML';
 
   FavClose;
-  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
 
@@ -3842,7 +3993,7 @@ begin
     end;
   end else
   begin
-    MessageDlgCenter('Konvertieren PDF zu HTML: Bitte eine PDF-Datei aus dem Quellverzeichnis auswählen!',
+    MessageDlgCenter('Konvertieren PDF zu HTML: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!',
                       mtInformation, [mbOk]);
     Exit;
   end;
