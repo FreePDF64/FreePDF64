@@ -872,7 +872,7 @@ end;
 // Anlage(n) einer PDF-Datei hinzufügen
 procedure TFreePDF64_Form.AnlagenBtnClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile, s: String;
+  PDFDatei, Zieldatei, Anlage, Zeile: String;
   i: Integer;
   ProcID: Cardinal;
   F: TextFile;
@@ -894,9 +894,9 @@ begin
     // qpdf.exe --add-attachment Demodatei.txt -- Test.pdf Test_Neu.pdf
     Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment "' + Anlage + '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                  LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
-                 ChangeFileExt(LMDShellList1.SelectedItems[0].DisplayName, '') + '_NEU.pdf"';
+                 LMDShellList1.SelectedItems[0].DisplayName + '"';
     PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
-    ZielDatei := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ChangeFileExt(LMDShellList1.SelectedItems[0].DisplayName, '') + '_NEU.pdf';
+    ZielDatei := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
 
     // Starte die Erstellung...
     ProcID := 0;
@@ -926,6 +926,14 @@ begin
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
       end;
+    end;
+    // Mit einem PDF-Anzeiger anzeigen
+    if Einstellungen_Form.AnzeigenCB.Checked then
+    begin
+      if Einstellungen_Form.Edit3.Text = '' then
+        ShellExecute(Application.Handle, NIL, PChar(Zieldatei), NIL, NIL, SW_SHOWNORMAL)
+      else
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
