@@ -1,7 +1,7 @@
 //
 // Programmname: FreePDF64
 //
-// Sinn dieses Programms:
+// Zweck dieses Programms:
 // Erstellung von PDF/PS/JPEG/TIFF/TXT-Dateien aus u.a. Postscript-Dateien.
 // Goodie: Die zu erzeugenden Dateien werden in das Eingabeverzeichnis
 // gedruckt (über Mfilemon) oder kopiert und sind nach Erstellung als
@@ -11,16 +11,11 @@
 // - GhostScript (Freeware)
 // - QPDF
 // - PDFtk
-// - XpdfReader und Xpdf-Tools
+// - XpdfReader und die Xpdf-Tools
 // - Ein postscriptfähigen Farbdruckertreiber (mit Mfilemon)
 //
 // Angefangen im:    Dezember 2021
 // Programmiert mit: Embarcadero Delphi 11 Community Edition
-//
-// Autor:            M. Tesch
-// Garstedter Feldstraße 12a
-// 22850 Norderstedt
-// eMail:            FreePDF64@outlook.com
 //
 // Hinweis: Wenn ein Formular erzeugt wird und seine Eigenschaft
 // Visible auf True gesetzt ist, werden die folgenden
@@ -506,7 +501,8 @@ var
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
-  Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1: String;
+  Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
+  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
@@ -1788,9 +1784,9 @@ procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
   i: Integer;
 begin
-  if not FileExists(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe') then
+  if not FileExists(XPDF_info) then
   begin
-    MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + ExtractFilePath(Application.ExeName) + 'xpdf\bin64\"!', mtError, [mbOk]);
+    MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
   end;
 
@@ -1798,13 +1794,13 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
     for i := 0 to LMDShellList1.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
-                   BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
+      RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
   if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
     for i := 0 to LMDShellList2.SelCount - 1 do
-      RunDosInMemo(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfinfo.exe -box "' +
-                   BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
+      RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
+                   LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1);
 
   // Markieren im Memofeld verhindern
   StatusBitBtn.SetFocus;
@@ -3202,10 +3198,11 @@ begin
     Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
     // PDFtk
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
-    // XPDFimages
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfimages.exe';
-    // XPDFtoHTML
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdftohtml.exe';
+    // XPDF-Tools
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
+    XPDF_Images := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+    XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+    XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
     // XPDFReader
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
@@ -3269,12 +3266,14 @@ begin
   // PDFtk
   if Einstellungen_Form.Edit5.Text = '' then
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
-  // XPDFimages
+  // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfimages.exe';
-  // XPDFtoHTML
-  if Einstellungen_Form.Edit7.Text = '' then
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdftohtml.exe';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
+  // XPDF-Tools
+  XPDF_Images := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+  XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+  XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
+
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
@@ -3713,9 +3712,9 @@ var
   FileName, Zeile, Memozeile: String;
   F: TextFile;
 begin
-  if not FileExists(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdfimages.exe') then
+  if not FileExists(XPDF_Images) then
   begin
-    MessageDlgCenter('Achtung: Die Datei "pdfimages.exe" fehlt im Ordner "' + ExtractFilePath(Application.ExeName) + 'xpdf\bin64\"!', mtError, [mbOk]);
+    MessageDlgCenter('Achtung: Die Datei "pdfimages.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
   end;
 
@@ -3725,15 +3724,14 @@ begin
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
     // Verzeichnis erstellen "Extrahierte Bilder"
     if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
-      Zeile := Einstellungen_Form.Edit6.Text + ' -j "' +
-               LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' +
-               FileName + '"';
+      Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName +
+               '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := Einstellungen_Form.Edit6.Text + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+      Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
                    BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
 
       Memo1.Lines.Text := Memozeile;
@@ -3777,17 +3775,16 @@ end;
 procedure TFreePDF64_Form.HTMLBtnClick(Sender: TObject);
 var
   ProcID: Cardinal;
-  FileName, Zeile, Memozeile, HTMLZiel, XPDFtoHTML: String;
+  FileName, Zeile, Memozeile, HTMLZiel: String;
   F: TextFile;
   j: Integer;
 begin
   j := 0;
-  if not FileExists(ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdftohtml.exe') then
+  if not FileExists(XPDF_ToHTML) then
   begin
-    MessageDlgCenter('Achtung: Die Datei "pdftohtml.exe" fehlt im Ordner "' + ExtractFilePath(Application.ExeName) + 'xpdf\bin64\"!', mtError, [mbOk]);
+    MessageDlgCenter('Achtung: Die Datei "pdftohtml.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
-  end else
-    XPDFtoHTML := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\pdftohtml.exe';
+  end;
   HTMLZiel := BackSlash(Ziel) + 'HTML';
 
   FavClose;
@@ -3808,13 +3805,13 @@ begin
     until not DirectoryExists(Ziel2);
       HTMLZiel := Ziel2;
 
-    Zeile := XPDFtoHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
+    Zeile := XPDF_toHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := XPDFtoHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
+      Memozeile := XPDF_toHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
       Memo1.Lines.Text := Memozeile;
       // FreePDF64Log.txt
       if Logdatei.Checked then
