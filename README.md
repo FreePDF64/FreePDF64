@@ -34,9 +34,9 @@ Fragen, Anregungen, Wünsche gerne an FreePDF@outlook.com oder hier über GitHub
 13. PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
 14. Ausgewählte Seiten entnehmen aus allen Formaten
 15. Schnelle Webanzeige (Optimierung der PDF-Datei)
-16. Schnelle Anzeige der PS/PDF-Dateien im FreePDF64-Hauptprogramm
-17. PDF-Datei(en) komprimieren
-18. Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
+16. PDF-Datei(en) komprimieren
+17. Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
+18. Anlagen zur PDF-Datei hinzufügen oder extrahieren
 19. Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
 20. Bilder extrahieren aus PDF-Dateien
 21. Konvertieren von PDF zu HTML
