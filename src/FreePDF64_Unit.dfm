@@ -750,7 +750,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
-      ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1142,8 +1141,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 667
-      ExplicitTop = 729
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1399,7 +1396,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 733
       end
       object Ziellabel: TPanel
         Left = 1

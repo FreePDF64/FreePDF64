@@ -3240,7 +3240,6 @@ begin
         WriteBool('Start', 'Autostart', Autostart.Checked);
         WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
-        WriteInteger('Format', 'System Sound Volume (0=Low, 65535=High)', 65535);
       end;
       // Speicher wird wieder freigeben
       IniDat.Free;
