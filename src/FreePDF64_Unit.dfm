@@ -1129,7 +1129,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 735
+      Top = 736
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1155,6 +1155,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 667
+      ExplicitTop = 734
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1383,7 +1385,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 739
+        Top = 740
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1409,6 +1411,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 738
       end
       object Ziellabel: TPanel
         Left = 1

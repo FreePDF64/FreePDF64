@@ -1860,7 +1860,7 @@ end;
 // Anlagen zu einer PDF-Datei anzeigen
 procedure TFreePDF64_Form.PDFAttachmentClick(Sender: TObject);
 var
-  i: Integer;
+  i, j: Integer;
   PDFDatei, Zeile: String;
   ProcID: Cardinal;
   F: TextFile;
@@ -1911,6 +1911,11 @@ begin
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + PDFDatei));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(LMDShellFolder2.ActiveFolder.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -   Anzahl der Anlagen: ' + Memo1.lines[0]));
+      for j := 1 to Memo1.Lines.Count - 1 do
+      begin
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -             Anlage_' + Memo1.lines[j]));
+      end;
       Closefile(F);
 
       if Einstellungen_Form.SystemklangCB.Checked then
