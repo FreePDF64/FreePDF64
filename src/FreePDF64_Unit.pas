@@ -887,11 +887,25 @@ begin
     else
       Exit;
 
+
+    // Wenn Erstellung Formatfolder angehakt...
+    if Formatverz_Date.Checked then
+    begin
+      // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+    end else if Formatverz.Checked then
+    begin
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
+    end else
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
+
     Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment "' + Anlage + '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
-                 LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
-                 LMDShellList1.SelectedItems[0].DisplayName + '"';
+                 LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
     PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
-    ZielDatei := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
+    ZielDatei := BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName;
 
     // Starte die Erstellung...
     ProcID := 0;
@@ -913,7 +927,7 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -               Anlage: ' + Anlage));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(LMDShellFolder2.ActiveFolder.PathName)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
         Closefile(F);
@@ -929,7 +943,7 @@ begin
       if Einstellungen_Form.Edit3.Text = '' then
         ShellExecute(Application.Handle, NIL, PChar(Zieldatei), NIL, NIL, SW_SHOWNORMAL)
       else
-        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+        ShellExecute(Application.Handle, 'open', PChar(Zieldatei), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
