@@ -321,6 +321,8 @@ end;
     AnlagenBtn: TToolButton;
     AnlageeinerPDFDateihinzufgen1: TMenuItem;
     LMDOpenDialog2: TLMDOpenDialog;
+    Kommandozeilenfensterffnen1: TMenuItem;
+    ToolButton2: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -886,12 +888,6 @@ begin
     else
       Exit;
 
-    // QPDF-Pfad => Einstellungen_Form.Edit4.Text
-    //
-    // Original-PDF ist Test.pdf
-    // Erstellte PDF wird dann Test_Neu.pdf
-    // Attachment ist die Datei Demodatei.txt
-    // qpdf.exe --add-attachment Demodatei.txt -- Test.pdf Test_Neu.pdf
     Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment "' + Anlage + '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                  LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
                  LMDShellList1.SelectedItems[0].DisplayName + '"';
@@ -927,6 +923,7 @@ begin
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
       end;
     end;
+    Application.ProcessMessages;
     // Mit einem PDF-Anzeiger anzeigen
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
@@ -3884,18 +3881,31 @@ begin
   FavClose;
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
+
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
-    // Verzeichnis erstellen "Extrahierte Bilder"
-    if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
-      Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName +
-               '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
+    if Formatverz_Date.Checked then
+    begin
+      // Verzeichnis erstellen "Extrahierte Bilder"
+      if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder' + ' ' + DateToStr(NOW)) then
+        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder ' +
+                 DateToStr(Now) +'\' + FileName + '"'
+    end else
+    begin
+      // Verzeichnis erstellen "Extrahierte Bilder"
+      if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
+        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
+    end;
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                   BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
+      if Formatverz_Date.Checked then
+        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                     BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now) + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
+      else
+        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                     BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
 
       Memo1.Lines.Text := Memozeile;
       // FreePDF64Log.txt
@@ -3912,7 +3922,12 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel))));
+        if Formatverz_Date.Checked then
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
+                  'Extrahierte Bilder ' + DateToStr(Now))))
+        else
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
+                  'Extrahierte Bilder')));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
         Closefile(F);
 
