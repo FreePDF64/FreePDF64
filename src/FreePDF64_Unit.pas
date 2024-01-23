@@ -2769,6 +2769,7 @@ end;
 procedure TFreePDF64_Form.FavSpLClick(Sender: TObject);
 begin
   FavClose;
+  Favoriten_Form.Position := poMainFormCenter;
   Favoriten_Form.ShowModal;
   Favoritenspeichern1.Click;
 end;
@@ -2777,6 +2778,7 @@ end;
 procedure TFreePDF64_Form.FavSpRClick(Sender: TObject);
 begin
   FavClose;
+  Favoriten2_Form.Position := poMainFormCenter;
   Favoriten2_Form.ShowModal;
   Favoritenspeichern1.Click;
 end;
