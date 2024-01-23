@@ -875,7 +875,6 @@ end;
 procedure TFreePDF64_Form.AnlagenBtnClick(Sender: TObject);
 var
   PDFDatei, Zieldatei, Anlage, Zeile: String;
-  i: Integer;
   ProcID: Cardinal;
   F: TextFile;
 begin
@@ -1981,7 +1980,7 @@ end;
 // PDF-Passwortschutz entfernen
 procedure TFreePDF64_Form.PDFdecryptClick(Sender: TObject);
 var
-  PDFDatei, Zeile, Zeile2, EndPDF, s: String;
+  PDFDatei, Zeile, Zeile2, EndPDF, Ziel, s: String;
   ProcID: Cardinal;
   F: TextFile;
 begin
@@ -1992,11 +1991,24 @@ begin
   else
     Exit;
 
+  // Wenn Erstellung Formatfolder angehakt...
+  if Formatverz_Date.Checked then
+  begin
+    // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+    if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
+      Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+  end else if Formatverz.Checked then
+  begin
+    if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
+      Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
+  end else
+    if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
+      Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
+
   // QPDF-Pfad => Einstellungen_Form.Edit4.Text
   Zeile  := Einstellungen_Form.Edit4.Text + ' --decrypt "' + PDFDatei + '" "' +
-            BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
-  EndPDF := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei);
-
+            Backslash(Ziel) + ExtractFileName(PDFDatei) + '"';
+  EndPDF := Backslash(Ziel) + ExtractFileName(PDFDatei);
   // Starte die Erstellung...
   ProcID := 0;
   if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
@@ -2016,7 +2028,7 @@ begin
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(PDFDatei)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(LMDShellFolder2.ActiveFolder.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + Backslash(Ziel)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(EndPDF)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
       Closefile(F);
@@ -3175,7 +3187,6 @@ procedure TFreePDF64_Form.Installation1Click(Sender: TObject);
 var
   MFDatei, Reg, s1: String;
   ProcID: Cardinal;
-  i: Integer;
 begin
   if MessageDlgCenter('Hiermit wird der Druckeranschluß-Umleitungsmonitor "Mfilemon" installiert!' + #13 +
                       'Danach steht der Drucker "FreePDF64" aus jedem Programm heraus zur Verfügung.' + #13 + #13 +
