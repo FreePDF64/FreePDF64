@@ -1379,7 +1379,6 @@ object FreePDF64_Form: TFreePDF64_Form
         Font.Style = []
         ItemHeight = 20
         ParentFont = False
-        Sorted = True
         TabOrder = 1
         Visible = False
       end
@@ -1661,7 +1660,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Font.Style = []
       ItemHeight = 20
       ParentFont = False
-      Sorted = True
       TabOrder = 1
       Visible = False
     end
