@@ -72,6 +72,9 @@ Here are some ideas to get you started:
 ### Statusinformation
 ![FreePDF64_Statusinformation](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Anzeige%20Statusinformationen.JPG)
 
+### PDF-Metadaten
+![FreePDF64_Metadaten](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Metadaten.JPG)
+
 ### PDF-Dateien vorne/hinten anfügen
 ![FreePDF64_Datei anfügen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Datei%20anf%C3%BCgen.JPG)
 
