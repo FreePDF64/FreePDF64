@@ -1,4 +1,4 @@
-# FreePDF64 👋 - Die PDF-Toolsammlung (und einiges mehr...)
+# FreePDF64 👋 - Die PDF-Toolsammlung (und mehr...)
 
 Download der **allerneuesten** Version immer unter: 
 - https://github.com/FreePDF64/FreePDF64/tree/main/releases/download
