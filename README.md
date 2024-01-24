@@ -60,7 +60,7 @@ Here are some ideas to get you started:
 - 😄 Pronouns: ...
 - ⚡ Fun fact: ...
 -->
-### Hauptbildschirm
+### Hauptfenster
 ![FreePDF64_Hauptbildschirm](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG)
 
 ### Einstellungen
