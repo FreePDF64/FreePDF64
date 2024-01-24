@@ -61,10 +61,10 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 ### Hauptbildschirm
-![FreePDF64_Hauptbildschirm](https://github.com/FreePDF64/FreePDF64/assets/38452654/a46d8f0d-5d96-4842-8699-47d4d802a56a)
+[![FreePDF64_Hauptbildschirm](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG)
 
 ### Einstellungen
-![FreePDF64_Einstellungen](https://github.com/FreePDF64/FreePDF64/assets/38452654/adf814f3-bdd3-4203-8aa9-1cd0a5fa0910)
+![FreePDF64_Einstellungen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Einstellungen.JPG)
 
 ### Verschlüsselung
 ![FreePDF64_Verschlüsselung](https://github.com/FreePDF64/FreePDF64/assets/38452654/a3876550-5e96-4ec2-82de-19be0855b556)
