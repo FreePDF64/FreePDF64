@@ -1,7 +1,7 @@
 object FreePDF64_Form: TFreePDF64_Form
   Left = 0
   Top = 0
-  Caption = 'FreePDF64'
+  Caption = 'FreePDF64 - Die PDF-Toolsammlung'
   ClientHeight = 695
   ClientWidth = 1392
   Color = clBtnFace
@@ -1129,7 +1129,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 741
+      Top = 743
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1156,7 +1156,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 739
+      ExplicitTop = 741
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1384,7 +1384,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 745
+        Top = 747
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1410,7 +1410,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 743
+        ExplicitTop = 745
       end
       object Ziellabel: TPanel
         Left = 1

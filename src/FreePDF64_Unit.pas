@@ -3355,7 +3355,7 @@ var
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
 begin
-  FreePDF64_Form.Caption := 'FreePDF64 - Benutzername: ' + GetCurrentUsername;
+  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUsername;
   FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
   FAbbrechen := False;
