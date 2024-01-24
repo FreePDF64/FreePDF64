@@ -69,4 +69,17 @@ Here are some ideas to get you started:
 ### Verschlüsselung
 ![FreePDF64_Verschlüsselung](https://github.com/FreePDF64/FreePDF64/assets/38452654/a3876550-5e96-4ec2-82de-19be0855b556)
 
+### Statusinformation
+![FreePDF64_Statusinformation](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Anzeige%20Statusinformationen.JPG)
 
+### PDF-Dateien vorne/hinten anfügen
+![FreePDF64_Datei anfügen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Datei%20anf%C3%BCgen.JPG)
+
+### PDF-Dateien verbinden
+![FreePDF64_Dateien verbinden](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verbinden%20von%20PDF-Dateien.JPG)
+
+### Wasserzeichen/Stempel
+![FreePDF64_Wasserzeichen_Stempel](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Wasserzeichen_Stempel%20hinzuf%C3%BCgen.JPG)
+
+### Überwachung
+![FreePDF64_Überwachung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-%C3%9Cberwachung.JPG)
