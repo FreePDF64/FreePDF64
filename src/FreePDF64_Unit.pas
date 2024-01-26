@@ -874,7 +874,7 @@ end;
 // Anlage(n) einer PDF-Datei hinzufügen
 procedure TFreePDF64_Form.AnlagenBtnClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile: String;
+  PDFDatei, Zieldatei, Anlage, Zeile, Beschreibung: String;
   ProcID: Cardinal;
   F: TextFile;
 begin
@@ -886,7 +886,6 @@ begin
       Anlage := LMDOpenDialog2.Filename
     else
       Exit;
-
 
     // Wenn Erstellung Formatfolder angehakt...
     if Formatverz_Date.Checked then
@@ -902,8 +901,10 @@ begin
       if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
         Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
 
-    Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment "' + Anlage + '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
-                 LMDShellList1.SelectedItems[0].DisplayName) + '" "' + BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
+    InputQuery('Anlage einer PDF-Datei hinzufügen', 'Beschreibung zur Anlage:', Beschreibung);
+    Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment --description="' + Beschreibung + '" "' + Anlage +
+                 '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) +
+                 '" "' + BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
     PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
     ZielDatei := BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName;
 
