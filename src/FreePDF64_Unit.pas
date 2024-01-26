@@ -3909,62 +3909,67 @@ begin
     MessageDlgCenter('Achtung: Die Datei "pdfimages.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
   end;
-
   FavClose;
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
-    if Formatverz_Date.Checked then
-    begin
-      // Verzeichnis erstellen "Extrahierte Bilder"
-      if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder' + ' ' + DateToStr(NOW)) then
-        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder ' +
-                 DateToStr(Now) +'\' + FileName + '"'
-    end else
-    begin
-      // Verzeichnis erstellen "Extrahierte Bilder"
-      if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
-        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
-    end;
-
-    // Starte die Erstellung...
+    // Abfrage, ob das Extrahieren funktionieren wird...
+    if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+      Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" >NIL';
     ProcID := 0;
+    // Ja wird funktionieren. Weiter geht's mit Erstellung der Ziel-Verzeichnisse...
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
       if Formatverz_Date.Checked then
-        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                     BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now) + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
-      else
-        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                     BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
-
-      Memo1.Lines.Text := Memozeile;
-      // FreePDF64Log.txt
-      if Logdatei.Checked then
       begin
-        // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
-        AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
-        try
-          Append(F);
-        except
-          Rewrite(F)
-        end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
-        if Formatverz_Date.Checked then
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
-                  'Extrahierte Bilder ' + DateToStr(Now))))
-        else
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
-                  'Extrahierte Bilder')));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
-        Closefile(F);
+        // Verzeichnis erstellen "Extrahierte Bilder"
+        if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder' + ' ' + DateToStr(NOW)) then
+          Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder ' +
+                   DateToStr(Now) +'\' + FileName + '"'
+      end else
+      begin
+        // Verzeichnis erstellen "Extrahierte Bilder"
+        if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
+          Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
+      end;
 
-        if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+      // Starte nun die richtige Erstellung...
+      if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
+      begin
+        if Formatverz_Date.Checked then
+          Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                       BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now) + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
+        else
+          Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                       BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
+
+        Memo1.Lines.Text := Memozeile;
+        // FreePDF64Log.txt
+        if Logdatei.Checked then
+        begin
+          // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+          AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+          try
+            Append(F);
+          except
+            Rewrite(F)
+          end;
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+          if Formatverz_Date.Checked then
+            Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
+                    'Extrahierte Bilder ' + DateToStr(Now))))
+          else
+            Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
+                    'Extrahierte Bilder')));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
+          Closefile(F);
+
+          if Einstellungen_Form.SystemklangCB.Checked then
+            PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+        end;
       end;
     end else
     begin
