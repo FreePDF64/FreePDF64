@@ -2123,8 +2123,11 @@ begin
 
     if InputQuery('Datei: ' + ExtractFileName(PDFDatei), 'Eingabe Passwort erforderlich:', s) then
     begin
+//      Zeile2 := Einstellungen_Form.Edit4.Text + ' --decrypt --password="' + s + '" "' + PDFDatei + '" "' +
+//                BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
       Zeile2 := Einstellungen_Form.Edit4.Text + ' --decrypt --password="' + s + '" "' + PDFDatei + '" "' +
-                BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
+                BackSlash(Ziel) + ExtractFileName(PDFDatei) + '"';
+
       ProcID := 0;
       if RunProcess(Zeile2, SW_HIDE, True, @ProcID) = 0 then
       begin
