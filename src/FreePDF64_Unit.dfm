@@ -965,6 +965,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitLeft = -1
+      ExplicitTop = 30
     end
     object Quelllabel: TPanel
       Left = 1
@@ -1129,7 +1131,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 746
+      Top = 747
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1156,7 +1158,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 744
+      ExplicitTop = 745
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1384,7 +1386,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 750
+        Top = 751
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1410,7 +1412,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 748
+        ExplicitTop = 749
       end
       object Ziellabel: TPanel
         Left = 1
@@ -2215,6 +2217,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
   end
   object LMDShellFolder1: TLMDShellFolder
+    RootFolder = 'C:\'
     Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
     SortType = stName
     SortOrder = soDesc
@@ -2247,6 +2250,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 275
   end
   object LMDShellFolder2: TLMDShellFolder
+    RootFolder = 'C:\'
     Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
     SortType = stName
     SortOrder = soDesc

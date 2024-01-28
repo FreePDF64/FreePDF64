@@ -3557,15 +3557,15 @@ begin
       LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
       LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
       LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
-      Ziel := ReadString('Folder', 'Target', Ziel);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
         FreePDF64_Notify.MonitoringFolder.Text := BackSlash(LMDShellFolder1.ActiveFolder.PathName);
 
-      LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', StartFolder);
-      A_S := LMDShellFolder1.RootFolder;
-      LMDShellFolder2.RootFolder := ReadString('Folder', 'Target', Ziel);
-      B_Z := LMDShellFolder2.RootFolder;
+      LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', A_S);
+      LMDShellFolder2.RootFolder := ReadString('Folder', 'Target', B_Z);
+      Ziel := LMDShellFolder2.RootFolder;
+      Application.ProcessMessages;
+
       Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
       FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
       FreePDF64_Notify.LMDShellNotify.Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
@@ -3645,7 +3645,6 @@ begin
     Beide_FolderBtn.Visible := True;
     ShowFolders1.Visible    := True;
   end;
-
   // Show Folders Both Pane
   if ShowFolders1.Checked then
   begin
@@ -3849,6 +3848,7 @@ end;
 
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
 begin
+  // Ersten Eintrag auswählen
   LMDShellList1.ItemIndex := 0;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
