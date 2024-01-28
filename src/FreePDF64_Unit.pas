@@ -3561,9 +3561,9 @@ begin
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
         FreePDF64_Notify.MonitoringFolder.Text := BackSlash(LMDShellFolder1.ActiveFolder.PathName);
 
-      LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', A_S);
-      LMDShellFolder2.RootFolder := ReadString('Folder', 'Target', B_Z);
-      Ziel := LMDShellFolder2.RootFolder;
+      A_S := ReadString('Folder', 'Left', A_S);
+      B_Z := ReadString('Folder', 'Target', B_Z);
+      Ziel := B_Z;
       Application.ProcessMessages;
 
       Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
@@ -3837,6 +3837,8 @@ begin
   finally
     Free;
   end;
+  LMDShellFolder1.RootFolder := A_S;
+  LMDShellFolder2.RootFolder := B_Z;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
