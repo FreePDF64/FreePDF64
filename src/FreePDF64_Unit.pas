@@ -323,6 +323,8 @@ end;
     LMDOpenDialog2: TLMDOpenDialog;
     Kommandozeilenfensterffnen1: TMenuItem;
     ToolButton2: TToolButton;
+    PDFRemove: TToolButton;
+    Anlageentfernen1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -488,6 +490,7 @@ end;
     procedure Memo1DblClick(Sender: TObject);
     procedure PDFAttachmentClick(Sender: TObject);
     procedure AnlagenBtnClick(Sender: TObject);
+    procedure PDFRemoveClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -881,6 +884,79 @@ begin
   LMDShellList1.SetFocus;
 end;
 
+// Ausgabe Consolelog -> Memofenster
+procedure RunDosInMemo(DosApp: string; AMemo:TMemo);
+const
+    READ_BUFFER_SIZE = 2400;
+var
+    Security: TSecurityAttributes;
+    readableEndOfPipe, writeableEndOfPipe: THandle;
+    start: TStartUpInfo;
+    ProcessInfo: TProcessInformation;
+    Buffer: PAnsiChar;
+    BytesRead: DWORD;
+    AppRunning: DWORD;
+begin
+    Security.nLength := SizeOf(TSecurityAttributes);
+    Security.bInheritHandle := True;
+    Security.lpSecurityDescriptor := nil;
+
+    if CreatePipe({var}readableEndOfPipe, {var}writeableEndOfPipe, @Security, 0) then
+    begin
+        Buffer := AllocMem(READ_BUFFER_SIZE+1);
+        FillChar(Start, Sizeof(Start), #0);
+        start.cb := SizeOf(start);
+
+        // Set up members of the STARTUPINFO structure.
+        // This structure specifies the STDIN and STDOUT handles for redirection.
+        // - Redirect the output and error to the writeable end of our pipe.
+        // - We must still supply a valid StdInput handle (because we used STARTF_USESTDHANDLES to swear that all three handles will be valid)
+        start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
+        start.hStdInput := GetStdHandle(STD_INPUT_HANDLE); //we're not redirecting stdInput; but we still have to give it a valid handle
+        start.hStdOutput := writeableEndOfPipe; //we give the writeable end of the pipe to the child process; we read from the readable end
+        start.hStdError := writeableEndOfPipe;
+
+        //We can also choose to say that the wShowWindow member contains a value.
+        //In our case we want to force the console window to be hidden.
+        start.dwFlags := start.dwFlags + STARTF_USESHOWWINDOW;
+        start.wShowWindow := SW_HIDE;
+
+        // Don't forget to set up members of the PROCESS_INFORMATION structure.
+        ProcessInfo := Default(TProcessInformation);
+
+        //WARNING: The unicode version of CreateProcess (CreateProcessW) can modify the command-line "DosApp" string.
+        //Therefore "DosApp" cannot be a pointer to read-only memory, or an ACCESS_VIOLATION will occur.
+        //We can ensure it's not read-only with the RTL function: UniqueString
+        UniqueString({var}DosApp);
+
+        if CreateProcess(nil, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS, NIL, NIL, start, {var}ProcessInfo) then
+        begin
+            //Wait for the application to terminate, as it writes it's output to the pipe.
+            //WARNING: If the console app outputs more than 2400 bytes (ReadBuffer),
+            //it will block on writing to the pipe and *never* close.
+            repeat
+                Apprunning := WaitForSingleObject(ProcessInfo.hProcess, 100);
+                Application.ProcessMessages;
+            until (Apprunning <> WAIT_TIMEOUT);
+
+            //Read the contents of the pipe out of the readable end
+            //WARNING: if the console app never writes anything to the StdOutput, then ReadFile will block and never return
+            repeat
+                BytesRead := 0;
+                ReadFile(readableEndOfPipe, Buffer[0], READ_BUFFER_SIZE, {var}BytesRead, NIL);
+                Buffer[BytesRead]:= #0;
+                OemToAnsi(Buffer,Buffer);
+                AMemo.Text := AMemo.text + String(Buffer);
+            until (BytesRead < READ_BUFFER_SIZE);
+        end;
+        FreeMem(Buffer);
+        CloseHandle(ProcessInfo.hProcess);
+        CloseHandle(ProcessInfo.hThread);
+        CloseHandle(readableEndOfPipe);
+        CloseHandle(writeableEndOfPipe);
+    end;
+end;
+
 // Anlage(n) einer PDF-Datei hinzufügen
 procedure TFreePDF64_Form.AnlagenBtnClick(Sender: TObject);
 var
@@ -966,6 +1042,102 @@ begin
   end else
   begin
     MessageDlgCenter('Anlage einer PDF-Datei hinzufügen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end;
+end;
+
+// Anlage(n) aus einer PDF-Datei entfernen
+procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
+var
+  PDFDatei, Zieldatei, Anlage, Zeile: String;
+  ProcID: Cardinal;
+  F: TextFile;
+  i: Integer;
+begin
+  FavClose;
+  Memo1.Clear;
+
+  // Was war die letzte aktive Komponente?
+  if wcActive.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
+  // Zeige die Attachments der ausgewählten PDF-Datei
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  begin
+    // Anlagen anzeigen...
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
+
+    if not InputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heisst die Anlage? (Groß-/Kleinschrift beachten!):', Anlage) then
+      Exit
+    else if Anlage = '' then
+      Exit
+    else
+
+    // Wenn Erstellung Formatfolder angehakt...
+    if Formatverz_Date.Checked then
+    begin
+      // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+    end else if Formatverz.Checked then
+    begin
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
+    end else
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
+
+    Zeile     := Einstellungen_Form.Edit4.Text + ' --remove-attachment="' + Anlage + '" "' +
+                 (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) + '" "' +
+                  BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
+    PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
+    ZielDatei := BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName;
+
+    // Starte die Erstellung...
+    ProcID := 0;
+    if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
+    begin
+      Memo1.Lines.Text := Zeile;
+      // FreePDF64Log.txt
+      if Logdatei.Checked then
+      begin
+        // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+        AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+        try
+          Append(F);
+        except
+          Rewrite(F)
+        end;
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> Anlage entfernen: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Anlage));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
+        Closefile(F);
+
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+      end;
+    end;
+    Application.ProcessMessages;
+    // Mit einem PDF-Anzeiger anzeigen
+    if Einstellungen_Form.AnzeigenCB.Checked then
+    begin
+      if Einstellungen_Form.Edit3.Text = '' then
+        ShellExecute(Application.Handle, NIL, PChar(Zieldatei), NIL, NIL, SW_SHOWNORMAL)
+      else
+        ShellExecute(Application.Handle, 'open', PChar(Zieldatei), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+    end;
+  end else
+  begin
+    MessageDlgCenter('Anlage aus einer PDF-Datei entfernen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 end;
@@ -1825,79 +1997,6 @@ begin
   Hide();
   TrayIcon1.Visible := True;
   Timer2.Enabled := False;
-end;
-
-// Ausgabe Consolelog -> Memofenster
-procedure RunDosInMemo(DosApp: string; AMemo:TMemo);
-const
-    READ_BUFFER_SIZE = 2400;
-var
-    Security: TSecurityAttributes;
-    readableEndOfPipe, writeableEndOfPipe: THandle;
-    start: TStartUpInfo;
-    ProcessInfo: TProcessInformation;
-    Buffer: PAnsiChar;
-    BytesRead: DWORD;
-    AppRunning: DWORD;
-begin
-    Security.nLength := SizeOf(TSecurityAttributes);
-    Security.bInheritHandle := True;
-    Security.lpSecurityDescriptor := nil;
-
-    if CreatePipe({var}readableEndOfPipe, {var}writeableEndOfPipe, @Security, 0) then
-    begin
-        Buffer := AllocMem(READ_BUFFER_SIZE+1);
-        FillChar(Start, Sizeof(Start), #0);
-        start.cb := SizeOf(start);
-
-        // Set up members of the STARTUPINFO structure.
-        // This structure specifies the STDIN and STDOUT handles for redirection.
-        // - Redirect the output and error to the writeable end of our pipe.
-        // - We must still supply a valid StdInput handle (because we used STARTF_USESTDHANDLES to swear that all three handles will be valid)
-        start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
-        start.hStdInput := GetStdHandle(STD_INPUT_HANDLE); //we're not redirecting stdInput; but we still have to give it a valid handle
-        start.hStdOutput := writeableEndOfPipe; //we give the writeable end of the pipe to the child process; we read from the readable end
-        start.hStdError := writeableEndOfPipe;
-
-        //We can also choose to say that the wShowWindow member contains a value.
-        //In our case we want to force the console window to be hidden.
-        start.dwFlags := start.dwFlags + STARTF_USESHOWWINDOW;
-        start.wShowWindow := SW_HIDE;
-
-        // Don't forget to set up members of the PROCESS_INFORMATION structure.
-        ProcessInfo := Default(TProcessInformation);
-
-        //WARNING: The unicode version of CreateProcess (CreateProcessW) can modify the command-line "DosApp" string.
-        //Therefore "DosApp" cannot be a pointer to read-only memory, or an ACCESS_VIOLATION will occur.
-        //We can ensure it's not read-only with the RTL function: UniqueString
-        UniqueString({var}DosApp);
-
-        if CreateProcess(nil, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS, NIL, NIL, start, {var}ProcessInfo) then
-        begin
-            //Wait for the application to terminate, as it writes it's output to the pipe.
-            //WARNING: If the console app outputs more than 2400 bytes (ReadBuffer),
-            //it will block on writing to the pipe and *never* close.
-            repeat
-                Apprunning := WaitForSingleObject(ProcessInfo.hProcess, 100);
-                Application.ProcessMessages;
-            until (Apprunning <> WAIT_TIMEOUT);
-
-            //Read the contents of the pipe out of the readable end
-            //WARNING: if the console app never writes anything to the StdOutput, then ReadFile will block and never return
-            repeat
-                BytesRead := 0;
-                ReadFile(readableEndOfPipe, Buffer[0], READ_BUFFER_SIZE, {var}BytesRead, NIL);
-                Buffer[BytesRead]:= #0;
-                OemToAnsi(Buffer,Buffer);
-                AMemo.Text := AMemo.text + String(Buffer);
-            until (BytesRead < READ_BUFFER_SIZE);
-        end;
-        FreeMem(Buffer);
-        CloseHandle(ProcessInfo.hProcess);
-        CloseHandle(ProcessInfo.hThread);
-        CloseHandle(readableEndOfPipe);
-        CloseHandle(writeableEndOfPipe);
-    end;
 end;
 
 function TextHoehe(Font: TFont; Text: String): Integer;
