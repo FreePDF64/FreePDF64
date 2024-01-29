@@ -1069,7 +1069,7 @@ begin
       RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                    LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
-    if not InputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heisst die Anlage? (Groﬂ-/Kleinschrift beachten!):', Anlage) then
+    if not InputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heiﬂt die Anlage? (Groﬂ-/Kleinschrift beachten!):', Anlage) then
       Exit
     else if Anlage = '' then
       Exit
