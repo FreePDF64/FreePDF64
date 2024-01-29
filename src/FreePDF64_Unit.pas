@@ -449,8 +449,6 @@ end;
     procedure Sendenan1Click(Sender: TObject);
     procedure ShowFolders_LeftClick(Sender: TObject);
     procedure Beide_FolderBtnClick(Sender: TObject);
-    procedure LMDShellList2Change(Sender: TObject; Item: TListItem;
-      Change: TItemChange);
     procedure QuellBtnClick(Sender: TObject);
     procedure ZielBtnClick(Sender: TObject);
     procedure QuellBtnMouseEnter(Sender: TObject);
@@ -1566,7 +1564,7 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  if Sendenan1.Enabled = False then
+  if (LMDShellList1.Focused and (LMDShellList1.SelCount = 0)) or (LMDShellList2.Focused and (LMDShellList2.SelCount = 0) )then
   begin
     MessageDlgCenter('Markierte Datei(en) versenden: Bitte Datei(en) auswählen!', mtInformation, [mbOk]);
     Exit;
@@ -3901,15 +3899,6 @@ begin
   Ziellabel.Color := clBtnFace;
   LMDShellList1.SetFocus;
 
-  Sendenan1.Enabled := False;
-  MailBtn.Visible := False;
-
-  if LMDShellList1.SelCount > 0 then
-  begin
-    Sendenan1.Enabled := True;
-    MailBtn.Visible := True;
-  end;
-
   // Wenn TrayIcon sichtbar ist...
   if TrayIcon1.Visible = False then
   begin
@@ -4301,14 +4290,6 @@ begin
 
   Quelllabel.Color := RGB(220,220,220);
   Ziellabel.Color := clBtnFace;
-
-  Sendenan1.Enabled := False;
-  MailBtn.Visible := False;
-  if LMDShellList1.SelCount > 0 then
-  begin
-    Sendenan1.Enabled := True;
-    MailBtn.Visible := True;
-  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
@@ -4321,26 +4302,6 @@ begin
     PDF_Erstellung.Caption := ('START');
   // Abfrage auf Hinweis bzgl. der Extension
   ExtAbfrage;
-
-  Sendenan1.Enabled := False;
-  MailBtn.Visible := False;
-  if LMDShellList1.SelCount > 0 then
-  begin
-    Sendenan1.Enabled := True;
-    MailBtn.Visible := True;
-  end;
-end;
-
-procedure TFreePDF64_Form.LMDShellList2Change(Sender: TObject; Item: TListItem;
-  Change: TItemChange);
-begin
-  Sendenan1.Enabled := False;
-  MailBtn.Visible := False;
-  if LMDShellList2.SelCount > 0 then
-  begin
-    Sendenan1.Enabled := True;
-    MailBtn.Visible := True;
-  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
@@ -4369,14 +4330,6 @@ begin
 
   Ziellabel.Color := RGB(220,220,220);
   Quelllabel.Color := clBtnFace;
-
-  Sendenan1.Enabled := False;
-  MailBtn.Visible := False;
-  if LMDShellList2.SelCount > 0 then
-  begin
-    Sendenan1.Enabled := True;
-    MailBtn.Visible := True;
-  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList1KeyDown(Sender: TObject; var Key: Word;
