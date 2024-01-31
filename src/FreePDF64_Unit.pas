@@ -325,6 +325,7 @@ end;
     ToolButton2: TToolButton;
     PDFRemove: TToolButton;
     Anlageentfernen1: TMenuItem;
+    PDFFontsBtn: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -489,6 +490,7 @@ end;
     procedure PDFAttachmentClick(Sender: TObject);
     procedure AnlagenBtnClick(Sender: TObject);
     procedure PDFRemoveClick(Sender: TObject);
+    procedure PDFFontsBtnClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -514,7 +516,7 @@ var
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
   Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
-  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach: String;
+  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
@@ -2104,7 +2106,7 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  if not FileExists(XPDF_info) then
+  if not FileExists(XPDF_Info) then
   begin
     MessageDlgCenter('Achtung: Die Datei "pdfinfo.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
@@ -2123,6 +2125,51 @@ begin
   else
   begin
     MessageDlgCenter('Informationen zu einer PDF-Datei anzeigen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end;
+
+  if Memo1.Lines.Count > 1 then
+  begin
+    i:= TextHoehe(Memo1.Font, Memo1.Text);
+    i := (i * Memo1.Lines.Count) + MHA;
+    if i <= Memo1.Parent.Height then
+      Exit;
+    PDFPanel.Height := i;
+  end;
+end;
+
+// PDF-Font-Informationen anzeigen
+procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
+var
+  i: Integer;
+begin
+  FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcActive.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
+  if not FileExists(XPDF_Fonts) then
+  begin
+    MessageDlgCenter('Achtung: Die Datei "pdffonts.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
+    Exit;
+  end;
+
+  Memo1.Clear;
+
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      RunDosInMemo(XPDF_Fonts + ' -loc "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+                   LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1)
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    for i := 0 to LMDShellList2.SelCount - 1 do
+      RunDosInMemo(XPDF_Fonts + ' -loc "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
+                   LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1)
+  else
+  begin
+    MessageDlgCenter('Die Schriftarten in der PDF-Datei werden aufgelistet: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 
@@ -3581,6 +3628,7 @@ begin
     XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
     XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
     XPDF_Detach := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+    XPDF_Fonts  := Backslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
 
     // XPDFReader
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
@@ -3652,6 +3700,7 @@ begin
   XPDF_ToHTML := Backslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
   XPDF_Info   := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
   XPDF_Detach := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+  XPDF_Fonts  := Backslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
 
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
