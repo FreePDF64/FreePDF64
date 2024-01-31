@@ -518,7 +518,7 @@ var
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
-  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf: Boolean;
+  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -2303,6 +2303,12 @@ begin
   Show();
   // Hide the tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
+
+  if AutoSpalteJN then
+    AutoSpalte.Checked := True
+  else
+    AutoSpalte.Checked := False;
+
   WindowState := wsNormal;
   Application.BringToFront();
 end;
@@ -3082,8 +3088,10 @@ var
 begin
   Screen.OnActiveControlChange := ActiveControlChanged;
 
-  // PDFPanelH initialisieren
+  // Initialisieren...
   PDFPanelH := 0;
+  AutoSpalteJN := False;
+
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
@@ -3507,6 +3515,11 @@ begin
   // Fenster wurde minimiert
   if Message.CmdType and $FFF0 = SC_MINIMIZE then
   begin
+    if AutoSpalte.Checked then
+      AutoSpalteJN := True
+    else
+      AutoSpalteJN := False;
+
     Hide;
     TrayIcon1.Visible := True;
   end else
