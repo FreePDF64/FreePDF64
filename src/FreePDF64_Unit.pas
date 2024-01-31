@@ -897,7 +897,7 @@ var
 begin
     Security.nLength := SizeOf(TSecurityAttributes);
     Security.bInheritHandle := True;
-    Security.lpSecurityDescriptor := nil;
+    Security.lpSecurityDescriptor := NIL;
 
     if CreatePipe({var}readableEndOfPipe, {var}writeableEndOfPipe, @Security, 0) then
     begin
@@ -909,14 +909,14 @@ begin
         // This structure specifies the STDIN and STDOUT handles for redirection.
         // - Redirect the output and error to the writeable end of our pipe.
         // - We must still supply a valid StdInput handle (because we used STARTF_USESTDHANDLES to swear that all three handles will be valid)
-        start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
-        start.hStdInput := GetStdHandle(STD_INPUT_HANDLE); //we're not redirecting stdInput; but we still have to give it a valid handle
+        start.dwFlags    := start.dwFlags or STARTF_USESTDHANDLES;
+        start.hStdInput  := GetStdHandle(STD_INPUT_HANDLE); //we're not redirecting stdInput; but we still have to give it a valid handle
         start.hStdOutput := writeableEndOfPipe; //we give the writeable end of the pipe to the child process; we read from the readable end
-        start.hStdError := writeableEndOfPipe;
+        start.hStdError  := writeableEndOfPipe;
 
         //We can also choose to say that the wShowWindow member contains a value.
         //In our case we want to force the console window to be hidden.
-        start.dwFlags := start.dwFlags + STARTF_USESHOWWINDOW;
+        start.dwFlags     := start.dwFlags + STARTF_USESHOWWINDOW;
         start.wShowWindow := SW_HIDE;
 
         // Don't forget to set up members of the PROCESS_INFORMATION structure.
@@ -927,7 +927,7 @@ begin
         //We can ensure it's not read-only with the RTL function: UniqueString
         UniqueString({var}DosApp);
 
-        if CreateProcess(nil, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS, NIL, NIL, start, {var}ProcessInfo) then
+        if CreateProcess(NIL, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS, NIL, NIL, start, {var}ProcessInfo) then
         begin
             //Wait for the application to terminate, as it writes it's output to the pipe.
             //WARNING: If the console app outputs more than 2400 bytes (ReadBuffer),
@@ -943,7 +943,8 @@ begin
                 BytesRead := 0;
                 ReadFile(readableEndOfPipe, Buffer[0], READ_BUFFER_SIZE, {var}BytesRead, NIL);
                 Buffer[BytesRead]:= #0;
-                OemToAnsi(Buffer,Buffer);
+                // Die nächste Zeile konvertiert NICHT die deutschen Umlaute?!
+//                OemToAnsi(Buffer, Buffer);
                 AMemo.Text := AMemo.text + String(Buffer);
             until (BytesRead < READ_BUFFER_SIZE);
         end;
@@ -3897,7 +3898,7 @@ begin
 
   Quelllabel.Color := RGB(220,220,220);
   Ziellabel.Color := clBtnFace;
-  LMDShellList1.SetFocus;
+//  LMDShellList1.SetFocus;
 
   // Wenn TrayIcon sichtbar ist...
   if TrayIcon1.Visible = False then
