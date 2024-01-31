@@ -2305,8 +2305,11 @@ begin
   TrayIcon1.Visible := False;
 
   if AutoSpalteJN then
-    AutoSpalte.Checked := True
-  else
+  begin
+    AutoSpalte.Checked := True;
+    LMDShellList1.Column[0].AutoSize := True;
+    LMDShellList2.Column[0].AutoSize := True;
+  end else
     AutoSpalte.Checked := False;
 
   WindowState := wsNormal;
@@ -3073,6 +3076,10 @@ begin
   if KlickaufX.Checked then
   begin
     CanClose := False;
+    if AutoSpalte.Checked then
+      AutoSpalteJN := True
+    else
+      AutoSpalteJN := False;
     Hide;
     TrayIcon1.Visible := True;
   end;
