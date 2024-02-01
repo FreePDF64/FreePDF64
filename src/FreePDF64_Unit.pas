@@ -6080,7 +6080,7 @@ begin
 
   // Nach der Erstellung den ersten Eintrag markieren
   LMDShellList1.ItemIndex := 0;
-  LMDShellList1.SetFocus;
+//  LMDShellList1.SetFocus;
 
   Seiten_Form.VonSE.Value := 0;
   Seiten_Form.BisSE.Value := 0;
