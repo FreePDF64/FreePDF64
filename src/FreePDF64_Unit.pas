@@ -4484,13 +4484,6 @@ end;
 procedure TFreePDF64_Form.LogBtClick(Sender: TObject);
 begin
   FavClose;
-
-  // Was war die letzte aktive Komponente?
-  if wcActive.Name = 'LMDShellList1' then
-    LMDShellList1.SetFocus
-  else
-    LMDShellList2.SetFocus;
-
   Logdateiansehen1.Click;
 end;
 
