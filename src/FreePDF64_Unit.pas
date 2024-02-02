@@ -519,8 +519,8 @@ var
   PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
-  Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
-  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN: Boolean;
+  Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts, Windows_Session_End,
+  FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN, ShowVomTray: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -2347,6 +2347,7 @@ end;
 // Einfacher Klick auf TrayIcon
 procedure TFreePDF64_Form.TrayIcon1Click(Sender: TObject);
 begin
+  ShowVomTray := True;
   Show();
   // Hide the tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
@@ -3145,6 +3146,7 @@ begin
   // Initialisieren...
   PDFPanelH := 0;
   AutoSpalteJN := False;
+  ShowVomTray  := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
@@ -3589,6 +3591,12 @@ var
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
 begin
+  if ShowVomTray = True then
+  begin
+    ShowVomTray := False;
+    Exit;
+  end;
+
   FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUsername;
   FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
