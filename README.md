@@ -38,7 +38,7 @@ Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitH
 17. PDF-Datei(en) komprimieren
 18. Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
 19. Anlagen zur PDF-Datei hinzufügen oder extrahieren
-20. Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
+20. Anfügen einer PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
 21. Bilder extrahieren aus PDF-Dateien
 22. Konvertieren von PDF zu HTML
 23. E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
