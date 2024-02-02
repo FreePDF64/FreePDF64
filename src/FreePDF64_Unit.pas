@@ -624,15 +624,114 @@ end;
 // Mitte der Form und nicht in die Mitte des Bildschirms
 function GetAveCharSize(Canvas: TCanvas): TPoint;
 var
-  i: Integer;
-  Buffer: array [0 .. 51] of Char;
+  I: Integer;
+  Buffer: array [0..51] of Char;
 begin
-  for i := 0 to 25 do
-    Buffer[i] := Chr(i + Ord('A'));
-  for i := 0 to 25 do
-    Buffer[i + 26] := Chr(i + Ord('a'));
+  for I := 0 to 25 do
+    Buffer[I] := Chr(I + Ord('A'));
+  for I := 0 to 25 do
+    Buffer[I + 26] := Chr(I + Ord('a'));
   GetTextExtentPoint(Canvas.Handle, Buffer, 52, TSize(Result));
   Result.X := Result.X div 52;
+end;
+
+function MyInputQuery(const ACaption, APrompt: string; var Value: string): Boolean; overload;
+const
+  SMsgDlgOK     = 'OK';
+  SMsgDlgCancel = 'Abbrechen';
+var
+  x, y, w, h: Integer;
+  Form: TForm;
+  Prompt: TLabel;
+  Edit: TEdit;
+  DialogUnits: TPoint;
+  ButtonTop, ButtonWidth, ButtonHeight: Integer;
+begin
+  Result := False;
+  Form := TForm.Create(Application);
+  with Form do
+  try
+    Canvas.Font  := Font;
+    DialogUnits  := GetAveCharSize(Canvas);
+    BorderStyle  := bsDialog;
+    Caption      := ACaption;
+    ClientWidth  := MulDiv(193, DialogUnits.X, 4);
+    ClientHeight := MulDiv(58, DialogUnits.Y, 8);
+
+    // Horizontal zentrieren
+    w := (Application.MainForm.Width - Form.Width) div 2;
+    X := Application.MainForm.Left + W;
+    if x < 0 then
+      x := 0
+    else if x + w > Screen.Width then
+      x := Screen.Width - Form.Width;
+    Form.Left := X;
+
+    // Vertikal zentrieren
+    h := (Application.MainForm.Height + Form.Height) div 2;
+    // Top-Position des Inputquery-Eingabedialogs
+    y := Application.MainForm.Top + (h DIV 2);
+    if y < 0 then
+      y := 0
+    else if y + h > Screen.Height then
+      y := Screen.Height - Form.Height;
+    Form.Left := X;
+    Form.Top  := Y;
+
+    Prompt := TLabel.Create(Form);
+    with Prompt do
+    begin
+      Parent   := Form;
+      AutoSize := True;
+      Left     := MulDiv(8, DialogUnits.X, 4);
+      Top      := MulDiv(8, DialogUnits.Y, 8);
+      Caption  := APrompt;
+    end;
+
+    Edit := TEdit.Create(Form);
+    with Edit do
+    begin
+      Parent    := Form;
+      Left      := Prompt.Left;
+      Top       := MulDiv(19, DialogUnits.Y, 8);
+      Width     := MulDiv(176, DialogUnits.X, 4);
+      MaxLength := 255;
+      Text      := Value;
+      SelectAll;
+    end;
+
+    ButtonTop    := MulDiv(36, DialogUnits.Y, 8); // MulDiv(41, DialogUnits.Y, 8);
+    ButtonWidth  := 132; // MulDiv(50, DialogUnits.X, 4);
+    ButtonHeight := 44;  // MulDiv(14, DialogUnits.Y, 8);
+
+    with TButton.Create(Form) do
+    begin
+      Parent      := Form;
+      Caption     := SMsgDlgOK;
+      ModalResult := mrOk;
+      Default     := True;
+      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+//      SetBounds(MulDiv(38, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+    end;
+
+    with TButton.Create(Form) do
+    begin
+      Parent      := Form;
+      Caption     := SMsgDlgCancel;
+      ModalResult := mrCancel;
+      Cancel      := True;
+      SetBounds(MulDiv(102, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+//      SetBounds(MulDiv(92, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+    end;
+
+    if ShowModal = mrOk then
+    begin
+      Value  := Edit.Text;
+      Result := True;
+    end;
+  finally
+    Form.Free;
+  end;
 end;
 
 // Größe der Datei angeben
@@ -995,7 +1094,8 @@ begin
       if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
         Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
 
-    InputQuery('Anlage einer PDF-Datei hinzufügen', 'Beschreibung zur Anlage:', Beschreibung);
+    MyInputQuery('Anlage einer PDF-Datei hinzufügen', 'Beschreibung zur Anlage:', Beschreibung);
+
     Zeile     := Einstellungen_Form.Edit4.Text + ' --add-attachment --description="' + Beschreibung + '" "' + Anlage +
                  '" -- "' + (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) +
                  '" "' + BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
@@ -1072,7 +1172,7 @@ begin
       RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                    LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
-    if not InputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heißt die Anlage? (Groß-/Kleinschrift beachten!):', Anlage) then
+    if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heißt die Anlage? (Groß-/Kleinschrift beachten!):', Anlage) then
       Exit
     else if Anlage = '' then
       Exit
@@ -2266,7 +2366,7 @@ begin
     if Einstellungen_Form.SystemklangCB.Checked then
       PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
 
-    if InputQuery('Datei: ' + ExtractFileName(PDFDatei), 'Eingabe Passwort erforderlich:', s) then
+    if MyInputQuery('Datei: ' + ExtractFileName(PDFDatei), 'Eingabe vom Passwort erforderlich:', s) then
     begin
 //      Zeile2 := Einstellungen_Form.Edit4.Text + ' --decrypt --password="' + s + '" "' + PDFDatei + '" "' +
 //                BackSlash(LMDShellFolder2.ActiveFolder.PathName) + ExtractFileName(PDFDatei) + '"';
@@ -4663,16 +4763,9 @@ begin
   end;
 
   keybd_event(VK_HOME, 0, 0, 0);
+  p := Backslash(Ziel);
 
-  if Formatverz.Checked then
-    p := MinimizeName(Backslash(Ziel), FreePDF64_Form.Canvas, 600) + 'PDF'
-  else
-  if Formatverz_Date.Checked then
-    p := MinimizeName(Backslash(Ziel), FreePDF64_Form.Canvas, 600) + 'PDF' + ' ' + DateToStr(NOW)
-  else
-    p := MinimizeName(Backslash(Ziel), FreePDF64_Form.Canvas, 600);
-
-  if InputQuery('Verbinden -> Ziel: ' + p, 'Dateiname:', s) then
+  if MyInputQuery('Verbinden -> Ziel: ' + p, 'Dateiname:', s) then
   begin
     if FileExists(BackSlash(Ziel) + s) then
     begin
