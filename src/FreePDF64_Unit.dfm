@@ -786,6 +786,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
       Left = 0
@@ -912,6 +913,8 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
+    ExplicitWidth = 449
+    ExplicitHeight = 453
     DesignSize = (
       455
       454)
@@ -1148,7 +1151,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 756
+      Top = 757
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1174,6 +1177,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 667
+      ExplicitTop = 755
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1307,6 +1312,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 451
       DesignSize = (
         364
         452)
@@ -1399,7 +1405,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 760
+        Top = 761
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1425,6 +1431,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 759
       end
       object Ziellabel: TPanel
         Left = 1
@@ -1583,7 +1590,6 @@ object FreePDF64_Form: TFreePDF64_Form
           TabOrder = 0
           TabStop = False
           OnChange = ComboBoxRChange
-          OnClick = ComboBoxRClick
           OnDropDown = ComboBoxRDropDown
         end
       end
@@ -2278,6 +2284,21 @@ object FreePDF64_Form: TFreePDF64_Form
   object PopupMenu3: TPopupMenu
     Left = 375
     Top = 903
+    object est1: TMenuItem
+      Caption = #220'berwachungsverzeichnis:'
+    end
+    object N19: TMenuItem
+      Caption = '1'
+    end
+    object Zielverzeichnis1: TMenuItem
+      Caption = 'Aktuelles Zielverzeichnis:'
+    end
+    object N31: TMenuItem
+      Caption = '3'
+    end
+    object N18: TMenuItem
+      Caption = '-'
+    end
     object Wiederherstellen2: TMenuItem
       Caption = 'Wiederherstellen'
       Visible = False
@@ -15354,6 +15375,7 @@ object FreePDF64_Form: TFreePDF64_Form
       000000000000000000000000000000000000000000000000000000000000}
     PopupMenu = PopupMenu3
     OnClick = TrayIcon1Click
+    OnMouseDown = TrayIcon1MouseDown
     Left = 58
     Top = 130
   end

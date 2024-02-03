@@ -326,6 +326,11 @@ end;
     PDFRemove: TToolButton;
     Anlageentfernen1: TMenuItem;
     PDFFontsBtn: TToolButton;
+    N18: TMenuItem;
+    est1: TMenuItem;
+    Zielverzeichnis1: TMenuItem;
+    N19: TMenuItem;
+    N31: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -480,7 +485,6 @@ end;
     procedure LMDShellTree1Click(Sender: TObject);
     procedure LMDShellTree2Click(Sender: TObject);
     procedure LMDShellList2Click(Sender: TObject);
-    procedure ComboBoxRClick(Sender: TObject);
     procedure FormClick(Sender: TObject);
     procedure Memo1Click(Sender: TObject);
     procedure MainMenu1Change(Sender: TObject; Source: TMenuItem; Rebuild: Boolean);
@@ -492,6 +496,7 @@ end;
     procedure PDFRemoveClick(Sender: TObject);
     procedure PDFFontsBtnClick(Sender: TObject);
     procedure MonitorBtnMouseEnter(Sender: TObject);
+    procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -2472,6 +2477,23 @@ begin
   Application.BringToFront();
 end;
 
+procedure TFreePDF64_Form.TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  MZiel: String;
+begin
+  if not FreePDF64_Notify.Ziel_FestCB.Checked then
+    MZiel := FreePDF64_Form.ZielLabel.Hint
+  else
+    MZiel := FreePDF64_Notify.ZielEdit.Text;
+
+  // RMB zeigt die beiden wichtigen Verzeichnisse an
+  if Button = mbRight then
+  begin
+    PopupMenu3.Items.Items[1].Caption := FreePDF64_Notify.MonitoringFolder.Text;
+    PopupMenu3.Items.Items[3].Caption := MZiel;
+  end;
+end;
+
 procedure TFreePDF64_Form.EditorClick(Sender: TObject);
 begin
   Editoraufrufen1.Click;
@@ -2701,11 +2723,6 @@ begin
   else
     ComboBoxR.Items.Delete(ComboBoxR.ItemIndex);
   LMDShellList2.SetFocus;
-end;
-
-procedure TFreePDF64_Form.ComboBoxRClick(Sender: TObject);
-begin
-
 end;
 
 // Max. Breite der ComboBox
@@ -3476,13 +3493,12 @@ procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
 begin
   QuellBtn.Hint := 'Ins gespeicherte Quellverzeichnis wechseln:' + #10#13 + MinimizeName(BackSlash(A_S),
                    FreePDF64_Form.Canvas, Quelllabel.Width - 250);
-
 end;
 
 procedure TFreePDF64_Form.ZielBtnMouseEnter(Sender: TObject);
 begin
   ZielBtn.Hint := 'Ins gespeicherte Zielverzeichnis wechseln:' + #10#13 + MinimizeName(BackSlash(B_Z),
-                   FreePDF64_Form.Canvas, Quelllabel.Width - 250);
+                   FreePDF64_Form.Canvas, Ziellabel.Width - 250);
 end;
 
 procedure TFreePDF64_Form.FormResize(Sender: TObject);
@@ -5182,8 +5198,8 @@ begin
 
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
-    MonitorBtn.Hint       := 'Überwachungsverzeichnis:' + #13 + FreePDF64_Notify.MonitoringFolder.Text + #13 + #13 +
-                             'Zielverzeichnis:' + #13 + MZiel;
+    MonitorBtn.Hint       := 'Überwachungsverzeichnis:' + #13 + FreePDF64_Notify.MonitoringFolder.Text + #13 +
+                             'Aktuelles Zielverzeichnis:' + #13 + MZiel;
     MonitorBtn.ImageIndex := 57;
     MonitorBtn.Caption    := '  AN';
   end else
