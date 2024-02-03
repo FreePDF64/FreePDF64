@@ -1104,6 +1104,13 @@ begin
 
     // Starte die Erstellung...
     ProcID := 0;
+    if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 2 then
+    begin
+      MessageDlgCenter('Quell- und Zielverzeichnis dürfen beim Hinzufügen von Dateien NICHT identisch sein.' + #13 +
+                       'Bitte ein anderes Ziel auswählen oder -> Ins Unterverzeichnis beim Erstellen <- nutzen!' , mtInformation, [mbOk]);
+      Exit;
+    end;
+
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
       Memo1.Lines.Text := Zeile;
