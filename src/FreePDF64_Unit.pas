@@ -491,6 +491,7 @@ end;
     procedure AnlagenBtnClick(Sender: TObject);
     procedure PDFRemoveClick(Sender: TObject);
     procedure PDFFontsBtnClick(Sender: TObject);
+    procedure MonitorBtnMouseEnter(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -4010,24 +4011,6 @@ begin
     LMDShellFolder2.RootFolder := Ziel;
   end;
 
-  // Überwachung auf...
-  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(FreePDF64_Notify.MonitoringFolder.Text);
-  if FreePDF64_Notify.LMDShellNotify.Active then
-  begin
-    MonitorBtn.Hint       := 'Überwachung ist AN' + #13 +
-                             '- Schnelles AN/AUS durch rechte Maustaste' + #13 +
-                             '- Wechseln des Quellverzeichnisses möglichst vermeiden!';
-    MonitorBtn.ImageIndex := 57;
-    MonitorBtn.Caption    := '  AN';
-    MonitorBtn.ImageIndex := 57;
-  end else
-  begin
-    MonitorBtn.Hint       := 'Überwachung ist AUS';
-    MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption    := '  AUS';
-    MonitorBtn.ImageIndex := 58;
-  end;
-
   // Lösche den ersten RootFolder-Eintrag links und rechts
   for i := 0 to ComboBoxL.Items.Count - 1 do
     if ComboBoxL.Items.Strings[i] = LMDShellFolder1.RootFolder then ComboBoxL.Items.Delete(i);
@@ -4112,6 +4095,18 @@ begin
   end;
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
+
+  // Überwachung auf...
+  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(FreePDF64_Notify.MonitoringFolder.Text);
+  if FreePDF64_Notify.LMDShellNotify.Active then
+  begin
+    MonitorBtn.ImageIndex := 57;
+    MonitorBtn.Caption    := '  AN';
+  end else
+  begin
+    MonitorBtn.ImageIndex := 58;
+    MonitorBtn.Caption    := '  AUS';
+  end;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
@@ -5173,6 +5168,29 @@ begin
   begin
     MonitorBtn.Caption    := '  AUS';
     MonitorBtn.ImageIndex := 58;
+  end;
+end;
+
+procedure TFreePDF64_Form.MonitorBtnMouseEnter(Sender: TObject);
+var
+  MZiel: String;
+begin
+  if not FreePDF64_Notify.Ziel_FestCB.Checked then
+    MZiel := ZielLabel.Hint
+  else
+    MZiel := FreePDF64_Notify.ZielEdit.Text;
+
+  if FreePDF64_Notify.LMDShellNotify.Active then
+  begin
+    MonitorBtn.Hint       := 'Überwachungsverzeichnis:' + #13 + FreePDF64_Notify.MonitoringFolder.Text + #13 + #13 +
+                             'Zielverzeichnis:' + #13 + MZiel;
+    MonitorBtn.ImageIndex := 57;
+    MonitorBtn.Caption    := '  AN';
+  end else
+  begin
+    MonitorBtn.Hint       := 'Schnelles AN/AUS durch rechte Maustaste';
+    MonitorBtn.ImageIndex := 58;
+    MonitorBtn.Caption    := '  AUS';
   end;
 end;
 
