@@ -217,7 +217,6 @@ end;
     N12: TMenuItem;
     Einstellungenndern2: TMenuItem;
     Beenden2: TMenuItem;
-    berwachung1: TMenuItem;
     FreePDFHowTo1: TMenuItem;
     HilfezudenEinstellungen1: TMenuItem;
     VerbindenBt: TToolButton;

@@ -2287,16 +2287,19 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 903
     object est1: TMenuItem
       Caption = #220'berwachungseinstellungen:'
+      OnClick = berwachung1Click
     end
     object N19: TMenuItem
       Caption = '1'
       ImageIndex = 98
       ImageName = '172480_home_icon'
+      OnClick = berwachung1Click
     end
     object N31: TMenuItem
       Caption = '2'
       ImageIndex = 95
       ImageName = '6843063_accuracy_archery_arrow_business_goal_icon'
+      OnClick = berwachung1Click
     end
     object N18: TMenuItem
       Caption = '-'
@@ -2327,10 +2330,6 @@ object FreePDF64_Form: TFreePDF64_Form
     object Einstellungenndern2: TMenuItem
       Caption = 'Einstellungen '#228'ndern'
       OnClick = Einstellungenndern2Click
-    end
-    object berwachung1: TMenuItem
-      Caption = #220'berwachung'
-      OnClick = berwachung1Click
     end
     object Verbinden1: TMenuItem
       Caption = 'Verbinden'
