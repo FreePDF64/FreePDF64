@@ -1151,7 +1151,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 757
+      Top = 758
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1178,7 +1178,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 755
+      ExplicitTop = 756
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1405,7 +1405,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 761
+        Top = 762
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1431,7 +1431,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 759
+        ExplicitTop = 760
       end
       object Ziellabel: TPanel
         Left = 1
@@ -2282,19 +2282,21 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 179
   end
   object PopupMenu3: TPopupMenu
+    Images = VirtualImageList1
     Left = 375
     Top = 903
     object est1: TMenuItem
-      Caption = #220'berwachungsverzeichnis:'
+      Caption = #220'berwachungseinstellungen:'
     end
     object N19: TMenuItem
       Caption = '1'
-    end
-    object Zielverzeichnis1: TMenuItem
-      Caption = 'Aktuelles Zielverzeichnis:'
+      ImageIndex = 98
+      ImageName = '172480_home_icon'
     end
     object N31: TMenuItem
-      Caption = '3'
+      Caption = '2'
+      ImageIndex = 95
+      ImageName = '6843063_accuracy_archery_arrow_business_goal_icon'
     end
     object N18: TMenuItem
       Caption = '-'

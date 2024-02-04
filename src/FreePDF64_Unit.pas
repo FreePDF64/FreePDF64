@@ -328,7 +328,6 @@ end;
     PDFFontsBtn: TToolButton;
     N18: TMenuItem;
     est1: TMenuItem;
-    Zielverzeichnis1: TMenuItem;
     N19: TMenuItem;
     N31: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
@@ -891,8 +890,7 @@ begin
       WZST := 'stamp';
       WZST2 := 'ST_';
     end;
-  end
-  else
+  end else
   begin
     MessageDlgCenter
       ('Wasserzeichen/Stempel hinzufügen: Bitte PDF-Datei(en) aus dem Quellverzeichnis auswählen!',
@@ -2482,7 +2480,7 @@ var
   MZiel: String;
 begin
   if not FreePDF64_Notify.Ziel_FestCB.Checked then
-    MZiel := FreePDF64_Form.ZielLabel.Hint
+    MZiel := Ziel
   else
     MZiel := FreePDF64_Notify.ZielEdit.Text;
 
@@ -2490,7 +2488,7 @@ begin
   if Button = mbRight then
   begin
     PopupMenu3.Items.Items[1].Caption := FreePDF64_Notify.MonitoringFolder.Text;
-    PopupMenu3.Items.Items[3].Caption := MZiel;
+    PopupMenu3.Items.Items[2].Caption := MZiel;
   end;
 end;
 
@@ -5160,8 +5158,7 @@ begin
     StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
   else if Einstellungen_Form.AnzeigenCB.Checked = false then
     StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text
+  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' + FreePDF64_Notify.MonitoringFolder.Text
 end;
 
 procedure TFreePDF64_Form.MonitorBtnMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -5188,23 +5185,15 @@ begin
 end;
 
 procedure TFreePDF64_Form.MonitorBtnMouseEnter(Sender: TObject);
-var
-  MZiel: String;
 begin
-  if not FreePDF64_Notify.Ziel_FestCB.Checked then
-    MZiel := ZielLabel.Hint
-  else
-    MZiel := FreePDF64_Notify.ZielEdit.Text;
+  FreePDF64_Form.MonitorBtn.Hint := 'Schnelles AN/AUS durch rechte Maustaste';
 
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
-    MonitorBtn.Hint       := 'Überwachungsverzeichnis:' + #13 + FreePDF64_Notify.MonitoringFolder.Text + #13 +
-                             'Aktuelles Zielverzeichnis:' + #13 + MZiel;
     MonitorBtn.ImageIndex := 57;
     MonitorBtn.Caption    := '  AN';
   end else
   begin
-    MonitorBtn.Hint       := 'Schnelles AN/AUS durch rechte Maustaste';
     MonitorBtn.ImageIndex := 58;
     MonitorBtn.Caption    := '  AUS';
   end;
