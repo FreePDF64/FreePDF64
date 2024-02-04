@@ -1157,13 +1157,23 @@ begin
   end;
 end;
 
+function TextHoehe(Font: TFont; Text: String): Integer;
+var
+  B: TBitMap;
+begin
+  B := TBitMap.Create;
+  B.Canvas.Font := Font;
+  Result := B.Canvas.TextHeight(Text);
+  B.Free;
+end;
+
 // Anlage(n) aus einer PDF-Datei entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
   PDFDatei, Zieldatei, Anlage, Zeile: String;
   ProcID: Cardinal;
   F: TextFile;
-  i: Integer;
+  i, j: Integer;
 begin
   FavClose;
   Memo1.Clear;
@@ -1181,6 +1191,15 @@ begin
     for i := 0 to LMDShellList1.SelCount - 1 do
       RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                    LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
+
+    if Memo1.Lines.Count > 1 then
+    begin
+      j:= TextHoehe(Memo1.Font, Memo1.Text);
+      j := (j * Memo1.Lines.Count) + MHA;
+      if j <= Memo1.Parent.Height then
+        Exit;
+      PDFPanel.Height := j;
+    end;
 
     if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heißt die Anlage? (Groß-/Kleinschrift beachten!):', Anlage) then
       Exit
@@ -2108,16 +2127,6 @@ begin
   Hide();
   TrayIcon1.Visible := True;
   Timer2.Enabled := False;
-end;
-
-function TextHoehe(Font: TFont; Text: String): Integer;
-var
-  B: TBitMap;
-begin
-  B := TBitMap.Create;
-  B.Canvas.Font := Font;
-  Result := B.Canvas.TextHeight(Text);
-  B.Free;
 end;
 
 // Anlagen zu einer PDF-Datei anzeigen
