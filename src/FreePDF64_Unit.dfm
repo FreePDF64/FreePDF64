@@ -2209,7 +2209,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = '-'
       end
       object Installation1: TMenuItem
-        Caption = 'Installation von Mfilemon'
+        Caption = 'Installation vom FreePDF64-Drucker'
         OnClick = Installation1Click
       end
     end

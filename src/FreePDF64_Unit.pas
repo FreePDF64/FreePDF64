@@ -3556,10 +3556,13 @@ var
   MFDatei, Reg, s1: String;
   ProcID: Cardinal;
 begin
-  if MessageDlgCenter('Hiermit wird der Druckeranschluß-Umleitungsmonitor "Mfilemon" installiert!' + #13 +
-                      'Danach steht der Drucker "FreePDF64" aus jedem Programm heraus zur Verfügung.' + #13 + #13 +
-                      'Bitte einfach die Installation durchklicken. Danach werden nötige Registry-' + #13 +
-                      'Einträge hinzugefügt, wonach ein Windows-Neustart durchgeführt werden sollte.' + #13 + #13 +
+  if MessageDlgCenter('Hierüber wird automatisch der FreePDF64-Drucker eingerichtet!' + #13 + #13 +
+                      'Bitte einfach die nachfolgende Installation durchklicken:' + #13 +
+                      '1. Das Druckeranschluß-Umleitungsprogramm "Mfilemon" wird installiert.' + #13 +
+                      '2. Benötigte Registry-Einträge werden hinzugefügt.' + #13 +
+                      '3. Ein manueller Windows-Neustart ist nun erforderlich.' + #13 + #13 +
+                      'Nach dem Neustart ist der Drucker "FreePDF64" aus jedem Programm' + #13 +
+                      'heraus auswählbar. ' + #13 + #13 +
                       'Weitere Informationen unter: Hilfe - FreePDF64-HowTo',mtConfirmation, [mbYes,mbNo]) = IDNO then
     Exit;
 
@@ -3587,14 +3590,14 @@ begin
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
         PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
-      MessageDlgCenter('Fehler bei der Installation von Mfilemon - Bitte wiederholen!', mtError, [mbOk]);
+      MessageDlgCenter('Fehler bei der Installation von "Mfilemon" - Bitte wiederholen!', mtError, [mbOk]);
       Exit;
     end;
   end else
   begin
     MessageDlgCenter('Die Datei "mfilemon-setup.exe" wurde im Verzeichnis "' + BackSlash(ExtractFilePath(Application.ExeName)) +
                      'mfilemon\" ' + 'nicht gefunden.' + #13 +
-                     'Sie wird für die Installation des Druckerumleitungsprogramms benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
+                     'Sie wird für die Installation des FreePDF64-Druckers benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
                      mtError, [mbOk]);
     Exit;
   end;
@@ -3605,16 +3608,14 @@ begin
   begin
     // Starte die Erstellung...
     ShellExecute(Handle, NIL, PChar(Reg), NIL, NIL, SW_SHOWNORMAL);
-    MessageDlgCenter('Nach der erfolgten Registry-Anpassung ist ein Windows-Neustart erforderlich.' + #13 +
-                     'Danach ist der neue Drucker namens "FreePDF64" aus jedem Programm heraus auswählbar!',
-                      mtInformation, [mbOk]);
+    MessageDlgCenter('Nach der erfolgten Registry-Anpassung ist ein Windows-Neustart erforderlich!', mtInformation, [mbOk]);
     Exit;
   end else
   if Einstellungen_Form.SystemklangCB.Checked then
     PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
   MessageDlgCenter('Die Datei "mfilemon.reg" wurde im Verzeichnis "' + BackSlash(ExtractFilePath(Application.ExeName)) +
                    'Definition files\" ' + 'nicht gefunden.' + #13 +
-                   'Sie wird für die Installation des Druckerumleitungsprogramms benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
+                   'Sie wird für die Installation des FreePDF64-Druckers benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
                     mtError, [mbOk]);
 end;
 
@@ -4464,6 +4465,9 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
+  if LMDShellList1.Items.Count > 0 then
+    LMDShellList1.ItemFocused;
+
   if LMDShellList1.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
   else
@@ -4504,6 +4508,9 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
+  if LMDShellList2.Items.Count > 0 then
+    LMDShellList2.ItemFocused;
+
   if LMDShellList2.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
   else
