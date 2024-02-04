@@ -1196,7 +1196,7 @@ begin
     begin
       j:= TextHoehe(Memo1.Font, Memo1.Text);
       j := (j * Memo1.Lines.Count) + MHA;
-      if j <= Memo1.Parent.Height then
+      if j < Memo1.Parent.Height then
         Exit;
       PDFPanel.Height := j;
     end;
@@ -2206,7 +2206,7 @@ begin
   begin
     i:= TextHoehe(Memo1.Font, Memo1.Text);
     i := (i * Memo1.Lines.Count) + MHA;
-    if i <= Memo1.Parent.Height then
+    if i < Memo1.Parent.Height then
       Exit;
     PDFPanel.Height := i;
   end;
@@ -2251,7 +2251,7 @@ begin
   begin
     i:= TextHoehe(Memo1.Font, Memo1.Text);
     i := (i * Memo1.Lines.Count) + MHA;
-    if i <= Memo1.Parent.Height then
+    if i < Memo1.Parent.Height then
       Exit;
     PDFPanel.Height := i;
   end;
@@ -2296,7 +2296,7 @@ begin
   begin
     i:= TextHoehe(Memo1.Font, Memo1.Text);
     i := (i * Memo1.Lines.Count) + MHA;
-    if i <= Memo1.Parent.Height then
+    if i < Memo1.Parent.Height then
       Exit;
     PDFPanel.Height := i;
   end;
