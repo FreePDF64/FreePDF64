@@ -4471,6 +4471,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList1Click(Sender: TObject);
 begin
   FavClose;
+  Memo1.Clear;
 end;
 
 // Starte die Erstellung mit Doppelklick auf ein Listenelement, auﬂer es ist ein Verzeichnis...
@@ -4534,6 +4535,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
 begin
   FavClose;
+  Memo1.Clear;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
