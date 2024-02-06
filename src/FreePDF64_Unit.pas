@@ -5296,12 +5296,16 @@ procedure TFreePDF64_Form.ParentFolderLClick(Sender: TObject);
 begin
   FavClose;
   LMDShellFolder1.LevelUp;
+  if LMDShellList1.Selected = NIL then
+    LMDShellList1.ItemIndex := 0;
 end;
 
 procedure TFreePDF64_Form.ParentFolderRClick(Sender: TObject);
 begin
   FavClose;
   LMDShellFolder2.LevelUp;
+  if LMDShellList2.Selected = NIL then
+    LMDShellList2.ItemIndex := 0;
 end;
 
 procedure TFreePDF64_Form.FreePDF64inibearbeiten1Click(Sender: TObject);
