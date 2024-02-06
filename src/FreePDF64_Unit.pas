@@ -3997,6 +3997,12 @@ begin
   LMDShellList1.Options := tmpt;
   LMDShellList2.Options := tmpt;
 
+  if Ziel = '' then
+  begin
+    Ziel := BackSlash(ExtractFilePath(Application.ExeName));
+    LMDShellFolder2.RootFolder := Ziel;
+  end;
+
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
 
@@ -4032,12 +4038,6 @@ begin
 
   DokuInfo_Form.Clear.Click;
   DokuInfo_Form.MetadatenCB.Checked := False;
-
-  if Ziel = '' then
-  begin
-    Ziel := BackSlash(ExtractFilePath(Application.ExeName));
-    LMDShellFolder2.RootFolder := Ziel;
-  end;
 
   // Lösche den ersten RootFolder-Eintrag links und rechts
   for i := 0 to ComboBoxL.Items.Count - 1 do
