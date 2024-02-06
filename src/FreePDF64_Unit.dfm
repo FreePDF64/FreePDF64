@@ -1145,13 +1145,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         TabOrder = 0
         TabStop = False
-        OnChange = ComboBoxLChange
+        OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
+        ExplicitLeft = 3
       end
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 768
+      Top = 769
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1178,7 +1179,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 766
+      ExplicitTop = 767
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1589,7 +1590,7 @@ object FreePDF64_Form: TFreePDF64_Form
           ShowHint = True
           TabOrder = 0
           TabStop = False
-          OnChange = ComboBoxRChange
+          OnCloseUp = ComboBoxRCloseUp
           OnDropDown = ComboBoxRDropDown
         end
       end

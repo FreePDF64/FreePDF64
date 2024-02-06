@@ -405,9 +405,7 @@ end;
     procedure AngleichenTBClick(Sender: TObject);
     procedure TauschenTBClick(Sender: TObject);
     procedure ComboBoxLDropDown(Sender: TObject);
-    procedure ComboBoxLChange(Sender: TObject);
     procedure ComboBoxRDropDown(Sender: TObject);
-    procedure ComboBoxRChange(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure Filter1Click(Sender: TObject);
     procedure LMDShellList1Enter(Sender: TObject);
@@ -495,6 +493,8 @@ end;
     procedure PDFFontsBtnClick(Sender: TObject);
     procedure MonitorBtnMouseEnter(Sender: TObject);
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ComboBoxLCloseUp(Sender: TObject);
+    procedure ComboBoxRCloseUp(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -2712,7 +2712,7 @@ begin
   RefreshBt.Click;
 end;
 
-procedure TFreePDF64_Form.ComboBoxLChange(Sender: TObject);
+procedure TFreePDF64_Form.ComboBoxLCloseUp(Sender: TObject);
 begin
   if System.SysUtils.DirectoryExists(ComboBoxL.Items[ComboBoxL.ItemIndex]) then
     LMDShellFolder1.RootFolder := ComboBoxL.Items[ComboBoxL.ItemIndex]
@@ -2721,7 +2721,7 @@ begin
   LMDShellList1.SetFocus;
 end;
 
-procedure TFreePDF64_Form.ComboBoxRChange(Sender: TObject);
+procedure TFreePDF64_Form.ComboBoxRCloseUp(Sender: TObject);
 begin
   if System.SysUtils.DirectoryExists(ComboBoxR.Items[ComboBoxR.ItemIndex]) then
     LMDShellFolder2.RootFolder := ComboBoxR.Items[ComboBoxR.ItemIndex]
