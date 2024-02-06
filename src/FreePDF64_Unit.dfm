@@ -764,7 +764,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 86
       Hint = 
         'Anzeige der Ghostscript-Befehle beim Erstellen der Datei(en)'#13#10'so' +
-        'wie Anzeigefenster der Informationen zu einer PDF-Datei'#13#10'- Doppe' +
+        'wie Anzeigefenster von Informationen zu einer PDF-Datei'#13#10'- Doppe' +
         'lklick passt das Fenster den Zeilen an'
       Margins.Left = 4
       Margins.Top = 4
@@ -1151,7 +1151,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 762
+      Top = 767
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1178,7 +1178,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 760
+      ExplicitTop = 765
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1405,7 +1405,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 766
+        Top = 771
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1431,7 +1431,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 764
+        ExplicitTop = 769
       end
       object Ziellabel: TPanel
         Left = 1

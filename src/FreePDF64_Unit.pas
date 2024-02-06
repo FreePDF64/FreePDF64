@@ -547,7 +547,7 @@ end;
 procedure TFreePDF64_Form.ActiveControlChanged(Sender: TObject);
 begin
   wcPrevious := wcActive;
-  wcActive := ActiveControl;
+  wcActive   := FreePDF64_Form.ActiveControl;
 end;
 
 // Doppelklick auf Splitter2
@@ -4775,8 +4775,13 @@ procedure TFreePDF64_Form.Memo1DblClick(Sender: TObject);
 var
   i: Integer;
 begin
-  // Markieren im Memofeld verhindern
-  StatusBitBtn.SetFocus;
+  FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcPrevious.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
 
   if PDFPanelH > PDFPanel.Height then
     PDFPanel.Height := PDFPanelH;
