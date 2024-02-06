@@ -3942,15 +3942,6 @@ begin
     end;
   end;
 
-  if Zielverzeichnisanzeigen1.Checked = False then
-  begin
-    Beide_FolderBtn.Visible := False;
-    ShowFolders1.Visible    := False;
-  end else
-  begin
-    Beide_FolderBtn.Visible := True;
-    ShowFolders1.Visible    := True;
-  end;
   // Show Folders Both Pane
   if ShowFolders1.Checked then
   begin
@@ -3963,20 +3954,6 @@ begin
     ShowFolders1.Checked     := True;
     ShowFolders_Left.Checked := False;
     ShowFolders_Left.Click;
-  end;
-  // Wenn beide ShowFolders = False...
-  if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False) then
-  begin
-    ShowFolders1.Checked := False;
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible := false;
-    Splitter4.Visible := false;
-    LMDShellTree1.Visible := false;
-    LMDShellTree2.Visible := false;
-    Panel_Left.Visible := false;
-    Panel_Right.Visible := false;
-    Panel2.Visible := false;
-    Panel3.Visible := false;
   end;
 
   // Vorgabewert beim Start des Programms
@@ -4019,6 +3996,34 @@ begin
     Exclude(tmpt, loShowHidden);
   LMDShellList1.Options := tmpt;
   LMDShellList2.Options := tmpt;
+
+  LMDShellFolder1.RootFolder := A_S;
+  LMDShellFolder2.RootFolder := B_Z;
+
+  if Zielverzeichnisanzeigen1.Checked = False then
+  begin
+    Beide_FolderBtn.Visible := False;
+    ShowFolders1.Visible    := False;
+  end else
+  begin
+    Beide_FolderBtn.Visible := True;
+    ShowFolders1.Visible    := True;
+  end;
+
+  // Wenn beide ShowFolders = False...
+  if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False) then
+  begin
+    ShowFolders1.Checked := False;
+    ShowFolders_Left.Checked := False;
+    Splitter1.Visible := false;
+    Splitter4.Visible := false;
+    LMDShellTree1.Visible := false;
+    LMDShellTree2.Visible := false;
+    Panel_Left.Visible := false;
+    Panel_Right.Visible := false;
+    Panel2.Visible := false;
+    Panel3.Visible := false;
+  end;
 
   // Rechtes Zielverzeichnis anzeigen
   Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
@@ -4088,7 +4093,6 @@ begin
 
   Quelllabel.Color := RGB(220,220,220);
   Ziellabel.Color := clBtnFace;
-//  LMDShellList1.SetFocus;
 
   // Wenn TrayIcon sichtbar ist...
   if TrayIcon1.Visible = False then
@@ -4116,8 +4120,6 @@ begin
   finally
     Free;
   end;
-  LMDShellFolder1.RootFolder := A_S;
-  LMDShellFolder2.RootFolder := B_Z;
 
   // Überwachung auf...
   FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(FreePDF64_Notify.MonitoringFolder.Text);
@@ -4140,9 +4142,19 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
+var
+  i, j: Integer;
 begin
-  // Ersten Eintrag auswählen
-  LMDShellList1.ItemIndex := 0;
+  // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
+  i := LMDShellFolder1.BackwardPathList.Count - 2;
+  for j := 0 to LMDShellList1.Items.Count - 1 do
+    if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
+    begin
+      LMDShellList1.ItemIndex := j;
+      LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
+    end;
+  if LMDShellList1.Selected = NIL then
+    LMDShellList1.ItemIndex := 0;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(BackSlash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4166,9 +4178,19 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
+var
+  i, j: Integer;
 begin
-  // Ersten Eintrag auswählen
-  LMDShellList2.ItemIndex := 0;
+  // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
+  i := LMDShellFolder2.BackwardPathList.Count - 2;
+  for j := 0 to LMDShellList2.Items.Count - 1 do
+    if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
+    begin
+      LMDShellList2.ItemIndex := j;
+      LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
+    end;
+  if LMDShellList2.Selected = NIL then
+    LMDShellList2.ItemIndex := 0;
 
   LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := BackSlash(LMDShellFolder2.RootFolder);
@@ -5273,8 +5295,6 @@ end;
 procedure TFreePDF64_Form.ParentFolderLClick(Sender: TObject);
 begin
   FavClose;
-  LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
-  LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
   LMDShellFolder1.LevelUp;
 end;
 
