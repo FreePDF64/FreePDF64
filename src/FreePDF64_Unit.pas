@@ -1185,7 +1185,7 @@ begin
     LMDShellList2.SetFocus;
 
   // Zeige die Attachments der ausgew‰hlten PDF-Datei
-  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  if LMDShellList1.SelCount = 1 then
   begin
     // Anlagen anzeigen...
     for i := 0 to LMDShellList1.SelCount - 1 do
@@ -1196,9 +1196,8 @@ begin
     begin
       j:= TextHoehe(Memo1.Font, Memo1.Text);
       j := (j * Memo1.Lines.Count) + MHA;
-      if j < Memo1.Parent.Height then
-        Exit;
-      PDFPanel.Height := j;
+      if j > Memo1.Parent.Height then
+        PDFPanel.Height := j;
     end;
 
     if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heiﬂt die Anlage? (Groﬂ-/Kleinschrift beachten!):', Anlage) then
