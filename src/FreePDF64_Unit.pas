@@ -3346,7 +3346,7 @@ begin
           Timer2.Enabled := False;
 
         // History Links lesen
-        for i := 1 to 25 do
+        for i := 1 to 254 do
         begin
           iec[i - 1] := IniDat.ReadString('History',
             'History Left' + IntToStr(i - 1), s);
@@ -3355,7 +3355,7 @@ begin
           ComboBoxL.Items.Insert(i - 1, iec[i - 1]);
         end;
         // History Rechts lesen
-        for i := 1 to 25 do
+        for i := 1 to 254 do
         begin
           iec[i - 1] := IniDat.ReadString('History',
             'History Right' + IntToStr(i - 1), s);
@@ -3365,7 +3365,7 @@ begin
         end;
 
         // Favoritenliste Links einlesen
-        for ie1 := 1 to 255 do
+        for ie1 := 1 to 254 do
         begin
           iec[ie1 - 1] := ReadString('Favorites Left', IntToStr(ie1 - 1), ies);
           if iec[ie1 - 1] = '' then
@@ -3385,7 +3385,7 @@ begin
           ListBoxL.Items.Add(iec[ie1 - 1]);
         end;
         // Favoriten Rechts einlesen
-        for ie1 := 1 to 255 do
+        for ie1 := 1 to 254 do
         begin
           iec[ie1 - 1] := ReadString('Favorites Right', IntToStr(ie1 - 1), ies);
           if iec[ie1 - 1] = '' then
