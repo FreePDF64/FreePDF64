@@ -62,36 +62,28 @@ Here are some ideas to get you started:
 - ⚡ Fun fact: ...
 -->
 ### Hauptfenster
-![FreePDF64_Hauptbildschirm]
-https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG
+![FreePDF64_Hauptbildschirm](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG)
 
 ### Einstellungen
-![FreePDF64_Einstellungen]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Einstellungen.JPG)
+![FreePDF64_Einstellungen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Einstellungen.JPG)
 
 ### Verschlüsselung
-![FreePDF64_Verschluesselung]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verschluesselung.JPG)
+![FreePDF64_Verschluesselung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verschluesselung.JPG)
 
 ### Statusinformation
-![FreePDF64_Statusinformation]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Anzeige%20Statusinformationen.JPG)
+![FreePDF64_Statusinformation](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Anzeige%20Statusinformationen.JPG)
 
 ### PDF-Metadaten
-![FreePDF64_Metadaten]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Metadaten.JPG)
+![FreePDF64_Metadaten](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Metadaten.JPG)
 
 ### PDF-Dateien vorne/hinten anfügen
-![FreePDF64_Datei anfügen]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Datei%20anfuegen.JPG)
+![FreePDF64_Datei anfügen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Datei%20anfuegen.JPG)
 
 ### PDF-Dateien verbinden
-![FreePDF64_Dateien verbinden]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verbinden%20von%20PDF-Dateien.JPG)
+![FreePDF64_Dateien verbinden](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verbinden%20von%20PDF-Dateien.JPG)
 
 ### Wasserzeichen/Stempel
 ![FreePDF64_Wasserzeichen_Stempel](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Wasserzeichen_Stempel%20hinzufuegen.JPG)
 
 ### Überwachung
-![FreePDF64_Überwachung]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Ueberwachung.JPG)
+![FreePDF64_Überwachung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Ueberwachung.JPG)
