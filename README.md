@@ -63,7 +63,7 @@ Here are some ideas to get you started:
 -->
 ### Hauptfenster
 ![FreePDF64_Hauptbildschirm]
-(https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG)
+https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG
 
 ### Einstellungen
 ![FreePDF64_Einstellungen]
