@@ -4781,7 +4781,7 @@ begin
   if PDFPanelH > PDFPanel.Height then
     PDFPanel.Height := PDFPanelH;
 
-  if Memo1.Lines.Count > 1 then
+  if Memo1.Lines.Count > 0 then
   begin
     i:= TextHoehe(Memo1.Font, Memo1.Text);
     i := (i * Memo1.Lines.Count) + 80;
