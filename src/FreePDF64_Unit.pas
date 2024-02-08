@@ -2939,8 +2939,10 @@ begin
             ShowMessage('"' + s + '" ist nicht mehr vorhanden!');
           LMDShellFolder1.ChDir(s);
           LMDShellList1.SetFocus;
-          LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
-          LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
+          if LMDShellList1.Selected = NIL then
+            LMDShellList1.ItemIndex := 0;
+//          LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
+//          LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
           Break;
         end;
       end;
@@ -2957,21 +2959,21 @@ procedure TFreePDF64_Form.FavLbLMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   i: Integer;
-  olh: string;
+//  olh: string;
 begin
   with FavLbL do
     begin
-      olh := Hint;
+//      olh := Hint;
       i := ItemAtPos(Point(X, Y), False);
       if (i <= Items.Count - 1) then
-      begin
-        Hint := Items.Strings[i];
+//      begin
+//        Hint := Items.Strings[i];
         FavLbL.Selected[i] := True;
-      end else
-        Hint := '';
+//      end else
+//        Hint := '';
 
-      if Hint <> olh then
-        Application.CancelHint;
+//      if Hint <> olh then
+//        Application.CancelHint;
     end;
 end;
 
@@ -2994,8 +2996,10 @@ begin
             ShowMessage('"' + s + '" ist nicht mehr vorhanden!');
           LMDShellFolder2.ChDir(s);
           LMDShellList2.SetFocus;
-          LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
-          LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
+          if LMDShellList2.Selected = NIL then
+            LMDShellList2.ItemIndex := 0;
+//          LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
+//          LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
           Break;
         end;
       end;
@@ -3016,21 +3020,21 @@ procedure TFreePDF64_Form.FavLbRMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   i: Integer;
-  olh: string;
+//  olh: string;
 begin
   with FavLbR do
     begin
-      olh := Hint;
+//      olh := Hint;
       i := ItemAtPos(Point(X, Y), False);
       if (i <= Items.Count - 1) then
-      begin
-        Hint := Items.Strings[i];
+//      begin
+//        Hint := Items.Strings[i];
         FavLbR.Selected[i] := True;
-      end else
-        Hint := '';
+//      end else
+//        Hint := '';
 
-      if Hint <> olh then
-        Application.CancelHint;
+//      if Hint <> olh then
+//        Application.CancelHint;
     end;
 end;
 
@@ -3466,8 +3470,10 @@ begin
       ShowMessage('Error');
     end;
   end;
-  LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
-  LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
+  if LMDShellList1.Selected = NIL then
+    LMDShellList1.ItemIndex := 0;
+//  LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
+//  LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
 end;
 
 procedure TFreePDF64_Form.ZielBtnClick(Sender: TObject);
@@ -3490,8 +3496,10 @@ begin
       ShowMessage('Error');
     end;
   end;
-  LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
-  LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
+  if LMDShellList2.Selected = NIL then
+    LMDShellList2.ItemIndex := 0;
+//  LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
+//  LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
 end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
