@@ -1185,7 +1185,7 @@ begin
     LMDShellList2.SetFocus;
 
   // Zeige die Attachments der ausgewählten PDF-Datei
-  if LMDShellList1.SelCount = 1 then
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     // Anlagen anzeigen...
     for i := 0 to LMDShellList1.SelCount - 1 do
@@ -2971,7 +2971,6 @@ begin
         FavLbL.Selected[i] := True;
 //      end else
 //        Hint := '';
-
 //      if Hint <> olh then
 //        Application.CancelHint;
     end;
@@ -3032,7 +3031,6 @@ begin
         FavLbR.Selected[i] := True;
 //      end else
 //        Hint := '';
-
 //      if Hint <> olh then
 //        Application.CancelHint;
     end;
