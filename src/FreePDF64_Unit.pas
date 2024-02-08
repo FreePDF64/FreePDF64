@@ -83,7 +83,7 @@ uses
   ShlObj,
   LMDUnicodeDialogs,
   ActiveX,
-  ComObj, MMSystem,
+  ComObj, MMSystem, JPEG,
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar;
 
 const
@@ -329,6 +329,7 @@ end;
     est1: TMenuItem;
     N19: TMenuItem;
     N31: TMenuItem;
+    Image1: TImage;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -495,6 +496,7 @@ end;
     procedure TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ComboBoxLCloseUp(Sender: TObject);
     procedure ComboBoxRCloseUp(Sender: TObject);
+    procedure Image1Click(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -2441,6 +2443,19 @@ begin
   ShowFolders_Left.Click;
 end;
 
+procedure TFreePDF64_Form.Image1Click(Sender: TObject);
+begin
+  if Image1.Proportional then
+  begin
+    Image1.Proportional := False;
+    Image1.Stretch := True;
+  end else
+  begin
+    Image1.Proportional := True;
+    Image1.Stretch := False;
+  end;
+end;
+
 procedure TFreePDF64_Form.InDenTrayClick(Sender: TObject);
 begin
   if InDenTray.Checked then
@@ -2657,6 +2672,21 @@ begin
   else
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
       Auswahl := LMDShellList2.SelectedItem.PathName;
+
+  // JPEG anzeigen
+  if Image1.Visible then
+  begin
+    Image1.Visible := False;
+    LMDShellList2.Visible := True;
+    Exit;
+  end else
+  if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
+  begin
+    LMDShellList2.Visible := False;
+    Image1.Visible := True;
+    Image1.Picture.LoadFromFile(Auswahl);
+    Exit;
+  end;
 
   if not FileExists(XPDFReader) or
     (Uppercase(ExtractFileExt(Auswahl)) <> ('.PDF')) then
@@ -4478,6 +4508,10 @@ procedure TFreePDF64_Form.LMDShellList1Click(Sender: TObject);
 begin
   FavClose;
   Memo1.Clear;
+
+  if Image1.Visible then
+    if (Uppercase(ExtractFileExt(LMDShellList1.SelectedItem.Pathname)) = ('.JPG')) or (Uppercase(LMDShellList1.SelectedItem.Pathname) = ('.JPEG')) then
+      Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.pathname);
 end;
 
 // Starte die Erstellung mit Doppelklick auf ein Listenelement, auﬂer es ist ein Verzeichnis...

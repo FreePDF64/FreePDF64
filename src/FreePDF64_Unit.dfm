@@ -556,14 +556,15 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 33
       Hint = 
         'Markierte PS/PDF-Datei entweder mit dem PDF-Anzeiger oder mit Gh' +
-        'ostscript anzeigen'
+        'ostscript anzeigen. '#13#10'JPEG-Dateien werden im Zielfenster angezei' +
+        'gt. Fenster schlie'#223'en wieder mit F3.'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
-      Caption = 'F3 PS/PDF anzeigen'
+      Caption = 'F3 PS/PDF/JPEG anzeigen'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -1151,7 +1152,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 770
+      Top = 772
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1179,7 +1180,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 768
+      ExplicitTop = 770
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1317,6 +1318,25 @@ object FreePDF64_Form: TFreePDF64_Form
       DesignSize = (
         364
         452)
+      object Image1: TImage
+        Left = 1
+        Top = 29
+        Width = 362
+        Height = 399
+        Hint = 'Klick f'#252'r Stretch an/aus'
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Align = alClient
+        Stretch = True
+        Visible = False
+        OnClick = Image1Click
+        ExplicitLeft = 185
+        ExplicitTop = 100
+        ExplicitWidth = 131
+        ExplicitHeight = 131
+      end
       object LMDShellList2: TLMDShellList
         Left = 1
         Top = 29
@@ -1384,6 +1404,9 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem
+        ExplicitLeft = 3
+        ExplicitTop = 120
+        ExplicitHeight = 308
       end
       object ListBoxR: TListBox
         Left = 142
