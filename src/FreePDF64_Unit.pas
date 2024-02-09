@@ -562,6 +562,7 @@ begin
   if Image1.Visible then
   begin
     Image1.Visible := False;
+    Image1.Picture := NIL;
     LMDShellList2.Visible := True;
   end;
 
@@ -2742,6 +2743,7 @@ begin
   if Image1.Visible then
   begin
     Image1.Visible := False;
+    Image1.Picture := NIL;
     LMDShellList2.Visible := True;
     Exit;
   end else
@@ -4758,6 +4760,7 @@ begin
   if Image1.Visible then
   begin
     Image1.Visible := False;
+    Image1.Picture := NIL;
     LMDShellList2.Visible := True;
   end;
 end;
