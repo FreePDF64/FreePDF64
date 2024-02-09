@@ -566,12 +566,11 @@ begin
   end;
 
   a := LMDShellList1.Column[0].AutoSize;
-
   // AutoSize Spalte "Name"
+//  FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
+//  FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
   LMDShellList1.Column[0].AutoSize := True;
   LMDShellList2.Column[0].AutoSize := True;
-  FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
-  FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
 
   // Splitter soll sich in der Mitte befinden.
   if Panel_Right.Visible then
