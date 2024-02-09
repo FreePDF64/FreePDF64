@@ -37,9 +37,9 @@ object FreePDF64_Form: TFreePDF64_Form
     ExplicitHeight = 456
   end
   object Splitter2: TSplitter
-    Left = 738
+    Left = 736
     Top = 47
-    Width = 4
+    Width = 6
     Height = 454
     Hint = 'Doppelklick f'#252'r 50/50'
     Margins.Left = 4
@@ -47,8 +47,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Right = 4
     Margins.Bottom = 4
     Align = alRight
-    ExplicitLeft = 628
-    ExplicitHeight = 456
+    ExplicitLeft = 738
   end
   object Splitter3: TSplitter
     Left = 0
@@ -56,7 +55,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Width = 1392
     Height = 6
     Cursor = crVSplit
-    Hint = 'Doppelklick f'#252'r Startposition'
+    Hint = 'Doppelklick f'#252'r gespeicherte Position'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -547,6 +546,8 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    ExplicitTop = 500
+    ExplicitWidth = 1386
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -902,7 +903,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object PanelL: TPanel
     Left = 283
     Top = 47
-    Width = 455
+    Width = 453
     Height = 454
     Margins.Left = 4
     Margins.Top = 4
@@ -915,12 +916,12 @@ object FreePDF64_Form: TFreePDF64_Form
     ExplicitWidth = 449
     ExplicitHeight = 453
     DesignSize = (
-      455
+      453
       454)
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 29
-      Width = 453
+      Width = 451
       Height = 400
       Margins.Left = 4
       Margins.Top = 4
@@ -986,11 +987,12 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitWidth = 453
     end
     object Quelllabel: TPanel
       Left = 1
       Top = 1
-      Width = 453
+      Width = 451
       Height = 28
       Margins.Left = 4
       Margins.Top = 4
@@ -1010,7 +1012,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseEnter = QuelllabelMouseEnter
       ExplicitWidth = 447
       object FavSpL: TSpeedButton
-        Left = 377
+        Left = 375
         Top = 0
         Width = 32
         Height = 28
@@ -1036,7 +1038,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitLeft = 434
       end
       object FavLinks: TSpeedButton
-        Left = 409
+        Left = 407
         Top = 0
         Width = 44
         Height = 28
@@ -1149,7 +1151,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object FavLbL: TListBox
-      Left = 677
+      Left = 674
       Top = 773
       Width = 175
       Height = 40
@@ -1183,7 +1185,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object StatusBar_Left: TStatusBar
       Left = 1
       Top = 429
-      Width = 453
+      Width = 451
       Height = 24
       Margins.Left = 4
       Margins.Top = 4
