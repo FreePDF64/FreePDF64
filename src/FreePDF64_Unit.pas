@@ -4754,6 +4754,13 @@ end;
 procedure TFreePDF64_Form.LMDShellTree1Change(Sender: TObject; Node: TTreeNode);
 begin
   PDF_Erstellung.Caption := ('START');
+
+  // JPEG-Fenster schlieﬂen
+  if Image1.Visible then
+  begin
+    Image1.Visible := False;
+    LMDShellList2.Visible := True;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1Click(Sender: TObject);
