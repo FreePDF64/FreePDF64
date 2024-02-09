@@ -83,7 +83,7 @@ uses
   ShlObj,
   LMDUnicodeDialogs,
   ActiveX,
-  ComObj, MMSystem, JPEG,
+  ComObj, MMSystem, JPEG, GDIPAPI, GDIPOBJ,
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar;
 
 const
@@ -497,6 +497,7 @@ end;
     procedure ComboBoxLCloseUp(Sender: TObject);
     procedure ComboBoxRCloseUp(Sender: TObject);
     procedure Image1Click(Sender: TObject);
+    procedure Image1ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -2446,14 +2447,9 @@ end;
 procedure TFreePDF64_Form.Image1Click(Sender: TObject);
 begin
   if Image1.Proportional then
-  begin
-    Image1.Proportional := False;
-    Image1.Stretch := True;
-  end else
-  begin
+    Image1.Proportional := False
+  else
     Image1.Proportional := True;
-    Image1.Stretch := False;
-  end;
 end;
 
 procedure TFreePDF64_Form.InDenTrayClick(Sender: TObject);
@@ -2661,6 +2657,69 @@ begin // ExeFileName = caption or cmd path
     PostMessage(h, WM_CLOSE, 0, 0);
 end;
 
+// JPEG richtig drehen!
+procedure RotateJPEGImage(const AFileName: string; AImage: TImage);
+var
+  GPImage: TGPImage;
+  GPGraphics: TGPGraphics;
+  pPropItem: PPropertyItem;
+  BufferSize: Cardinal;
+  Orientation: Byte;
+  RotateType: TRotateFlipType;
+  W, H: Integer;
+  Ratio: Double;
+  Exif: Boolean;
+begin
+  GPImage:= TGPImage.Create(AFileName);
+  try
+    Exif := False;
+    BufferSize := GPImage.GetPropertyItemSize(PropertyTagOrientation);
+    if BufferSize > 0 then
+    begin
+      Exif := True;
+      GetMem(pPropItem, BufferSize);
+      GPImage.GetPropertyItem(PropertyTagOrientation, BufferSize, pPropItem);
+      Orientation := PByte(pPropItem.Value)^;
+      case Orientation of
+        1: RotateType := RotateNoneFlipNone; // Horizontal - No rotation required
+        2: RotateType := RotateNoneFlipX;
+        3: RotateType := Rotate180FlipNone;
+        4: RotateType := Rotate180FlipX;
+        5: RotateType := Rotate90FlipX;
+        6: RotateType := Rotate90FlipNone;
+        7: RotateType := Rotate270FlipX;
+        8: RotateType := Rotate270FlipNone;
+        else
+          RotateType := RotateNoneFlipNone; // Unknown rotation?
+      end;
+      if RotateType <> RotateNoneFlipNone then
+        GPImage.RotateFlip(RotateType);
+    end;
+
+    // Berechne das Verhältnis für die Anzeige
+    Ratio := GPImage.GetWidth / AImage.Width;
+    if Ratio < GPImage.GetHeight / AImage.Height then
+      Ratio := GPImage.GetHeight / AImage.Height;
+    W := Round(GPImage.GetWidth / Ratio);
+    H := Round(GPImage.GetHeight / Ratio);
+
+    // Lösche das aktuelle Bild in der TImage-Komponente
+    AImage.Picture.Assign(nil);
+    AImage.Width := W;
+    AImage.Height := H;
+
+    // Zeichne das gedrehte Bild auf die TImage-Komponente
+    GPGraphics := TGPGraphics.Create(AImage.Canvas.Handle);
+    try
+      GPGraphics.DrawImage(GPImage, 0, 0, W, H);
+    finally
+      GPGraphics.Free;
+    end;
+  finally
+    GPImage.Free;
+  end;
+end;
+
 // PS/PDF-Dateien anschauen mit Ghostscript oder dem XPDFReader
 procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
@@ -2680,11 +2739,18 @@ begin
     LMDShellList2.Visible := True;
     Exit;
   end else
+  if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+  begin
+    MessageDlgCenter
+      ('JPEG anzeigen: Bitte JPEG-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Exit;
+  end else
   if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
   begin
     LMDShellList2.Visible := False;
     Image1.Visible := True;
     Image1.Picture.LoadFromFile(Auswahl);
+//    RotateJPEGImage(Auswahl, Image1);
     Exit;
   end;
 
@@ -2716,6 +2782,13 @@ begin
     ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
     KillTask(XPDFReader);
   end;
+end;
+
+// Rechtsklick auf TImage
+procedure TFreePDF64_Form.Image1ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  Auswahl := LMDShellList1.SelectedItem.PathName;
+  RotateJPEGImage(Auswahl, Image1);
 end;
 
 procedure TFreePDF64_Form.Btn_DeleteClick(Sender: TObject);
@@ -4509,6 +4582,9 @@ begin
   FavClose;
   Memo1.Clear;
 
+  if LMDShellList1.SelCount = 0 then
+    Exit
+  else
   if Image1.Visible then
     if (Uppercase(ExtractFileExt(LMDShellList1.SelectedItem.Pathname)) = ('.JPG')) or (Uppercase(LMDShellList1.SelectedItem.Pathname) = ('.JPEG')) then
       Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.pathname);

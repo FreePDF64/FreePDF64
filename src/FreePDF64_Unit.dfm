@@ -547,8 +547,6 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitTop = 500
-    ExplicitWidth = 1386
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -1152,7 +1150,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 677
-      Top = 772
+      Top = 773
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1180,7 +1178,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 667
-      ExplicitTop = 770
+      ExplicitTop = 771
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1323,15 +1321,19 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 29
         Width = 362
         Height = 399
-        Hint = 'Klick f'#252'r Stretch an/aus'
+        Hint = 
+          '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
+          ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
+          'hl m'#246'glich'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
         Align = alClient
-        Stretch = True
+        Proportional = True
         Visible = False
         OnClick = Image1Click
+        OnContextPopup = Image1ContextPopup
         ExplicitLeft = 185
         ExplicitTop = 100
         ExplicitWidth = 131
@@ -1404,9 +1406,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem
-        ExplicitLeft = 3
-        ExplicitTop = 120
-        ExplicitHeight = 308
       end
       object ListBoxR: TListBox
         Left = 142
