@@ -1180,7 +1180,8 @@ end;
 // Anlage(n) aus einer PDF-Datei entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile, Ausgabe: String;
+  PDFDatei, Zieldatei, Anlage,
+  Zeile, Zeile2, Ausgabe: String;
   ProcID: Cardinal;
   F: TextFile;
   i, j: Integer;
@@ -1240,11 +1241,21 @@ begin
     PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
     ZielDatei := BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName;
 
-    // Starte die Erstellung...
+    // Starte die Erstellung und extrahiere die Anlage aus der PDF-Datei
     ProcID := 0;
-    if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
-    begin
-      Memo1.Lines.Text := Zeile;
+    if RunProcess(Zeile, SW_HIDE, True, @ProcID) <> 0 then
+      Exit;
+
+    Zeile2 := Einstellungen_Form.Edit4.Text + ' --remove-attachment="' + Ausgabe + '" "' +
+              (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) + '" "' +
+              BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
+
+    // Starte die 2te Erstellung und entferne auch die Anlage aus der PDF-Datei
+    ProcID := 0;
+    if RunProcess(Zeile2, SW_HIDE, True, @ProcID) = 0 then
+    begin
+
+      Memo1.Lines.Text := Zeile2;
       // FreePDF64Log.txt
       if Logdatei.Checked then
       begin
@@ -1255,14 +1266,14 @@ begin
         except
           Rewrite(F)
         end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> Anlage entfernen: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> Anlage entfernen: ' + Zeile2));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Ausgabe));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
-//        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Backslash(Ziel) + Ausgabe))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
