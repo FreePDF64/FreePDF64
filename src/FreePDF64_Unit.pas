@@ -2244,11 +2244,11 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
     for i := 0 to LMDShellList1.SelCount - 1 do
-      RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
+      RunDosInMemo(XPDF_Info + ' -box -custom "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                    LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1)
   else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
     for i := 0 to LMDShellList2.SelCount - 1 do
-      RunDosInMemo(XPDF_Info + ' -box "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
+      RunDosInMemo(XPDF_Info + ' -box -custom "' + BackSlash(LMDShellFolder2.ActiveFolder.PathName) +
                    LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1)
   else
   begin
@@ -4541,13 +4541,13 @@ begin
     until not DirectoryExists(Ziel2);
       HTMLZiel := Ziel2;
 
-    Zeile := XPDF_toHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
+    Zeile := XPDF_toHTML + ' -meta -overwrites -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := XPDF_toHTML + ' -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
+      Memozeile := XPDF_toHTML + ' -meta -overwrites -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
       Memo1.Lines.Text := Memozeile;
       // FreePDF64Log.txt
       if Logdatei.Checked then
