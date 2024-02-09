@@ -558,6 +558,13 @@ procedure TFreePDF64_Form.SplDblClick(Sender: TObject);
 var
   a: Boolean;
 begin
+  // JPEG-Fenster schlieﬂen
+  if Image1.Visible then
+  begin
+    Image1.Visible := False;
+    LMDShellList2.Visible := True;
+  end;
+
   a := LMDShellList1.Column[0].AutoSize;
 
   // AutoSize Spalte "Name"
