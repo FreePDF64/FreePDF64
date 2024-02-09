@@ -1180,7 +1180,7 @@ end;
 // Anlage(n) aus einer PDF-Datei entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile: String;
+  PDFDatei, Zieldatei, Anlage, Zeile, Ausgabe: String;
   ProcID: Cardinal;
   F: TextFile;
   i, j: Integer;
@@ -1210,7 +1210,7 @@ begin
         PDFPanel.Height := j;
     end;
 
-    if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Wie heißt die Anlage? (Groß-/Kleinschrift beachten!):', Anlage) then
+    if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Welche soll entfernt werden? Bitte Nummer angeben:', Anlage) then
       Exit
     else if Anlage = '' then
       Exit
@@ -1230,9 +1230,13 @@ begin
       if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
         Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
 
-    Zeile     := Einstellungen_Form.Edit4.Text + ' --remove-attachment="' + Anlage + '" "' +
-                 (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) + '" "' +
-                  BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
+    // Zeige die Zeile namens "Anlage" aus Memo1 an
+    Ausgabe := Memo1.Lines[StrToInt(Anlage)];
+    // Die ersten 3 Zeichen davon dann entfernen
+    Delete(Ausgabe, 1, 3);
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      Zeile := XPDF_Detach + ' -save ' + Anlage + ' -o "' + BackSlash(Ziel) + Ausgabe  + '" "' +
+               BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName + '"';
     PDFDatei  := BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
     ZielDatei := BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName;
 
@@ -1255,10 +1259,10 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Anlage));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Ausgabe));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
+//        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Backslash(Ziel) + Ausgabe))));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
