@@ -4575,7 +4575,6 @@ begin
                        'Vermutlich ist die PDF-Datei verschlüsselt oder es ist keine PDF-Datei?!', mtError, [mbOk]);
       ProgressBar1.Position := 0;
     end;
-    showmessage('OK');
     if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder') then
       DelDir(BackSlash(Ziel) + 'Extrahierte Bilder');
     if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now)) then
