@@ -41,7 +41,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 47
     Width = 6
     Height = 454
-    Hint = 'Doppelklick f'#252'r 50/50'
+    Hint = 'Doppelklick f'#252'r 50/50-Anzeige'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -763,9 +763,9 @@ object FreePDF64_Form: TFreePDF64_Form
       Width = 1392
       Height = 86
       Hint = 
-        'Anzeige der Ghostscript-Befehle beim Erstellen der Datei(en)'#13#10'so' +
-        'wie Anzeigefenster von Informationen zu einer PDF-Datei'#13#10'- Doppe' +
-        'lklick passt das Fenster den Zeilen an'
+        'Anzeige der Verarbeitungsbefehle der PDF-Tools sowie '#13#10'Anzeigefe' +
+        'nster der Informationen zu einer PDF-Datei '#13#10'- Doppelklick passt' +
+        ' die Fensterh'#246'he den Zeilen an'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -786,6 +786,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
       Left = 0
@@ -912,6 +913,8 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
+    ExplicitWidth = 447
+    ExplicitHeight = 453
     DesignSize = (
       453
       454)
@@ -1198,6 +1201,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 664
+      ExplicitTop = 771
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1331,6 +1336,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 451
       DesignSize = (
         364
         452)
@@ -1474,6 +1480,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 769
       end
       object Ziellabel: TPanel
         Left = 1
