@@ -330,6 +330,7 @@ end;
     N19: TMenuItem;
     N31: TMenuItem;
     Image1: TImage;
+    Image2: TImage;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -498,6 +499,8 @@ end;
     procedure ComboBoxRCloseUp(Sender: TObject);
     procedure Image1Click(Sender: TObject);
     procedure Image1ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure Image2ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+    procedure Image2Click(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -564,6 +567,12 @@ begin
     Image1.Visible := False;
     Image1.Picture := NIL;
     LMDShellList2.Visible := True;
+  end else
+  if Image2.Visible then
+  begin
+    Image2.Visible := False;
+    Image2.Picture := NIL;
+    LMDShellList1.Visible := True;
   end;
 
   a := LMDShellList1.Column[0].AutoSize;
@@ -1268,7 +1277,6 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ausgabe));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(BackSlash(Ziel) + Ausgabe))));
         Closefile(F);
-
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
       end;
@@ -1638,6 +1646,14 @@ procedure TFreePDF64_Form.LMDShellTree2Change(Sender: TObject; Node: TTreeNode);
 begin
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(BackSlash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
                                       Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
+
+  // JPEG-Fenster schließen
+  if Image2.Visible then
+  begin
+    Image2.Visible := False;
+    Image2.Picture := NIL;
+    LMDShellList1.Visible := True;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree2Click(Sender: TObject);
@@ -2790,20 +2806,30 @@ begin
     LMDShellList2.Visible := True;
     Exit;
   end else
-  if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+  if Image2.Visible then
   begin
-    MessageDlgCenter
-      ('JPEG anzeigen: Bitte JPEG-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    Image2.Visible := False;
+    Image2.Picture := NIL;
+    LMDShellList1.Visible := True;
     Exit;
   end else
-  if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
-  begin
-    LMDShellList2.Visible := False;
-    Image1.Visible := True;
-    Image1.Picture.LoadFromFile(Auswahl);
-//    RotateJPEGImage(Auswahl, Image1);
-    Exit;
-  end;
+
+  if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
+    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
+    begin
+      LMDShellList2.Visible := False;
+      Image1.Visible := True;
+      Image1.Picture.LoadFromFile(Auswahl);
+      Exit;
+    end;
+  if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
+    begin
+      LMDShellList1.Visible := False;
+      Image2.Visible := True;
+      Image2.Picture.LoadFromFile(Auswahl);
+      Exit;
+    end;
 
   if not FileExists(XPDFReader) or
     (Uppercase(ExtractFileExt(Auswahl)) <> ('.PDF')) then
@@ -2840,6 +2866,20 @@ procedure TFreePDF64_Form.Image1ContextPopup(Sender: TObject; MousePos: TPoint; 
 begin
   Auswahl := LMDShellList1.SelectedItem.PathName;
   RotateJPEGImage(Auswahl, Image1);
+end;
+
+procedure TFreePDF64_Form.Image2Click(Sender: TObject);
+begin
+  if Image2.Proportional then
+    Image2.Proportional := False
+  else
+    Image2.Proportional := True;
+end;
+
+procedure TFreePDF64_Form.Image2ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
+begin
+  Auswahl := LMDShellList2.SelectedItem.PathName;
+  RotateJPEGImage(Auswahl, Image2);
 end;
 
 procedure TFreePDF64_Form.Btn_DeleteClick(Sender: TObject);
@@ -4707,6 +4747,13 @@ procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
 begin
   FavClose;
   Memo1.Clear;
+
+  if LMDShellList2.SelCount = 0 then
+    Exit
+  else
+  if Image2.Visible then
+    if (Uppercase(ExtractFileExt(LMDShellList2.SelectedItem.Pathname)) = ('.JPG')) or (Uppercase(LMDShellList2.SelectedItem.Pathname) = ('.JPEG')) then
+      Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.pathname);
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);

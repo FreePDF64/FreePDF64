@@ -555,8 +555,8 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 33
       Hint = 
         '- Markierte PS/PDF-Datei entweder mit dem PDF-Anzeiger oder mit ' +
-        'Ghostscript anzeigen'#13#10'- JPEG-Dateien werden im Zielfenster angez' +
-        'eigt. Fenster schlie'#223'en wieder mit F3'
+        'Ghostscript anzeigen'#13#10'- JPEG-Dateien werden im gegen'#252'berliegende' +
+        'n Fenster angezeigt. Fenster schlie'#223'en mit F3'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -918,6 +918,29 @@ object FreePDF64_Form: TFreePDF64_Form
     DesignSize = (
       453
       454)
+    object Image2: TImage
+      Left = 1
+      Top = 29
+      Width = 451
+      Height = 400
+      Hint = 
+        '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
+        ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
+        'hl m'#246'glich'
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      Align = alClient
+      Proportional = True
+      Visible = False
+      OnClick = Image2Click
+      OnContextPopup = Image2ContextPopup
+      ExplicitLeft = 210
+      ExplicitTop = 215
+      ExplicitWidth = 131
+      ExplicitHeight = 131
+    end
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 29
