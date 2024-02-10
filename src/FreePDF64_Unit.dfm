@@ -316,9 +316,9 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 472
         Top = 0
         Hint = 
-          'Anlage aus einer PDF-Datei entfernen:'#13#10'1. Es werden alle Anlagen' +
-          ' im unteren Fenster angezeigt'#13#10'2. Nun gibt man die Nummer der An' +
-          'lage an, welche entfernt werden soll'
+          'Anlage aus einer PDF-Datei extrahieren/entfernen:'#13#10'1. Es werden ' +
+          'alle Anlagen im unteren Fenster angezeigt'#13#10'2. Nun gibt man die N' +
+          'ummer der Anlage an, welche extrahiert/entfernt werden soll'
         Caption = 'PDFRemove'
         ImageIndex = 80
         ImageName = 'Item81'
@@ -1984,7 +1984,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AnlagenBtnClick
       end
       object Anlageentfernen1: TMenuItem
-        Caption = 'Anlage aus einer PDF-Datei entfernen'
+        Caption = 'Anlage aus einer PDF-Datei extr./entf.'
         ShortCut = 16466
         OnClick = PDFRemoveClick
       end

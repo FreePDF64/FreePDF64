@@ -682,9 +682,12 @@ begin
     Form.Left := X;
 
     // Vertikal zentrieren
-    h := (Application.MainForm.Height + Form.Height) div 2;
+//    h := (Application.MainForm.Height + Form.Height) div 2;
+    h := (Application.MainForm.Height - Form.Height) div 2;
     // Top-Position des Inputquery-Eingabedialogs
-    y := Application.MainForm.Top + (h DIV 2);
+//    y := Application.MainForm.Top + (h DIV 2);
+    y := Application.MainForm.Top + h;
+
     if y < 0 then
       y := 0
     else if y + h > Screen.Height then
@@ -901,9 +904,7 @@ begin
     end;
   end else
   begin
-    MessageDlgCenter
-      ('Wasserzeichen/Stempel hinzufügen: Bitte PDF-Datei(en) aus dem Quellverzeichnis auswählen!',
-      mtInformation, [mbOk]);
+    MessageDlgCenter('Wasserzeichen/Stempel hinzufügen: Bitte PDF-Datei(en) aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 
@@ -1177,7 +1178,7 @@ begin
   B.Free;
 end;
 
-// Anlage(n) aus einer PDF-Datei entfernen
+// Anlage(n) aus einer PDF-Datei extrahieren/entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
   PDFDatei, Zieldatei, Anlage,
@@ -1211,7 +1212,7 @@ begin
         PDFPanel.Height := j;
     end;
 
-    if not MyInputQuery('Anlage aus einer PDF-Datei entfernen', 'Welche soll entfernt werden? Bitte Nummer angeben:', Anlage) then
+    if not MyInputQuery('Anlage aus einer PDF-Datei extrahieren', 'Bitte Nummer der Anlage angeben:', Anlage) then
       Exit
     else if Anlage = '' then
       Exit
@@ -1243,18 +1244,46 @@ begin
 
     // Starte die Erstellung und extrahiere die Anlage aus der PDF-Datei
     ProcID := 0;
+    // Bei Fehler -> Exit
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) <> 0 then
       Exit;
 
+      Memo1.Lines.Text := Zeile;
+      // FreePDF64Log.txt
+      if Logdatei.Checked then
+      begin
+        // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+        AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+        try
+          Append(F);
+        except
+          Rewrite(F)
+        end;
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Anlage extrahieren: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(LMDShellFolder1.ActiveFolder.PathName)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -   Extrahierte Anlage: ' + Anlage));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ausgabe));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(BackSlash(Ziel) + Ausgabe))));
+        Closefile(F);
+
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+      end;
+
+    if MessageDlgCenter('Möchten Sie diese Anlage auch aus der PDF-Datei entfernen?', mtConfirmation, [mbYes, mbNo]) = mrNo then
+      Exit;
+
+    // Starte die 2te Erstellung und entferne auch die Anlage aus der PDF-Datei
     Zeile2 := Einstellungen_Form.Edit4.Text + ' --remove-attachment="' + Ausgabe + '" "' +
               (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) + '" "' +
               BackSlash(Ziel) + LMDShellList1.SelectedItems[0].DisplayName + '"';
 
-    // Starte die 2te Erstellung und entferne auch die Anlage aus der PDF-Datei
     ProcID := 0;
     if RunProcess(Zeile2, SW_HIDE, True, @ProcID) = 0 then
-    begin
-
+    begin
       Memo1.Lines.Text := Zeile2;
       // FreePDF64Log.txt
       if Logdatei.Checked then
@@ -2002,8 +2031,7 @@ var
   IniDat: TIniFile;
   IniFile: String;
 begin
-  if MessageDlgCenter('Fensterposition speichern?', mtConfirmation,
-    [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter('Fensterposition speichern?', mtConfirmation, [mbYes, mbNo]) = mrYes then
   begin
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
@@ -2821,7 +2849,9 @@ begin
   else if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
     LMDShellList2.DeleteItems;
 
-  RefreshBt.Click
+  RefreshBt.Click;
+  // Einmal Taste DOWN drücken für Markierung des ersten Eintrags
+  keybd_event(VK_DOWN, MapVirtualKey(VK_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
 end;
 
 procedure TFreePDF64_Form.AbbrechenPnClick(Sender: TObject);
@@ -4635,8 +4665,10 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
-  if LMDShellList1.Items.Count > 0 then
-    LMDShellList1.ItemFocused;
+//  if LMDShellList1.Items.Count > 0 then
+//    LMDShellList1.ItemFocused;
+  if LMDShellList1.Selected = NIL then
+    LMDShellList1.ItemIndex := 0;
 
   if LMDShellList1.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
@@ -4679,8 +4711,10 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
-  if LMDShellList2.Items.Count > 0 then
-    LMDShellList2.ItemFocused;
+//  if LMDShellList2.Items.Count > 0 then
+//    LMDShellList2.ItemFocused;
+  if LMDShellList2.Selected = NIL then
+    LMDShellList2.ItemIndex := 0;
 
   if LMDShellList2.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
