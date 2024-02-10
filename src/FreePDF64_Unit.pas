@@ -1328,7 +1328,7 @@ begin
     end;
   end else
   begin
-    MessageDlgCenter('Anlage aus einer PDF-Datei entfernen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Anlage aus einer PDF-Datei extrahieren/entfernen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 end;
