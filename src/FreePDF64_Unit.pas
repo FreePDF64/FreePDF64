@@ -4513,6 +4513,7 @@ begin
     // Abfrage, ob das Extrahieren funktionieren wird...
     if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
       Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" >NIL';
+
     ProcID := 0;
     // Ja wird funktionieren. Weiter geht's mit Erstellung der Ziel-Verzeichnisse...
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
@@ -4573,9 +4574,12 @@ begin
       MessageDlgCenter('Fehler beim Extrahieren von Bildern aus der Datei: "' + FileName + '".' + #13 +
                        'Vermutlich ist die PDF-Datei verschlüsselt oder es ist keine PDF-Datei?!', mtError, [mbOk]);
       ProgressBar1.Position := 0;
-      if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder') then
-        DelDir(BackSlash(Ziel) + 'Extrahierte Bilder');
     end;
+    showmessage('OK');
+    if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder') then
+      DelDir(BackSlash(Ziel) + 'Extrahierte Bilder');
+    if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now)) then
+      DelDir(BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now));
   end else
   begin
     MessageDlgCenter('Bilder extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
