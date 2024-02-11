@@ -75,9 +75,6 @@ Here are some ideas to get you started:
 ### PDF-Metadaten
 ![FreePDF64_Metadaten](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Metadaten.JPG)
 
-### PDF-Dateien vorne/hinten anfügen
-![FreePDF64_Datei anfügen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Datei%20anfuegen.JPG)
-
 ### PDF-Dateien verbinden
 ![FreePDF64_Dateien verbinden](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verbinden%20von%20PDF-Dateien.JPG)
 
