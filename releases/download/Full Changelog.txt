@@ -1,0 +1,174 @@
+11.02.2024, V4.3.3
+Fix -> Die Funktion "Anlage aus einer PDF-Datei entfernen" wurde nun verfeinert: Zuerst kann man die Anlage aus der PDF-Datei ins Zielverzeichnis extrahieren. Dann entscheidet man, ob sie anschließend auch entfernt werden soll.
+Fix -> Update der Xpdf-Tools auf Version 4.0.5.
+Neu -> Anzeige von JPEG-Dateien im gegenüberliegenden Fenster nun möglich [F3-Taste]. Linker Mausklick ändert die proportionale Ansicht - rechter Mausklick passt die richtigen Ausrichtung des Bildes an.
+08.02.2024, V4.3.2
+Fix -> Das Arbeiten mit der Benutzeroberfläche wurde weiter optimiert.
+Fix -> Einige Designfehler des Programms behoben.
+Fix -> FreePDF64-HowTo-Anleitung komplett überarbeitet.
+03.02.2024, V4.3.1
+Fix -> Darstellungsfehler des Programms beim Wiederherstellen aus dem Tray behoben.
+Neu -> Neue Funktion hinzugefügt: Schriftarten einer PDF-Datei anzeigen.
+Fix -> Fehler bei der Anzeige deutscher Umlaute beseitigt.
+Fix -> Kosmetische Korrekturen durchgeführt.
+Neu -> Neue Funktion hinzugefügt: Anlage aus einer PDF-Datei entfernen.
+28.01.2024, V4.3.0
+Fix -> Beim Start von FreePDF64 gab es ab und an ein Fehlverhalten. Dieses wurde nun korrigiert.
+Fix -> Das Arbeiten mit der Benutzeroberfläche wurde optimiert - z.B: bleibt der Fokus auf dem aktiven Fenster nach einem Funktionsaufruf, etc.
+25.01.2024, V4.2.2
+Fix -> Codeoptimierungen durchgeführt.
+Neu -> Anlage(n) extrahieren aus einer PDF-Datei.
+Neu -> Anlage(n) zu einer PDF-Datei hinzufügen.
+Neu -> Einstellungen-Fenster optimiert.
+Fix -> Codeoptimierung bei der Funktion zur Anzeige der PDF-Informationen im unteren Programmfenster: Mit der neuen FreePDF64.ini-Variable "[Start] Memo Height Addition" läßt sich die untere Fensterhöhe beim Anzeigen der Informationen feinjustieren. Standardwert ist 80.
+Fix -> Codeoptimierung bei der Funktion des Systemklangs: Mit der FreePDF64.ini-Variable "[Format] System Sound Volume 0-65535" läßt sich die Lautstärke des Systemklangs nach der Erstellung feinjustieren.
+19.01.2024, V4.1.3
+Neu -> Informationen zur ausgewählten PDF-Datei im unteren Fenster anzeigen lassen.
+10.01.2024, V4.1.2
+Neu -> Konvertieren von PDF zu HTML.
+Fix -> QPDF-Update auf Version 11.8.0.
+02.01.2024, V4.1.1
+Neu -> Einfachste Installation des Druckerumleitungsprogramms Mfilemon, inkl. der wichtigsten Einstellungen, ist nun aus dem Hauptprogramm möglich. Danach steht der neue FreePDF64-Drucker aus jedem Programm heraus zur Verfügung.
+31.12.2023. V4.1.0
+Neu -> PDF-Passwortschutz entfernen.
+30.12.2023. V4.0.4
+Neu -> Aus Kompatibilitätsgründen die 128 Bit RC4-Verschlüsselung hinzugefügt.
+Fix -> Passwörter für die Verschlüsselung müssen nun mindestens 6 Zeichen lang sein (allgemeiner Standard).
+Fix -> Weitere Codeoptimierungen durchgeführt.
+25.12.2023, V4.0.3
+Fix -> QPDF-Update auf Version 11.7.0.
+22.12.2023, V4.0.2
+Neu -> Änderung der 128-Bit-Verschlüsselung von der schwachen RC4- auf die starke AES-Verschlüsselung.
+Neu -> Erstellung von PDF/X-3 nun möglich: PDF/X-3 ist ein Dateiformat für den Austausch digitaler Druckvorlagen.
+Fix -> Die Erstellung von PDF-Dateien ins Langzeitarchivierungsformat PDF/A entspricht nun endlich der PDF/A-Konformität.
+17.12.2023, V4.0.1
+Neu -> Es wird eine Quellverzeichnis-Verknüpfung unter "Senden an" angelegt: So können unterstützte Dateien direkt per > rechte Maustaste - Senden an < ins Quellverzeichnis kopiert und von dort automatisch mit FreePDF64 erstellt werden (wenn aktiviert). Bei Fragen hierzu oder zu anderen Themen des Programms -> Mail an FreePDF64@outlook.com.
+Fix -> QPDF-Update auf Version 11.6.4.
+Fix -> Codeoptimierungen durchgeführt.
+09.12.2023, V4.0.0
+Neu -> Ausgewählte PS- oder PDF-Datei(en) vorne und hinten direkt bei Erstellung der PDF-Datei anfügen.
+Fix -> Fehlerkorrektur durchgeführt beim Erstellen der PDF-Metadaten.
+21.11.2023, V3.7.1
+Neu -> Programm minimieren mit Klick auf [X].
+Fix -> Codeverbesserung durchgeführt bei der Überwachungsfunktion.
+11.11.2023, V3.7.0
+Fix -> Fehlerbeseitigung und Codeverbesserung bei der Splashscreen- und Tray-Funktion.
+04.11.2023, V3.6.7
+Neu -> FreePDF64 mit Splashscreen starten: verhindert das kurzzeitige Flackern beim Start in den Tray.
+Fix -> Ghostscript-Update auf Version 10.02.1.
+22.10.2023, V3.6.6
+Neu -> Manuelles Anpassen der Lautstärke des Systemklangs möglich. Siehe FreePDF64.ini: [Format] - [System Sound Volume 0-65535].
+Fix -> QPDF-Update auf Version 11.6.3.
+20.10.2023, V3.6.5
+Neu -> Möglichkeit, einen Systemklang nach der Erstellung abspielen zu lassen: Für eigenen Sound einfach die beiden WAV-Dateien im Sounds-Verzeichnis von FreePDF64 austauschen. 
+12.10.2023, V3.6.4
+Neu -> Angabe von Zeichenketten, welche man aus den ermittelten Dateinamen beim Drucken in eine PDF-Datei entfernt haben möchte.
+Fix -> QPDF-Update auf Version 11.6.2.
+23.09.2023, V3.6.3
+Fix -> QPDF-Update auf Version 11.6.1.
+Fix -> Ghostscript-Update auf Version 10.02.0.
+30.07.2023, V3.6.2
+Fix -> QPDF-Update auf Version 11.5.0.
+06.07.2023, V3.6.1
+Neu -> Ins Unterverzeichnis mit Datum beim Erstellen.
+23.06.2023, V3.6.0
+Fix -> Ghostscript-Update auf Version 10.01.2.
+Fix -> Codeoptimierungen durchgeführt.
+15.06.2023, V3.5.2
+Fix -> QPDF-Update auf Version 11.4.0.
+Fix -> Codeoptimierungen durchgeführt (z.B. beim allerersten Start von FreePDF64).
+11.05.2023, V3.5.1
+Fix -> Darstellungsfehler der Symbole bei 4k-Auflösung behoben.
+06.05.2023, V3.5.0
+Fix -> Codeoptimierungen durchgeführt wegen Umstellung auf neue Delphi-Edition, dadurch auch schärfere Darstellung bei hochauflösenden Monitoren.
+01.05.2023, V3.4.7
+Fix -> Codeoptimierungen durchgeführt.
+06.04.2023, V3.4.6
+Fix -> Codeoptimierungen durchgeführt.
+Fix -> Ghostscript-Update auf Version 10.01.1.
+24.03.2023, v3.4.5
+Fix -> Ghostscript-Update auf Version 10.01.0.
+03.03.2023, v3.4.4
+Fix -> QPDF-Update auf Version 11.3.0.
+28.01.2023, v3.4.3
+Fix -> Codeoptimierungen durchgeführt (z.B. beim allerersten Start von FreePDF64).
+31.12.2022, v3.4.2
+Neu -> E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an".
+21.12.2022, v3.4.1
+Neu -> Implementierung des PDF-Readers "XpdfReader" für die Anzeige von PDF-Dateien.
+16.12.2022, v3.4.0
+Neu -> Bilder extrahieren ins JPEG-Format aus PDF-Dateien.
+15.12.2022, v3.3.3
+Fix -> Funktion Verschlüsselung: Ein Kennwort zum Öffnen der PDF-Datei war vorher nur möglich mit aktivierter Benutzerkennwortvergabe. Nun wird bei Aktivierung das Benutzerkennwort mit diesem gleichgesetzt.
+13.12.2022, v3.3.2
+Neu -> Formatauswahl: PS/PDF zu PNG.
+11.12.2022, v3.3.1
+Fix -> Funktion Überwachung: Manuelle Auswahl "Quelldatei nach Erstellung löschen" und "Löschen der Datei in Papierkorb ja/nein" aufgrund folgender neuer Möglichkeit wieder entfernt: Es lassen sich nun beliebig viele Dateien zur Umwandlung in den Überwachungsordner zur automatisierten Erstellung (sog. Massenerstellung) ins gewünschte Format kopieren (die Quelldateien werden nach der Erstellung in den Papierkorb gelöscht). So kann man einfachst z.B. alle seine JPEG-Bilder direkt ins PDF-Format umwandeln! 
+07.12.2022, v3.3.0
+Neu -> Umbenennung des Programms auf FreePDF64. Der Name ist aussagekräftiger und zeigt damit die absolut kostenlose Nutzung an!
+Fix -> Codeoptimierungen durchgeführt.
+04.12.2022, v3.2.3
+Neu -> Die Schrift des Formatauswahl-Buttons ist ROT, wenn die markierte Datei nicht für die Erstellung geeignet erscheint: Es wird die Datei-Erweiterung abgefragt - z.B. die Datei "Test.pdf" ist nicht geeignet für die Erstellung "JPEG zu PDF", da die Datei-Erweiterung nicht "JPG" oder "JPEG" ist.
+01.12.2022, v3.2.2
+Neu -> PDF-Datei(en) komprimieren - zu finden in den Einstellungen: Bei der Erstellung der PDF-Datei wird diese erst in eine Postscript-Datei (PS) umgewandelt und von dort wieder in eine PDF-Datei. Diese Prozedur komprimiert die erstellte PDF-Datei meist um ein Vielfaches.
+30.11.2022, v3.2.1
+Neu -> Formatauswahl: JPEG zu PDF.
+25.11.2022, v3.2.0
+Neu -> Es ist nun möglich per Kommandozeile die Verbinden-Funktion von FreePDF64 zu nutzen (FreePDF64 darf aber nicht schon gestartet sein). Hier ein Beispielaufruf: "FreePDF64 C:\Temp\A.pdf C:\Temp\B.pdf". Nach Start wird direkt der Verbinden-Dateiname abgefragt und die Erstellung gestartet. Das Ergebnis wird sofort danach mit dem PDF-Anzeiger aufgerufen.
+Fix -> Die Log-Datei PDFLog.txt wurde nun zu FreePDF64Log.txt umbenannt! Es kann ja nicht nur die PDF-Erstellung mitgeloggt werden, sondern auch die anderen Formate ;)
+Neu -> QPDF-Update auf Version 11.2.0.
+16.11.2022, v3.1.9
+Fix -> Fehler bei der Funktion Verbinden bereinigt. Dateinamen mit Leerzeichen machten hier Probleme.
+12.11.2022, v3.1.8
+Neu -> Weitere Einträge zum Tray-Menü von FreePDF64 hinzugefügt.
+Fix -> Codeoptimierungen durchgeführt.
+09.11.2022, v3.1.7
+Neu -> Anzeige der PS/TXT/TIFF-Dateien mit dem zugewiesenen Programm (z.B. nach Windows-Standard) nun möglich direkt nach der Erstellung.
+07.11.2022, v3.1.6
+Neu -> Formatauswahl: PS/PDF zu BMP.
+Neu -> Formatauswahl: PS/PDF zu TXT.
+06.11.2022, v3.1.5
+Neu -> Kopieren und Bewegen nun auch mit Verzeichnisauswahl-Dialog möglich (Umschalt-Taste + F5/F6). So muss das Ziel nicht immer das rechte/linke Fenster sein.
+02.11.2022, v3.1.4
+Neu -> Funktion Überwachung: Schnelles Umschalten zwischen AN/AUS mit rechtem Mausklick auf das Überwachungssymbol (dies wird nicht in der FreePDF64.ini gespeichert). 
+28.10.2022, v3.1.3
+Neu -> Funktion Wasserzeichen/Stamp: Wenn die PDF-Datei geschützt ist, gibt es eine Warnmeldung.
+Fix -> Fehlerbereinigung bei der Wasserzeichen/Stamp-Erstellung.
+26.10.2022, v3.1.2
+Fix -> Fehlerbereinigungen bei der Wasserzeichen/Stempel-Erstellung.
+Neu -> Hinzufügen eines Stempels zu einer PDF-Datei.
+25.10.2022, v3.1.1
+Fix -> Fehlerbereinigung bei der Wasserzeichen-Erstellung.
+24.10.2022, v3.1.0
+Neu -> Hinzufügen eines Wasserzeichens zu einer PDF-Datei.
+23.10.2022, v3.0.3
+Neu -> Autosize der Name-Spalten einstellbar.
+Fix -> Codeoptimierung des Hauptprogramms - daher ist die Dateigröße von FreePDF64 um einiges kleiner geworden!
+Fix -> Unklare Einstellungen beim Erststart von FreePDF64 korrigiert.
+Fix -> Dateifenster: Die dynamische Anzeige der Dateigrößen korrigiert.
+22.10.2022, v3.0.2
+Fix -> Wenn Zielverzeichnis = Überwachungsordner erscheint eine Warnungmeldung! Es könnte so zu einem unkontrollierten Verhalten bei der Erstellung kommen.
+22.10.2022, v3.0.1
+Neu -> Dateifenster: Statuszeilen zu beiden Fenstern hinzugefügt.
+Neu -> Baumstruktur öffnet nun neben dem linken Explorerfenster nun auch das rechte Explorerfenster.
+Neu -> Funktion Überwachung: Möglichkeit, das aktuelle Zielverzeichnis "Fest" (unveränderbar) einzustellen.
+Neu -> Funktion Überwachung: Löschen der Datei in Papierkorb ja/nein. 
+Neu -> Dateifenster: Die Dateigrößen werden nun dynamisch angezeigt.
+Neu -> Neue Button hinzugekommen: In PDF-Anzeiger öffnen.
+Fix -> Codeoptimierungen durchgeführt.
+Fix -> Statusbarinformationen angepasst.
+13.10.2022, v3.0.0
+Neu -> Funktion Verschlüsselung: Kennwörter lassen sich zur Kontrolle anzeigen. 
+Fix -> Logfile bei der Funktion Verbinden angepasst. 
+Fix -> Text zu den FreePDF64-Funktionen und FreePDF64-HowTo angepasst. 
+09.10.2022, v2.5.5
+Neu -> Grundeinstellungen für den allerersten Start von FreePDF64 angepasst, u.a. Quell-/Zielverzeichnis werden bei der Installation im FreePDF64-Installationsverzeichnis gleich erstellt sowie auf Installation von Mfilemon (Druck aus jedem Windows-Programm in eine PDF-Datei) hingewiesen.
+Fix -> HowTo-Anleitung angepasst.
+07.10.2022, v2.5.4
+Fix -> Codeoptimierungen durchgeführt.
+06.10.2022, v2.5.3
+Fix -> Funktion Überwachung: Multiselect an/aus deaktiviert bei Erstellung einer PDF-Datei. 
+Warum? In seltenen Fällen verkleinern sich ungewollt die Spalten des Quell- und Zielverzeichnisfensters. 
+05.10.2022, v2.5.3
+Neu -> Funktion Überwachung: Quelldatei nach Erstellung löschen. 
+Warum? In seltenen Fällen wird die Zieldatei ungewollt doppelt erstellt. Das wird mit Löschung der Quelldatei nach der Erstellung verhindert.
