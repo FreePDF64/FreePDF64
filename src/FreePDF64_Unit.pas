@@ -1213,6 +1213,14 @@ begin
       RunDosInMemo(XPDF_Detach + ' -list "' + BackSlash(LMDShellFolder1.ActiveFolder.PathName) +
                    LMDShellList1.SelectedItems[i].DisplayName + '"', Memo1);
 
+    // Wenn keine Anlagen in der PDF-Datei enthalten sind, Routine mit Hinweisfenster beenden!
+    if Memo1.lines[0] = '0 embedded files' then
+    begin
+      MessageDlgCenter('Fehler beim Extrahieren der Anlage(n) aus der Datei: "' + ExtractFileName(PDFDatei) + '.' + #13 +
+                       'Vermutlich enthält die PDF-Datei keine Anlage(n)?!', mtError, [mbOk]);
+      Exit;
+    end;
+
     if Memo1.Lines.Count > 1 then
     begin
       j:= TextHoehe(Memo1.Font, Memo1.Text);
