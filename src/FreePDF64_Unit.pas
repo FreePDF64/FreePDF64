@@ -1224,22 +1224,7 @@ begin
     if not MyInputQuery('Anlage aus einer PDF-Datei extrahieren', 'Bitte Nummer der Anlage angeben:', Anlage) then
       Exit
     else if Anlage = '' then
-      Exit
-    else
-
-    // Wenn Erstellung Formatfolder angehakt...
-    if Formatverz_Date.Checked then
-    begin
-      // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
-      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
-        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
-    end else if Formatverz.Checked then
-    begin
-      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
-        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
-    end else
-      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
-        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
+      Exit;
 
     // Zeige die Zeile namens "Anlage" aus Memo1 an
     Ausgabe := Memo1.Lines[StrToInt(Anlage)];
@@ -1282,6 +1267,20 @@ begin
     if MessageDlgCenter('Möchten Sie diese Anlage auch aus der PDF-Datei entfernen?', mtConfirmation, [mbYes, mbNo]) = mrNo then
       Exit;
 
+    // Wenn Erstellung Formatfolder angehakt...
+    if Formatverz_Date.Checked then
+    begin
+      // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+    end else if Formatverz.Checked then
+    begin
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
+    end else
+      if System.SysUtils.ForceDirectories(BackSlash(LMDShellFolder2.ActiveFolder.PathName)) then
+        Ziel := BackSlash(LMDShellFolder2.ActiveFolder.PathName);
+
     // Starte die 2te Erstellung und entferne auch die Anlage aus der PDF-Datei
     Zeile2 := Einstellungen_Form.Edit4.Text + ' --remove-attachment="' + Ausgabe + '" "' +
               (BackSlash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName) + '" "' +
@@ -1308,7 +1307,8 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Ausgabe));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(Ziel)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(BackSlash(Ziel) +
+                ExtractFileName(Zieldatei)))));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
@@ -2195,6 +2195,23 @@ begin
   Timer2.Enabled := False;
 end;
 
+// Ist Verzeichnis leer?
+function IsEmptyFolder(const AsFolder : string) : boolean;
+var
+  sr : TSearchRec;
+begin
+  Result := FindFirst(AsFolder + '\*.*', faAnyFile, sr) = 0;
+  if not Result then Exit;
+  repeat
+    if (sr.Name <> '.') and (sr.Name <> '..') and (sr.Attr and faVolumeID = 0) then
+    begin
+      Result := False;
+      Break;
+    end;
+  until FindNext(sr) <> 0;
+  FindClose(sr);
+end;
+
 // Anlagen zu einer PDF-Datei anzeigen
 procedure TFreePDF64_Form.PDFAttachmentClick(Sender: TObject);
 var
@@ -2237,10 +2254,21 @@ begin
   // = Nun Anlagen ins Zielverzeichnis speichern ===============
   // Starte die Erstellung...
   ProcID := 0;
+  // Bei Fehler -> Exit
+  if RunProcess(Zeile, SW_HIDE, True, @ProcID) <> 0 then
+    Exit
+  else
   if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
   begin
+    if IsEmptyFolder(Ziel) then
+    begin
+      MessageDlgCenter('Fehler beim Extrahieren der Anlage(n) aus der Datei: "' + ExtractFileName(PDFDatei) + '.' + #13 +
+                       'Vermutlich enthält die PDF-Datei keine Anlage(n)?!', mtError, [mbOk]);
+      Exit;
+    end;
+
     // FreePDF64Log.txt
-    if Logdatei.Checked then
+    if Logdatei.Checked and (Memo1.lines[0] <> '0 embedded files') then
     begin
       // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
       AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
@@ -2262,10 +2290,15 @@ begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -             Anlage_' + Memo1.lines[j]));
       end;
       Closefile(F);
-
-      if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
     end;
+    if Memo1.lines[0] = '0 embedded files' then
+    begin
+      MessageDlgCenter('Fehler beim Extrahieren der Anlage(n) aus der Datei: "' + ExtractFileName(PDFDatei) + '.' + #13 +
+                       'Vermutlich enthält die PDF-Datei keine Anlage(n)?!', mtError, [mbOk]);
+      Exit;
+    end;
+    if Einstellungen_Form.SystemklangCB.Checked then
+      PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
   end;
 
   if Memo1.Lines.Count > 1 then
@@ -4470,35 +4503,22 @@ begin
   Result := (0 = ShFileOperation(fos));
 end;
 
-// Ist Verzeichnis leer?
-function IsEmptyFolder(const AsFolder : string) : boolean;
-var
-  sr : TSearchRec;
-begin
-  Result := FindFirst(AsFolder + '\*.*', faAnyFile, sr) = 0;
-  if not Result then Exit;
-  repeat
-    if (sr.Name <> '.') and (sr.Name <> '..') and (sr.Attr and faVolumeID = 0) then
-    begin
-      Result := False;
-      Break;
-    end;
-  until FindNext(sr) <> 0;
-  FindClose(sr);
-end;
-
 // Bilder aus PDF-Datei extrahieren
 procedure TFreePDF64_Form.ExtractBtnClick(Sender: TObject);
 var
   ProcID: Cardinal;
-  FileName, Zeile, Memozeile: String;
+  FileName, Zeile, Memozeile, Bildziel: String;
   F: TextFile;
+  j: Integer;
 begin
+  j := 0;
   if not FileExists(XPDF_Images) then
   begin
     MessageDlgCenter('Achtung: Die Datei "pdfimages.exe" fehlt im Ordner "' + Backslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
     Exit;
   end;
+  BildZiel := BackSlash(Ziel) + 'Extrahierte Bilder';
+
   FavClose;
 
   // Was war die letzte aktive Komponente?
@@ -4510,6 +4530,19 @@ begin
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
+    // Wenn der Zielordner schon vorhanden ist, dann Umbenennen...
+    repeat
+      Ziel2 := BildZiel;
+      // Gibt es Ziel2, dann INC...
+      if DirectoryExists(Ziel2) then
+      begin
+        INC(j);
+        Ziel2 := BildZiel + '_' + IntToStr(j);
+      end;
+      // Wiederhole alles solange...
+    until not DirectoryExists(Ziel2);
+      BildZiel := Ziel2;
+
     // Abfrage, ob das Extrahieren funktionieren wird...
     if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
       Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" >NIL';
@@ -4518,67 +4551,50 @@ begin
     // Ja wird funktionieren. Weiter geht's mit Erstellung der Ziel-Verzeichnisse...
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      if Formatverz_Date.Checked then
-      begin
-        // Verzeichnis erstellen "Extrahierte Bilder"
-        if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder' + ' ' + DateToStr(NOW)) then
-          Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder ' +
-                   DateToStr(Now) +'\' + FileName + '"'
-      end else
-      begin
-        // Verzeichnis erstellen "Extrahierte Bilder"
-        if System.SysUtils.ForceDirectories(BackSlash(Ziel) + 'Extrahierte Bilder') then
-          Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + BackSlash(Ziel) + 'Extrahierte Bilder\' + FileName + '"';
-      end;
+      // Verzeichnis erstellen "Extrahierte Bilder"
+      if System.SysUtils.ForceDirectories(Bildziel) then
+        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + Bildziel + '\' + FileName + '"';
 
       // Starte nun die richtige Erstellung...
       if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
-      begin
-        if Formatverz_Date.Checked then
-          Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                       BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now) + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
-        else
-          Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                       BackSlash(Ziel) + 'Extrahierte Bilder\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
-
-        Memo1.Lines.Text := Memozeile;
-        // FreePDF64Log.txt
-        if Logdatei.Checked then
-        begin
-          // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
-          AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
-          try
-            Append(F);
-          except
-            Rewrite(F)
-          end;
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
-          if Formatverz_Date.Checked then
-            Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
-                    'Extrahierte Bilder ' + DateToStr(Now))))
-          else
-            Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel) +
-                    'Extrahierte Bilder')));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
-          Closefile(F);
-
-          if Einstellungen_Form.SystemklangCB.Checked then
-            PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
-        end;
-      end;
+        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                     Bildziel + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
     end else
     begin
       MessageDlgCenter('Fehler beim Extrahieren von Bildern aus der Datei: "' + FileName + '".' + #13 +
-                       'Vermutlich ist die PDF-Datei verschlüsselt oder es ist keine PDF-Datei?!', mtError, [mbOk]);
+                       'Vermutlich ist die PDF-Datei verschlüsselt, enthält kein Bild oder es ist keine PDF-Datei?!', mtError, [mbOk]);
       ProgressBar1.Position := 0;
     end;
-    if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder') then
-      DelDir(BackSlash(Ziel) + 'Extrahierte Bilder');
-    if IsEmptyFolder(BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now)) then
-      DelDir(BackSlash(Ziel) + 'Extrahierte Bilder ' + DateToStr(Now));
+
+    if IsEmptyFolder(Bildziel) then
+    begin
+      DelDir(Bildziel);
+      MessageDlgCenter('Fehler beim Extrahieren von Bildern aus der Datei: "' + FileName + '".' + #13 +
+                       'Vermutlich ist die PDF-Datei verschlüsselt, enthält kein Bild oder es ist keine PDF-Datei?!', mtError, [mbOk]);
+      Exit;
+    end;
+    if Einstellungen_Form.SystemklangCB.Checked then
+      PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+
+    // FreePDF64Log.txt
+    if Logdatei.Checked then
+    begin
+      Memo1.Lines.Text := Memozeile;
+      // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+      AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+      try
+        Append(F);
+      except
+        Rewrite(F)
+      end;
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + Bildziel));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
+      Closefile(F);
+    end;
   end else
   begin
     MessageDlgCenter('Bilder extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
@@ -4627,13 +4643,13 @@ begin
     until not DirectoryExists(Ziel2);
       HTMLZiel := Ziel2;
 
-    Zeile := XPDF_toHTML + ' -meta -overwrites -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
+    Zeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := XPDF_toHTML + ' -meta -overwrites -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
+      Memozeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
       Memo1.Lines.Text := Memozeile;
       // FreePDF64Log.txt
       if Logdatei.Checked then
