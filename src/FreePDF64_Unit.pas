@@ -5925,14 +5925,14 @@ begin
           begin
             // Verzeichnis erstellen der gewünschten Endung (z.B. \PDF)
             if System.SysUtils.ForceDirectories(Uppercase(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Ziel))) then
-              Ziel := (BackSlash(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Ziel))) + ExtractFileName(Ziel);
+              Ziel := (BackSlash(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Uppercase(Ziel)))) + ExtractFileName(Ziel);
           end else
           // Wenn Erstellung Formatfolder mit Datum angehakt...
           if Formatverz_Date.Checked then
           begin
             // Verzeichnis erstellen der gewünschten Endung (z.B. \PDF)
             if System.SysUtils.ForceDirectories(Uppercase(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Ziel) + ' ' + DateToStr(NOW))) then
-              Ziel := (BackSlash(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Ziel) + ' ' + DateToStr(NOW))) + ExtractFileName(Ziel);
+              Ziel := (BackSlash(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Uppercase(Ziel)) + ' ' + DateToStr(NOW))) + ExtractFileName(Ziel);
           end;
 
           // Wenn die Zieldatei schon vorhanden ist, dann Umbenennen...
