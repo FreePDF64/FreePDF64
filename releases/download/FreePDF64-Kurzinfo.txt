@@ -14,25 +14,24 @@ Funktionen:
 03: Erstellen von JPEG zu PDF-Dateien
 04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)
 05: PDF-Passwortschutz entfernen
-06: Informationen zu einer PDF-Datei anzeigen
-07: Schriftarten einer PDF-Datei anzeigen
-08: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
-09: Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
-10: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
-11: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
-12: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
-13: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
-14: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
-15: Ausgewählte Seiten entnehmen aus allen Formaten
-16: Schnelle Webanzeige (Optimierung der PDF-Datei)
-17: PDF-Datei(en) komprimieren
-18: Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
-19: Anlagen zur PDF-Datei hinzufügen oder extrahieren
-20: Anfügen einer PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
-21: Bilder extrahieren aus PDF-Dateien
-22: Konvertieren von PDF zu HTML
-23: E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
-24: Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
+06: Informationen und Schriftarten einer PDF-Datei anzeigen
+07: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
+08: Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
+09: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
+10: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
+11: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
+12: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
+13: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
+14: Ausgewählte Seiten entnehmen aus allen Formaten
+15: Schnelle Webanzeige (Optimierung der PDF-Datei)
+16: PDF-Datei(en) komprimieren
+17: Hinzufügen eines Wasserzeichens und Stempels zu einer PDF-Datei
+18: Anlagen zur PDF-Datei hinzufügen oder aus einer PDF-Datei extrahieren
+19: Anfügen einer PDF-Datei vorne/hinten an die zu erstellende PDF-Datei
+20: Bilder extrahieren aus PDF-Dateien
+21: Konvertieren von PDF zu HTML
+22: E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
+23: Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
 
 ...und vieles mehr.
 
