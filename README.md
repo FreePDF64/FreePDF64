@@ -67,7 +67,7 @@ Here are some ideas to get you started:
 ![FreePDF64_Einstellungen](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Einstellungen.JPG)
 
 ### Verschlüsselung
-![FreePDF64_Verschluesselung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verschluesselung.JPG)
+![FreePDF64_Verschluesselung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Verschluesselung.jpg)
 
 ### Statusinformation
 ![FreePDF64_Statusinformation](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Anzeige%20Statusinformationen.JPG)
