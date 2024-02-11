@@ -19,15 +19,15 @@ Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitH
 - Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
 
 ##### Funktionen:
-01: Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
-02: Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
-03: Erstellen von JPEG zu PDF-Dateien
-04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)
-05: PDF-Passwortschutz entfernen
-06: Informationen und Schriftarten einer PDF-Datei anzeigen
-07: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
-08: Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
-09: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
+1: Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
+2: Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
+3: Erstellen von JPEG zu PDF-Dateien
+4: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)
+5: PDF-Passwortschutz entfernen
+6: Informationen und Schriftarten einer PDF-Datei anzeigen
+7: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung
+8: Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen
+9: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)
 10: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
 11: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
 12: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
