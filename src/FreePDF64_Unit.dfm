@@ -74,6 +74,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alTop
     TabOrder = 0
+    ExplicitWidth = 1386
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
@@ -89,6 +90,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
+      ExplicitWidth = 990
       object Linker_FolderBtn: TToolButton
         Left = 0
         Top = 0
@@ -784,6 +786,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1386
     end
     object BottomPanel: TPanel
       Left = 0
@@ -910,6 +913,8 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
+    ExplicitWidth = 447
+    ExplicitHeight = 453
     DesignSize = (
       453
       454)
@@ -1005,6 +1010,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitLeft = 0
     end
     object Quelllabel: TPanel
       Left = 1
@@ -1196,6 +1202,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 664
+      ExplicitTop = 771
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1329,6 +1337,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 451
       DesignSize = (
         364
         452)
@@ -1472,6 +1481,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 769
       end
       object Ziellabel: TPanel
         Left = 1
