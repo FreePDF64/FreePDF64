@@ -2975,8 +2975,7 @@ begin
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
     ComboBoxL.Items.Add(LMDShellFolder1.ActiveFolder.PathName);
 
-  SendMessage(ComboBoxL.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxL) + 30, 0);
+  SendMessage(ComboBoxL.Handle, CB_SETDROPPEDWIDTH, MaxValueCB(ComboBoxL) + 30, 0);
 end;
 
 procedure TFreePDF64_Form.ComboBoxRDropDown(Sender: TObject);
@@ -2986,8 +2985,7 @@ begin
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
     ComboBoxR.Items.Add(LMDShellFolder2.ActiveFolder.PathName);
 
-  SendMessage(ComboBoxR.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxR) + 30, 0);
+  SendMessage(ComboBoxR.Handle, CB_SETDROPPEDWIDTH, MaxValueCB(ComboBoxR) + 30, 0);
 end;
 
 procedure TFreePDF64_Form.ConfigBtnClick(Sender: TObject);
@@ -4268,20 +4266,6 @@ begin
     if ComboBoxL.Items.Strings[i] = LMDShellFolder1.RootFolder then ComboBoxL.Items.Delete(i);
   for i := 0 to ComboBoxR.Items.Count - 1 do
     if ComboBoxR.Items.Strings[i] = LMDShellFolder2.RootFolder then ComboBoxR.Items.Delete(i);
-
-
-{
-  j := 0;
-  for i := 0 to LMDShellList1.Items.Count - 1 do
-  begin
-    s  := LMDShellList1.Items.[i];
-    if DirectoryExists(s) then
-      Inc(j);
-  end;
-  StatusBar1.SimpleText := '[' + IntToStr(SearchListBox.Items.Count - j) + ' Datei(en) und ' + IntToStr(j)
-                             + ' Verzeichnis(se) gefunden]';
-}
-
 
   SB_Left;
   SB_Right;
