@@ -262,7 +262,6 @@ end;
     FavRechts: TSpeedButton;
     ParentFolderR: TSpeedButton;
     ComboBoxR: TComboBox;
-    ToolButton7: TToolButton;
     RefreshBt: TToolButton;
     ProgressBar1: TProgressBar;
     StatusBar_Left: TStatusBar;
@@ -331,6 +330,8 @@ end;
     N31: TMenuItem;
     Image1: TImage;
     Image2: TImage;
+    SearchBtn: TToolButton;
+    Suche2: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -501,6 +502,7 @@ end;
     procedure Image1ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure Image2ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure Image2Click(Sender: TObject);
+    procedure SearchBtnClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -529,8 +531,9 @@ var
   PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
-  Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts, Windows_Session_End,
-  FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN, ShowVomTray: Boolean;
+  Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
+  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf,
+  AutospalteJN, ShowVomTray, Suche_ItemAnzeigen: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -539,7 +542,7 @@ uses
   Einstellungen_Unit, Encrypt_Unit, DokuInfo_Unit,
   Seiten_Unit, Favoriten_Unit, Favoriten2_Unit, Auswahl_Unit,
   Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit, EineInstanz_Unit,
-  Filter_Unit, Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit, Dateianlage_Unit, Status_Unit;
+  Filter_Unit, Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit, Dateianlage_Unit, Status_Unit, Suchen;
 
 {$R *.DFM}
 {$R FreePDF64.res}
@@ -1506,14 +1509,14 @@ begin
     // Speichere beim Beenden des Programmes in die 'FreePDF64.ini'
     with IniDat do
     begin
-      // Verlauf schreiben.
+      // Verlauf FreePDF64 schreiben.
       IniDat.EraseSection('History');
       if ComboBoxL.Items.Count > 0 then
         for i := 1 to ComboBoxL.Items.Count do
           WriteString('History', 'History Left' + IntToStr(i - 1), ComboBoxL.Items[i - 1]);
       if ComboBoxR.Items.Count > 0 then
         for i := 1 to ComboBoxR.Items.Count do
-          WriteString('History', 'History Right' + IntToStr(i - 1),  ComboBoxR.Items[i - 1]);
+          WriteString('History', 'History Right' + IntToStr(i - 1), ComboBoxR.Items[i - 1]);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -1552,17 +1555,31 @@ end;
 function ListFileDir(Path: string): Integer;
 var
   SR: TSearchRec;
-  i: Integer;
+  i, faHidden: Integer;
 begin
+  faHidden := 2;
   i := 0;
-  if FindFirst(Path + '*.*', faAnyFile and not faDirectory, SR) = 0 then
+  if not FreePDF64_Form.VersteckteDateienanzeigen1.Checked then
   begin
-    repeat
-      INC(i);
-    until FindNext(SR) <> 0;
-    FindClose(SR);
+    if FindFirst(Path + '*.*', faSysfile and faDirectory, SR) = 0 then
+    begin
+      repeat
+        INC(i);
+      until FindNext(SR) <> 0;
+      FindClose(SR);
+    end;
+    Result := i;
+  end else
+  begin
+    if FindFirst(Path + '*.*', faAnyfile and faHidden and not faDirectory, SR) = 0 then
+    begin
+      repeat
+        INC(i);
+      until FindNext(SR) <> 0;
+      FindClose(SR);
+    end;
+    Result := i;
   end;
-  Result := i;
 end;
 
 // Verzeichnisgröße auslesen mit/ohne Unterverzeichnisse
@@ -1605,6 +1622,32 @@ begin
   Merge.Click;
 end;
 
+procedure SB_Left;
+begin
+  FreePDF64_Form.StatusBar_Left.SimpleText :=
+                  'Datei(en)/Verzeichnis(se): ' +
+                  IntToStr(ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName)))
+	               	+ '/' +
+                  IntToStr(FreePDF64_Form.LMDShellList1.Items.Count - ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName)))
+ 							    + ' - ' +
+                  IntToStr(ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + ' Datei(en)'
+                  + ' in ' +
+                  FormatByteString(GetDirSize(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName), False));
+end;
+
+procedure SB_Right;
+begin
+  FreePDF64_Form.StatusBar_Right.SimpleText :=
+                  'Datei(en)/Verzeichnis(se): ' +
+                  IntToStr(ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName)))
+	               	+ '/' +
+                  IntToStr(FreePDF64_Form.LMDShellList2.Items.Count - ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName)))
+							    + ' - ' +
+                  IntToStr(ListFileDir(BackSlash(FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName))) + ' Datei(en)'
+                  + ' in ' +
+                  FormatByteString(GetDirSize(BackSlash(FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName), False));
+end;
+
 procedure TFreePDF64_Form.VersteckteDateienanzeigen1Click(Sender: TObject);
 var
   tmpt: TLMDShellListOptions;
@@ -1617,24 +1660,8 @@ begin
     Exclude(tmpt, loShowHidden);
   LMDShellList1.Options := tmpt;
   LMDShellList2.Options := tmpt;
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
+  SB_Right;
 end;
 
 // Wasserzeichen...
@@ -2100,24 +2127,8 @@ begin
   LMDShellList2.Refresh;
   LMDShellList1.RefreshData;
   LMDShellList2.RefreshData;
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
+  SB_Right;
 end;
 
 procedure TFreePDF64_Form.Systemsteuerungaufrufen1Click(Sender: TObject);
@@ -2139,24 +2150,8 @@ begin
     LMDShellFolder2.RootFolder := LMDShellFolder1.ActiveFolder.PathName
   else
     LMDShellFolder1.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
+  SB_Right;
 end;
 
 // Fenster tauschen
@@ -2169,24 +2164,8 @@ begin
   R := LMDShellFolder2.ActiveFolder.PathName;
   LMDShellFolder1.RootFolder := R;
   LMDShellFolder2.RootFolder := L;
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
+  SB_Right;
 end;
 
 procedure TFreePDF64_Form.Timer1Timer(Sender: TObject);
@@ -2201,6 +2180,12 @@ begin
   Hide();
   TrayIcon1.Visible := True;
   Timer2.Enabled := False;
+end;
+
+procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
+begin
+  Suche_Form.Position := poMainFormCenter;
+  Suche_Form.Show;
 end;
 
 // Ist Verzeichnis leer?
@@ -3176,8 +3161,6 @@ begin
           LMDShellList1.SetFocus;
           if LMDShellList1.Selected = NIL then
             LMDShellList1.ItemIndex := 0;
-//          LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
-//          LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
           Break;
         end;
       end;
@@ -3514,6 +3497,7 @@ begin
   PDFPanelH := 0;
   AutoSpalteJN := False;
   ShowVomTray  := False;
+  Suche_ItemAnzeigen := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(BackSlash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
@@ -4285,24 +4269,22 @@ begin
   for i := 0 to ComboBoxR.Items.Count - 1 do
     if ComboBoxR.Items.Strings[i] = LMDShellFolder2.RootFolder then ComboBoxR.Items.Delete(i);
 
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+
+{
+  j := 0;
+  for i := 0 to LMDShellList1.Items.Count - 1 do
+  begin
+    s  := LMDShellList1.Items.[i];
+    if DirectoryExists(s) then
+      Inc(j);
+  end;
+  StatusBar1.SimpleText := '[' + IntToStr(SearchListBox.Items.Count - j) + ' Datei(en) und ' + IntToStr(j)
+                             + ' Verzeichnis(se) gefunden]';
+}
+
+
+  SB_Left;
+  SB_Right;
 
   StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
   if Einstellungen_Form.AnzeigenCB.Checked then StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
@@ -4387,14 +4369,18 @@ var
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder1.BackwardPathList.Count - 2;
-  for j := 0 to LMDShellList1.Items.Count - 1 do
-    if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
-    begin
-      LMDShellList1.ItemIndex := j;
-      LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
-    end;
-  if LMDShellList1.Selected = NIL then
-    LMDShellList1.ItemIndex := 0;
+  if Suche_ItemAnzeigen = False then
+    for j := 0 to LMDShellList1.Items.Count - 1 do
+      if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
+      begin
+        LMDShellList1.ItemIndex := j;
+        LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
+      end;
+
+  // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
+  if Suche_ItemAnzeigen = False then
+    if LMDShellList1.Selected = NIL then
+      LMDShellList1.ItemIndex := 0;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(BackSlash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4404,17 +4390,14 @@ begin
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
     ComboBoxL.Items.Add(LMDShellFolder1.ActiveFolder.PathName);
 
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' + IntToStr(LMDShellList1.Items.Count -
-                               ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-                               IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-                               ' - ' + FormatByteString(GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-                               ' in ' + IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + ' Datei(en)';
+  SB_Left;
 
   if AutoSpalte.Checked then
   begin
     LMDShellList1.Column[0].AutoSize := True;
     LMDShellList2.Column[0].AutoSize := True;
   end;
+  Suche_ItemAnzeigen := False;
 end;
 
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
@@ -4423,14 +4406,18 @@ var
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder2.BackwardPathList.Count - 2;
-  for j := 0 to LMDShellList2.Items.Count - 1 do
-    if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
-    begin
-      LMDShellList2.ItemIndex := j;
-      LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
-    end;
-  if LMDShellList2.Selected = NIL then
-    LMDShellList2.ItemIndex := 0;
+  if Suche_ItemAnzeigen = False then
+    for j := 0 to LMDShellList2.Items.Count - 1 do
+      if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
+      begin
+        LMDShellList2.ItemIndex := j;
+        LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
+      end;
+
+  // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
+  if Suche_ItemAnzeigen = False then
+    if LMDShellList2.Selected = NIL then
+      LMDShellList2.ItemIndex := 0;
 
   LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := BackSlash(LMDShellFolder2.RootFolder);
@@ -4442,21 +4429,14 @@ begin
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
     ComboBoxR.Items.Add(LMDShellFolder2.ActiveFolder.PathName);
 
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Right;
 
   if AutoSpalte.Checked then
   begin
     LMDShellList1.Column[0].AutoSize := True;
     LMDShellList2.Column[0].AutoSize := True;
   end;
+  Suche_ItemAnzeigen := False;
 end;
 
 // Abfrage auf richtige Extension zur Erstellungsauswahl!
@@ -4730,8 +4710,6 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
-//  if LMDShellList1.Items.Count > 0 then
-//    LMDShellList1.ItemFocused;
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
 
@@ -4852,25 +4830,13 @@ end;
 procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-  IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count - ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + ' - '
-    + FormatByteString(GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + ' Datei(en)';
+  SB_Right;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1Change(Sender: TObject; Node: TTreeNode);
@@ -6478,24 +6444,8 @@ begin
   AbbrechenPn.Visible := False;
   AbbrechenPn.BevelOuter := BvRaised;
 
-  StatusBar_Left.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList1.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder1.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder1.ActiveFolder.PathName))) +
-    ' Datei(en)';
-  StatusBar_Right.SimpleText := 'Verzeichnis(se)/Datei(en): ' +
-    IntToStr(LMDShellList2.Items.Count -
-    ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) + '/' +
-    IntToStr(ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' - ' + FormatByteString
-    (GetDirSize(BackSlash(LMDShellFolder2.ActiveFolder.PathName), false)) +
-    ' in ' + IntToStr
-    (ListFileDir(BackSlash(LMDShellFolder2.ActiveFolder.PathName))) +
-    ' Datei(en)';
+  SB_Left;
+  SB_Right;
 
   // Variable Ziel wieder zurücksetzen
   Ziel := Ziel3;

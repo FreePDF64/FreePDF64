@@ -2,8 +2,8 @@ object FreePDF64_Form: TFreePDF64_Form
   Left = 0
   Top = 0
   Caption = 'FreePDF64 - Die PDF-Toolsammlung'
-  ClientHeight = 695
-  ClientWidth = 1392
+  ClientHeight = 774
+  ClientWidth = 1481
   Color = clBtnFace
   Constraints.MinHeight = 375
   Constraints.MinWidth = 375
@@ -29,7 +29,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object Splitter1: TSplitter
     Left = 280
     Top = 47
-    Height = 454
+    Height = 533
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -37,10 +37,10 @@ object FreePDF64_Form: TFreePDF64_Form
     ExplicitHeight = 456
   end
   object Splitter2: TSplitter
-    Left = 736
+    Left = 825
     Top = 47
     Width = 6
-    Height = 454
+    Height = 533
     Hint = 'Doppelklick f'#252'r 50/50-Anzeige'
     Margins.Left = 4
     Margins.Top = 4
@@ -48,11 +48,12 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alRight
     ExplicitLeft = 738
+    ExplicitHeight = 454
   end
   object Splitter3: TSplitter
     Left = 0
-    Top = 536
-    Width = 1392
+    Top = 615
+    Width = 1481
     Height = 6
     Cursor = crVSplit
     Hint = 'Doppelklick f'#252'r gespeicherte Position'
@@ -62,11 +63,12 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alBottom
     ExplicitTop = 538
+    ExplicitWidth = 1392
   end
   object TopPanel: TPanel
     Left = 0
     Top = 0
-    Width = 1392
+    Width = 1481
     Height = 47
     Margins.Left = 4
     Margins.Top = 4
@@ -74,11 +76,11 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 1386
+    ExplicitWidth = 1475
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 996
+      Width = 1085
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -90,7 +92,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
-      ExplicitWidth = 990
+      ExplicitWidth = 1079
       object Linker_FolderBtn: TToolButton
         Left = 0
         Top = 0
@@ -141,23 +143,11 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'RefreshBt'
         ImageIndex = 81
         ImageName = 'Item82'
+        Visible = False
         OnClick = RefreshBtClick
       end
-      object ToolButton7: TToolButton
-        Left = 116
-        Top = 0
-        Width = 5
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        Caption = 'ToolButton7'
-        ImageIndex = 43
-        ImageName = 'Item44'
-        Style = tbsSeparator
-      end
       object BackBtn: TToolButton
-        Left = 121
+        Left = 116
         Top = 0
         Hint = 'Zur'#252'ck'
         Margins.Left = 4
@@ -172,7 +162,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = BackBtnClick
       end
       object FwdBtn: TToolButton
-        Left = 158
+        Left = 153
         Top = 0
         Hint = 'Vorw'#228'rts'
         Margins.Left = 4
@@ -187,7 +177,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FwdBtnClick
       end
       object ToolButton3: TToolButton
-        Left = 195
+        Left = 190
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -199,8 +189,17 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item5'
         Style = tbsSeparator
       end
+      object SearchBtn: TToolButton
+        Left = 195
+        Top = 0
+        Hint = 'Suchefenster '#246'ffnen'
+        Caption = 'SearchBtn'
+        ImageIndex = 10
+        ImageName = 'Item11'
+        OnClick = SearchBtnClick
+      end
       object PropertiesBtn: TToolButton
-        Left = 200
+        Left = 232
         Top = 0
         Hint = 'Eigenschaften anzeigen [auch LEERTASTE]'
         Margins.Left = 4
@@ -215,7 +214,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PropertiesBtnClick
       end
       object FilterTB: TToolButton
-        Left = 237
+        Left = 269
         Top = 0
         Hint = 'Dateifilter festlegen'
         Margins.Left = 4
@@ -230,7 +229,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FilterTBClick
       end
       object TauschenTB: TToolButton
-        Left = 274
+        Left = 306
         Top = 0
         Hint = 'Fenster tauschen'
         Margins.Left = 4
@@ -243,7 +242,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = TauschenTBClick
       end
       object AngleichenTB: TToolButton
-        Left = 311
+        Left = 343
         Top = 0
         Hint = 'Fenster angleichen'
         Margins.Left = 4
@@ -256,7 +255,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AngleichenTBClick
       end
       object ToolButton4: TToolButton
-        Left = 348
+        Left = 380
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -269,7 +268,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object VerbindenBt: TToolButton
-        Left = 353
+        Left = 385
         Top = 0
         Hint = 'Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei'
         Margins.Left = 4
@@ -282,7 +281,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = VerbindenBtClick
       end
       object WZSTTB: TToolButton
-        Left = 390
+        Left = 422
         Top = 0
         Hint = 'Wasserzeichen/Stempel einer PDF-Datei hinzuf'#252'gen'
         Margins.Left = 4
@@ -295,7 +294,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = WZSTTBClick
       end
       object AnlagenBtn: TToolButton
-        Left = 427
+        Left = 459
         Top = 0
         Hint = 'Anlage einer PDF-Datei hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
@@ -304,7 +303,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AnlagenBtnClick
       end
       object ToolButton2: TToolButton
-        Left = 464
+        Left = 496
         Top = 0
         Width = 8
         Caption = 'ToolButton2'
@@ -313,7 +312,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PDFRemove: TToolButton
-        Left = 472
+        Left = 504
         Top = 0
         Hint = 
           'Anlage aus einer PDF-Datei extrahieren/entfernen:'#13#10'1. Es werden ' +
@@ -325,7 +324,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFRemoveClick
       end
       object PDFAttachment: TToolButton
-        Left = 509
+        Left = 541
         Top = 0
         Hint = 
           'Anlage(n) einer PDF-Datei anzeigen und ins Zielverzeichnis extra' +
@@ -336,7 +335,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFAttachmentClick
       end
       object ExtractBtn: TToolButton
-        Left = 546
+        Left = 578
         Top = 0
         Hint = 'Extrahiere Bilder aus der markierten PDF-Datei'
         Margins.Left = 4
@@ -349,7 +348,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = ExtractBtnClick
       end
       object HTMLBtn: TToolButton
-        Left = 583
+        Left = 615
         Top = 0
         Hint = 'Konvertieren von PDF zu HTML'
         Caption = 'Konvertieren von PDF zu HTML'
@@ -358,7 +357,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = HTMLBtnClick
       end
       object ToolButton5: TToolButton
-        Left = 620
+        Left = 652
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -371,7 +370,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PDFInfoBtn: TToolButton
-        Left = 625
+        Left = 657
         Top = 0
         Hint = 'Informationen '#252'ber die ausgew'#228'hlte PDF-Datei anzeigen [auch F9]'
         ImageIndex = 62
@@ -379,7 +378,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFInfoBtnClick
       end
       object PDFFontsBtn: TToolButton
-        Left = 662
+        Left = 694
         Top = 0
         Hint = 'Listet die in der PDF-Datei verwendeten Schriftarten auf'
         Caption = 'PDFFonts'
@@ -388,7 +387,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFFontsBtnClick
       end
       object PDFdecrypt: TToolButton
-        Left = 699
+        Left = 731
         Top = 0
         Hint = 'PDF-Passwortschutz entfernen'
         Caption = 'PDFdecrypt'
@@ -397,7 +396,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFdecryptClick
       end
       object MailBtn: TToolButton
-        Left = 736
+        Left = 768
         Top = 0
         Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
         Margins.Left = 4
@@ -410,7 +409,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Sendenan1Click
       end
       object LogBt: TToolButton
-        Left = 773
+        Left = 805
         Top = 0
         Hint = 'Logdatei ansehen'
         Margins.Left = 4
@@ -423,7 +422,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = LogBtClick
       end
       object ToolButton1: TToolButton
-        Left = 810
+        Left = 842
         Top = 0
         Width = 10
         Caption = 'ToolButton1'
@@ -432,7 +431,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object Feedback: TToolButton
-        Left = 820
+        Left = 852
         Top = 0
         Hint = 'Feedback zu FreePDF64'
         Caption = 'Feedback'
@@ -442,7 +441,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object ConfigBtn: TButton
-      Left = 1131
+      Left = 1220
       Top = 1
       Width = 260
       Height = 45
@@ -470,10 +469,10 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 1
       TabStop = False
       OnClick = ConfigBtnClick
-      ExplicitLeft = 1125
+      ExplicitLeft = 1214
     end
     object MonitorBtn: TBitBtn
-      Left = 1041
+      Left = 1130
       Top = 1
       Width = 90
       Height = 45
@@ -499,10 +498,10 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
-      ExplicitLeft = 1035
+      ExplicitLeft = 1124
     end
     object StatusBitBtn: TBitBtn
-      Left = 997
+      Left = 1086
       Top = 1
       Width = 44
       Height = 45
@@ -527,13 +526,13 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-      ExplicitLeft = 991
+      ExplicitLeft = 1080
     end
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 501
-    Width = 1392
+    Top = 580
+    Width = 1481
     Height = 35
     Margins.Left = 4
     Margins.Top = 4
@@ -546,8 +545,8 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitTop = 500
-    ExplicitWidth = 1386
+    ExplicitTop = 579
+    ExplicitWidth = 1475
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -727,8 +726,8 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object PDFPanel: TPanel
     Left = 0
-    Top = 542
-    Width = 1392
+    Top = 621
+    Width = 1481
     Height = 153
     Margins.Left = 4
     Margins.Top = 4
@@ -737,12 +736,12 @@ object FreePDF64_Form: TFreePDF64_Form
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 541
-    ExplicitWidth = 1386
+    ExplicitTop = 620
+    ExplicitWidth = 1475
     object StatusBar1: TStatusBar
       Left = 0
       Top = 130
-      Width = 1392
+      Width = 1481
       Height = 23
       Margins.Left = 4
       Margins.Top = 4
@@ -755,12 +754,12 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentShowHint = False
       ShowHint = False
       SimplePanel = True
-      ExplicitWidth = 1386
+      ExplicitWidth = 1475
     end
     object Memo1: TMemo
       Left = 0
       Top = 44
-      Width = 1392
+      Width = 1481
       Height = 86
       Hint = 
         'Anzeige der Verarbeitungsbefehle der PDF-Tools sowie '#13#10'Anzeigefe' +
@@ -786,12 +785,12 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
-      ExplicitWidth = 1386
+      ExplicitWidth = 1475
     end
     object BottomPanel: TPanel
       Left = 0
       Top = 0
-      Width = 1392
+      Width = 1481
       Height = 44
       Margins.Left = 4
       Margins.Top = 4
@@ -802,7 +801,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-      ExplicitWidth = 1386
+      ExplicitWidth = 1475
       object FormatBtn: TSpeedButton
         Left = 1
         Top = 1
@@ -828,7 +827,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FormatBtnClick
       end
       object PDF_Erstellung: TButton
-        Left = 1041
+        Left = 1130
         Top = 1
         Width = 350
         Height = 42
@@ -854,12 +853,12 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDF_ErstellungClick
         OnMouseEnter = PDF_ErstellungMouseEnter
         OnMouseLeave = PDF_ErstellungMouseLeave
-        ExplicitLeft = 1035
+        ExplicitLeft = 1124
       end
       object ProgressBar1: TProgressBar
         Left = 421
         Top = 1
-        Width = 390
+        Width = 479
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -869,10 +868,10 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 1
-        ExplicitWidth = 384
+        ExplicitWidth = 473
       end
       object AbbrechenPn: TPanel
-        Left = 811
+        Left = 900
         Top = 1
         Width = 230
         Height = 42
@@ -896,15 +895,15 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 2
         Visible = False
         OnClick = AbbrechenPnClick
-        ExplicitLeft = 805
+        ExplicitLeft = 894
       end
     end
   end
   object PanelL: TPanel
     Left = 283
     Top = 47
-    Width = 453
-    Height = 454
+    Width = 542
+    Height = 533
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -913,16 +912,16 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
-    ExplicitWidth = 447
-    ExplicitHeight = 453
+    ExplicitWidth = 536
+    ExplicitHeight = 532
     DesignSize = (
-      453
-      454)
+      542
+      533)
     object Image2: TImage
       Left = 1
       Top = 29
-      Width = 451
-      Height = 400
+      Width = 540
+      Height = 479
       Hint = 
         '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
         ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -944,8 +943,8 @@ object FreePDF64_Form: TFreePDF64_Form
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 29
-      Width = 451
-      Height = 400
+      Width = 540
+      Height = 479
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1010,12 +1009,11 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitLeft = 0
     end
     object Quelllabel: TPanel
       Left = 1
       Top = 1
-      Width = 451
+      Width = 540
       Height = 28
       Margins.Left = 4
       Margins.Top = 4
@@ -1033,9 +1031,9 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentFont = False
       TabOrder = 1
       OnMouseEnter = QuelllabelMouseEnter
-      ExplicitWidth = 445
+      ExplicitWidth = 534
       object FavSpL: TSpeedButton
-        Left = 375
+        Left = 464
         Top = 0
         Width = 32
         Height = 28
@@ -1061,7 +1059,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitLeft = 434
       end
       object FavLinks: TSpeedButton
-        Left = 407
+        Left = 496
         Top = 0
         Width = 44
         Height = 28
@@ -1174,8 +1172,8 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object FavLbL: TListBox
-      Left = 674
-      Top = 773
+      Left = 824
+      Top = 911
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1202,13 +1200,13 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 664
-      ExplicitTop = 771
+      ExplicitLeft = 814
+      ExplicitTop = 909
     end
     object StatusBar_Left: TStatusBar
       Left = 1
-      Top = 429
-      Width = 451
+      Top = 508
+      Width = 540
       Height = 24
       Margins.Left = 4
       Margins.Top = 4
@@ -1223,15 +1221,15 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowHint = False
       SimplePanel = True
       SizeGrip = False
-      ExplicitTop = 428
-      ExplicitWidth = 445
+      ExplicitTop = 507
+      ExplicitWidth = 534
     end
   end
   object PanelR: TPanel
-    Left = 742
+    Left = 831
     Top = 47
     Width = 650
-    Height = 454
+    Height = 533
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1240,13 +1238,13 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 4
     OnResize = PanelRResize
-    ExplicitLeft = 736
-    ExplicitHeight = 453
+    ExplicitLeft = 825
+    ExplicitHeight = 532
     object Splitter4: TSplitter
       Left = 281
       Top = 1
       Width = 4
-      Height = 452
+      Height = 531
       Hint = 'Doppelklick f'#252'r 50/50'
       Margins.Left = 4
       Margins.Top = 4
@@ -1259,7 +1257,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 1
       Top = 1
       Width = 280
-      Height = 452
+      Height = 531
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1268,7 +1266,7 @@ object FreePDF64_Form: TFreePDF64_Form
       BevelOuter = bvLowered
       Caption = 'Zielverzeichnis'
       TabOrder = 0
-      ExplicitHeight = 451
+      ExplicitHeight = 530
       object Panel3: TPanel
         Left = 1
         Top = 1
@@ -1293,7 +1291,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 1
         Top = 29
         Width = 278
-        Height = 422
+        Height = 501
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1322,14 +1320,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
-        ExplicitHeight = 421
+        ExplicitHeight = 500
       end
     end
     object PanelLMDShellList2: TPanel
       Left = 285
       Top = 1
       Width = 364
-      Height = 452
+      Height = 531
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1337,15 +1335,15 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 451
+      ExplicitHeight = 530
       DesignSize = (
         364
-        452)
+        531)
       object Image1: TImage
         Left = 1
         Top = 29
         Width = 362
-        Height = 399
+        Height = 478
         Hint = 
           '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
           ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -1368,7 +1366,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 1
         Top = 29
         Width = 362
-        Height = 399
+        Height = 478
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1454,7 +1452,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object FavLbR: TListBox
         Left = 168
-        Top = 771
+        Top = 909
         Width = 175
         Height = 40
         Margins.Left = 4
@@ -1481,7 +1479,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 769
+        ExplicitTop = 907
       end
       object Ziellabel: TPanel
         Left = 1
@@ -1645,7 +1643,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object StatusBar_Right: TStatusBar
         Left = 1
-        Top = 428
+        Top = 507
         Width = 362
         Height = 23
         Margins.Left = 4
@@ -1661,7 +1659,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = False
         SimplePanel = True
         SizeGrip = False
-        ExplicitTop = 427
+        ExplicitTop = 506
       end
     end
   end
@@ -1669,7 +1667,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 0
     Top = 47
     Width = 280
-    Height = 454
+    Height = 533
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1678,12 +1676,12 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     Caption = 'Quellverzeichnis'
     TabOrder = 5
-    ExplicitHeight = 453
+    ExplicitHeight = 532
     object LMDShellTree1: TLMDShellTree
       Left = 1
       Top = 29
       Width = 278
-      Height = 424
+      Height = 503
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1712,7 +1710,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowNonFolders = False
       AutoContextMenus = False
       AutoSortSupport = False
-      ExplicitHeight = 423
+      ExplicitHeight = 502
     end
     object ListBoxL: TListBox
       Left = 17
@@ -2242,9 +2240,13 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object Suche1: TMenuItem
         Action = LMDShellFindComputer1
-        Caption = 'Suche...'
+        Caption = 'Windows-Suche...'
         Hint = 'Suche'
+      end
+      object Suche2: TMenuItem
+        Caption = 'Suche..'
         ShortCut = 16454
+        OnClick = SearchBtnClick
       end
       object Systemsteuerungaufrufen1: TMenuItem
         Caption = 'Systemsteuerung'
@@ -2292,7 +2294,7 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object LMDShellFolder1: TLMDShellFolder
     RootFolder = 'C:\'
-    Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
+    Options = [foIncludeHidden, foHighlightCompressed, foFilterDirs]
     SortType = stName
     SortOrder = soDesc
     OnChange = LMDShellFolder1Change
@@ -2904,13 +2906,169 @@ object FreePDF64_Form: TFreePDF64_Form
         SourceImages = <
           item
             Image.Data = {
-              89504E470D0A1A0A0000000D494844520000001E0000001E08060000003B30AE
-              A2000000964944415478DAEDD5DD0A80200C86E1766575695EDABA32738191F9
-              73D45E0FEA031988F080E8267189CB8CC80F8FB2EB1ED76D151436D42A0A6714
-              85EF28063F51046EA1EE700F758547E81B51D51AA6D00226D10BA6D1134E9B38
-              7AC269B94F8910420DDB558B1518BF1E178D17DF89C4AB0642E1CD9639C2D379
-              DF21D1C3DDE11E8EC02D1C839F380ADF711CCEF814F8CD7C0F3E00D50E90EDA4
-              98AB950000000049454E44AE426082}
+              0000010001000000000001002000361400001600000089504E470D0A1A0A0000
+              000D49484452000001000000010008060000005C72A866000000097048597300
+              000B1300000B1301009A9C18000013E849444154789CED9D7BF89F631DC7EFDB
+              30A7B0396DA2AD1CA2244C54568E7565582A4D9B43568C151B865D572145E8D2
+              1C136363E6906939442A525144A8D09873D8A1D136A3CC69EAFDD9F3FB5DFD6C
+              BFC3F37D9EFB737FEEE779DEAFEB7AFF91F6FB3EF7E7F41CEFFB733B47082184
+              1042082184104208218410420821841042082184104208218410420821841042
+              08218410420821841042082184104208218410420821242156873E0CED0D1DE5
+              BD3F139A04DD00DD053D043DDDA639D002686E87FFF630F407E8466832F403FC
+              CE18681F682B680D43DB08211DD814FA0A8AF40CE816E879E8BF11F40274AB9C
+              5C70FC11D0E6C67E20A4F678681B681C0AEF7AE89F918A3DAFE6C95D03C6771C
+              B46DDB7809212590DBF9FDDA6EC5672750E4AD481E2B2EC7F887393E3610929B
+              55A07D503C53A1571328E4105A0CDD0CBB0E86DE63EC5F4292E4C33E7B61373F
+              8182D53E195C077BF7B0763821D6F4860E45413C9840615AE86FB0FF706855E3
+              38101295B5A0B12880590914610A7AC9675F1436B40E0C219AAC87443F0BFA4F
+              024597A25E83CE819F36B00E142121E983C4FEBEAFCF4B3D6DFDDB671390D6B1
+              0E1C216558111A85647E3181A2AAA216C27FE35DF6AE84904AF15924F08C048A
+              A80E9A097F0EB10E282179E88B849D9840D1D4513297E0BDD60126A42B0EF2D9
+              1B6DEB42A9B316C0CF231DA71A938458D767ABEDAC8BA349FA35FCDEDF3AF084
+              ECE1F93DDF4AF35CB6EC9990E8F44202FE007A27814268B2C4FF135CF6C58590
+              28AC83A4BB2D81E4A7FEAFBB1C1F0948040621D99E4B20E1A9E5350BF1D9D13A
+              41487DF91C92EC9504129DEA5AAF234E5FB14E14523F6446DF5B092438D5B3DE
+              41BC4EB14E1852137CF6B2CF3AA9A9D675AEE37C0152022F4994402253C575A5
+              E317025200F9CC373981042EAB45D09FA1AB7CB6D4F6446834340ADA1FFAB2CB
+              FAF6C9FF3E02FA36FEDDD95238D07DD0CB09D85056573B9E04480BF88A16FF63
+              D0452EEBB2B3AB0BF759AC1FB48BCBDE835C083D9A80AD454E022B04F207A933
+              48960B1248D83C7A169A8C211FE8E277D39193CB081CFF529F6D2862ED8B3CBA
+              D4F19D00E90E9F35E6B44ED4EE248B8DCEC7503F66EDAB6590F911F2BE645E02
+              3EEA4EE7583B8AA4CB91092468677A039A8EF10D8556B276520FC8B3F6DE18EF
+              34E8F5047CB79C30BE71D64E22E931C4A7F79D5F0A6822C6B6B1B5730AB23E74
+              8A4FEF45E2128CEB8BD6CE21E9B09DCFFAD0592766BBE4CDFDE92E2BA03A20CB
+              A54F851626E0DB76BD8671ED60ED18628F24E73F12484891DCEA9F8131AD6DED
+              1425D6827DA7F9741E0D5E70EC40DC68564012FC32814414DDE9B26DBD9BC0A6
+              09F9FD6E97FE7B15A201827F7A020938174339C035F3F3D4309F46339509D68E
+              20F1D91D815F629C7857B96C97A026F31EF8E132E338C8E2A13DAD1D41E2B1B6
+              B75DD3BF1863186BED84C49086AA961BA7487BB17ED64E201140B0A71B26DAA3
+              18C247AC7D90285BC23F8F18C646DA8E37F151AC510C374CB06B70FCD5AD1D90
+              38ABC14F5758C508C73FC4DA01440FE9E5673555F587AE1A57972DA01330DE49
+              D0F5D094B6B17F131A04F58A30061C72E95E8A16719AEFF869B09E185D59E405
+              D309D6B6E7605B8CF58E1CF6484BB49B5CB68C7815E5318DF1362F6AAF55B68B
+              18B09B4122BDE5AA714B29CB7CDF2C60DF02E83CFCFD468A639347B63762C70E
+              C7FD9CA24D2432D2DCE32183E2FF82B5E139181DC05629D08BF15B0394C6B8A7
+              C149405ED67282504D383C72F2C86DFF486BA373B0832F76E5EF4A32BFFE64A7
+              F368207702511F0770CC310A7690C8C8FCF3172327CE786BA3F380B1DEA9E483
+              A79CCE2DF4D8C827727921D857C10E1291532227CDD9D606E76490B21F64CBAE
+              0B719C55430EDAC79FBE7D7AC8F193B8F4F571D7A24F73D5F8D42785F4DD483E
+              9981C36D1376E87E6AC498BE8A63AE1770FC241691AF164FE2906B5ADB9C171F
+              773B7399FA7C70C0E1AF82DFFC5BC4F19F1570EC241232DF3FD6365E92E01FB5
+              36B81530E67B221690481E09A4D741A8CEBC1FF2F19AB8FC07C75B37D0B84924
+              C6C74A6E97B5E1AE1418F76F229F00DA75A30BF75EE09088313E39D098490456
+              F6F1D6995772D698CFA6FA5A9C0044BF77811E977C365539C69865B5A0F6CC47
+              1288832226451F6B630B32C2F004207AC08579B9B6267E6B768C31BB6CF72492
+              3A08D69F2225C457AD6D2DC1EA3EDB63C0F224F0880BF39D3DD60ACF87028C95
+              28B355A464B8CB55E4935F371C6F7C0210DDE3022C91F691DE69E050DB97773B
+              5103413A2F4222C83CFF3A34F5903512BF4DE024701BC6D2BBA42D1FF471D60B
+              5C1CC2F14487DE08D0FC084950A72692F20C7D77022781CBCB1AE2E3CCFB58E4
+              02CF6E24E1D83B4202FCDBD5EF9BB07C35913D11A32FBBED28577EF18DCCFD50
+              9FF989E3EC17C0E724343ECE14D13A5DFD9765239F4D11FEB3B769C4218F56BB
+              9531C0C7E924745D207F9380C8F4D045CA8197197FB1B7E1B642B6FF9665D4BF
+              F271EF0CE4D36A99965CEB79FD1982323390BD1D1323C6EDFF8FAD8D34427A29
+              CADE7EB11656DDE24A7C61C1DF9FAD3D46C7C780B440502E540EBADC9E0EB4B6
+              D318D9B3F0241F618D058E734489716EE8F5F71F9C14C8A7240408C833CA01BF
+              D9DAC684783FFCF13B657FCBCBD681450788BFBF4E797CB35CF5E781D4862D22
+              5C9186591B991892FC47C137AF29FAFD8612E3DB27424E6C1DC897A424DF540E
+              F642C785205DF109F8E75F8A455674CFBE95BC722B381CE398807E24454130AE
+              563E015C626D63E2C82CBC67957CFF842BD89DD7EBCF0A9D1ED88FA4088AC9D7
+              7EA61F6C6D6305E80F5F3DA9E4FFAF171CD3F6CA2780B9211D488AF15EE520CF
+              717CD99397CDBDCEE38074195EB1C880225C1C3609EB42D22AFB2A9F00AEB636
+              B0620CF60A9FE05CC1A5D7F8DBC9CA2780E161DD475AE524E5001F6A6D6005D1
+              D888E5BE82633940F902C1B6E1962000D3954F001FB0B6B182C0754BA710878E
+              4591CF6EFD954F009C1F620902F0B86270FF616D5F8519E0C3CF182CB4100B7F
+              F798628E3C17DA71243FF2ADF76DC5E0965EA3DE708E0D1C8F278B0C027FF763
+              C51C917D20B930C8884D14032BB79C475B1B58716485E69CC03129B203F111CA
+              79F2A1C07E2339D94D39B043AC0DAC0141FB0EBA623B0CEDAA9C277B05F619C9
+              C9D79503CB6FBCE55903BE5C10302EA71518C386CA79726468A7917C9CAC18D8
+              D7F1FBBDAC0DAC033EECB7F8C905C7A0D92CE68CD03E233980E3CF570CEADFAD
+              EDAB114302C6A5D00A41FCDDFD8AB972696887911C78DD45406596A29277234D
+              47175A161BFEEE1AC55CB93EB4C3480EBCC264930E9A686D5F9D803FAF0D1117
+              FCD409058F7FAE62AEDC19D85D240F70FCBD8A41FDBEB57D3523C84EBEAEF827
+              37CD29E3DC32CC0238FEAF5A41C5CF1F676D5FCD580D7E9D57322E779538BE66
+              D39899C1BC44F203C7CF503C01F0D34E78469588C9DBF8FB1D4B1CFB6B8A2780
+              67433988B480576A40D17602E056D00AC0B73F29188F634B1EFA40C513C09C10
+              BE212DE2159B3DE0E7475ADB575364FDC6552DC462892BF8E26F1986299E005E
+              0C303ED22A70FC4CDE01549683E0E7E77A88C303F8773B073A9EE61DC0EC4063
+              24ADE0755F02F21D803ED2EC7328FCFD23E8569F7DD5B9093A13FF7D2717B615
+              9BE6B471BE03B0008EBF47F10470BCB57D2428472A9E00F815C00238FE0EC5A0
+              B2D553BDD05C37C2790016C0F1BF500C2AF702A8115E77DDC8EFACED6B24BEE0
+              27A59CBAD1DA3E120EE55CF999B57D8D048EFFA162506758DB47C281783EA898
+              2B175BDBD7548E510CEA1BAEE066142439104EFFAA62AEF07D91119A933BE44B
+              C0A6D60692206CA49C27A3AD0D6C2A9F540E2C7BBDD583DD95F3A4E80EC6A424
+              0394035B76FE3949836F28E7C916D6063695151180C58AC19D6A6D20290FE238
+              513147645F8055AD6D6C2C08C05F1483CB39DE35C02BAE1A859EB1B6AFD12000
+              53946FEF36B3B691946263CDFCF09C2F62CE38E513C0E1D6069252046945D68D
+              BE676D60D3F98C7280A7591B488A83F85DA17C8118666D63D3D940F904300FC7
+              58C1DA48520884CF3FAF7C0218686D64E3F1BA2F7924C8BB5ADB480AA13A4F04
+              9A656D20714B4F00972807FA326B1B49EB206E1729E7C5B5D636928CE1CA817E
+              05C758CDDA48D212BD11B7F9CA778647591B4932FA2320EF28077B84B591A425
+              BEA87C51909CD8D2DA48D20602F29872C07F696D23C90FE27583723E3C6F6D23
+              E90002728E72C065630A4E0AAA060310AF3795F3813D001263B0F62D9F2FB837
+              3D898BCFBA0CABE6020EB3AFB59DE4DDAC80C0CC560EFC9B38CE006B4349B7F4
+              439C5E53CE037929CC0540A981C05C10E12EE0026B3B49D778DD3671EDBACADA
+              4ED2393B4708FE621CA7BFB5A1A453D6F1BAADBF960AC7196A6D28E99C5E5EFF
+              314074A1B5A164791097B323C47E010ED5DBDA56D20508D0A911924036ACDCC1
+              DA56F22EB6F2FA6FFE45E75B1B4ABA47D67FBF1D2111EEC7B17A591B4B968270
+              F8DF4788B9DCFE6F636D2CE90104EAE7919281BD02D260648C7843F7591B4AF2
+              31245242CCC7B1D6B336B6E1F4411C5E8C74C23FC4DA58920F9913F04CA493C0
+              4D2EEC36D6A405E0FF6991E22CFD2157B6B697E46774A4C4902BC331D6C63614
+              D576DFCBC478BCB5B1A4356439E80B911244B611DBD1DAE086B1ADD76D09DF51
+              32F36F6D6B8349EB8C897585809EC3F1D6B136B821AC017FCF8C18DBD3AC0D26
+              C55815C19B1B31517EEEF869501B79BF333D624C5FC631FB581B4D8AA3B98370
+              67BAC4DAE03A03FF9E1F339E38E477AC6D26E59077014F453E099C6A6D744DF9
+              56E4384A47E835AD8D26E5F97CE4C4912BC7D1D646D78C83BC72DBB74E627898
+              B5D1241008E8ED914F02B25EE0006BBB6BC297E0CFB722C7EFAF8EEF736AC556
+              064924278123AD0DAF3887FA386B3B3A4A76FCDDD9DA701216797B7C7FE4446A
+              17DF0914E3441FF9B6BF4DDC07A26648F1ABEE229C4397631C2B5A3BA222C05D
+              513AFB74A69770FC75AD1D40C2214D42AE302EFE76DDECF84DB927D6829FAEB7
+              8A118EBFBFB503483852B8F22F2BE927FF496BC724CA765E799FC71E34DDDA01
+              241C29167FBBDEC2F84E71DC75B823077BFD6EBEDDE9058CA1AFB513481852BA
+              EDEF4EB294787D6B6719238D3C634EEDED4CF2B5866FFD6B42558ABF5DD26472
+              B46BDEDD80D82B9FF8FE651D0397DD8D911A90F26D7F4FFA0BC6FF716B0746E2
+              A3B0F7EE047C2EBACD71C24F2DA8DA95BF332D812E72F5DD7760039F6DDE127B
+              624F577ADAF1AB4C2DA843F1779434BA90BD07EAB20DD946B0E73C6FFB926F59
+              49938FADAD1D43CA53E5DBFE9E247DEEA7C2C62DAC9D5C90816D851FAB734F5E
+              C94ECFFB583B8794A76E57FE2E1316FA35EC3D105ADDDAE93D209B660EC7786F
+              F5E9DCEABF4B18DF286B2791F234A5F89795EC7D3705F6EFEED2F97220E3D805
+              E3BA0C5A94808FBAD3F7AC9D45CA53E7DBFE56F492CFA6174BC7DA412E6E7BF2
+              0F40A370FCA9D0AC047C9147DCD6AB0634F5CA9F47B231EA95F0D1F12E7BC6DD
+              DC955F80247FBF19B437745C9BEF63755B0EA94B1DF76FA83C2CFED6252F12A5
+              83EE4DD024E84C97DD311CE5B267E17649DF82F1F8FFCF68FB77F2EF1F85DE48
+              C086B2923E8DA93C2E9182F0B69F2AA21F395EF92B0FAFFC54117DD73A714979
+              78E5A75A957CE71F6D9DB8A43C2C7EAA55BD8ABCD9CB3A71497978DB4FB5AA27
+              91371FB14E5C521E5EF9A956F50BC7853DB580577EAA15C9F3FE498E6FFA6B01
+              AFFC542B921D993F6D9DB4240C2C7EAA15FDD4B1875F6D60F15379F54FE4CBC1
+              D6094BC251C7677ED98128F636647597EC1024F3F9D7B64E58128E3A16FF1497
+              CD3B97BD08636F485A573D007F0EB64D55129A3A16FF4FDCF20D26F7F0D9A21A
+              EBB15551B24DD7D84E7C4A2A4E1D8B7F8AEB7AC5596FE818FC9BB9098CB30A92
+              56E9DF86D6889590241E752C7ED9F833CF7253699735C657A781466CBDECB21E
+              FD6B692620B1A3C9C5DF11B923188DBF7D2681F1A720D92F711CB466F08C23C9
+              C0E25F1EF9DB21F89D9B7DA20D3495F547D87F00B452900C23C9C2E2EF99F7E1
+              374F83E624609BA6A48FE104D8BB6540DF9184A963F15FE6F45A4CC9EF0EF659
+              3FFDD909D81A420B7DB6BF81F4295C59C96F2441EA58FCA1AFFCDD21C7F9148E
+              79AEAFDEA7C4277CD685774F97BDF3200DA38EC5AF79E5CF433F976DBA31117A
+              3C017F74D4D3126F973518DDC4D047240158FC71581FDA033AD6676B291E845E
+              57F6834C717E0C9AE6B26FF5435D7D3733250590E29F9A40C1D6BDF8BB42FAF8
+              BF0FDA091A061D8DF14F80AE866EF1D9F4E47BA107A0A77C76E5163DDAF6DFEE
+              F3D9B65E5742E7BA6CADFD48681768A02BBFCF00A931BCF213D25058FC843414
+              163F210D85C54F484361F113D25058FC8434943A16FF64C7E227A44758FC8434
+              14163F210D85C54F484361F113D25058FC843414163F210D85C54F484391BDFA
+              EAB6A4779263F113D2333EEB47675DB0BCF21362C0B8040A36A4644349163F21
+              39F8180AE6CD048A96C54F4864E4B9FFFE048A369478DB4F480B8C4CA06879E5
+              27C400D48C9F9140E1F2CA4F8801BB2650B82C7E422CF0D94613D6C55B569738
+              163F21ADE3ABBF4D3527F91052907E091430AFFC8418F1E9048A98577E428C18
+              9E402117BDF27B6BE71152750E4BA09859FC841851B513006FFB0909C8FE0914
+              755E4D74BCF21312944F2450D8BCF21362445F14D73B091438AFFC8458E0D35E
+              07C0853D846882229B9040A1F3CA4F8811DB2750ECCBEA62C7E227240E28B87B
+              12287ADEF61362C4D0040A9F577E42AC40F1FD8A577E429ACBA628C25778E527
+              A4B9C8CCC0D8F30258FC8424C478DEF613D26CC6A238972817FF798EC54F48B2
+              C8E3C02285C25F8CDF1E656D1C21A4673641C1DE1EB0F8FF84DFDCDADA284248
+              6BC83C817B4B14FEC3F88D118E2FFB08A9348350CC67418FF89EBF16CC842EC0
+              DF0C762C7C426A471F6847683FE830973DD70F837682D6351C17218410420821
+              8410420821841042082184104208218410420821841042082184104208218410
+              42082184104208218410420821841042082184109297FF01750C32C6E34AF21E
+              0000000049454E44AE426082}
           end>
       end
       item

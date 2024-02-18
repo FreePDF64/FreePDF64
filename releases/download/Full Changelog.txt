@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+18.02.2024, V4.3.4
+Neu -> Suche-Funktion eingebaut mit direktem Sprung zur markierten Datei oder Verzeichnis.
 11.02.2024, V4.3.3
 Fix -> Die Funktion "Anlage aus einer PDF-Datei entfernen" wurde nun verfeinert: Zuerst kann man die Anlage aus der PDF-Datei ins Zielverzeichnis extrahieren. Dann entscheidet man, ob sie anschließend auch entfernt werden soll.
 Fix -> Update der Xpdf-Tools auf Version 4.0.5.
@@ -348,4 +349,3 @@ Warum? In seltenen Fällen verkleinern sich ungewollt die Spalten des Quell- und
 05.10.2022, v2.5.3
 Neu -> Funktion Überwachung: Quelldatei nach Erstellung löschen. 
 Warum? In seltenen Fällen wird die Zieldatei ungewollt doppelt erstellt. Das wird mit Löschung der Quelldatei nach der Erstellung verhindert.
->>>>>>> 93b76a7e1d590d48123178900aaf03d864aeab76
