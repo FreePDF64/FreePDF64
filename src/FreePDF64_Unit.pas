@@ -3136,6 +3136,8 @@ procedure TFreePDF64_Form.Exit1Click(Sender: TObject);
 begin
   Tray1 := False;
   Close;
+//  showmessage('Beenden');
+  Application.Terminate;
 end;
 
 procedure TFreePDF64_Form.FavLbLClick(Sender: TObject);
@@ -3469,6 +3471,7 @@ end;
 
 procedure TFreePDF64_Form.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+showmessage('Beenden');
   Application.Terminate;
 end;
 
