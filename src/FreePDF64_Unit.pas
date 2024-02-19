@@ -503,6 +503,7 @@ end;
     procedure Image2ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
     procedure Image2Click(Sender: TObject);
     procedure SearchBtnClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -3464,6 +3465,11 @@ end;
 procedure TFreePDF64_Form.FormClick(Sender: TObject);
 begin
   FavClose;
+end;
+
+procedure TFreePDF64_Form.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  Application.Terminate;
 end;
 
 procedure TFreePDF64_Form.FormCloseQuery(Sender: TObject; var CanClose: Boolean);

@@ -17,6 +17,7 @@ object FreePDF64_Form: TFreePDF64_Form
   Position = poDesigned
   ShowHint = True
   OnClick = FormClick
+  OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
