@@ -1,4 +1,4 @@
-18.02.2024, V4.3.4
+20.02.2024, V4.3.4
 Neu -> Suche-Funktion eingebaut mit direktem Sprung zur markierten Datei oder Verzeichnis.
 11.02.2024, V4.3.3
 Fix -> Die Funktion "Anlage aus einer PDF-Datei entfernen" wurde nun verfeinert: Zuerst kann man die Anlage aus der PDF-Datei ins Zielverzeichnis extrahieren. Dann entscheidet man, ob sie anschließend auch entfernt werden soll.
