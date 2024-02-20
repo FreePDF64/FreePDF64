@@ -2370,17 +2370,6 @@ object FreePDF64_Form: TFreePDF64_Form
     object N13: TMenuItem
       Caption = '-'
     end
-    object Logdateiansehen2: TMenuItem
-      Caption = 'Logdatei ansehen'
-      OnClick = Logdateiansehen2Click
-    end
-    object berFreePDF641: TMenuItem
-      Caption = #220'ber FreePDF64'
-      OnClick = berFreePDF641Click
-    end
-    object N12: TMenuItem
-      Caption = '-'
-    end
     object Einstellungenndern2: TMenuItem
       Caption = 'Einstellungen '#228'ndern'
       OnClick = Einstellungenndern2Click
@@ -2388,6 +2377,21 @@ object FreePDF64_Form: TFreePDF64_Form
     object Verbinden1: TMenuItem
       Caption = 'Verbinden'
       OnClick = Verbinden1Click
+    end
+    object N12: TMenuItem
+      Caption = '-'
+    end
+    object Suche3: TMenuItem
+      Caption = 'Suche...'
+      OnClick = SearchBtnClick
+    end
+    object Logdateiansehen2: TMenuItem
+      Caption = 'Logdatei ansehen'
+      OnClick = Logdateiansehen2Click
+    end
+    object berFreePDF641: TMenuItem
+      Caption = #220'ber FreePDF64'
+      OnClick = berFreePDF641Click
     end
     object N14: TMenuItem
       Caption = '-'

@@ -332,6 +332,7 @@ end;
     Image2: TImage;
     SearchBtn: TToolButton;
     Suche2: TMenuItem;
+    Suche3: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2185,7 +2186,6 @@ end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
 begin
-//  Suche_Form.Position := poMainFormCenter;
   Suche_Form.Show;
 end;
 
