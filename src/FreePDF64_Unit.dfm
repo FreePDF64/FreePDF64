@@ -1010,6 +1010,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitLeft = -159
+      ExplicitTop = -141
     end
     object Quelllabel: TPanel
       Left = 1
@@ -2247,6 +2249,12 @@ object FreePDF64_Form: TFreePDF64_Form
       object Suche2: TMenuItem
         Caption = 'Suche..'
         ShortCut = 16454
+        OnClick = SearchBtnClick
+      end
+      object SuchemitAltF71: TMenuItem
+        Caption = 'Suche mit Alt+F7'
+        ShortCut = 32886
+        Visible = False
         OnClick = SearchBtnClick
       end
       object Systemsteuerungaufrufen1: TMenuItem

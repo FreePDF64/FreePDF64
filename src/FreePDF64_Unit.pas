@@ -333,6 +333,7 @@ end;
     SearchBtn: TToolButton;
     Suche2: TMenuItem;
     Suche3: TMenuItem;
+    SuchemitAltF71: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
