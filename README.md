@@ -2,7 +2,7 @@
 
 Download der **allerneuesten** Version immer unter: 
 - https://github.com/FreePDF64/FreePDF64/tree/main/releases/download
-- Zum Download **FreePDF64-Setup.exe** auswählen und danach rechts auf **[ Raw ]** klicken.
+
 
 Neuestes Release/Changelog immer unter:
 - https://github.com/FreePDF64/FreePDF64/releases
