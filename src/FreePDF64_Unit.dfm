@@ -1010,8 +1010,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitLeft = -159
-      ExplicitTop = -141
     end
     object Quelllabel: TPanel
       Left = 1
