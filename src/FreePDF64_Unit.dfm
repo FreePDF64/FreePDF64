@@ -2134,8 +2134,12 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = '-'
       end
       object History1: TMenuItem
-        Caption = 'History l'#246'schen'
+        Caption = 'Verzeichnis-History l'#246'schen'
         OnClick = History1Click
+      end
+      object SuchennachSucheninHistorylschen1: TMenuItem
+        Caption = 'Suchen nach/Suchen in-History l'#246'schen'
+        OnClick = SuchennachSucheninHistorylschen1Click
       end
       object Logdateilschen1: TMenuItem
         Caption = 'Logdatei l'#246'schen'

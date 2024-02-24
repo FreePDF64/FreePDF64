@@ -334,6 +334,7 @@ end;
     Suche2: TMenuItem;
     Suche3: TMenuItem;
     SuchemitAltF71: TMenuItem;
+    SuchennachSucheninHistorylschen1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -506,6 +507,7 @@ end;
     procedure Image2Click(Sender: TObject);
     procedure SearchBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure SuchennachSucheninHistorylschen1Click(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -648,6 +650,7 @@ begin
   Status_Form.Position := poScreenCenter;
   Status_Form.ShowModal;
 end;
+
 
 // Dieser Code positioniert die Input Box in die
 // Mitte der Form und nicht in die Mitte des Bildschirms
@@ -3773,11 +3776,23 @@ procedure TFreePDF64_Form.History1Click(Sender: TObject);
 var
   Msg: String;
 begin
-  Msg := 'Soll die History (links/rechts) wirklich gelöscht werden?';
+  Msg := 'Soll die Verzeichnis-History (links/rechts) wirklich gelöscht werden?';
   if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
   begin
     ComboBoxL.Items.Clear;
     ComboBoxR.Items.Clear
+  end;
+end;
+
+procedure TFreePDF64_Form.SuchennachSucheninHistorylschen1Click(Sender: TObject);
+var
+  Msg: String;
+begin
+  Msg := 'Soll die Suchen nach-/Suchen in-History im Suche-Fenster wirklich gelöscht werden?';
+  if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
+  begin
+    Suche_Form.SearchField.Items.Clear;
+    Suche_Form.FileField.Items.Clear
   end;
 end;
 
