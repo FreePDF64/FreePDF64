@@ -1,3 +1,5 @@
+24.02.2024, V4.4.1
+Neu -> Suche-Funktionen ausgebaut, nun mit Suche nach Datum/Größe.
 23.02.2024, V4.4.0
 Neu -> Suche-Funktion eingebaut, u.a. mit direktem Sprung zur markierten Datei oder Verzeichnis.
 11.02.2024, V4.3.3
