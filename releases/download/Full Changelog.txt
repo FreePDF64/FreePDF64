@@ -1,3 +1,6 @@
+25.02.2024, V4.4.2
+Fix -> QPDF-Update auf Version 11.9.0.
+Neu -> Suche-Funktionen ausgebaut: Nun ist die Suche auch nach Datum und/oder Größe möglich. Das Ergebnisfenster ist komfortabler geworden.
 24.02.2024, V4.4.1
 Neu -> Suche-Funktionen ausgebaut, nun mit Suche nach Datum/Größe.
 23.02.2024, V4.4.0
