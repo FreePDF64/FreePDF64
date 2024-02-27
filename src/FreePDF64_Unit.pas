@@ -531,9 +531,9 @@ var
   // Globale Variablen
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
-  PDFReader, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
-  Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
-  PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
+  PDFReader, ImageMagick, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
+  Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1,
+  XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
@@ -1452,7 +1452,7 @@ begin
     + #13 + 'Funktionen:'
     + #13 + '01: Erstellen von PS (Postscript) zu PDF/BMP/JPEG/PNG/TIFF/TXT-Dateien'
     + #13 + '02: Erstellen von PDF zu PDF-verschlüsselt/PS/BMP/JPEG/PNG/TIFF/TXT-Dateien'
-    + #13 + '03: Erstellen von JPEG zu PDF-Dateien'
+    + #13 + '03: Erstellen von BMP/JPEG/PNG/TIFF zu PDF-Dateien'
     + #13 + '04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)'
     + #13 + '05: PDF-Passwortschutz entfernen'
     + #13 + '06: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung'
@@ -4005,6 +4005,9 @@ begin
     Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
     // PDFtk
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
+    // ImageMagick-Converter
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick';
+    ImageMagick := Backslash(Einstellungen_Form.Edit7.Text) + 'convert.exe';
     // XPDF-Tools
     Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
     XPDF_Images := Backslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
@@ -4075,6 +4078,10 @@ begin
   // PDFtk
   if Einstellungen_Form.Edit5.Text = '' then
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
+  // ImageMagick-Converter
+  if Einstellungen_Form.Edit7.Text = '' then
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick';
+  ImageMagick := Backslash(Einstellungen_Form.Edit7.Text) + 'convert.exe';
   // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
     Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
@@ -4202,16 +4209,19 @@ begin
 
   // Vorgabewert beim Start des Programms
   //  Encrypt_Form.EncryptCombo.ItemIndex := 1;
-  if Einstellungen_Form.AuswahlRG.ItemIndex      = 0 then Text_FormatBtn := ' PS/PDF zu PDF '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 1 then Text_FormatBtn := ' PDF zu PS '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 2 then Text_FormatBtn := ' PS/PDF zu TXT '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 3 then Text_FormatBtn := ' PS/PDF zu BMP '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 4 then Text_FormatBtn := ' PS/PDF zu JPEG '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 5 then Text_FormatBtn := ' PS/PDF zu PNG '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 6 then Text_FormatBtn := ' PS/PDF zu TIFF G4 - BW '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 7 then Text_FormatBtn := ' PS/PDF zu TIFF LZW - BW '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 8 then Text_FormatBtn := ' PS/PDF zu TIFF (uncompressed) '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 9 then Text_FormatBtn := ' JPEG zu PDF ';
+  if Einstellungen_Form.AuswahlRG.ItemIndex      = 0  then Text_FormatBtn := ' PS/PDF zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 1  then Text_FormatBtn := ' PDF zu PS '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 2  then Text_FormatBtn := ' PS/PDF zu TXT '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 3  then Text_FormatBtn := ' PS/PDF zu BMP '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 4  then Text_FormatBtn := ' PS/PDF zu JPEG '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 5  then Text_FormatBtn := ' PS/PDF zu PNG '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 6  then Text_FormatBtn := ' PS/PDF zu TIFF G4 - BW '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 7  then Text_FormatBtn := ' PS/PDF zu TIFF LZW - BW '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 8  then Text_FormatBtn := ' PS/PDF zu TIFF (uncompressed) '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 9  then Text_FormatBtn := ' BMP zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then Text_FormatBtn := ' JPEG zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then Text_FormatBtn := ' PNG zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(BackSlash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4462,9 +4472,33 @@ begin
     if Einstellungen_Form.AuswahlRG.ItemIndex = 9 then
     begin
       if (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
+          FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.BMP') then
+        FreePDF64_Form.FormatBtn.Font.Color := clWindowText
+      else
+        FreePDF64_Form.FormatBtn.Font.Color := clRed;
+    end else
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then
+    begin
+      if (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.JPG') or
          (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.JPEG') then
+        FreePDF64_Form.FormatBtn.Font.Color := clWindowText
+      else
+        FreePDF64_Form.FormatBtn.Font.Color := clRed;
+    end else
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then
+    begin
+      if (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
+          FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.PNG') then
+        FreePDF64_Form.FormatBtn.Font.Color := clWindowText
+      else
+        FreePDF64_Form.FormatBtn.Font.Color := clRed;
+    end else
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then
+    begin
+      if (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
+          FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.TIFF') then
         FreePDF64_Form.FormatBtn.Font.Color := clWindowText
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
@@ -5586,10 +5620,11 @@ var
   Process: TProcessInformation;
   InpHandle, OutpHandle: THandle;
   fExitCode: Cardinal;
-  AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, AP3_1, DokuSicherheit, AX,
+  AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, AP3_1, DokuSicherheit, AX, Memozeile,
   DS1, DS2, DS3, DS4, DS5, Spin1, Spin2, VonSpin, BisSpin, Ziel3, Zielanz,
   PZiel, NZiel, QPDFZiel, QPDF_Zeile, z, JV, Endzielname, Datei_Vorne, Datei_Hinten: String;
   F: TextFile;
+  ProcID: Cardinal;
 begin
   FavClose;
 
@@ -5715,17 +5750,17 @@ begin
       AP6 := '';
 
     case Einstellungen_Form.AuswahlRG.ItemIndex of
-      0: AP1 := '-dNOPAUSE -dDOPDFMARKS -dBATCH ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5; // PDF
-      1: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-dSAFER -sDEVICE=ps2write'; // PS
-      2: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
-      3: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2; // BMP
-      4: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=jpeg -dJPEGQ=' + Spin1 + ' ' + '-r' + Spin2; // JPEG
-      5: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=png16m ' + '-r' + Spin2; // PNG
-      6: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiffg4 ' + '-r' + Spin2; // TIFF G4
-      7: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tifflzw ' + '-r' + Spin2; // TIFF LZW
-      8: AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiff24nc ' + '-r' + Spin2;
+      0:  AP1 := '-dNOPAUSE -dDOPDFMARKS -dBATCH ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5; // PDF
+      1:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-dSAFER -sDEVICE=ps2write'; // PS
+      2:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
+      3:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2; // BMP
+      4:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=jpeg -dJPEGQ=' + Spin1 + ' ' + '-r' + Spin2; // JPEG
+      5:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=png16m ' + '-r' + Spin2; // PNG
+      6:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiffg4 ' + '-r' + Spin2; // TIFF G4
+      7:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tifflzw ' + '-r' + Spin2; // TIFF LZW
+      8:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiff24nc ' + '-r' + Spin2;
         // TIFF - 24-bit RGB output (8 bits per component) uncompressed
-      9: AP1 := '-dNOPAUSE -dNOSAFER -dBATCH -sDEVICE=pdfwrite' + AP1_5; // JPEG zu PDF
+      10: AP1 := '-dNOPAUSE -dNOSAFER -dBATCH -sDEVICE=pdfwrite' + AP1_5; // JPEG zu PDF
     end;
 
     // -------------------------------------------------------------------------
@@ -5827,8 +5862,11 @@ begin
 
         LMDShellList1.ItemIndex := - 1;
 
-        if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
-           (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then // PDF
+        if (Einstellungen_Form.AuswahlRG.ItemIndex = 0)  or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 9)  or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // PDF
           Ziel := (BackSlash(z) + ChangeFileExt(ExtractFileName(AP3), '.pdf'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 1 then // PS
           Ziel := (BackSlash(z) + ChangeFileExt(ExtractFileName(AP3), '.ps'))
@@ -5935,6 +5973,16 @@ begin
           else
             JV := ' -sOutputFile="' + Ziel + '" "' + ViewJPEG + '" -c "('+ AP3_1 +') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"';
 
+          // Erstellung BMP/PNG/TIFF to PDF
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+          begin
+            ProcID := 0;
+            // Starte nun die richtige Erstellung...
+            if RunProcess(ImageMagick + ' "' + AP3 + '" "' + Ziel + Hochkommata, SW_HIDE, True, @ProcID) = 0 then
+              Memozeile := ImageMagick + ' "' + AP3 + '" "' + Ziel + Hochkommata;
+          end;
+
           // PDF-Erstellung von 128-Bit PS/PDF
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // 128-Bit PS/PDF
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
@@ -5945,14 +5993,14 @@ begin
 
           // PDF-Erstellung von JPEG zu PDF, PDF verkleinern nicht gewünscht
           else if (Einstellungen_Form.PDF_Shrink.Checked = False) and
-                  (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
+                  (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV), NIL, NIL, True,
                    CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS,
                    NIL, NIL, StartUp, Process)
 
           // PDF-Erstellung von JPEG zu PDF, PDF verkleinern ist gewünscht
           else if Einstellungen_Form.PDF_Shrink.Checked and
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1 + JV), NIL, NIL, True,
                    CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS,
                    NIL, NIL, StartUp, Process)
@@ -5983,7 +6031,6 @@ begin
               GetExitCodeProcess(Process.hProcess, fExitCode);
             until R <> WAIT_TIMEOUT;
             // FERTIG! Genug gewartet - Weiter gehts!!!
-
             // Dateianlage vorne/hinten anfügen - wenn gewünscht
             if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
             begin
@@ -6010,9 +6057,12 @@ begin
             end;
 
 //========= PDF-Erstellung von PDF zu PDF/JPEG zu PDF, PDF verkleinern ist gewünscht ======
+{
             if Einstellungen_Form.PDF_Shrink.Checked and
               ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
-              (Einstellungen_Form.AuswahlRG.ItemIndex = 9)) then
+              (Einstellungen_Form.AuswahlRG.ItemIndex = 10)) then
+}
+            if Einstellungen_Form.PDF_Shrink.Checked then
             begin
               // Nun die Erstellung von PDF zu PS
               Res := CreateProcess(NIL,
@@ -6216,12 +6266,17 @@ begin
             if Dateianlage_Form.Datei2.Text <> '' then
               Memo1.Lines.Text := Memo1.Lines.Text + 'Datei hinten angefügt: ' + Dateianlage_Form.Datei2.Text;
           end else
-          if Einstellungen_Form.AuswahlRG.ItemIndex = 9 then // JPEG zu PDF
+          if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then // JPEG zu PDF
           begin
             Memo1.Lines.Text := Memo1.Lines.Text +
               (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV);
               Zielanz := Ziel;
           end else
+          // BMP/PNG/TIFF zu PDF
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+            Memo1.Lines.Text := Memozeile
+          else
           begin
             if (Einstellungen_Form.AuswahlRG.ItemIndex > 0) and
                (Einstellungen_Form.AuswahlRG.ItemIndex < 9) then
@@ -6335,7 +6390,7 @@ begin
                           BackSlash(ExtractFilePath(Dateianlage_Form.Datei2.Text)) + ExtractFileName(Dateianlage_Form.Datei2.Text)));
 
               end else
-              if Einstellungen_Form.AuswahlRG.ItemIndex = 9 then // PDF
+              if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then // PDF
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(ExtractFilePath(AP3))));
@@ -6352,12 +6407,12 @@ begin
                 end;
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end else
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
               // PS/TXT/TIFF
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 2) or
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 6) or
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 7) or
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 8) then
+              if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 2) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 6) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 7) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 8) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(ExtractFilePath(AP3))));
@@ -6366,11 +6421,11 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
-              end
-              else if (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
+              end else
               // BMP, JPEG, PNG
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
-                (Einstellungen_Form.AuswahlRG.ItemIndex = 5) then
+              if (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 5) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(ExtractFilePath(AP3))));
@@ -6378,7 +6433,19 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-//                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: -'))
+              end else
+              // BMP, JPEG, PNG, TIFF zu PDF
+              if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+              begin
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick + ' "' + AP3 + '" "' + Ziel + '"'));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(ExtractFilePath(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + BackSlash(ExtractFilePath(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end;
             end;
             Closefile(F);
@@ -6393,10 +6460,15 @@ begin
         if Einstellungen_Form.AnzeigenCB.Checked then
         begin
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then // PDF
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then // PDF anzeigen
           begin
             if Zielanz = Ziel then
               Zielanz := Ziel;
+            if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or
+               (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+               (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // PDF anzeigen
+              Zielanz := Ziel;
+
             // Pause von 1 sec. einbauen...
             Sleep(1000);
 
@@ -6412,6 +6484,16 @@ begin
             else
               ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
           end else
+
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // BMP/PNG/TIFF
+          begin
+            if Einstellungen_Form.Edit3.Text = '' then
+              ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'), NIL, NIL, SW_SHOWNORMAL)
+            else
+              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL);
+          end else
+
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or (Einstellungen_Form.AuswahlRG.ItemIndex = 2) then // PS/TXT
           begin
             if Einstellungen_Form.Edit2.Text = '' then
@@ -6458,8 +6540,8 @@ begin
 
   // Nach der Erstellung den ersten Eintrag markieren
   LMDShellList1.ItemIndex := 0;
-//  LMDShellList1.SetFocus;
 
+  // Seiten wieder zurückstellen
   Seiten_Form.VonSE.Value := 0;
   Seiten_Form.BisSE.Value := 0;
 
