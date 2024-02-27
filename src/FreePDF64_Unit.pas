@@ -8,7 +8,8 @@
 // PDF-Datei(en) oder im anderen gewünschten Format im Zielverzeichnis!
 //
 // Was braucht man außer 'FreePDF64' noch:
-// - GhostScript (Freeware)
+// - GhostScript
+// - ImageMagick
 // - QPDF
 // - PDFtk
 // - XpdfReader und die Xpdf-Tools
@@ -335,6 +336,7 @@ end;
     Suche3: TMenuItem;
     SuchemitAltF71: TMenuItem;
     SuchennachSucheninHistorylschen1: TMenuItem;
+    ImageList1: TImageList;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2827,7 +2829,7 @@ begin
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
       Auswahl := LMDShellList2.SelectedItem.PathName;
 
-  // JPEG anzeigen
+  // Grafiken anzeigen
   if Image1.Visible then
   begin
     Image1.Visible := False;
@@ -2844,7 +2846,6 @@ begin
   end else
 
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
-    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
     begin
       LMDShellList2.Visible := False;
       Image1.Visible := True;
@@ -2852,7 +2853,6 @@ begin
       Exit;
     end;
   if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
-    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) then
     begin
       LMDShellList1.Visible := False;
       Image2.Visible := True;
@@ -4724,8 +4724,7 @@ begin
     Exit
   else
   if Image1.Visible then
-    if (Uppercase(ExtractFileExt(LMDShellList1.SelectedItem.Pathname)) = ('.JPG')) or (Uppercase(LMDShellList1.SelectedItem.Pathname) = ('.JPEG')) then
-      Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.pathname);
+    Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.pathname);
 end;
 
 // Starte die Erstellung mit Doppelklick auf ein Listenelement, außer es ist ein Verzeichnis...
@@ -4795,8 +4794,7 @@ begin
     Exit
   else
   if Image2.Visible then
-    if (Uppercase(ExtractFileExt(LMDShellList2.SelectedItem.Pathname)) = ('.JPG')) or (Uppercase(LMDShellList2.SelectedItem.Pathname) = ('.JPEG')) then
-      Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.pathname);
+    Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.pathname);
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);

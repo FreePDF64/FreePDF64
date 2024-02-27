@@ -563,7 +563,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
-      Caption = 'F3 PS/PDF/JPEG anzeigen'
+      Caption = 'F3 PS/PDF/Bilder anzeigen'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -786,6 +786,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1475
     end
     object BottomPanel: TPanel
       Left = 0
@@ -912,6 +913,8 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
+    ExplicitWidth = 536
+    ExplicitHeight = 532
     DesignSize = (
       542
       533)
@@ -1198,6 +1201,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 814
+      ExplicitTop = 909
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1331,6 +1336,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 530
       DesignSize = (
         364
         531)
@@ -1474,6 +1480,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 907
       end
       object Ziellabel: TPanel
         Left = 1
@@ -1928,7 +1935,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Btn_RenameClick
       end
       object PDFPRNPSanzeigen1: TMenuItem
-        Caption = 'PS/PDF anzeigen'
+        Caption = 'PS/PDF/Bilder anzeigen'
         ShortCut = 114
         OnClick = Btn_ViewClick
       end
@@ -15614,5 +15621,9 @@ object FreePDF64_Form: TFreePDF64_Form
     Title = 'Anlage einer PDF-Datei hinzuf'#252'gen - Bitte Anlage ausw'#228'hlen...'
     Left = 177
     Top = 346
+  end
+  object ImageList1: TImageList
+    Left = 660
+    Top = 156
   end
 end
