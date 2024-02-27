@@ -4498,7 +4498,7 @@ begin
     if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then
     begin
       if (Uppercase(ExtractFileExt(BackSlash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
-          FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.TIFF') then
+          FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.TIF') then
         FreePDF64_Form.FormatBtn.Font.Color := clWindowText
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
