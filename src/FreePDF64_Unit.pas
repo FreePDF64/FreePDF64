@@ -5979,8 +5979,8 @@ begin
           begin
             ProcID := 0;
             // Starte nun die richtige Erstellung...
-            if RunProcess(ImageMagick + ' "' + AP3 + '" "' + Ziel + Hochkommata, SW_HIDE, True, @ProcID) = 0 then
-              Memozeile := ImageMagick + ' "' + AP3 + '" "' + Ziel + Hochkommata;
+            if RunProcess(ImageMagick + ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + Hochkommata, SW_HIDE, True, @ProcID) = 0 then
+              Memozeile := ImageMagick + ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + Hochkommata;
           end;
 
           // PDF-Erstellung von 128-Bit PS/PDF
@@ -6439,7 +6439,8 @@ begin
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
               begin
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick + ' "' + AP3 + '" "' + Ziel + '"'));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick +
+                        ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + '"'));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + BackSlash(ExtractFilePath(AP3))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
