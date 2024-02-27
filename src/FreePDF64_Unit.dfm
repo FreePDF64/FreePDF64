@@ -546,8 +546,6 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitTop = 579
-    ExplicitWidth = 1475
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -555,8 +553,8 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 33
       Hint = 
         '- Markierte PS/PDF-Datei entweder mit dem PDF-Anzeiger oder mit ' +
-        'Ghostscript anzeigen'#13#10'- JPEG-Dateien werden im gegen'#252'berliegende' +
-        'n Fenster angezeigt. Fenster schlie'#223'en mit F3'
+        'Ghostscript anzeigen'#13#10'- Bilder werden im gegen'#252'berliegenden Fens' +
+        'ter angezeigt. Fenster schlie'#223'en mit F3'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
