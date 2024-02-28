@@ -546,6 +546,8 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    ExplicitTop = 579
+    ExplicitWidth = 1475
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -2240,11 +2242,6 @@ object FreePDF64_Form: TFreePDF64_Form
       object Papierkorb1: TMenuItem
         Caption = 'Papierkorb'
         OnClick = Papierkorb1Click
-      end
-      object Suche1: TMenuItem
-        Action = LMDShellFindComputer1
-        Caption = 'Windows-Suche...'
-        Hint = 'Suche'
       end
       object Suche2: TMenuItem
         Caption = 'Suche..'

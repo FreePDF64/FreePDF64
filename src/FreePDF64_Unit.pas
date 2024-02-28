@@ -205,7 +205,6 @@ end;
     LMDShellList1: TLMDShellList;
     PanelR: TPanel;
     Zielverzeichnisanzeigen1: TMenuItem;
-    Suche1: TMenuItem;
     Splitter3: TSplitter;
     Merge: TMenuItem;
     N1: TMenuItem;
@@ -2829,7 +2828,7 @@ begin
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
       Auswahl := LMDShellList2.SelectedItem.PathName;
 
-  // Grafiken anzeigen
+  // JPEG anzeigen
   if Image1.Visible then
   begin
     Image1.Visible := False;
@@ -2846,6 +2845,9 @@ begin
   end else
 
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
+    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
     begin
       LMDShellList2.Visible := False;
       Image1.Visible := True;
@@ -2853,6 +2855,9 @@ begin
       Exit;
     end;
   if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+    if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
     begin
       LMDShellList1.Visible := False;
       Image2.Visible := True;
