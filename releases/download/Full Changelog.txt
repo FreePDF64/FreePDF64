@@ -1,4 +1,6 @@
-27.02.2024, V5.0.0
+29.02.2024, V5.0.1
+Neu -> Suche-Funktionen weiter ausgebaut: Nun ist auch das Kopieren/Bewegen von Dateien/Verzeichnisse möglich.
+28.02.2024, V5.0.0
 Neu -> Konvertieren von BMP/PNG/TIFF zu PDF.
 Fix -> Einstellungsfenster neu sortiert.
 Fix -> Codeoptimierungen durchgeführt.
