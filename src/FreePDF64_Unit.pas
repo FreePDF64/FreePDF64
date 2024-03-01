@@ -4782,9 +4782,8 @@ procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 begin
   if LMDShellList1.SelCount > 0 then
-  begin
     PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) + ' => START')
-  end else
+  else
     PDF_Erstellung.Caption := ('START');
   // Abfrage auf Hinweis bzgl. der Extension
   ExtAbfrage;
