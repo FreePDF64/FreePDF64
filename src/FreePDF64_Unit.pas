@@ -5010,16 +5010,28 @@ procedure TFreePDF64_Form.Allemarkieren1Click(Sender: TObject);
 begin
   if LMDShellList1.Focused then
   begin
-    LMDShellList1.Cursor := crHourGlass;
-    LMDShellList1.SelectAll;
-    LMDShellList1.Cursor := crDefault;
+    if LMDShellList1.SelCount > 1 then
+    begin
+      LMDShellList1.ClearSelection;
+      LMDShellList1.ItemIndex := 0;
+    end else
+    begin
+      LMDShellList1.Cursor := crHourGlass;
+      LMDShellList1.SelectAll;
+      LMDShellList1.Cursor := crDefault;
+    end;
   end else
   if LMDShellList2.Focused then
-   begin
-    LMDShellList2.Cursor := crHourGlass;
-    LMDShellList2.SelectAll;
-    LMDShellList2.Cursor := crDefault;
-  end;
+    if LMDShellList2.SelCount > 1 then
+    begin
+      LMDShellList2.ClearSelection;
+      LMDShellList2.ItemIndex := 0;
+    end else
+    begin
+      LMDShellList2.Cursor := crHourGlass;
+      LMDShellList2.SelectAll;
+      LMDShellList2.Cursor := crDefault;
+    end;
 end;
 
 // Extract Extension OHNE Punkt!
