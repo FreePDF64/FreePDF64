@@ -3540,14 +3540,6 @@ begin
         Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
         Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
 
-        //Memo Height Addition
-        if not ValueExists('Start', 'Memo Height Addition') then
-        begin
-          MHA := 80;
-          WriteInteger('Start', 'Memo Height Addition', MHA);
-        end else
-          MHA := ReadInteger('Start', 'Memo Height Addition', MHA);
-
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
@@ -3560,15 +3552,6 @@ begin
         if not ValueExists('Files','PDF-Reader') then
           PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
         PDFReader  := ReadString('Files', 'PDF-Reader', PDFReader);
-
-        if not ValueExists('Format','System Sound Volume 0-65535') then
-          WriteInteger('Format', 'System Sound Volume 0-65535', 65535);
-        Vol1 := ReadInteger('Format', 'System Sound Volume 0-65535', Vol1);
-        if (Vol1 < 0) or (Vol1 > 65535) then
-          Vol1 := 65535;
-        Vol2 := Vol1;
-        // Word: 0 - 65535, wobei 65535 die lauteste Stärke ist
-        SetVolume(Vol1,Vol2);
 
         if not ValueExists('Start','Splashscreen') then
           WriteBool('Start', 'Splashscreen', True);
@@ -4146,6 +4129,18 @@ begin
       Autostart.Checked := ReadBool('Start', 'Autostart', Autostart.Checked);
       Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne', Dateianlage_Form.Datei1.Text);
       Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten', Dateianlage_Form.Datei2.Text);
+      Einstellungen_Form.HeightSpin.Value := ReadInteger('Start',  'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
+      Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
+
+      Vol1 := Einstellungen_Form.SoundSpin.Value;
+      if (Vol1 < 0) or (Vol1 > 65535) then
+        Vol1 := 65535;
+      Vol2 := Vol1;
+      // Word: 0 - 65535, wobei 65535 die lauteste Stärke ist
+      SetVolume(Vol1,Vol2);
+
+      //Memo Height Addition
+      MHA := Einstellungen_Form.HeightSpin.Value;
 
       if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
         Dateianlage_Form.DateianlageCB.Checked := True

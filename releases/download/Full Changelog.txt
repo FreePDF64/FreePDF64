@@ -1,3 +1,6 @@
+05.03.2024, V5.0.2
+Neu -> Sound Volume und Programmfensterhöhe nun auch im Einstellungsfenster einstellbar, nicht nur direkt in der FreePDF64.ini-Datei.
+Fix -> Codeoptimierungen durchgeführt.
 04.03.2024, V5.0.1
 Neu -> Suche-Funktionen weiter ausgebaut: Nun ist auch das Kopieren/Bewegen von Dateien/Verzeichnisse möglich.
 28.02.2024, V5.0.0
