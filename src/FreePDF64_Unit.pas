@@ -2186,7 +2186,7 @@ procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
   Hide();
   TrayIcon1.Visible := True;
-  Timer2.Enabled := False;
+  Timer2.Enabled    := False;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -3223,8 +3223,6 @@ begin
           LMDShellList2.SetFocus;
           if LMDShellList2.Selected = NIL then
             LMDShellList2.ItemIndex := 0;
-//          LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
-//          LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
           Break;
         end;
       end;
@@ -4222,13 +4220,13 @@ begin
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then Text_FormatBtn := ' JPEG zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then Text_FormatBtn := ' PNG zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then Text_FormatBtn := ' TIFF zu PDF ';
-  FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
+  FormatBtn.Caption  := 'Formatauswahl:' + Text_FormatBtn;
 
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(BackSlash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
                                       Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(BackSlash(LMDShellFolder2.ActiveFolder.PathName),
-                                   FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                                   ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100));
+  Ziellabel.Caption  := 'Ziel - ' + MinimizeName(BackSlash(LMDShellFolder2.ActiveFolder.PathName),
+                                    FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
+                                    ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100));
 
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
@@ -4273,22 +4271,22 @@ begin
   // Wenn beide ShowFolders = False...
   if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False) then
   begin
-    ShowFolders1.Checked := False;
+    ShowFolders1.Checked     := False;
     ShowFolders_Left.Checked := False;
-    Splitter1.Visible := false;
-    Splitter4.Visible := false;
-    LMDShellTree1.Visible := false;
-    LMDShellTree2.Visible := false;
-    Panel_Left.Visible := false;
-    Panel_Right.Visible := false;
-    Panel2.Visible := false;
-    Panel3.Visible := false;
+    Splitter1.Visible        := False;
+    Splitter4.Visible        := False;
+    LMDShellTree1.Visible    := false;
+    LMDShellTree2.Visible    := false;
+    Panel_Left.Visible       := false;
+    Panel_Right.Visible      := false;
+    Panel2.Visible           := false;
+    Panel3.Visible           := false;
   end;
 
   // Rechtes Zielverzeichnis anzeigen
-  Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
+  Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
   LMDShellList2.Visible := Splitter2.Visible;
-  PanelR.Visible := Splitter2.Visible;
+  PanelR.Visible        := Splitter2.Visible;
 
   DokuInfo_Form.Clear.Click;
   DokuInfo_Form.MetadatenCB.Checked := False;
@@ -4330,7 +4328,7 @@ begin
   end;
 
   Quelllabel.Color := RGB(220,220,220);
-  Ziellabel.Color := clBtnFace;
+  Ziellabel.Color  := clBtnFace;
 
   // Wenn TrayIcon sichtbar ist...
   if TrayIcon1.Visible = False then
