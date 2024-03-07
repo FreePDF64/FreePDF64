@@ -1,4 +1,4 @@
-06.03.2024, V5.0.2
+07.03.2024, V5.0.2
 Neu -> Sound Volume und Programmfensterhöhe nun auch im Einstellungsfenster einstellbar, nicht nur direkt in der FreePDF64.ini-Datei.
 Fix -> Codeoptimierungen durchgeführt.
 04.03.2024, V5.0.1
