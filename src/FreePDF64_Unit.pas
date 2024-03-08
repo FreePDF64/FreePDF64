@@ -5199,7 +5199,7 @@ begin
       AP6 := '-dFirstPage=' + VonSpin + ' -dLastPage=' + BisSpin + ' '
     else
       AP6 := '';
-    AP1 := '-dNOPAUSE -dDOPDFMARKS ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5;
+    AP1 := '-dNOPAUSE -dDOPDFMARKS -dPreserveMarkedContent=true ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5;
 
     // Die erzeugte PDF-Datei in 128 RC4/AES oder 265 AES umwandeln...
     // qpdf --encrypt --user-password=<password> --owner-password=<password> --bits=128 oder --bits=256 -- somefile.pdf somefile_encrypted.pdf
@@ -5756,7 +5756,7 @@ begin
       AP6 := '';
 
     case Einstellungen_Form.AuswahlRG.ItemIndex of
-      0:  AP1 := '-dNOPAUSE -dDOPDFMARKS -dBATCH ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5; // PDF
+      0:  AP1 := '-dNOPAUSE -dDOPDFMARKS -dBATCH -dPreserveMarkedContent=true ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5; // PDF
       1:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-dSAFER -sDEVICE=ps2write'; // PS
       2:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
       3:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2; // BMP
