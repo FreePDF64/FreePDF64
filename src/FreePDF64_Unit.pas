@@ -524,7 +524,6 @@ end;
   published
     { Doppelclick auf Splitter }
     property OnDblClick;
-
   end;
 
 var
