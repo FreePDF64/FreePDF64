@@ -661,7 +661,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
-      Caption = 'Umbenennen'
+      Caption = 'F2 Umbenennen'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
