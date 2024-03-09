@@ -1,4 +1,4 @@
-08.03.2024, V5.0.3
+09.03.2024, V5.0.3
 Fix -> Ghostscript-Update auf Version 10.03.0.
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 07.03.2024, V5.0.2
