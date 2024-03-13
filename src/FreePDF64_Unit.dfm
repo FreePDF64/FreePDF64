@@ -177,8 +177,17 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = FwdBtnClick
       end
-      object ToolButton3: TToolButton
+      object SearchBtn: TToolButton
         Left = 190
+        Top = 0
+        Hint = #214'ffnet das Suchenfenster'
+        Caption = 'SearchBtn'
+        ImageIndex = 10
+        ImageName = 'Item11'
+        OnClick = SearchBtnClick
+      end
+      object ToolButton3: TToolButton
+        Left = 227
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -189,15 +198,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageIndex = 4
         ImageName = 'Item5'
         Style = tbsSeparator
-      end
-      object SearchBtn: TToolButton
-        Left = 195
-        Top = 0
-        Hint = 'Suchefenster '#246'ffnen'
-        Caption = 'SearchBtn'
-        ImageIndex = 10
-        ImageName = 'Item11'
-        OnClick = SearchBtnClick
       end
       object PropertiesBtn: TToolButton
         Left = 232
@@ -786,6 +786,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
+      ExplicitWidth = 1469
     end
     object BottomPanel: TPanel
       Left = 0
@@ -912,6 +913,8 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelLResize
+    ExplicitWidth = 530
+    ExplicitHeight = 531
     DesignSize = (
       536
       532)
@@ -1198,6 +1201,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 804
+      ExplicitTop = 907
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1331,6 +1336,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitHeight = 529
       DesignSize = (
         364
         530)
@@ -1474,6 +1480,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 905
       end
       object Ziellabel: TPanel
         Left = 1
@@ -2237,12 +2244,12 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Papierkorb1Click
       end
       object Suche2: TMenuItem
-        Caption = 'Suche..'
+        Caption = 'Suchen...'
         ShortCut = 16454
         OnClick = SearchBtnClick
       end
       object SuchemitAltF71: TMenuItem
-        Caption = 'Suche mit Alt+F7'
+        Caption = 'Suchen mit Alt+F7'
         ShortCut = 32886
         Visible = False
         OnClick = SearchBtnClick
@@ -2380,7 +2387,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = '-'
     end
     object Suche3: TMenuItem
-      Caption = 'Suche...'
+      Caption = 'Suchen...'
       OnClick = SearchBtnClick
     end
     object Logdateiansehen2: TMenuItem
