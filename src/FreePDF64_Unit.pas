@@ -3694,8 +3694,6 @@ begin
   end;
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
-//  LMDShellList2.ItemFocused := LMDShellList2.Items.Item[0];
-//  LMDShellList2.Selected    := LMDShellList2.Items.Item[0];
 end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
@@ -3731,8 +3729,8 @@ begin
   Btn_View.Left := 7;
   Btn_View.Width := Laenge;
 
-  if Ziel = '' then
-    Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
+//  if Ziel = '' then
+//    Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.HilfezudenEinstellungen1Click(Sender: TObject);
