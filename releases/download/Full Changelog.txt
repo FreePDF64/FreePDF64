@@ -1,4 +1,4 @@
-20.03.2024, V5.0.5
+21.03.2024, V5.0.5
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 16.03.2024, V5.0.4
 Fix -> Codeoptimierungen durchgeführt: Klick auf [Abbrechen] im jeweiligen Fenster stellt die Grundeinstellungen wieder her.

@@ -3668,8 +3668,6 @@ begin
   end;
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
-//  LMDShellList1.ItemFocused := LMDShellList1.Items.Item[0];
-//  LMDShellList1.Selected    := LMDShellList1.Items.Item[0];
 end;
 
 procedure TFreePDF64_Form.ZielBtnClick(Sender: TObject);
@@ -4125,7 +4123,8 @@ begin
 
       if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
         Dateianlage_Form.DateianlageCB.Checked := True
-      else begin
+      else
+      begin
         Dateianlage_Form.DateianlageCB.Checked := False;
         Dateianlage_Form.Clear.Click;
       end;
@@ -4258,12 +4257,12 @@ begin
     ShowFolders_Left.Checked := False;
     Splitter1.Visible        := False;
     Splitter4.Visible        := False;
-    LMDShellTree1.Visible    := false;
-    LMDShellTree2.Visible    := false;
-    Panel_Left.Visible       := false;
-    Panel_Right.Visible      := false;
-    Panel2.Visible           := false;
-    Panel3.Visible           := false;
+    LMDShellTree1.Visible    := False;
+    LMDShellTree2.Visible    := False;
+    Panel_Left.Visible       := False;
+    Panel_Right.Visible      := False;
+    Panel2.Visible           := False;
+    Panel3.Visible           := False;
   end;
 
   // Rechtes Zielverzeichnis anzeigen
@@ -4376,8 +4375,10 @@ begin
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
+  begin
     if LMDShellList1.Selected = NIL then
       LMDShellList1.ItemIndex := 0;
+  end;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4413,8 +4414,10 @@ begin
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
+  begin
     if LMDShellList2.Selected = NIL then
       LMDShellList2.ItemIndex := 0;
+  end;
 
   LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
@@ -4731,7 +4734,8 @@ end;
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
   if LMDShellList1.Selected = NIL then
-    LMDShellList1.ItemIndex := 0;
+    LMDShellList1.ItemFocused;
+//    LMDShellList1.ItemIndex := 0;
 
   if LMDShellList1.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
@@ -4779,8 +4783,6 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
-//  if LMDShellList2.Items.Count > 0 then
-//    LMDShellList2.ItemFocused;
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
 
