@@ -3526,12 +3526,6 @@ begin
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
-        if not ValueExists('Folder','Left') then
-        begin
-          LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-          LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
-        end;
-
         if not ValueExists('Files','PDF-Reader') then
           PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
         PDFReader  := ReadString('Files', 'PDF-Reader', PDFReader);
@@ -3726,9 +3720,6 @@ begin
   BtnEditor.Width := Laenge;
   Btn_View.Left := 7;
   Btn_View.Width := Laenge;
-
-//  if Ziel = '' then
-//    Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.HilfezudenEinstellungen1Click(Sender: TObject);
@@ -3986,6 +3977,7 @@ begin
     // XPDFReader
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
+
     LMDShellFolder1.RootFolder    := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
     LMDShellFolder2.RootFolder    := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
     // Notify-Einstellungen...
@@ -4085,9 +4077,17 @@ begin
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
         FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
-      A_S := ReadString('Folder', 'Left', A_S);
-      B_Z := ReadString('Folder', 'Target', B_Z);
-      Ziel := B_Z;
+      if not ValueExists('Folder','Left') then
+      begin
+        Ziel := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
+        A_S  := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+        B_Z  := Ziel;
+      end else
+      begin
+        A_S := ReadString('Folder', 'Left', A_S);
+        B_Z := ReadString('Folder', 'Target', B_Z);
+        Ziel := B_Z;
+      end;
       Application.ProcessMessages;
 
       Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
@@ -4239,7 +4239,8 @@ begin
 
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
-
+  LMDShellTree1.Folder       := LMDShellFolder1;
+  
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
     Beide_FolderBtn.Visible := False;
@@ -4365,20 +4366,20 @@ var
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder1.BackwardPathList.Count - 2;
-  if Suche_ItemAnzeigen = False then
-    for j := 0 to LMDShellList1.Items.Count - 1 do
-      if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
-      begin
-        LMDShellList1.ItemIndex := j;
-        LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
-      end;
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
   begin
     if LMDShellList1.Selected = NIL then
-      LMDShellList1.ItemIndex := 0;
-  end;
+//    LMDShellList1.ItemIndex := 0;
+      LMDShellList1.ItemFocused;
+  end else
+  for j := 0 to LMDShellList1.Items.Count - 1 do
+    if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
+    begin
+      LMDShellList1.ItemIndex := j;
+      LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
+    end;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4404,20 +4405,20 @@ var
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder2.BackwardPathList.Count - 2;
-  if Suche_ItemAnzeigen = False then
-    for j := 0 to LMDShellList2.Items.Count - 1 do
-      if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
-      begin
-        LMDShellList2.ItemIndex := j;
-        LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
-      end;
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
   begin
     if LMDShellList2.Selected = NIL then
-      LMDShellList2.ItemIndex := 0;
-  end;
+//    LMDShellList2.ItemIndex := 0;
+      LMDShellList2.ItemFocused;
+  end else
+  for j := 0 to LMDShellList2.Items.Count - 1 do
+    if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
+    begin
+      LMDShellList2.ItemIndex := j;
+      LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
+    end;
 
   LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
