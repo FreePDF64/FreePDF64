@@ -4367,19 +4367,18 @@ begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder1.BackwardPathList.Count - 2;
 
+  if Suche_ItemAnzeigen = False then
+    for j := 0 to LMDShellList1.Items.Count - 1 do
+      if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
+      begin
+        LMDShellList1.ItemIndex := j;
+        LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
+      end;
+
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
-  begin
-    if LMDShellList1.Selected = NIL then
-//    LMDShellList1.ItemIndex := 0;
-      LMDShellList1.ItemFocused;
-  end else
-  for j := 0 to LMDShellList1.Items.Count - 1 do
-    if LMDShellList1.Items.Item[j].Caption = ExtractFileName(LMDShellFolder1.BackwardPathList.Strings[i]) then // und gefunden...
-    begin
-      LMDShellList1.ItemIndex := j;
-      LMDShellList1.Selected  := LMDShellList1.Items.Item[j];
-    end;
+    if (LMDShellList1.Items.Count > 0) and (LMDShellList1.Selcount = 0) then
+      LMDShellList1.ItemIndex := 0;
 
   LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4406,19 +4405,18 @@ begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   i := LMDShellFolder2.BackwardPathList.Count - 2;
 
+  if Suche_ItemAnzeigen = False then
+    for j := 0 to LMDShellList2.Items.Count - 1 do
+      if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
+      begin
+        LMDShellList2.ItemIndex := j;
+        LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
+      end;
+
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
-  begin
-    if LMDShellList2.Selected = NIL then
-//    LMDShellList2.ItemIndex := 0;
-      LMDShellList2.ItemFocused;
-  end else
-  for j := 0 to LMDShellList2.Items.Count - 1 do
-    if LMDShellList2.Items.Item[j].Caption = ExtractFileName(LMDShellFolder2.BackwardPathList.Strings[i]) then // und gefunden...
-    begin
-      LMDShellList2.ItemIndex := j;
-      LMDShellList2.Selected  := LMDShellList2.Items.Item[j];
-    end;
+    if (LMDShellList2.Items.Count > 0) and (LMDShellList2.Selcount = 0) then
+      LMDShellList2.ItemIndex := 0;
 
   LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);

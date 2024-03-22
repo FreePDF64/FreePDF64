@@ -1174,7 +1174,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object FavLbL: TListBox
       Left = 814
-      Top = 910
+      Top = 911
       Width = 175
       Height = 40
       Margins.Left = 4
@@ -1202,7 +1202,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
       ExplicitLeft = 804
-      ExplicitTop = 908
+      ExplicitTop = 909
     end
     object StatusBar_Left: TStatusBar
       Left = 1
