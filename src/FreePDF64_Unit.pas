@@ -793,8 +793,7 @@ begin
 end;
 
 // Way to convert size in bytes to KB, MB, GB
-function FormatByteString(Bytes: UInt64;
-  Format: TByteStringFormat = bsfDefault): string;
+function FormatByteString(Bytes: UInt64; Format: TByteStringFormat = bsfDefault): string;
 begin
   if Format = bsfDefault then
   begin

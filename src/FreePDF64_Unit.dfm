@@ -969,14 +969,14 @@ object FreePDF64_Form: TFreePDF64_Form
         end
         item
           Alignment = taRightJustify
-          DataType = cdSize
+          DataType = cdTypeName
           Caption = 'Type'
           MaxWidth = 300
           Visible = True
         end
         item
           Alignment = taRightJustify
-          DataType = cdCustom
+          DataType = cdSize
           Caption = 'Size'
           MaxWidth = 300
           Visible = True
