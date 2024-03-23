@@ -1,3 +1,5 @@
+23.03.2024, V5.1.0
+Fix -> Codeoptimierungen am gesamten Programm durchgeführt.
 22.03.2024, V5.0.5
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 16.03.2024, V5.0.4
