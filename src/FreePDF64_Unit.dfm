@@ -1426,6 +1426,7 @@ object FreePDF64_Form: TFreePDF64_Form
         RowSelect = True
         ParentFont = False
         TabOrder = 0
+        OnChange = LMDShellList2Change
         OnClick = LMDShellList2Click
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown

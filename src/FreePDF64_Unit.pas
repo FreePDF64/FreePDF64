@@ -509,6 +509,7 @@ end;
     procedure SearchBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SuchennachSucheninHistorylschen1Click(Sender: TObject);
+    procedure LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -4765,6 +4766,12 @@ begin
     PDF_Erstellung.Caption := ('START');
   // Abfrage auf Hinweis bzgl. der Extension
   ExtAbfrage;
+  SB_Left;
+end;
+
+procedure TFreePDF64_Form.LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
+begin
+  SB_Right;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
