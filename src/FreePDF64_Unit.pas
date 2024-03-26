@@ -637,7 +637,6 @@ begin
   Status_Form.ShowModal;
 end;
 
-
 // Dieser Code positioniert die Input Box in die
 // Mitte der Form und nicht in die Mitte des Bildschirms
 function GetAveCharSize(Canvas: TCanvas): TPoint;
@@ -2162,14 +2161,14 @@ end;
 procedure TFreePDF64_Form.Timer1Timer(Sender: TObject);
 begin
   FormatBtn.Enabled := not FormatBtn.Enabled;
-  Feedback.Enabled := not Feedback.Enabled;
+  Feedback.Enabled  := not Feedback.Enabled;
 end;
 
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-  Hide();
   TrayIcon1.Visible := True;
+  FreePDF64_Form.Hide;
   Timer2.Enabled    := False;
 end;
 
@@ -2556,8 +2555,8 @@ end;
 // Einfacher Klick auf TrayIcon
 procedure TFreePDF64_Form.TrayIcon1Click(Sender: TObject);
 begin
-  ShowVomTray := True;
-  Show();
+  ShowVomTray       := True;
+  FreePDF64_Form.Show;
   // Hide the tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
 
@@ -2570,7 +2569,7 @@ begin
     AutoSpalte.Checked := False;
 
   WindowState := wsNormal;
-  Application.BringToFront();
+  FreePDF64_Form.BringToFront;
 end;
 
 procedure TFreePDF64_Form.TrayIcon1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -3473,7 +3472,8 @@ begin
       AutoSpalteJN := True
     else
       AutoSpalteJN := False;
-    Hide;
+
+    FreePDF64_Form.Hide;
     TrayIcon1.Visible := True;
   end;
 end;
@@ -3489,9 +3489,9 @@ begin
   Screen.OnActiveControlChange := ActiveControlChanged;
 
   // Initialisieren...
-  PDFPanelH := 0;
-  AutoSpalteJN := False;
-  ShowVomTray  := False;
+  PDFPanelH          := 0;
+  AutoSpalteJN       := False;
+  ShowVomTray        := False;
   Suche_ItemAnzeigen := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
@@ -3908,7 +3908,7 @@ begin
     else
       AutoSpalteJN := False;
 
-    Hide;
+    FreePDF64_Form.Hide;
     TrayIcon1.Visible := True;
   end else
     inherited;
@@ -4238,8 +4238,8 @@ begin
 
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
-  LMDShellTree1.Folder       := LMDShellFolder1;
-  
+  FreePDF64_Form.QuellBtn.Click;
+
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
     Beide_FolderBtn.Visible := False;
