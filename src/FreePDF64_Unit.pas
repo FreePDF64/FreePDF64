@@ -4786,6 +4786,7 @@ begin
     Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.pathname);
 end;
 
+
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
   if LMDShellList2.Selected = NIL then
