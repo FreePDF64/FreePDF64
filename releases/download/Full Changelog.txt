@@ -1,3 +1,5 @@
+15.04.2024, V5.1.2
+Fix -> Codeoptimierungen durchgeführt.
 28.03.2024, V5.1.1
 Fix -> Einige Designfehler des Programms behoben.
 24.03.2024, V5.1.0
