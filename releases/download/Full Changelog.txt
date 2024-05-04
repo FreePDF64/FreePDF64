@@ -1,3 +1,5 @@
+04.05.2024, V5.2.0
+Neu -> Löschen-Button zur Suche-Funktion hinzugefügt.
 15.04.2024, V5.1.2
 Fix -> Codeoptimierungen durchgeführt.
 28.03.2024, V5.1.1
