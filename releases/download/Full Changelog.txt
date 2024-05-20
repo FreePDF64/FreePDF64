@@ -1,3 +1,6 @@
+20.05.2024
+Neu -> Formatauswahl: PDF zu DOCX.
+Fix -> Ghostscript-Update auf Version 10.03.1.
 08.05.2024, V5.2.1
 Fix -> Codeoptimierungen durchgeführt.
 04.05.2024, V5.2.0

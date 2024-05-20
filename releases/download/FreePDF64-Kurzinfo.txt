@@ -10,7 +10,7 @@ Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstel
 
 Funktionen:
 01: Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
-02: Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
+02: Erstellen von PDF zu PDF-verschlüsselt/PS-/BMP-/JPEG-/PNG-/TIFF-/TXT/DOCX-Dateien
 03: Erstellen von BMP/JPEG/PNG/TIFF zu PDF-Dateien
 04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)
 05: PDF-Passwortschutz entfernen

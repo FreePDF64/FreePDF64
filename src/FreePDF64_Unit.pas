@@ -1429,14 +1429,14 @@ procedure TFreePDF64_Form.Anleitung1Click(Sender: TObject);
 begin
   MessageDlgCenter('PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, verschlüsseln'
     + #13 + '(128-Bit RC4/AES oder 256-Bit AES), mit Wasserzeichen oder Stempel versehen, uvm.' + #13
-    + #13 + 'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung:'
+    + #13 + 'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF/DOCX-Erstellung:'
     + #13 + '- Einfachste Installation des benötigten Postscript-Druckers (Menüpunkt: Installation von Mfilemon)'
     + #13 + '- Alle benötigten Programme sind schon im Installationspaket enthalten'
     + #13 + '- Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!'
     + #13 + '- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten Postscript-Drucker... Fertig!' + #13
     + #13 + 'Funktionen:'
     + #13 + '01: Erstellen von PS (Postscript) zu PDF/BMP/JPEG/PNG/TIFF/TXT-Dateien'
-    + #13 + '02: Erstellen von PDF zu PDF-verschlüsselt/PS/BMP/JPEG/PNG/TIFF/TXT-Dateien'
+    + #13 + '02: Erstellen von PDF zu PDF-verschlüsselt/PS/BMP/JPEG/PNG/TIFF/TXT/DOCX-Dateien'
     + #13 + '03: Erstellen von BMP/JPEG/PNG/TIFF zu PDF-Dateien'
     + #13 + '04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)'
     + #13 + '05: PDF-Passwortschutz entfernen'
@@ -4191,17 +4191,18 @@ begin
   //  Encrypt_Form.EncryptCombo.ItemIndex := 1;
   if Einstellungen_Form.AuswahlRG.ItemIndex      = 0  then Text_FormatBtn := ' PS/PDF zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 1  then Text_FormatBtn := ' PDF zu PS '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 2  then Text_FormatBtn := ' PS/PDF zu TXT '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 3  then Text_FormatBtn := ' PS/PDF zu BMP '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 4  then Text_FormatBtn := ' PS/PDF zu JPEG '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 5  then Text_FormatBtn := ' PS/PDF zu PNG '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 6  then Text_FormatBtn := ' PS/PDF zu TIFF G4 - BW '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 7  then Text_FormatBtn := ' PS/PDF zu TIFF LZW - BW '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 8  then Text_FormatBtn := ' PS/PDF zu TIFF (uncompressed) '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 9  then Text_FormatBtn := ' BMP zu PDF '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then Text_FormatBtn := ' JPEG zu PDF '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then Text_FormatBtn := ' PNG zu PDF '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then Text_FormatBtn := ' TIFF zu PDF ';
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 2  then Text_FormatBtn := ' PDF zu DOCX '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 3  then Text_FormatBtn := ' PS/PDF zu TXT '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 4  then Text_FormatBtn := ' PS/PDF zu BMP '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 5  then Text_FormatBtn := ' PS/PDF zu JPEG '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 6  then Text_FormatBtn := ' PS/PDF zu PNG '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 7  then Text_FormatBtn := ' PS/PDF zu TIFF G4 - BW '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 8  then Text_FormatBtn := ' PS/PDF zu TIFF LZW - BW '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 9  then Text_FormatBtn := ' PS/PDF zu TIFF (uncompressed) '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 10  then Text_FormatBtn := ' BMP zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then Text_FormatBtn := ' JPEG zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then Text_FormatBtn := ' PNG zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 13 then Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption  := 'Formatauswahl:' + Text_FormatBtn;
 
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
@@ -4452,7 +4453,7 @@ begin
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
     end else
-    if Einstellungen_Form.AuswahlRG.ItemIndex = 9 then
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then
     begin
       if (Uppercase(ExtractFileExt(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.BMP') then
@@ -4460,7 +4461,7 @@ begin
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
     end else
-    if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then
     begin
       if (Uppercase(ExtractFileExt(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.JPG') or
@@ -4470,7 +4471,7 @@ begin
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
     end else
-    if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then
     begin
       if (Uppercase(ExtractFileExt(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.PNG') then
@@ -4478,7 +4479,7 @@ begin
       else
         FreePDF64_Form.FormatBtn.Font.Color := clRed;
     end else
-    if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then
+    if Einstellungen_Form.AuswahlRG.ItemIndex = 13 then
     begin
       if (Uppercase(ExtractFileExt(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName) +
           FreePDF64_Form.LMDShellList1.Selected.Caption)) =  '.TIF') then
@@ -5753,15 +5754,16 @@ begin
     case Einstellungen_Form.AuswahlRG.ItemIndex of
       0:  AP1 := '-dNOPAUSE -dDOPDFMARKS -dBATCH -dPreserveMarkedContent=true ' + AP6 + AP4 + '-sDEVICE=pdfwrite' + AP1_5; // PDF
       1:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-dSAFER -sDEVICE=ps2write'; // PS
-      2:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
-      3:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2; // BMP
-      4:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=jpeg -dJPEGQ=' + Spin1 + ' ' + '-r' + Spin2; // JPEG
-      5:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=png16m ' + '-r' + Spin2; // PNG
-      6:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiffg4 ' + '-r' + Spin2; // TIFF G4
-      7:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tifflzw ' + '-r' + Spin2; // TIFF LZW
-      8:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiff24nc ' + '-r' + Spin2;
+      2:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=docxwrite'; // DOCX
+      3:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
+      4:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2; // BMP
+      5:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=jpeg -dJPEGQ=' + Spin1 + ' ' + '-r' + Spin2; // JPEG
+      6:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=png16m ' + '-r' + Spin2; // PNG
+      7:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiffg4 ' + '-r' + Spin2; // TIFF G4
+      8:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tifflzw ' + '-r' + Spin2; // TIFF LZW
+      9:  AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiff24nc ' + '-r' + Spin2;
         // TIFF - 24-bit RGB output (8 bits per component) uncompressed
-      10: AP1 := '-dNOPAUSE -dNOSAFER -dBATCH -sDEVICE=pdfwrite' + AP1_5; // JPEG zu PDF
+      11: AP1 := '-dNOPAUSE -dNOSAFER -dBATCH -sDEVICE=pdfwrite' + AP1_5; // JPEG zu PDF
     end;
 
     // -------------------------------------------------------------------------
@@ -5864,23 +5866,25 @@ begin
         LMDShellList1.ItemIndex := - 1;
 
         if (Einstellungen_Form.AuswahlRG.ItemIndex = 0)  or
-           (Einstellungen_Form.AuswahlRG.ItemIndex = 9)  or
-           (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 10)  or
            (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-           (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // PDF
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+           (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // PDF
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '.pdf'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 1 then // PS
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '.ps'))
-        else if Einstellungen_Form.AuswahlRG.ItemIndex = 2 then // TXT
+        else if Einstellungen_Form.AuswahlRG.ItemIndex = 2 then // DOCX
+          Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '.docx'))
+        else if Einstellungen_Form.AuswahlRG.ItemIndex = 3 then // TXT
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '.txt'))
-        else if Einstellungen_Form.AuswahlRG.ItemIndex = 3 then // BMP
+        else if Einstellungen_Form.AuswahlRG.ItemIndex = 4 then // BMP
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '_%03d.bmp'))
-        else if Einstellungen_Form.AuswahlRG.ItemIndex = 4 then // JPEG
+        else if Einstellungen_Form.AuswahlRG.ItemIndex = 5 then // JPEG
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '_%03d.jpg'))
-        else if Einstellungen_Form.AuswahlRG.ItemIndex = 5 then // PNG
+        else if Einstellungen_Form.AuswahlRG.ItemIndex = 6 then // PNG
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '_%03d.png'))
-        else if (Einstellungen_Form.AuswahlRG.ItemIndex > 5) and
-          (Einstellungen_Form.AuswahlRG.ItemIndex < 9) then // TIFF
+        else if (Einstellungen_Form.AuswahlRG.ItemIndex > 6) and
+          (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then // TIFF
           Ziel := (IncludeTrailingBackslash(z) + ChangeFileExt(ExtractFileName(AP3), '.tif'));
 
         // Anonymous Pipe erzeugen
@@ -5975,8 +5979,8 @@ begin
             JV := ' -sOutputFile="' + Ziel + '" "' + ViewJPEG + '" -c "('+ AP3_1 +') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"';
 
           // Erstellung BMP/PNG/TIFF to PDF
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
           begin
             ProcID := 0;
             // Starte nun die richtige Erstellung...
@@ -5994,21 +5998,21 @@ begin
 
           // PDF-Erstellung von JPEG zu PDF, PDF verkleinern nicht gewünscht
           else if (Einstellungen_Form.PDF_Shrink.Checked = False) and
-                  (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then
+                  (Einstellungen_Form.AuswahlRG.ItemIndex = 11) then
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV), NIL, NIL, True,
                    CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS,
                    NIL, NIL, StartUp, Process)
 
           // PDF-Erstellung von JPEG zu PDF, PDF verkleinern ist gewünscht
           else if Einstellungen_Form.PDF_Shrink.Checked and
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 11) then
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1 + JV), NIL, NIL, True,
                    CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS,
                    NIL, NIL, StartUp, Process)
 
           // Erstellung JPEG/TIFF
           else if (Einstellungen_Form.AuswahlRG.ItemIndex > 0) or
-                  (Einstellungen_Form.AuswahlRG.ItemIndex < 9) then
+                  (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then
             Res := CreateProcess(NIL, PChar(Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' +
                    Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5)), NIL, NIL,
                    True, CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or
@@ -6061,7 +6065,7 @@ begin
 {
             if Einstellungen_Form.PDF_Shrink.Checked and
               ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
-              (Einstellungen_Form.AuswahlRG.ItemIndex = 10)) then
+              (Einstellungen_Form.AuswahlRG.ItemIndex = 11)) then
 }
             if Einstellungen_Form.PDF_Shrink.Checked then
             begin
@@ -6267,20 +6271,20 @@ begin
             if Dateianlage_Form.Datei2.Text <> '' then
               Memo1.Lines.Text := Memo1.Lines.Text + 'Datei hinten angefügt: ' + Dateianlage_Form.Datei2.Text;
           end else
-          if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then // JPEG zu PDF
+          if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // JPEG zu PDF
           begin
             Memo1.Lines.Text := Memo1.Lines.Text +
               (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV);
               Zielanz := Ziel;
           end else
           // BMP/PNG/TIFF zu PDF
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
             Memo1.Lines.Text := Memozeile
           else
           begin
             if (Einstellungen_Form.AuswahlRG.ItemIndex > 0) and
-               (Einstellungen_Form.AuswahlRG.ItemIndex < 9) then
+               (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then
             // Auswahl ist PS, TXT, BMP, JPG, PNG, TIFF
               Memo1.Lines.Text := Memo1.Lines.Text +
                 (Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' + Ziel
@@ -6391,7 +6395,7 @@ begin
                           IncludeTrailingBackslash(ExtractFilePath(Dateianlage_Form.Datei2.Text)) + ExtractFileName(Dateianlage_Form.Datei2.Text)));
 
               end else
-              if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then // PDF
+              if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // PDF
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
@@ -6408,12 +6412,13 @@ begin
                 end;
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end else
-              // PS/TXT/TIFF
+              // PS/DOCX/TXT/TIFF
               if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 2) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 6) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 7) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 8) then
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 8) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
@@ -6424,9 +6429,9 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end else
               // BMP, JPEG, PNG
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 5) then
+              if (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 5) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 6) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
@@ -6436,9 +6441,9 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
               end else
               // BMP, JPEG, PNG, TIFF zu PDF
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then
+              if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+                 (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick +
                         ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + '"'));
@@ -6462,13 +6467,13 @@ begin
         if Einstellungen_Form.AnzeigenCB.Checked then
         begin
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 10) then // PDF anzeigen
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 11) then // PDF anzeigen
           begin
             if Zielanz = Ziel then
               Zielanz := Ziel;
-            if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or
-               (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-               (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // PDF anzeigen
+            if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
+               (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+               (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // PDF anzeigen
               Zielanz := Ziel;
 
             // Pause von 1 sec. einbauen...
@@ -6487,8 +6492,8 @@ begin
               ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
           end else
 
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 9) or (Einstellungen_Form.AuswahlRG.ItemIndex = 11) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) then // BMP/PNG/TIFF
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+             (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // BMP/PNG/TIFF
           begin
             if Einstellungen_Form.Edit3.Text = '' then
               ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'), NIL, NIL, SW_SHOWNORMAL)
@@ -6496,7 +6501,7 @@ begin
               ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL);
           end else
 
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or (Einstellungen_Form.AuswahlRG.ItemIndex = 2) then // PS/TXT
+          if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or (Einstellungen_Form.AuswahlRG.ItemIndex = 3) then // PS/DOCX/TXT
           begin
             if Einstellungen_Form.Edit2.Text = '' then
               ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'), NIL, NIL, SW_SHOWNORMAL)
@@ -6504,8 +6509,8 @@ begin
               ShellExecute(Application.Handle, 'open',
                 PChar(Einstellungen_Form.Edit2.Text), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL);
           end else
-          if (Einstellungen_Form.AuswahlRG.ItemIndex > 5) and
-                  (Einstellungen_Form.AuswahlRG.ItemIndex < 9) then // TIFF
+          if (Einstellungen_Form.AuswahlRG.ItemIndex > 6) and
+                  (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then // TIFF
             ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'), NIL, NIL, SW_SHOWNORMAL);
         end;
         // Progressbar
