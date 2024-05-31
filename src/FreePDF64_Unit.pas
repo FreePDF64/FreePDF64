@@ -3923,6 +3923,7 @@ var
   tmpt: TLMDShellListOptions;
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
+  Notify_Active: Boolean;
 begin
   if ShowVomTray = True then
   begin
@@ -4092,7 +4093,7 @@ begin
 
       Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
       FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
-      FreePDF64_Notify.LMDShellNotify.Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
+      Notify_Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
       FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time', FreePDF64_Notify.SpinEditSec.Value);
       FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed', FreePDF64_Notify.Ziel_FestCB.Checked);
       FreePDF64_Notify.ZielEdit.Text := ReadString('Monitoring', 'Fixed Folder', FreePDF64_Notify.ZielEdit.Text);
@@ -4241,6 +4242,7 @@ begin
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
   FreePDF64_Form.QuellBtn.Click;
+  FreePDF64_Notify.LMDShellNotify.Active := Notify_Active;
 
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
