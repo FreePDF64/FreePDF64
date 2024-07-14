@@ -3966,7 +3966,7 @@ begin
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
     // ImageMagick-Converter
     Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick';
-    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'convert.exe';
+    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
     // XPDF-Tools
     Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
     XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
@@ -4041,7 +4041,7 @@ begin
   // ImageMagick-Converter
   if Einstellungen_Form.Edit7.Text = '' then
     Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick';
-  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'convert.exe';
+  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
   // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
     Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64';
