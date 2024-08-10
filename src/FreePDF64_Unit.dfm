@@ -2154,7 +2154,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = DoppelKClick
       end
       object InsUnterverzeichnisbeimErstellen1: TMenuItem
-        Caption = 'Ins Unterverzeichnis beim Erstellen (nur PDF)'
+        Caption = 'Ins Unterverzeichnis beim Erstellen'
         object Formatverz: TMenuItem
           Caption = 'Ohne Datum'
           OnClick = FormatverzClick
