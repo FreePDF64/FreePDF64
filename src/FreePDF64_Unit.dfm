@@ -2163,6 +2163,10 @@ object FreePDF64_Form: TFreePDF64_Form
           Caption = 'Mit Datum'
           OnClick = Formatverz_DateClick
         end
+        object Formatverz_OnlyDate: TMenuItem
+          Caption = 'Nur Datum'
+          OnClick = Formatverz_OnlyDateClick
+        end
       end
       object InDenTray: TMenuItem
         Caption = 'In den Tray beim Start'

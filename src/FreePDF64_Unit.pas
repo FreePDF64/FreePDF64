@@ -336,6 +336,7 @@ end;
     SuchemitAltF71: TMenuItem;
     SuchennachSucheninHistorylschen1: TMenuItem;
     ImageList1: TImageList;
+    Formatverz_OnlyDate: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -510,6 +511,7 @@ end;
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure SuchennachSucheninHistorylschen1Click(Sender: TObject);
     procedure LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
+    procedure Formatverz_OnlyDateClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -1103,6 +1105,11 @@ begin
       // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
       if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
         Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+    end else if Formatverz_OnlyDate.Checked then
+    begin
+      // Verzeichnis erstellen der gewünschten Endung (Datum)
+      if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)) then
+        Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)
     end else if Formatverz.Checked then
     begin
       if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
@@ -1275,6 +1282,11 @@ begin
       // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
       if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
         Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+    end else if Formatverz_OnlyDate.Checked then
+    begin
+      // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+      if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)) then
+        Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)
     end else if Formatverz.Checked then
     begin
       if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
@@ -2030,6 +2042,7 @@ begin
     WriteBool('Start', 'Create with DoubleClick', DoppelK.Checked);
     WriteBool('Start', 'Create Formatfolder', Formatverz.Checked);
     WriteBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
+    WriteBool('Start', 'Create Formatfolder only Date', Formatverz_OnlyDate.Checked);
     WriteString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
     WriteBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
     WriteBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
@@ -2411,6 +2424,11 @@ begin
     // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
     if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
       Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+  end else if Formatverz_OnlyDate.Checked then
+  begin
+    // Verzeichnis erstellen der gewünschten Endung (Datum)
+    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)) then
+      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)
   end else if Formatverz.Checked then
   begin
     if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
@@ -3007,14 +3025,23 @@ end;
 
 procedure TFreePDF64_Form.FormatverzClick(Sender: TObject);
 begin
-  Formatverz.Checked := NOT Formatverz.Checked;
-  Formatverz_Date.Checked := False;
+  Formatverz.Checked          := NOT Formatverz.Checked;
+  Formatverz_Date.Checked     := False;
+  Formatverz_OnlyDate.Checked := False;
 end;
 
 procedure TFreePDF64_Form.Formatverz_DateClick(Sender: TObject);
 begin
-  Formatverz_Date.Checked := NOT Formatverz_Date.Checked;
-  Formatverz.Checked := False;
+  Formatverz_Date.Checked     := NOT Formatverz_Date.Checked;
+  Formatverz.Checked          := False;
+  Formatverz_OnlyDate.Checked := False;
+end;
+
+procedure TFreePDF64_Form.Formatverz_OnlyDateClick(Sender: TObject);
+begin
+  Formatverz_OnlyDate.Checked := NOT Formatverz_OnlyDate.Checked;
+  Formatverz_Date.Checked     := False;
+  Formatverz.Checked          := False;
 end;
 
 procedure TFreePDF64_Form.Drucker1Click(Sender: TObject);
@@ -3522,6 +3549,7 @@ begin
         DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick', DoppelK.Checked);
         Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
         Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
+        Formatverz_OnlyDate.Checked := ReadBool('Start', 'Create Formatfolder only Date', Formatverz_OnlyDate.Checked);
 
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
@@ -5257,6 +5285,10 @@ begin
       // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
       if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(Ziel) + 'PDF' + ' ' + DateToStr(NOW)) then
         Ziel := IncludeTrailingBackslash(Ziel) + 'PDF' + ' ' + DateToStr(NOW);
+    if Formatverz_OnlyDate.Checked then
+      // Verzeichnis erstellen der gewünschten Endung (Datum)
+      if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(Ziel) + DateToStr(NOW)) then
+        Ziel := IncludeTrailingBackslash(Ziel) + DateToStr(NOW);
 
     A1 := AP1_4 + AP1 + A1 + AP1_3 + AP1_2 + AP1_1 + (' -sOutputFile="' + IncludeTrailingBackslash(Ziel) + MERGEDATEI +
           '"' + AX + '-dBATCH' + files) + ' "' + (ExtractFilePath(Application.ExeName) + 'pdfmarks"');
@@ -5950,6 +5982,12 @@ begin
             // Verzeichnis erstellen der gewünschten Endung (z.B. \PDF)
             if System.SysUtils.ForceDirectories(Uppercase(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Ziel) + ' ' + DateToStr(NOW))) then
               Ziel := (IncludeTrailingBackslash(ExtractFilePath(Ziel) + ExtractFileExtensionWithoutDot(Uppercase(Ziel)) + ' ' + DateToStr(NOW))) + ExtractFileName(Ziel);
+          end;
+          // Wenn Erstellung Formatfolder only Datum angehakt...
+          if Formatverz_OnlyDate.Checked then
+          begin
+            if System.SysUtils.ForceDirectories(Uppercase(ExtractFilePath(Ziel) + DateToStr(NOW))) then
+              Ziel := (IncludeTrailingBackslash(ExtractFilePath(Ziel) + DateToStr(NOW))) + ExtractFileName(Ziel);
           end;
 
           // Wenn die Zieldatei schon vorhanden ist, dann Umbenennen...

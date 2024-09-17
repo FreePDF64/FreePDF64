@@ -1,3 +1,5 @@
+17.09.2024 V5.4.0
+Neu -> Bei "Ins Unterverzeichnis beim Erstellen" ist die Auswahl "Nur Datum" nun auch möglich.
 03.09.2024 V5.3.4
 Fix -> Update ImageMagick-Tool auf neueste Version.
 26.08.2024 V5.3.3
