@@ -5455,10 +5455,10 @@ begin
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      ShellExecute(Application.Handle, NIL, PChar('"' + s + '"'), NIL, NIL, SW_SHOWNORMAL)
+      ShellExecute(Application.Handle, NIL, PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, NIL, SW_SHOWNORMAL)
     else
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + s + '"'), NIL, SW_SHOWNORMAL);
-  end;
+      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, SW_SHOWNORMAL);
+    end;
 
   ProgressBar1.Position := 100;
 
