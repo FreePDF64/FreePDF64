@@ -1,3 +1,5 @@
+02.10.2024
+Fix -> Ghostscript-Update auf Version 10.04.0.
 18.09.2024 V5.4.1
 Fix -> Fehler beim Anzeigen der PDF-Datei bei der Funtion "Verbinden" behoben.
 17.09.2024 V5.4.0
