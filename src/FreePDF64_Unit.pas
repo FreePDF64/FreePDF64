@@ -2766,15 +2766,12 @@ var
   RotateType: TRotateFlipType;
   W, H: Integer;
   Ratio: Double;
-  Exif: Boolean;
 begin
   GPImage:= TGPImage.Create(AFileName);
   try
-    Exif := False;
     BufferSize := GPImage.GetPropertyItemSize(PropertyTagOrientation);
     if BufferSize > 0 then
     begin
-      Exif := True;
       GetMem(pPropItem, BufferSize);
       GPImage.GetPropertyItem(PropertyTagOrientation, BufferSize, pPropItem);
       Orientation := PByte(pPropItem.Value)^;
@@ -5091,7 +5088,7 @@ var
   A1, p, s, AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, VonSpin,
   BisSpin, files, files2, NZiel, PZiel, QPDFZiel, QPDF_Zeile,
   DokuSicherheit, DS1, DS2, DS3, DS4, DS5, AX: String;
-  i, j, R, Bit, Bit1, Bit2, Bit3, Bit4, Bit5, Bit6, dpi, DP, DP1, Level,
+  i, j, R, dpi, DP, DP1, Level,
   PDFALevel: Integer;
   Res: Boolean;
   StartUp: TStartupInfo;
@@ -5151,15 +5148,6 @@ begin
     Ghostscript := Einstellungen_Form.Edit1.Text;
     // Wechsel das Verzeichnis.
     ChDir(Ziel);
-
-    // Variablenzuweisung
-    Bit  := 0;
-    Bit1 := 0;
-    Bit2 := 0;
-    Bit3 := 0;
-    Bit4 := 0;
-    Bit5 := 0;
-    Bit6 := 0;
     // PDF-Level
     Level := Einstellungen_Form.PDFLevel.ItemIndex;
     case Level of
@@ -5649,7 +5637,7 @@ end;
 
 procedure TFreePDF64_Form.PDF_ErstellungClick(Sender: TObject);
 var
-  Bit, Bit1, Bit2, Bit3, Bit4, Bit5, Bit6, dpi, DP, DP1,
+  dpi, DP, DP1,
   c, i, j, k, Level, PDFALevel, R: Integer;
   Res: Boolean;
   StartUp: TStartupInfo;
@@ -5698,14 +5686,6 @@ begin
   Ziel := IncludeTrailingBackslash(Ziel);
   try
     Memo1.Clear;
-    // Variablenzuweisung
-    Bit := 0;
-    Bit1 := 0;
-    Bit2 := 0;
-    Bit3 := 0;
-    Bit4 := 0;
-    Bit5 := 0;
-    Bit6 := 0;
     // Wo liegt das Ghostscript-Programm 'gswin64c.exe'?
     Ghostscript := Einstellungen_Form.Edit1.Text;
     // Wo liegt das QPDF-Programm?

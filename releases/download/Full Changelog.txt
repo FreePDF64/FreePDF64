@@ -1,3 +1,5 @@
+03.11.2024
+Fix -> Codeoptimierungen durchgeführt.
 02.10.2024
 Fix -> Ghostscript-Update auf Version 10.04.0.
 18.09.2024 V5.4.1
