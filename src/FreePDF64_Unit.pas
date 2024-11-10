@@ -2575,6 +2575,7 @@ end;
 procedure TFreePDF64_Form.TrayIcon1Click(Sender: TObject);
 begin
   ShowVomTray       := True;
+  Application.BringToFront;
   FreePDF64_Form.Show;
   // Hide the tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
