@@ -1,6 +1,8 @@
-03.11.2024
+10.11.2024 V5.5.1
+Fix -> ImageMagick-Tool "convert.exe" durch neue "magick.exe" ausgetauscht.
+03.11.2024 V5.5.0
 Fix -> Codeoptimierungen durchgeführt.
-02.10.2024
+02.10.2024 V5.4.2
 Fix -> Ghostscript-Update auf Version 10.04.0.
 18.09.2024 V5.4.1
 Fix -> Fehler beim Anzeigen der PDF-Datei bei der Funtion "Verbinden" behoben.
