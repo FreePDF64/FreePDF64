@@ -337,6 +337,7 @@ end;
     SuchennachSucheninHistorylschen1: TMenuItem;
     ImageList1: TImageList;
     Formatverz_OnlyDate: TMenuItem;
+    ResizeEqual: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -512,6 +513,7 @@ end;
     procedure SuchennachSucheninHistorylschen1Click(Sender: TObject);
     procedure LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure Formatverz_OnlyDateClick(Sender: TObject);
+    procedure ResizeEqualClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -1414,6 +1416,11 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.ResizeEqualClick(Sender: TObject);
+begin
+  ResizeEqual.Checked := Not ResizeEqual.Checked;
+end;
+
 procedure TFreePDF64_Form.AutostartClick(Sender: TObject);
 var
   Reg: TRegistry;
@@ -2029,6 +2036,7 @@ begin
     B_Z := IncludeTrailingBackslash(Ziel);
     WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
     WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
+    WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
     WriteBool('Folder', 'Autosize Name', AutoSpalte.Checked);
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
@@ -3541,6 +3549,7 @@ begin
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
         LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
+        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
         VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
         InDenTray.Checked := ReadBool('Start', 'Tray', InDenTray.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
@@ -3730,6 +3739,13 @@ procedure TFreePDF64_Form.FormResize(Sender: TObject);
 var
   Laenge: Integer;
 begin
+  if ResizeEqual.Checked then
+    // Splitter soll sich in der Mitte befinden.
+    if Panel_Right.Visible then
+      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
+    else
+      PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := FreePDF64_Form.Width div 7;
   Btn_Rename.Left := 1;
@@ -4039,6 +4055,7 @@ begin
         WriteBool('Start', 'Autostart', Autostart.Checked);
         WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
+        WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
       end;
       // Speicher wird wieder freigeben
       IniDat.Free;

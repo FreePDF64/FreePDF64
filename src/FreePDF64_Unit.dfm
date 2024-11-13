@@ -2027,6 +2027,11 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Autosize der Name-Spalten'
         OnClick = AutoSpalteClick
       end
+      object ResizeEqual: TMenuItem
+        Caption = 'Bei Resize gleiche Fenstergr'#246#223'en'
+        Checked = True
+        OnClick = ResizeEqualClick
+      end
       object VersteckteDateienanzeigen1: TMenuItem
         Caption = 'Versteckte Dateien anzeigen'
         OnClick = VersteckteDateienanzeigen1Click
