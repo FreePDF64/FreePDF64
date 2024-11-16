@@ -2582,9 +2582,11 @@ end;
 // Einfacher Klick auf TrayIcon
 procedure TFreePDF64_Form.TrayIcon1Click(Sender: TObject);
 begin
-  ShowVomTray       := True;
+  ShowVomTray := True;
   FreePDF64_Form.Show;
   Application.BringToFront;
+  LMDShellList1.SetFocus;
+
   // Hide the tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
 
@@ -4021,8 +4023,8 @@ begin
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
-    LMDShellFolder1.RootFolder    := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-    LMDShellFolder2.RootFolder    := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
+    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
     // Notify-Einstellungen...
     FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
     LMDShellList1.GridLines := True;
