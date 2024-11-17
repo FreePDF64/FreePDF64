@@ -872,12 +872,14 @@ object FreePDF64_Form: TFreePDF64_Form
         BevelKind = bkTile
         BevelWidth = 2
         Caption = 'Abbrechen!'
+        Ctl3D = True
         Font.Charset = ANSI_CHARSET
         Font.Color = clRed
         Font.Height = -20
         Font.Name = 'Segoe UI'
         Font.Style = [fsBold]
         ParentBackground = False
+        ParentCtl3D = False
         ParentFont = False
         TabOrder = 2
         Visible = False
