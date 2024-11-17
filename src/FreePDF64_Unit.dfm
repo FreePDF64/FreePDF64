@@ -810,7 +810,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -15
-        Font.Name = 'Segoe UI Semibold'
+        Font.Name = 'Segoe UI'
         Font.Style = [fsBold]
         ParentFont = False
         OnClick = FormatBtnClick
@@ -827,7 +827,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Right = 4
         Margins.Bottom = 4
         Align = alRight
-        Caption = 'START'
+        Caption = 'STARTEN'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -15

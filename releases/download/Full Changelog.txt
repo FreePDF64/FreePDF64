@@ -1,7 +1,10 @@
+17.11.2024 V5.5.3
+Fix -> Update ImageMagick-Tool auf neueste Version.
+Fix -> Codeoptimierungen durchgeführt.
 13.11.2024 V5.5.2
 Neu -> Bei Größenänderung des FreePDF64-Fensters läßt sich aktivieren, das beide Dateifenster gleich groß bleiben (gleich dem Doppelklick auf den mittleren Größebalken).
 10.11.2024 V5.5.1
-Fix -> ImageMagick-Tool "convert.exe" durch neue "magick.exe" ausgetauscht.
+Fix -> Update ImageMagick-Tool auf neueste Version.
 03.11.2024 V5.5.0
 Fix -> Codeoptimierungen durchgeführt.
 02.10.2024 V5.4.2

@@ -4810,9 +4810,9 @@ procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 begin
   if LMDShellList1.SelCount > 0 then
-    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) + ' => START')
+    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) + ' => STARTEN')
   else
-    PDF_Erstellung.Caption := ('START');
+    PDF_Erstellung.Caption := ('STARTEN');
   // Abfrage auf Hinweis bzgl. der Extension
   ExtAbfrage;
   SB_Left;
@@ -4918,7 +4918,7 @@ end;
 
 procedure TFreePDF64_Form.LMDShellTree1Change(Sender: TObject; Node: TTreeNode);
 begin
-  PDF_Erstellung.Caption := ('START');
+  PDF_Erstellung.Caption := ('STARTEN');
 
   // JPEG-Fenster schlieﬂen
   if Image1.Visible then
