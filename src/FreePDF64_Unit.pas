@@ -4949,9 +4949,15 @@ procedure TFreePDF64_Form.Logdateiansehen1Click(Sender: TObject);
 begin
   if Einstellungen_Form.Edit2.Text = '' then
     Einstellungen_Form.Edit2.Text := 'notepad.exe';
-  ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-    PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'),
-    NIL, SW_SHOWNORMAL)
+
+  if ExtractFileName(Einstellungen_Form.Edit2.Text) = 'notepad++.exe' then
+    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+      PChar(' -n999999 "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'),
+      NIL, SW_SHOWNORMAL)
+  else
+    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+      PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'),
+      NIL, SW_SHOWNORMAL)
 end;
 
 procedure TFreePDF64_Form.Logdateiansehen2Click(Sender: TObject);
