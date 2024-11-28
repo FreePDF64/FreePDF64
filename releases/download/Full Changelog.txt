@@ -1,3 +1,5 @@
+28.11.2024 V5.6.0
+Fix -> Codeoptimierungen durchgeführt.
 23.11.2024 V5.5.4
 Fix -> Codeoptimierungen durchgeführt.
 17.11.2024 V5.5.3
