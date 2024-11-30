@@ -2614,6 +2614,7 @@ begin
   // RMB zeigt die beiden wichtigen Verzeichnisse an
   if Button = mbRight then
   begin
+    PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
     PopupMenu3.Items.Items[1].Caption := FreePDF64_Notify.MonitoringFolder.Text;
     PopupMenu3.Items.Items[2].Caption := MZiel;
   end;

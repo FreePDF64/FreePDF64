@@ -2351,6 +2351,8 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Statusinformationen1: TMenuItem
       Caption = 'Statusinformationen'
+      ImageIndex = 0
+      ImageName = 'Item1'
       OnClick = Statusinformationen1Click
     end
     object N13: TMenuItem
@@ -2358,10 +2360,14 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Einstellungenndern2: TMenuItem
       Caption = 'Einstellungen '#228'ndern'
+      ImageIndex = 103
+      ImageName = '1976057_config_configuration_settings_icon'
       OnClick = Einstellungenndern2Click
     end
     object Verbinden1: TMenuItem
       Caption = 'Verbinden'
+      ImageIndex = 42
+      ImageName = 'Item43'
       OnClick = Verbinden1Click
     end
     object N12: TMenuItem
@@ -2369,14 +2375,20 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Suche3: TMenuItem
       Caption = 'Suchen...'
+      ImageIndex = 10
+      ImageName = 'Item11'
       OnClick = SearchBtnClick
     end
     object Logdateiansehen2: TMenuItem
       Caption = 'Logdatei ansehen'
+      ImageIndex = 77
+      ImageName = 'Item78'
       OnClick = Logdateiansehen2Click
     end
     object berFreePDF641: TMenuItem
       Caption = #220'ber FreePDF64'
+      ImageIndex = 36
+      ImageName = 'Item37'
       OnClick = berFreePDF641Click
     end
     object N14: TMenuItem
@@ -2384,6 +2396,8 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Beenden2: TMenuItem
       Caption = 'Beenden'
+      ImageIndex = 2
+      ImageName = 'Item3'
       OnClick = Beenden2Click
     end
   end

@@ -1,3 +1,5 @@
+30.11.2024 V5.6.1
+Neu -> Das PopupMenu (rechte Maustaste auf Systray-Icon) hat nun Symbole bekommen.
 28.11.2024 V5.6.0
 Fix -> Codeoptimierungen durchgeführt.
 23.11.2024 V5.5.4
