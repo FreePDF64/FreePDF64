@@ -3019,7 +3019,7 @@ begin
   Einstellungen_Form.Position := poMainFormCenter;
   Einstellungen1.Click;
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.DoppelKClick(Sender: TObject);
@@ -3403,7 +3403,7 @@ begin
   Filter_Form.ShowModal;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.FormatBtnClick(Sender: TObject);
@@ -3920,7 +3920,7 @@ procedure TFreePDF64_Form.WMSettingChange(var Message: TMessage);
 begin
   Printer.PrinterIndex := - 1;
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 // Beim Minimieren die Form verstecken und Icon in die TNA
@@ -4318,7 +4318,7 @@ begin
   SB_Right;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   // Abfrage auf FreePDF64-Registry-Eintrag...
   begin
@@ -4773,7 +4773,7 @@ begin
     FilterTB.ImageIndex := 68;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   Quelllabel.Color := RGB(220,220,220);
   Ziellabel.Color := clBtnFace;
@@ -4822,7 +4822,7 @@ begin
     FilterTB.ImageIndex := 68;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   Ziellabel.Color := RGB(220,220,220);
   Quelllabel.Color := clBtnFace;
@@ -5467,7 +5467,7 @@ begin
     Counter := 0;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
@@ -5478,7 +5478,7 @@ begin
   FreePDF64_Notify.ShowModal;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MonitorBtnMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -5526,7 +5526,7 @@ begin
   FreePDF64_Notify.ShowModal;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 // Drücken der rechten Maustaste auf das Überwachungssymbol schaltet diese AN/AUS...
@@ -6542,7 +6542,7 @@ begin
   end;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
-    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+    ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   if Einstellungen_Form.SystemklangCB.Checked then
     PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
