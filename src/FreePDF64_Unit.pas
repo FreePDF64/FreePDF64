@@ -338,6 +338,7 @@ end;
     ImageList1: TImageList;
     Formatverz_OnlyDate: TMenuItem;
     ResizeEqual: TMenuItem;
+    Nullstellung: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -514,6 +515,7 @@ end;
     procedure LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure Formatverz_OnlyDateClick(Sender: TObject);
     procedure ResizeEqualClick(Sender: TObject);
+    procedure NullstellungClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -539,7 +541,7 @@ var
   PDFReader, ImageMagick, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
   Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1,
   XPDF_Images, XPDF_ToHTML, XPDF_Info, XPDF_Detach, XPDF_Fonts: String;
-  ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA: Integer;
+  ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9,
   Versch10, Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
   Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf,
@@ -1275,7 +1277,7 @@ begin
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
       end;
 
-    if MessageDlgCenter('Möchten Sie diese Anlage auch aus der PDF-Datei entfernen?', mtConfirmation, [mbYes, mbNo]) = mrNo then
+    if MessageDlgCenter('Möchten Sie diese Anlage auch aus der PDF-Datei entfernen?', mtInformation, [mbYes, mbNo]) = mrNo then
       Exit;
 
     // Wenn Erstellung Formatfolder angehakt...
@@ -1527,6 +1529,7 @@ begin
       if ComboBoxR.Items.Count > 0 then
         for i := 1 to ComboBoxR.Items.Count do
           WriteString('History', 'History Right' + IntToStr(i - 1), ComboBoxR.Items[i - 1]);
+      WriteInteger('Start', 'Counter', Counter);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -2063,6 +2066,7 @@ begin
     WriteInteger('Start', 'ColumnsR Width1', LMDShellList2.Column[1].Width);
     WriteInteger('Start', 'ColumnsR Width2', LMDShellList2.Column[2].Width);
     WriteInteger('Start', 'ColumnsR Width3', LMDShellList2.Column[3].Width);
+    WriteInteger('Start', 'Counter', Counter);
 
     // Filter schreiben
     IniDat.EraseSection('Filter');
@@ -2080,7 +2084,7 @@ begin
   if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
     if MessageDlgCenter('Einstellungen speichern?' + #13 + #13 +
       'Gespeichert wird alles, außer dem Schnellzugriff und der History!' + #13 +
-      'Diese werden automatisch beim Beenden von FreePDF64 gespeichert.', mtConfirmation,
+      'Diese werden automatisch beim Beenden von FreePDF64 gespeichert.', mtInformation,
       [mbYes, mbNo]) = mrYes then
         // AllesSpeichern aufrufen...
         AllesSpeichern;
@@ -2092,7 +2096,7 @@ var
   IniDat: TIniFile;
   IniFile: String;
 begin
-  if MessageDlgCenter('Fensterposition speichern?', mtConfirmation, [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter('Fensterposition speichern?', mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
@@ -3014,17 +3018,8 @@ begin
   FavClose;
   Einstellungen_Form.Position := poMainFormCenter;
   Einstellungen1.Click;
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.DoppelKClick(Sender: TObject);
@@ -3407,17 +3402,8 @@ begin
   Filter_Form.Position := poMainFormCenter;
   Filter_Form.ShowModal;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.FormatBtnClick(Sender: TObject);
@@ -3523,6 +3509,9 @@ var
   iec: Array [0 .. 255] of String;
   Log: Boolean;
 begin
+  UseLatestCommonDialogs := False;
+  MsgDlgIcons[TMsgDlgType.mtInformation] := TMsgDlgIcon.mdiInformation;
+
   Screen.OnActiveControlChange := ActiveControlChanged;
 
   // Initialisieren...
@@ -3780,7 +3769,7 @@ var
   Msg: String;
 begin
   Msg := 'Soll die Verzeichnis-History (links/rechts) wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     ComboBoxL.Items.Clear;
     ComboBoxR.Items.Clear
@@ -3792,7 +3781,7 @@ var
   Msg: String;
 begin
   Msg := 'Soll die Suchen nach-/Suchen in-History im Suche-Fenster wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     Suche_Form.SearchField.Items.Clear;
     Suche_Form.FileField.Items.Clear
@@ -3819,7 +3808,7 @@ begin
                       '3. Ein manueller Windows-Neustart ist nun erforderlich.' + #13 + #13 +
                       'Nach dem Neustart ist der Drucker "FreePDF64" aus jedem Programm' + #13 +
                       'heraus auswählbar. ' + #13 + #13 +
-                      'Weitere Informationen unter: Hilfe - FreePDF64-HowTo',mtConfirmation, [mbYes,mbNo]) = IDNO then
+                      'Weitere Informationen unter: Hilfe - FreePDF64-HowTo',mtInformation, [mbYes,mbNo]) = IDNO then
     Exit;
 
   MFDatei := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'mfilemon\mfilemon-setup.exe';
@@ -3930,17 +3919,8 @@ end;
 procedure TFreePDF64_Form.WMSettingChange(var Message: TMessage);
 begin
   Printer.PrinterIndex := - 1;
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text;
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 end;
 
 // Beim Minimieren die Form verstecken und Icon in die TNA
@@ -4158,6 +4138,11 @@ begin
       Einstellungen_Form.HeightSpin.Value := ReadInteger('Start',  'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
       Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
 
+      if not ValueExists('Start','Counter') then
+        Counter := 0
+      else
+        Counter := ReadInteger('Start', 'Counter', Counter);
+
       Vol1 := Einstellungen_Form.SoundSpin.Value;
       if (Vol1 < 0) or (Vol1 > 65535) then
         Vol1 := 65535;
@@ -4332,12 +4317,8 @@ begin
   SB_Left;
   SB_Right;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' + FreePDF64_Notify.MonitoringFolder.Text;
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 
   // Abfrage auf FreePDF64-Registry-Eintrag...
   begin
@@ -4791,17 +4772,8 @@ begin
   else
     FilterTB.ImageIndex := 68;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text;
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 
   Quelllabel.Color := RGB(220,220,220);
   Ziellabel.Color := clBtnFace;
@@ -4849,17 +4821,8 @@ begin
   else
     FilterTB.ImageIndex := 68;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text;
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 
   Ziellabel.Color := RGB(220,220,220);
   Quelllabel.Color := clBtnFace;
@@ -4977,7 +4940,7 @@ var
   Msg: String;
 begin
   Msg := 'Soll die Logdatei wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
     if not DeleteFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt') then
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
@@ -5024,7 +4987,7 @@ var
   Msg: String;
 begin
   Msg := 'Soll die komplette Schnellzugriffsliste wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtConfirmation, [mbYes, mbNo]) = mrYes then
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     if FavLbL.Visible then
     begin
@@ -5495,6 +5458,18 @@ begin
   Btn_NewFolder.Click;
 end;
 
+procedure TFreePDF64_Form.NullstellungClick(Sender: TObject);
+var
+  Msg: String;
+begin
+  Msg := 'Soll der Erstellzähler wirklich auf Null gesetzt werden?';
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
+    Counter := 0;
+
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+end;
+
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
 begin
   FavClose;
@@ -5502,16 +5477,8 @@ begin
   FreePDF64_Notify.Position := poMainFormCenter;
   FreePDF64_Notify.ShowModal;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' + FreePDF64_Notify.MonitoringFolder.Text
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MonitorBtnMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -5558,17 +5525,8 @@ begin
   FreePDF64_Notify.Position := poMainFormCenter;
   FreePDF64_Notify.ShowModal;
 
-  StatusBar1.SimpleText := 'Standarddrucker: ' + Printer.Printers[printer.printerindex];
-  if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS'
-  else if Einstellungen_Form.AnzeigenCB.Checked then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AN'
-  else if Einstellungen_Form.AnzeigenCB.Checked = false then
-    StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Anzeigen: AUS';
-  StatusBar1.SimpleText := StatusBar1.SimpleText + ' | Überwachungsverzeichnis: ' +
-    FreePDF64_Notify.MonitoringFolder.Text
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
 end;
 
 // Drücken der rechten Maustaste auf das Überwachungssymbol schaltet diese AN/AUS...
@@ -5879,6 +5837,7 @@ begin
       // Wenn mehrere Dateien markiert sind...
       for i := 0 to LMDShellList1.SelCount - 1 do
       begin
+        INC(Counter);
         if (Einstellungen_Form.PDFA_CB.Checked = False) and (Einstellungen_Form.PDFX.Checked = False) then
           AP1_4 := '';
         ProgressBar1.Position := 0;
@@ -6581,6 +6540,10 @@ begin
         PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
     end;
   end;
+
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
+    ' | Erstellte Dateien - seit Nullstellung: ' + IntToStr(Counter);
+
   if Einstellungen_Form.SystemklangCB.Checked then
     PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
   AbbrechenPn.Visible := False;

@@ -745,7 +745,6 @@ object FreePDF64_Form: TFreePDF64_Form
         end>
       ParentShowHint = False
       ShowHint = False
-      SimplePanel = True
     end
     object Memo1: TMemo
       Left = 0
@@ -2121,6 +2120,10 @@ object FreePDF64_Form: TFreePDF64_Form
       object Logdateilschen1: TMenuItem
         Caption = 'Logdatei l'#246'schen'
         OnClick = Logdateilschen1Click
+      end
+      object Nullstellung: TMenuItem
+        Caption = 'Erstellz'#228'hler auf Null?'
+        OnClick = NullstellungClick
       end
       object N7: TMenuItem
         Caption = '-'
