@@ -1449,10 +1449,10 @@ begin
   MessageDlgCenter('PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, verschlüsseln'
     + #13 + '(128-Bit RC4/AES oder 256-Bit AES), mit Wasserzeichen oder Stempel versehen, uvm.' + #13
     + #13 + 'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF/DOCX-Erstellung:'
-    + #13 + '- Einfachste Installation des benötigten Postscript-Druckers (Menüpunkt: Installation von Mfilemon)'
+    + #13 + '- Einfachste Installation des benötigten FreePDF64-Druckers (Menüpunkt: Installation von Mfilemon)'
     + #13 + '- Alle benötigten Programme sind schon im Installationspaket enthalten'
     + #13 + '- Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!'
-    + #13 + '- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten Postscript-Drucker... Fertig!' + #13
+    + #13 + '- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker... Fertig!' + #13
     + #13 + 'Funktionen:'
     + #13 + '01: Erstellen von PS (Postscript) zu PDF/BMP/JPEG/PNG/TIFF/TXT-Dateien'
     + #13 + '02: Erstellen von PDF zu PDF-verschlüsselt/PS/BMP/JPEG/PNG/TIFF/TXT/DOCX-Dateien'
@@ -1476,7 +1476,7 @@ begin
     + #13 + '20: Umfangreichste Suchfunktionen'
     + #13 + '21: E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"'
     + #13 + '22: Automatische Überwachung auf neue eingehende Dateien (z.B. gedruckt aus den Anwendungen an den'
-    + #13 + '      Postscript-Drucker) mit sofortiger Erstellung ins gewünschte Format!'
+    + #13 + '      FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format!'
     + #13 + '... uvm.' + #13 + #13 +
     'Weitere Informationen unter: Hilfe - FreePDF64-HowTo',
     mtInformation, [mbOk]);
