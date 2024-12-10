@@ -985,11 +985,11 @@ begin
               if Einstellungen_Form.AnzeigenCB.Checked then
               begin
                 if Einstellungen_Form.Edit3.Text = '' then
-                  ShellExecute(Application.Handle, NIL, PChar('"' +
-                  (IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3)) + '"'), NIL, NIL, SW_SHOWNORMAL)
+                  PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
                 else
-                  ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                    PChar('"' + (IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3)) + '"'), NIL, SW_SHOWNORMAL);
+                  PDFReader := Einstellungen_Form.Edit3.Text;
+                ShellExecute(Application.Handle, 'open', PChar(PDFReader),
+                  PChar('"' + (IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3)) + '"'), NIL, SW_SHOWNORMAL);
               end;
             end;
             // Ende von FreePDF64Log.txt
@@ -1171,9 +1171,10 @@ begin
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       if Einstellungen_Form.Edit3.Text = '' then
-        ShellExecute(Application.Handle, NIL, PChar(Zieldatei), NIL, NIL, SW_SHOWNORMAL)
+        PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
       else
-        ShellExecute(Application.Handle, 'open', PChar(Zieldatei), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+        PDFReader := Einstellungen_Form.Edit3.Text;
+      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
@@ -1338,9 +1339,10 @@ begin
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       if Einstellungen_Form.Edit3.Text = '' then
-        ShellExecute(Application.Handle, NIL, PChar(Zieldatei), NIL, NIL, SW_SHOWNORMAL)
+        PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
       else
-        ShellExecute(Application.Handle, 'open', PChar(Zieldatei), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+        PDFReader := Einstellungen_Form.Edit3.Text;
+      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
@@ -2486,9 +2488,10 @@ begin
         // Pause von 1 sec. einbauen...
         Sleep(1000);
         if Einstellungen_Form.Edit3.Text = '' then
-          ShellExecute(Application.Handle, NIL, PChar('"' + EndPDF + '"'), NIL, NIL, SW_SHOWNORMAL)
+          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
         else
-          ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
+          PDFReader := Einstellungen_Form.Edit3.Text;
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
       end;
     end;
   end else
@@ -2533,9 +2536,10 @@ begin
           begin
             Sleep(1000);
             if Einstellungen_Form.Edit3.Text = '' then
-              ShellExecute(Application.Handle, NIL, PChar('"' + EndPDF + '"'), NIL, NIL, SW_SHOWNORMAL)
+              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
             else
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
+              PDFReader := Einstellungen_Form.Edit3.Text;
+            ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
           end;
         end;
       end else
@@ -2836,7 +2840,11 @@ procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
   Param, XPDFReader: String;
 begin
+  if Einstellungen_Form.Edit3.Text = '' then
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
   XPDFReader := Einstellungen_Form.Edit3.Text;
+  PDFReader  := XPDFReader;
+
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
       Auswahl := LMDShellList1.SelectedItem.PathName
   else
@@ -5433,10 +5441,11 @@ begin
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      ShellExecute(Application.Handle, NIL, PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, NIL, SW_SHOWNORMAL)
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, SW_SHOWNORMAL);
-    end;
+      PDFReader := Einstellungen_Form.Edit3.Text;
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, SW_SHOWNORMAL);
+  end;
 
   ProgressBar1.Position := 100;
 
@@ -5606,9 +5615,10 @@ begin
   else
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      ShellExecute(Application.Handle, NIL, PChar('"' + s + '"'), NIL, NIL, SW_SHOWNORMAL)
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + s + '"'), NIL, SW_SHOWNORMAL);
+      PDFReader := Einstellungen_Form.Edit3.Text;
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + s + '"'), NIL, SW_SHOWNORMAL);
   end;
 end;
 
@@ -6485,27 +6495,21 @@ begin
             // Pause von 1 sec. einbauen...
             Sleep(1000);
 
-            if Encrypt_Form.EncryptCombo.ItemIndex = 1 then
-            begin
-              if Einstellungen_Form.Edit3.Text = '' then ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'),
-                  NIL, NIL, SW_SHOWNORMAL)
-              else
-                ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL);
-            end else
             if Einstellungen_Form.Edit3.Text = '' then
-              ShellExecute(Application.Handle, NIL, PChar('"' + Zielanz + '"'), NIL, NIL, SW_SHOWNORMAL)
+              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+            else
+              PDFReader := Einstellungen_Form.Edit3.Text;
+
+            if Encrypt_Form.EncryptCombo.ItemIndex = 1 then
+              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
             else
               ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
           end else
 
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
              (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // BMP/PNG/TIFF
-          begin
-            if Einstellungen_Form.Edit3.Text = '' then
-              ShellExecute(Application.Handle, NIL, PChar('"' + Ziel + '"'), NIL, NIL, SW_SHOWNORMAL)
-            else
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL);
-          end else
+              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
+          else
 
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or (Einstellungen_Form.AuswahlRG.ItemIndex = 3) then // PS/DOCX/TXT
           begin
