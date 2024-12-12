@@ -815,18 +815,20 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FormatBtnClick
       end
       object PDF_Erstellung: TButton
-        Left = 1124
+        Left = 1074
         Top = 1
-        Width = 350
+        Width = 400
         Height = 42
         Cursor = crHandPoint
-        Hint = 'Auf geht'#39's - Hiermit wird die Erstellung gestartet [auch F10]'
+        Hint = 
+          'Auf geht'#39's - Mit Klick wird die Erstellung ins gew'#252'nschte Format' +
+          ' gestartet [auch F10]'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
         Align = alRight
-        Caption = 'STARTEN'
+        Caption = 'Erstellung starten!'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -15
@@ -845,7 +847,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object ProgressBar1: TProgressBar
         Left = 421
         Top = 1
-        Width = 473
+        Width = 423
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -857,7 +859,7 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 1
       end
       object AbbrechenPn: TPanel
-        Left = 894
+        Left = 844
         Top = 1
         Width = 230
         Height = 42
