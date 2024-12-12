@@ -831,7 +831,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Erstellung starten!'
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
-        Font.Height = -15
+        Font.Height = -17
         Font.Name = 'Segoe UI'
         Font.Style = [fsBold]
         ImageIndex = 92
