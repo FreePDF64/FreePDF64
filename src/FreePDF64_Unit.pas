@@ -16,7 +16,7 @@
 // - Ein postscriptfähigen Farbdruckertreiber (mit Mfilemon)
 //
 // Angefangen im:    Dezember 2021
-// Programmiert mit: Embarcadero Delphi 11 Community Edition
+// Programmiert mit: Embarcadero Delphi 12.1 Community Edition
 //
 // Hinweis: Wenn ein Formular erzeugt wird und seine Eigenschaft
 // Visible auf True gesetzt ist, werden die folgenden

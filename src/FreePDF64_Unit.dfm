@@ -838,6 +838,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = '31189_arrow_forward_green_icon'
         Images = VirtualImageList1
         ParentFont = False
+        PressedImageIndex = 102
+        PressedImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
         TabOrder = 0
         TabStop = False
         OnClick = PDF_ErstellungClick
