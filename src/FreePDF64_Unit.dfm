@@ -994,6 +994,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnChange = LMDShellList1Change
       OnClick = LMDShellList1Click
+      OnColumnClick = LMDShellList1ColumnClick
       OnDblClick = LMDShellList1DblClick
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
@@ -1406,6 +1407,7 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 0
         OnChange = LMDShellList2Change
         OnClick = LMDShellList2Click
+        OnColumnClick = LMDShellList2ColumnClick
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem

@@ -1,3 +1,5 @@
+15.12.2024 V5.6.4
+Neu -> Speicherung der Spaltensortierung.
 10.12.2024 V5.6.3
 Fix -> Codeoptimierungen durchgeführt.
 01.12.2024 V5.6.2

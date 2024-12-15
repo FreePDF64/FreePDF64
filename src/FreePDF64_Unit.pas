@@ -93,7 +93,6 @@ const
   OneMB = OneKB * OneKB;
   OneGB = OneKB * OneMB;
   OneTB = Int64(OneKB) * OneGB;
-
 type
   TExecuteWaitEvent = procedure(const ProcessInfo: TProcessInformation;
     var ATerminate: Boolean) of object;
@@ -516,6 +515,8 @@ end;
     procedure Formatverz_OnlyDateClick(Sender: TObject);
     procedure ResizeEqualClick(Sender: TObject);
     procedure NullstellungClick(Sender: TObject);
+    procedure LMDShellList2ColumnClick(Sender: TObject; Column: TListColumn);
+    procedure LMDShellList1ColumnClick(Sender: TObject; Column: TListColumn);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -528,6 +529,7 @@ end;
   private
     { Private-Deklarationen }
     wcActive, wcPrevious : TWinControl;
+    FSortColumn1, FSortColumn2: Integer;
   published
     { Doppelclick auf Splitter }
     property OnDblClick;
@@ -1532,6 +1534,8 @@ begin
         for i := 1 to ComboBoxR.Items.Count do
           WriteString('History', 'History Right' + IntToStr(i - 1), ComboBoxR.Items[i - 1]);
       WriteInteger('Start', 'Counter', Counter);
+      WriteInteger('Start', 'Sort ColumnsL', FSortColumn1);
+      WriteInteger('Start', 'Sort ColumnsR', FSortColumn2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -3948,6 +3952,18 @@ begin
     inherited;
 end;
 
+function ListViewSort(Item1, Item2: TListItem; Data: Integer): Integer; stdcall;
+var
+  ColumnIndex: Integer;
+begin
+  ColumnIndex := Data;
+
+  if Item1.SubItems.Count > ColumnIndex then
+    Result := CompareText(Item1.SubItems[ColumnIndex], Item2.SubItems[ColumnIndex])
+  else
+    Result := 0;
+end;
+
 procedure TFreePDF64_Form.FormShow(Sender: TObject);
 var
   c, i, ie1: Integer;
@@ -4202,7 +4218,8 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-
+      FSortColumn1 := ReadInteger('Start', 'Sort ColumnsL', FSortColumn1);
+      FSortColumn2 := ReadInteger('Start', 'Sort ColumnsR', FSortColumn2);
     end;
     IniDat.Free;
   except
@@ -4389,6 +4406,12 @@ begin
     MonitorBtn.ImageIndex := 58;
     MonitorBtn.Caption    := '  AUS';
   end;
+
+  // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn...'
+  if FSortColumn1 >= 0 then
+    LMDShellList1.SortColumn(FSortColumn1);
+  if FSortColumn2 >= 0 then
+    LMDShellList2.SortColumn(FSortColumn2);
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
@@ -4816,6 +4839,17 @@ begin
     Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.pathname);
 end;
 
+procedure TFreePDF64_Form.LMDShellList1ColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+  FSortColumn1 := Column.Index;
+end;
+
+procedure TFreePDF64_Form.LMDShellList2ColumnClick(Sender: TObject;
+  Column: TListColumn);
+begin
+  FSortColumn2 := Column.Index;
+end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
