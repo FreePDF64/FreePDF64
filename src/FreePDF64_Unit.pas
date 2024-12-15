@@ -56,6 +56,7 @@ uses
   Vcl.ExtCtrls,
   LMDControl,
   LMDShList,
+  LMDShMisc,
   IniFiles,
   LMDCustomComponent,
   LMDShBase,
@@ -529,7 +530,8 @@ end;
   private
     { Private-Deklarationen }
     wcActive, wcPrevious : TWinControl;
-    FSortColumn1, FSortColumn2: Integer;
+    FSortColumn, FSortColumn2: Integer;
+    FSortAscending, FSortAscending2: Boolean;
   published
     { Doppelclick auf Splitter }
     property OnDblClick;
@@ -1534,8 +1536,10 @@ begin
         for i := 1 to ComboBoxR.Items.Count do
           WriteString('History', 'History Right' + IntToStr(i - 1), ComboBoxR.Items[i - 1]);
       WriteInteger('Start', 'Counter', Counter);
-      WriteInteger('Start', 'Sort ColumnsL', FSortColumn1);
+      WriteInteger('Start', 'Sort ColumnsL', FSortColumn);
       WriteInteger('Start', 'Sort ColumnsR', FSortColumn2);
+      WriteBool('Start', 'SortDir ColumnsL', FSortAscending);
+      WriteBool('Start', 'SortDir ColumnsR', FSortAscending2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -4218,8 +4222,12 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-      FSortColumn1 := ReadInteger('Start', 'Sort ColumnsL', FSortColumn1);
+      FSortAscending  := True;
+      FSortAscending2 := True;
+      FSortColumn  := ReadInteger('Start', 'Sort ColumnsL', FSortColumn);
       FSortColumn2 := ReadInteger('Start', 'Sort ColumnsR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnsL', FSortAscending);
+      FSortAscending2 := ReadBool('Start', 'SortDir ColumnsR', FSortAscending2);
     end;
     IniDat.Free;
   except
@@ -4407,11 +4415,20 @@ begin
     MonitorBtn.Caption    := '  AUS';
   end;
 
-  // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn...'
-  if FSortColumn1 >= 0 then
-    LMDShellList1.SortColumn(FSortColumn1);
+  // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
+  if FSortColumn  >= 0 then
+    LMDShellList1.SortColumn(FSortColumn);
   if FSortColumn2 >= 0 then
     LMDShellList2.SortColumn(FSortColumn2);
+
+  if FSortAscending then
+    LMDShellList1.SortDirection := sdAscending
+  else
+    LMDShellList1.SortDirection := sdDescending;
+  if FSortAscending2 then
+    LMDShellList2.SortDirection := sdAscending
+  else
+    LMDShellList2.SortDirection := sdDescending;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
@@ -4842,13 +4859,25 @@ end;
 procedure TFreePDF64_Form.LMDShellList1ColumnClick(Sender: TObject;
   Column: TListColumn);
 begin
-  FSortColumn1 := Column.Index;
+  if Column.Index = FSortColumn then
+    FSortAscending := not FSortAscending
+  else
+  begin
+    FSortColumn := Column.Index;
+    FSortAscending := True;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2ColumnClick(Sender: TObject;
   Column: TListColumn);
 begin
-  FSortColumn2 := Column.Index;
+  if Column.Index = FSortColumn2 then
+    FSortAscending2 := not FSortAscending2
+  else
+  begin
+    FSortColumn2 := Column.Index;
+    FSortAscending2 := True;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
