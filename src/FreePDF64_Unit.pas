@@ -1536,10 +1536,10 @@ begin
         for i := 1 to ComboBoxR.Items.Count do
           WriteString('History', 'History Right' + IntToStr(i - 1), ComboBoxR.Items[i - 1]);
       WriteInteger('Start', 'Counter', Counter);
-      WriteInteger('Start', 'Sort ColumnsL', FSortColumn);
-      WriteInteger('Start', 'Sort ColumnsR', FSortColumn2);
-      WriteBool('Start', 'SortDir ColumnsL', FSortAscending);
-      WriteBool('Start', 'SortDir ColumnsR', FSortAscending2);
+      WriteInteger('Start', 'Sort ColumnL', FSortColumn);
+      WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
+      WriteBool('Start', 'SortDir ColumnL', FSortAscending);
+      WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -4224,10 +4224,10 @@ begin
       end;
       FSortAscending  := True;
       FSortAscending2 := True;
-      FSortColumn  := ReadInteger('Start', 'Sort ColumnsL', FSortColumn);
-      FSortColumn2 := ReadInteger('Start', 'Sort ColumnsR', FSortColumn2);
-      FSortAscending  := ReadBool('Start', 'SortDir ColumnsL', FSortAscending);
-      FSortAscending2 := ReadBool('Start', 'SortDir ColumnsR', FSortAscending2);
+      FSortColumn  := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
   except
