@@ -717,7 +717,7 @@ begin
       Top      := MulDiv(8, DialogUnits.Y, 8);
       Caption  := APrompt;
       Hint     := AHint;
-      Width    := 325;
+      Width    := MulDiv(176, DialogUnits.X, 4); //325;
     end;
 
     Edit := TEdit.Create(Form);
