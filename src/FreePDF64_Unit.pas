@@ -663,6 +663,107 @@ begin
   Result.X := Result.X div 52;
 end;
 
+function MyInputQuery_Verbinden(const ACaption, APrompt, AHint: string; var Value: string): Boolean; overload;
+const
+  SMsgDlgOK     = 'OK';
+  SMsgDlgCancel = 'Abbrechen';
+var
+  x, y, w, h: Integer;
+  Form: TForm;
+  Prompt: TLabel;
+  Edit: TEdit;
+  DialogUnits: TPoint;
+  ButtonTop, ButtonWidth, ButtonHeight: Integer;
+begin
+  Result := False;
+  Form := TForm.Create(Application);
+  with Form do
+  try
+    Canvas.Font  := Font;
+    DialogUnits  := GetAveCharSize(Canvas);
+    BorderStyle  := bsDialog;
+    Caption      := ACaption;
+    ClientWidth  := MulDiv(193, DialogUnits.X, 4);
+    ClientHeight := MulDiv(74, DialogUnits.Y, 8);
+
+    // Horizontal zentrieren
+    w := (Application.MainForm.Width - Form.Width) div 2;
+    X := Application.MainForm.Left + W;
+    if x < 0 then
+      x := 0
+    else if x + w > Screen.Width then
+      x := Screen.Width - Form.Width;
+    Form.Left := X;
+
+    // Vertikal zentrieren
+    h := (Application.MainForm.Height - Form.Height) div 2;
+    // Top-Position des Inputquery-Eingabedialogs
+    y := Application.MainForm.Top + h;
+
+    if y < 0 then
+      y := 0
+    else if y + h > Screen.Height then
+      y := Screen.Height - Form.Height;
+    Form.Left := X;
+    Form.Top  := Y;
+
+    Prompt := TLabel.Create(Form);
+    with Prompt do
+    begin
+      Parent   := Form;
+      ShowHint := True;
+      Cursor   := crHandPoint;
+      Left     := MulDiv(8, DialogUnits.X, 4);
+      Top      := MulDiv(8, DialogUnits.Y, 8);
+      Caption  := APrompt;
+      Hint     := AHint;
+      Width    := 325;
+    end;
+
+    Edit := TEdit.Create(Form);
+    with Edit do
+    begin
+      Parent    := Form;
+      Left      := Prompt.Left;
+      Top       := MulDiv(35, DialogUnits.Y, 8);
+      Width     := MulDiv(176, DialogUnits.X, 4);
+      MaxLength := 255;
+      Text      := Value;
+      SelectAll;
+    end;
+
+    ButtonTop    := MulDiv(52, DialogUnits.Y, 8); // MulDiv(41, DialogUnits.Y, 8);
+    ButtonWidth  := 132; // MulDiv(50, DialogUnits.X, 4);
+    ButtonHeight := 44;  // MulDiv(14, DialogUnits.Y, 8);
+
+    with TButton.Create(Form) do
+    begin
+      Parent      := Form;
+      Caption     := SMsgDlgOK;
+      ModalResult := mrOk;
+      Default     := True;
+      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+    end;
+
+    with TButton.Create(Form) do
+    begin
+      Parent      := Form;
+      Caption     := SMsgDlgCancel;
+      ModalResult := mrCancel;
+      Cancel      := True;
+      SetBounds(MulDiv(102, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+    end;
+
+    if ShowModal = mrOk then
+    begin
+      Value  := Edit.Text;
+      Result := True;
+    end;
+  finally
+    Form.Free;
+  end;
+end;
+
 function MyInputQuery(const ACaption, APrompt: string; var Value: string): Boolean; overload;
 const
   SMsgDlgOK     = 'OK';
@@ -5171,9 +5272,14 @@ begin
   end;
 
   keybd_event(VK_HOME, 0, 0, 0);
+
+  if FreePDF64_Notify.Ziel_FestCB.Checked then
+    Ziel := FreePDF64_Notify.ZielEdit.Text;
   p := IncludeTrailingBackslash(Ziel);
 
-  if MyInputQuery('Verbinden -> Ziel: ' + p, 'Dateiname:', s) then
+  if MyInputQuery_Verbinden('Verbinden', 'Zielverzeichnis -> siehe Hilfetext am Mauszeiger!' + #13 + #13 + 'Dateiname:',
+                            'Zielverzeichnis: ' + p + #13 +
+                            'Es ist gleich dem aktuellen Zielverzeichnis der Überwachung (siehe dort)', s) then
   begin
     if FileExists(IncludeTrailingBackslash(Ziel) + s) then
     begin
@@ -5507,7 +5613,7 @@ begin
       PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + s + '"'), NIL, SW_SHOWNORMAL);
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + ExtractFileName(s) + '"'), NIL, SW_SHOWNORMAL);
   end;
 
   ProgressBar1.Position := 100;

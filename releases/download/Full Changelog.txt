@@ -1,3 +1,6 @@
+20.12.2024 V5.7.0
+Neu -> Funktion Verbinden: Hinweistext beim Mauszeiger zeigt nun das Zielverzeichnis an.
+Fix -> Codeoptimierungen durchgeführt.
 15.12.2024 V5.6.4
 Neu -> Speicherung der Spaltensortierung.
 10.12.2024 V5.6.3
