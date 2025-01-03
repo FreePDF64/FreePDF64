@@ -201,8 +201,6 @@ end;
     PfadimExplorerffnen1: TMenuItem;
     Splitter2: TSplitter;
     LMDShellFolder2: TLMDShellFolder;
-    PanelL: TPanel;
-    LMDShellList1: TLMDShellList;
     PanelR: TPanel;
     Zielverzeichnisanzeigen1: TMenuItem;
     Splitter3: TSplitter;
@@ -220,22 +218,16 @@ end;
     FreePDFHowTo1: TMenuItem;
     HilfezudenEinstellungen1: TMenuItem;
     VerbindenBt: TToolButton;
-    Quelllabel: TPanel;
-    FavSpL: TSpeedButton;
-    FavLinks: TSpeedButton;
     BtnEditor: TSpeedButton;
     Kopieren1: TMenuItem;
-    ParentFolderL: TSpeedButton;
     Favoritenspeichern1: TMenuItem;
     Panel_Left: TPanel;
     LMDShellTree1: TLMDShellTree;
     ListBoxL: TListBox;
     Panel2: TPanel;
-    FavLbL: TListBox;
     DoppelK: TMenuItem;
     AngleichenTB: TToolButton;
     TauschenTB: TToolButton;
-    ComboBoxL: TComboBox;
     Logdateilschen1: TMenuItem;
     History1: TMenuItem;
     N3: TMenuItem;
@@ -257,14 +249,8 @@ end;
     LMDShellList2: TLMDShellList;
     ListBoxR: TListBox;
     FavLbR: TListBox;
-    Ziellabel: TPanel;
-    FavSpR: TSpeedButton;
-    FavRechts: TSpeedButton;
-    ParentFolderR: TSpeedButton;
-    ComboBoxR: TComboBox;
     RefreshBt: TToolButton;
     ProgressBar1: TProgressBar;
-    StatusBar_Left: TStatusBar;
     StatusBar_Right: TStatusBar;
     AutoSpalte: TMenuItem;
     N11: TMenuItem;
@@ -282,8 +268,6 @@ end;
     MailBtn: TToolButton;
     ShowFolders_Left: TMenuItem;
     Beide_FolderBtn: TToolButton;
-    QuellBtn: TSpeedButton;
-    ZielBtn: TSpeedButton;
     ImageCollection1: TImageCollection;
     VirtualImageList1: TVirtualImageList;
     ZielverzeichnisimExplorerffnen1: TMenuItem;
@@ -329,16 +313,38 @@ end;
     N19: TMenuItem;
     N31: TMenuItem;
     Image1: TImage;
-    Image2: TImage;
     SearchBtn: TToolButton;
     Suche2: TMenuItem;
     Suche3: TMenuItem;
     SuchemitAltF71: TMenuItem;
-    SuchennachSucheninHistorylschen1: TMenuItem;
     ImageList1: TImageList;
     Formatverz_OnlyDate: TMenuItem;
     ResizeEqual: TMenuItem;
     Nullstellung: TMenuItem;
+    AutoSize: TBitBtn;
+    ToolButton7: TToolButton;
+    AutoSizeBtn: TMenuItem;
+    PanelL: TPanel;
+    Image2: TImage;
+    LMDShellList1: TLMDShellList;
+    FavLbL: TListBox;
+    StatusBar_Left: TStatusBar;
+    Panel1: TPanel;
+    RootL: TSpeedButton;
+    ParentFolderL: TSpeedButton;
+    QuellBtn: TSpeedButton;
+    ComboBoxL: TComboBox;
+    Quelllabel: TPanel;
+    FavSpL: TSpeedButton;
+    FavLinks: TSpeedButton;
+    Panel4: TPanel;
+    ComboBoxR: TComboBox;
+    RootR: TSpeedButton;
+    ParentFolderR: TSpeedButton;
+    FavSpR: TSpeedButton;
+    FavRechts: TSpeedButton;
+    ZielBtn: TSpeedButton;
+    Ziellabel: TPanel;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -511,13 +517,48 @@ end;
     procedure Image2Click(Sender: TObject);
     procedure SearchBtnClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-    procedure SuchennachSucheninHistorylschen1Click(Sender: TObject);
     procedure LMDShellList2Change(Sender: TObject; Item: TListItem; Change: TItemChange);
     procedure Formatverz_OnlyDateClick(Sender: TObject);
     procedure ResizeEqualClick(Sender: TObject);
     procedure NullstellungClick(Sender: TObject);
     procedure LMDShellList2ColumnClick(Sender: TObject; Column: TListColumn);
     procedure LMDShellList1ColumnClick(Sender: TObject; Column: TListColumn);
+    procedure RootLClick(Sender: TObject);
+    procedure RootRClick(Sender: TObject);
+    procedure AutoSizeClick(Sender: TObject);
+    procedure AutoSizeBtnClick(Sender: TObject);
+    procedure Btn_ViewMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_ViewMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_RenameMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_CopyMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_MoveMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_NewFolderMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_DeleteMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_DeleteMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_NewFolderMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_MoveMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_CopyMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure BtnEditorMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure Btn_RenameMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormatBtnMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure FormatBtnMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
+    procedure BtnEditorMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -526,7 +567,7 @@ end;
     procedure PlaySoundFile(FileName: string);
     procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
     procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
-    procedure ActiveControlChanged(Sender: TObject) ;
+    procedure ActiveControlChanged(Sender: TObject);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious : TWinControl;
@@ -636,6 +677,13 @@ end;
 procedure TFreePDF64_Form.StatusBitBtnClick(Sender: TObject);
 begin
   FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcPrevious.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
   // Form soll mittig angezeigt werden.
   Status_Form.Position := poMainFormCenter;
   Status_Form.ShowModal;
@@ -732,9 +780,12 @@ begin
       SelectAll;
     end;
 
-    ButtonTop    := MulDiv(52, DialogUnits.Y, 8); // MulDiv(41, DialogUnits.Y, 8);
-    ButtonWidth  := 132; // MulDiv(50, DialogUnits.X, 4);
-    ButtonHeight := 44;  // MulDiv(14, DialogUnits.Y, 8);
+    ButtonTop    := MulDiv(52, DialogUnits.Y, 8);
+//    ButtonTop    := MulDiv(41, DialogUnits.Y, 8);
+    ButtonWidth  := MulDiv(50, DialogUnits.X, 4);
+//    ButtonWidth  := 132;
+    ButtonHeight := MulDiv(14, DialogUnits.Y, 8);
+//    ButtonHeight := 44;
 
     with TButton.Create(Form) do
     begin
@@ -742,7 +793,8 @@ begin
       Caption     := SMsgDlgOK;
       ModalResult := mrOk;
       Default     := True;
-      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+      SetBounds(MulDiv(38, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+//      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
     end;
 
     with TButton.Create(Form) do
@@ -752,6 +804,7 @@ begin
       ModalResult := mrCancel;
       Cancel      := True;
       SetBounds(MulDiv(102, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+//      SetBounds(MulDiv(92, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
     end;
 
     if ShowModal = mrOk then
@@ -797,11 +850,11 @@ begin
     Form.Left := X;
 
     // Vertikal zentrieren
-//    h := (Application.MainForm.Height + Form.Height) div 2;
     h := (Application.MainForm.Height - Form.Height) div 2;
+//    h := (Application.MainForm.Height + Form.Height) div 2;
     // Top-Position des Inputquery-Eingabedialogs
-//    y := Application.MainForm.Top + (h DIV 2);
     y := Application.MainForm.Top + h;
+//    y := Application.MainForm.Top + (h DIV 2);
 
     if y < 0 then
       y := 0
@@ -832,9 +885,12 @@ begin
       SelectAll;
     end;
 
-    ButtonTop    := MulDiv(36, DialogUnits.Y, 8); // MulDiv(41, DialogUnits.Y, 8);
-    ButtonWidth  := 132; // MulDiv(50, DialogUnits.X, 4);
-    ButtonHeight := 44;  // MulDiv(14, DialogUnits.Y, 8);
+    ButtonTop    := MulDiv(36, DialogUnits.Y, 8);
+// ButtonTop := MulDiv(41, DialogUnits.Y, 8);
+    ButtonWidth  := MulDiv(50, DialogUnits.X, 4);
+// ButtonWidth := 132
+    ButtonHeight := MulDiv(14, DialogUnits.Y, 8);
+// ButtonHeight := 44
 
     with TButton.Create(Form) do
     begin
@@ -842,8 +898,8 @@ begin
       Caption     := SMsgDlgOK;
       ModalResult := mrOk;
       Default     := True;
-      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
-//      SetBounds(MulDiv(38, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+      SetBounds(MulDiv(38, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
+//      SetBounds(MulDiv(24, DialogUnits.X, 4), ButtonTop, ButtonWidth, ButtonHeight);
     end;
 
     with TButton.Create(Form) do
@@ -1076,13 +1132,11 @@ begin
                 Rewrite(F)
               end;
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> WZ/Stempel: ' + Memo1.Lines.Text));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -          WZ/ST-Datei: ' + IncludeTrailingBackslash(Wasserzeichen_Form.Edit1.Text)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + IncludeTrailingBackslash(ExtractFilePath(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -          WZ/ST-Datei: ' + Wasserzeichen_Form.Edit1.Text));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text)
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text)
                       + WZST2 + ExtractFileName(AP3)))));
               Closefile(F);
 
@@ -1258,13 +1312,12 @@ begin
           Rewrite(F)
         end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Anlage hinzufügen: ' + Zeile));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+                + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -               Anlage: ' + Anlage));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(Ziel)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Zieldatei));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Zieldatei))));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
@@ -1279,7 +1332,8 @@ begin
         PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
       else
         PDFReader := Einstellungen_Form.Edit3.Text;
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+
+      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zieldatei + '"'), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
@@ -1373,11 +1427,11 @@ begin
           Rewrite(F)
         end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Anlage extrahieren: ' + Zeile));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(Ziel)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+                + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + ExcludeTrailingBackslash(Ziel)));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -   Extrahierte Anlage: ' + Ausgabe));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel) + Ausgabe))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel) + Ausgabe))));
         Closefile(F);
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
@@ -1425,14 +1479,14 @@ begin
           Rewrite(F)
         end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> Anlage entfernen: ' + Zeile2));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItems[0].DisplayName));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+                + LMDShellList1.SelectedItems[0].DisplayName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Entfernte Anlage: ' + Ausgabe));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(Ziel)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Zieldatei)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel) +
-                ExtractFileName(Zieldatei)))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel)
+                + ExtractFileName(Zieldatei)));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel)
+                + ExtractFileName(Zieldatei)))));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
@@ -1447,7 +1501,8 @@ begin
         PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
       else
         PDFReader := Einstellungen_Form.Edit3.Text;
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar(Zieldatei), NIL, SW_SHOWNORMAL);
+
+      ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zieldatei + '"'), NIL, SW_SHOWNORMAL);
     end;
   end else
   begin
@@ -1507,7 +1562,26 @@ begin
   end;
 end;
 
-// Autosize beider Namen-Spalten
+// Schnelles Autosize (Ein- und danach sofort wieder Ausschalten) beider Namen-Spalten
+procedure TFreePDF64_Form.AutoSizeBtnClick(Sender: TObject);
+begin
+  AutoSizeBtn.Checked := Not AutoSizeBtn.Checked;
+  if AutoSizeBtn.Checked then
+    AutoSize.Visible := True
+  else
+    AutoSize.Visible := False;
+end;
+
+procedure TFreePDF64_Form.AutoSizeClick(Sender: TObject);
+begin
+  LMDShellList1.Column[0].AutoSize := True;
+  LMDShellList2.Column[0].AutoSize := True;
+  FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
+  FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
+  LMDShellList1.Column[0].AutoSize := False;
+  LMDShellList2.Column[0].AutoSize := False;
+end;
+
 procedure TFreePDF64_Form.AutoSpalteClick(Sender: TObject);
 begin
   AutoSpalte.Checked := Not AutoSpalte.Checked;
@@ -1528,6 +1602,22 @@ end;
 procedure TFreePDF64_Form.ResizeEqualClick(Sender: TObject);
 begin
   ResizeEqual.Checked := Not ResizeEqual.Checked;
+end;
+
+procedure TFreePDF64_Form.RootLClick(Sender: TObject);
+begin
+  FavClose;
+  LMDShellFolder1.RootFolder := IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder1.ActiveFolder.PathName));
+  if LMDShellList1.Selected = NIL then
+    LMDShellList1.ItemIndex := 0;
+end;
+
+procedure TFreePDF64_Form.RootRClick(Sender: TObject);
+begin
+  FavClose;
+  LMDShellFolder2.RootFolder := IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder2.ActiveFolder.PathName));
+  if LMDShellList2.Selected = NIL then
+    LMDShellList2.ItemIndex := 0;
 end;
 
 procedure TFreePDF64_Form.AutostartClick(Sender: TObject);
@@ -1801,8 +1891,8 @@ end;
 
 procedure TFreePDF64_Form.LMDShellTree2Change(Sender: TObject; Node: TTreeNode);
 begin
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
-                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + '*.*', FreePDF64_Form.Canvas,
+                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
   // JPEG-Fenster schließen
   if Image2.Visible then
@@ -1995,7 +2085,7 @@ begin
         for i := 0 to LMDShellList1.SelCount - 1 do
         begin
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> Senden von: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + m[i]));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                   LMDShellList1.SelectedItems[i].DisplayName))));
         end;
         Closefile(F)
@@ -2005,7 +2095,7 @@ begin
         for i := 0 to LMDShellList2.SelCount - 1 do
         begin
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> Senden von: ' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + m[i]));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                   LMDShellList2.SelectedItems[i].DisplayName))));
         end;
         Closefile(F);
@@ -2043,11 +2133,11 @@ begin
     Panel3.Visible := True;
   end;
 
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
-                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName),
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + '*.*', FreePDF64_Form.Canvas,
+                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + '*.*',
                                    FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                                   ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100))
+                                   ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width))
 end;
 
 // Nur linke Baumstruktur anzeigen
@@ -2084,8 +2174,8 @@ begin
     Panel2.Visible := True;
   end;
 
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
-                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + '*.*', FreePDF64_Form.Canvas,
+                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 end;
 
 procedure TFreePDF64_Form.Zielverzeichnisanzeigen1Click(Sender: TObject);
@@ -2154,10 +2244,11 @@ begin
     WriteBool('Folder', 'Autosize Name', AutoSpalte.Checked);
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
+    WriteBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
     WriteBool('Start', 'ShowFolders', ShowFolders1.Checked);
     WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
     WriteBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
-    WriteBool('Start', 'Tray', InDenTray.Checked);
+    WriteBool('Start', 'System Tray', InDenTray.Checked);
     WriteBool('Start', 'Splashscreen', Splash1.Checked);
     WriteBool('Start', 'Minimize', KlickaufX.Checked);
     WriteBool('Start', 'Autostart', Autostart.Checked);
@@ -2289,8 +2380,9 @@ begin
   FavClose;
   L := LMDShellFolder1.ActiveFolder.PathName;
   R := LMDShellFolder2.ActiveFolder.PathName;
-  LMDShellFolder1.RootFolder := R;
-  LMDShellFolder2.RootFolder := L;
+  LMDShellFolder1.ChDir(R);
+  LMDShellFolder2.ChDir(L);
+
   SB_Left;
   SB_Right;
 end;
@@ -2301,7 +2393,7 @@ begin
   Feedback.Enabled  := not Feedback.Enabled;
 end;
 
-// Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den Tray
+// Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
   TrayIcon1.Visible := True;
@@ -2402,7 +2494,7 @@ begin
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' => Anlage(n) speichern: ' + Zeile));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + PDFDatei));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + LMDShellFolder2.ActiveFolder.PathName));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -   Anzahl der Anlagen: ' + Memo1.lines[0]));
       for j := 1 to Memo1.Lines.Count - 1 do
       begin
@@ -2580,12 +2672,11 @@ begin
         Rewrite(F)
       end;
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Passwort entfernen: ' + Zeile));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(PDFDatei)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(Ziel)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(EndPDF)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+              + ExtractFileName(PDFDatei)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + ExtractFileName(EndPDF)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
       Closefile(F);
 
       if Einstellungen_Form.SystemklangCB.Checked then
@@ -2629,12 +2720,11 @@ begin
            Rewrite(F)
           end;
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Passwort entfernen: ' + Zeile2));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(PDFDatei)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(EndPDF)));
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+                  + ExtractFileName(PDFDatei)));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + ExtractFileName(EndPDF)));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
           Closefile(F);
 
           if Einstellungen_Form.SystemklangCB.Checked then
@@ -2702,9 +2792,9 @@ begin
   ShowVomTray := True;
   FreePDF64_Form.Show;
   Application.BringToFront;
-  LMDShellList1.SetFocus;
+//  LMDShellList1.SetFocus;
 
-  // Hide the tray icon and show the window, setting its state property to wsNormal
+  // Hide the system tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
 
   if AutoSpalteJN then
@@ -2755,6 +2845,18 @@ begin
   Btn_Move.Caption := 'F6 Bewegen';
 end;
 
+procedure TFreePDF64_Form.Btn_CopyMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Copy.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_CopyMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Copy.Flat := False;
+end;
+
 procedure TFreePDF64_Form.Btn_MoveClick(Sender: TObject);
 begin
   if Btn_Move.Caption = 'F6 Bewegen' then
@@ -2766,6 +2868,30 @@ begin
 
   Btn_Copy.Caption := 'F5 Kopieren';
   Btn_Move.Caption := 'F6 Bewegen';
+end;
+
+procedure TFreePDF64_Form.Btn_MoveMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Move.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_MoveMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Move.Flat := False;
+end;
+
+procedure TFreePDF64_Form.Btn_NewFolderMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_NewFolder.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_NewFolderMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_NewFolder.Flat := False;
 end;
 
 // Ermittlung des Betriebssystems
@@ -2874,6 +3000,18 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.Btn_RenameMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Rename.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_RenameMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Rename.Flat := False;
+end;
+
 // Task schließen (hier Ghostscript)
 procedure KillTask(ExeFileName: string);
 var
@@ -2958,7 +3096,9 @@ begin
       Auswahl := LMDShellList1.SelectedItem.PathName
   else
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
-      Auswahl := LMDShellList2.SelectedItem.PathName;
+      Auswahl := LMDShellList2.SelectedItem.PathName
+  else
+    Exit;
 
   // JPEG anzeigen
   if Image1.Visible then
@@ -3027,6 +3167,18 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.Btn_ViewMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_View.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_ViewMouseUp(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_View.Flat := False;
+end;
+
 // Rechtsklick auf TImage
 procedure TFreePDF64_Form.Image1ContextPopup(Sender: TObject; MousePos: TPoint; var Handled: Boolean);
 begin
@@ -3058,6 +3210,18 @@ begin
   RefreshBt.Click;
   // Einmal Taste DOWN drücken für Markierung des ersten Eintrags
   keybd_event(VK_DOWN, MapVirtualKey(VK_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+end;
+
+procedure TFreePDF64_Form.Btn_DeleteMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Delete.Flat := True;
+end;
+
+procedure TFreePDF64_Form.Btn_DeleteMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  Btn_Delete.Flat := False;
 end;
 
 procedure TFreePDF64_Form.AbbrechenPnClick(Sender: TObject);
@@ -3133,6 +3297,13 @@ end;
 procedure TFreePDF64_Form.ConfigBtnClick(Sender: TObject);
 begin
   FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcPrevious.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
   Einstellungen_Form.Position := poMainFormCenter;
   Einstellungen1.Click;
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[printer.printerindex] +
@@ -3246,6 +3417,18 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.BtnEditorMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  BtnEditor.Flat := True;
+end;
+
+procedure TFreePDF64_Form.BtnEditorMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  BtnEditor.Flat := False;
+end;
+
 procedure TFreePDF64_Form.Editor1Click(Sender: TObject);
 begin
   BtnEditor.Click;
@@ -3292,16 +3475,23 @@ begin
         j := Pos('*|*', ListBoxL.Items[i]);
         if j > 0 then
         begin
+          FavLbL.Visible := False;
           k := Copy(ListBoxL.Items[i], 0, j - 1);
           s := ListBoxL.Items[i];
           Delete(s, 1, Length(k) + 3);
           if not System.SysUtils.DirectoryExists(s) then
+          begin
             ShowMessage('"' + s + '" ist nicht mehr vorhanden!');
-          LMDShellFolder1.ChDir(s);
-          LMDShellList1.SetFocus;
-          if LMDShellList1.Selected = NIL then
-            LMDShellList1.ItemIndex := 0;
-          Break;
+            s := ExtractFilePath(QuellLabel.Caption);
+            Exit;
+          end else
+          begin
+            LMDShellFolder1.ChDir(s);
+            LMDShellList1.SetFocus;
+            if LMDShellList1.Selected = NIL then
+              LMDShellList1.ItemIndex := 0;
+            Break;
+          end;
         end;
       end;
   FavLbL.Visible := False;
@@ -3317,20 +3507,12 @@ procedure TFreePDF64_Form.FavLbLMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   i: Integer;
-//  olh: string;
 begin
   with FavLbL do
     begin
-//      olh := Hint;
       i := ItemAtPos(Point(X, Y), False);
       if (i <= Items.Count - 1) then
-//      begin
-//        Hint := Items.Strings[i];
         FavLbL.Selected[i] := True;
-//      end else
-//        Hint := '';
-//      if Hint <> olh then
-//        Application.CancelHint;
     end;
 end;
 
@@ -3346,23 +3528,33 @@ begin
         j := Pos('*|*', ListBoxR.Items[i]);
         if j > 0 then
         begin
+          FavLbR.Visible := False;
           k := Copy(ListBoxR.Items[i], 0, j - 1);
           s := ListBoxR.Items[i];
           Delete(s, 1, Length(k) + 3);
           if not System.SysUtils.DirectoryExists(s) then
+          begin
             ShowMessage('"' + s + '" ist nicht mehr vorhanden!');
-          LMDShellFolder2.ChDir(s);
-          LMDShellList2.SetFocus;
-          if LMDShellList2.Selected = NIL then
-            LMDShellList2.ItemIndex := 0;
-          Break;
+//            FavLbR.Items.Delete(i);
+//            ListBoxR.Items.Delete(i);
+//            Favoritenspeichern1.Click;
+            s := Ziel;
+            Exit;
+          end else
+          begin
+            LMDShellFolder2.ChDir(s);
+            LMDShellList2.SetFocus;
+            if LMDShellList2.Selected = NIL then
+              LMDShellList2.ItemIndex := 0;
+            Break;
+          end;
         end;
       end;
   FavLbR.Visible := False;
   Ziel := IncludeTrailingBackslash(s);
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel),
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel) + '*.*',
                        FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100))
+                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width))
 end;
 
 procedure TFreePDF64_Form.FavLbRMouseDown(Sender: TObject; Button: TMouseButton;
@@ -3375,20 +3567,12 @@ procedure TFreePDF64_Form.FavLbRMouseMove(Sender: TObject; Shift: TShiftState;
   X, Y: Integer);
 var
   i: Integer;
-//  olh: string;
 begin
   with FavLbR do
     begin
-//      olh := Hint;
       i := ItemAtPos(Point(X, Y), False);
       if (i <= Items.Count - 1) then
-//      begin
-//        Hint := Items.Strings[i];
         FavLbR.Selected[i] := True;
-//      end else
-//        Hint := '';
-//      if Hint <> olh then
-//        Application.CancelHint;
     end;
 end;
 
@@ -3536,6 +3720,18 @@ begin
   Einstellungen1.Click;
 end;
 
+procedure TFreePDF64_Form.FormatBtnMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  FormatBtn.Flat := True;
+end;
+
+procedure TFreePDF64_Form.FormatBtnMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+begin
+  FormatBtn.Flat := False;
+end;
+
 procedure TFreePDF64_Form.PlaySoundFile(FileName: string);
 begin
  if FileExists(FileName) then
@@ -3626,6 +3822,10 @@ var
   iec: Array [0 .. 255] of String;
   Log: Boolean;
 begin
+  // Unterbricht die Ausführung einer Anwendung, während Windows eine
+  // Botschaft aus der Windows-Botschaftswarteschlange verarbeitet wird.
+  Application.HandleMessage;
+
   UseLatestCommonDialogs := False;
   MsgDlgIcons[TMsgDlgType.mtInformation] := TMsgDlgIcon.mdiInformation;
 
@@ -3660,7 +3860,7 @@ begin
         LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
         VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
-        InDenTray.Checked := ReadBool('Start', 'Tray', InDenTray.Checked);
+        InDenTray.Checked := ReadBool('Start', 'System Tray', InDenTray.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
         DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick', DoppelK.Checked);
         Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
@@ -3669,6 +3869,12 @@ begin
 
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
+
+        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
+        if AutoSizeBtn.Checked then
+          AutoSize.Visible := True
+        else
+          AutoSize.Visible := False;
 
         if not ValueExists('Files','PDF-Reader') then
           PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
@@ -3787,7 +3993,7 @@ end;
 procedure TFreePDF64_Form.QuellBtnClick(Sender: TObject);
 var
   IniDat: TIniFile;
-  IniFile: string;
+  IniFile, s: string;
 begin
   FavClose;
   try
@@ -3795,7 +4001,7 @@ begin
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
     with IniDat do
-      LMDShellFolder1.RootFolder := ReadString('Folder', 'Left', A_S);
+      s := ReadString('Folder', 'Left', A_S);
     IniDat.Free;
   except
     begin
@@ -3804,6 +4010,7 @@ begin
       ShowMessage('Error');
     end;
   end;
+  LMDShellFolder1.ChDir(s);
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
 end;
@@ -3811,7 +4018,7 @@ end;
 procedure TFreePDF64_Form.ZielBtnClick(Sender: TObject);
 var
   IniDat: TIniFile;
-  IniFile: string;
+  IniFile, s: string;
 begin
   FavClose;
   try
@@ -3819,7 +4026,7 @@ begin
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
     with IniDat do
-      LMDShellFolder2.RootFolder := ReadString('Folder', 'Target', B_Z);
+      s := ReadString('Folder', 'Target', B_Z);
     IniDat.Free;
   except
     begin
@@ -3828,6 +4035,7 @@ begin
       ShowMessage('Error');
     end;
   end;
+  LMDShellFolder2.ChDir(s);
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
 end;
@@ -3885,23 +4093,11 @@ procedure TFreePDF64_Form.History1Click(Sender: TObject);
 var
   Msg: String;
 begin
-  Msg := 'Soll die Verzeichnis-History (links/rechts) wirklich gelöscht werden?';
+  Msg := 'Soll die linke und rechte Verzeichnis-History wirklich gelöscht werden?';
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     ComboBoxL.Items.Clear;
     ComboBoxR.Items.Clear
-  end;
-end;
-
-procedure TFreePDF64_Form.SuchennachSucheninHistorylschen1Click(Sender: TObject);
-var
-  Msg: String;
-begin
-  Msg := 'Soll die Suchen nach-/Suchen in-History im Suche-Fenster wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
-  begin
-    Suche_Form.SearchField.Items.Clear;
-    Suche_Form.FileField.Items.Clear
   end;
 end;
 
@@ -4371,11 +4567,11 @@ begin
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 13 then Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption  := 'Formatauswahl:' + Text_FormatBtn;
 
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
-                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
-  Ziellabel.Caption  := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName),
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + '*.*', FreePDF64_Form.Canvas,
+                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+  Ziellabel.Caption  := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + '*.*',
                                     FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                                    ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100));
+                                    ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
@@ -4530,6 +4726,12 @@ begin
     LMDShellList2.SortDirection := sdAscending
   else
     LMDShellList2.SortDirection := sdDescending;
+
+  // Setze Cursor auf den ersten Eintrag der LMDShellList1
+  LMDShellList1.ClearSelection;
+  LMDShellList1.SetFocus;
+  if LMDShellList1.Items.Count > 0 then
+    LMDShellList1.ItemIndex := 0;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
@@ -4559,9 +4761,8 @@ begin
       LMDShellList1.ItemIndex := 0;
   end;
 
-  LMDShellFolder1.RootFolder := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName), FreePDF64_Form.Canvas,
-                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width + 100));
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + '*.*', FreePDF64_Form.Canvas,
+                                      Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
@@ -4597,11 +4798,10 @@ begin
       LMDShellList2.ItemIndex := 0;
   end;
 
-  LMDShellFolder2.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
-  Ziel := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel),
+  Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel) + '*.*',
                        FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width + 100));
+                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
@@ -4754,6 +4954,7 @@ begin
       MessageDlgCenter('Fehler beim Extrahieren von Bildern aus der Datei: "' + FileName + '".' + #13 +
                        'Vermutlich ist die PDF-Datei verschlüsselt, enthält kein Bild oder es ist keine PDF-Datei?!', mtError, [mbOk]);
       ProgressBar1.Position := 0;
+      Exit;
     end;
 
     if IsEmptyFolder(Bildziel) then
@@ -4778,11 +4979,10 @@ begin
         Rewrite(F)
       end;
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + Bildziel));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(FileName) + '-xxxx.xxx'));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -        Zieldatei(en): ' + IncludeTrailingBackslash(Bildziel)
+              + ExtractFileName(FileName) + '-xxxx.xxx'));
       Closefile(F);
     end;
   end else
@@ -4852,10 +5052,9 @@ begin
           Rewrite(F)
         end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =========> PDF zu HTML: ' + Zeile));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + ExtractFilePath(LMDShellList1.SelectedItem.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(LMDShellList1.SelectedItem.PathName)));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + HTMLZiel + '\'));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + HTMLZiel));
         Closefile(F);
 
         if Einstellungen_Form.SystemklangCB.Checked then
@@ -5044,12 +5243,40 @@ procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject; Item: TListIt
   Selected: Boolean);
 begin
   SB_Left;
+
+  // Linkes Bild anzeigen durch KeyUp/Down - linke Maustaste wurde nicht gedrückt...
+  if Image1.Visible and (GetKeyState(VK_LBUTTON) and $8000 = 0) then
+  begin
+    if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
+      if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+      begin
+        Auswahl := LMDShellList1.SelectedItem.PathName;
+        LMDShellList2.Visible := False;
+        Image1.Picture.LoadFromFile(Auswahl);
+      end;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2SelectItem(Sender: TObject; Item: TListItem;
   Selected: Boolean);
 begin
   SB_Right;
+
+  // Rechtes Bild anzeigen durch KeyUp/Down - linke Maustaste wurde nicht gedrückt...
+  if Image2.Visible and (GetKeyState(VK_LBUTTON) and $8000 = 0) then
+  begin
+    if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+      if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+      begin
+        Auswahl := LMDShellList2.SelectedItem.PathName;
+        LMDShellList1.Visible := False;
+        Image2.Picture.LoadFromFile(Auswahl);
+      end;
+  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1Change(Sender: TObject; Node: TTreeNode);
@@ -5275,9 +5502,9 @@ begin
 
   if FreePDF64_Notify.Ziel_FestCB.Checked then
     Ziel := FreePDF64_Notify.ZielEdit.Text;
-  p := IncludeTrailingBackslash(Ziel);
+  p := ExcludeTrailingBackslash(Ziel);
 
-  if MyInputQuery_Verbinden('Verbinden', 'Zielverzeichnis -> siehe Hilfetext am Mauszeiger!' + #13 + #13 + 'Dateiname:',
+  if MyInputQuery_Verbinden('Verbinden', 'Zielverzeichnis -> siehe Hinweis beim Mauszeiger!' + #13 + #13 + 'Dateiname:',
                             'Zielverzeichnis: ' + p + #13 +
                             'Es ist gleich dem aktuellen Zielverzeichnis der Überwachung (siehe dort)', s) then
   begin
@@ -5594,7 +5821,7 @@ begin
       for i := 0 to Auswahl_Form.FileList.Items.Count - 1 do
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Dateiname: ' + PChar(Auswahl_Form.FileList.Items[i].Caption)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + MERGEDATEI));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel) + MERGEDATEI))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(Ziel) + MERGEDATEI))));
 
       Closefile(F);
     end;
@@ -5651,6 +5878,12 @@ end;
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
 begin
   FavClose;
+  // Was war die letzte aktive Komponente?
+  if wcPrevious.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
   // Form soll mittig angezeigt werden.
   FreePDF64_Notify.Position := poMainFormCenter;
   FreePDF64_Notify.ShowModal;
@@ -6498,58 +6731,46 @@ begin
             if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4
             begin
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --allow-weak-crypto --encrypt --user-password="' + Versch5 +
                       '" --owner-password="' + Versch3 + '" --bits=128' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel) + ' <- 128-Bit RC4'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
             end;
 
             if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES
             begin
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
                       '" --owner-password="' + Versch3 + '" --bits=128 --use-aes=y' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel) + ' <- 128-Bit AES'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit AES'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
             end;
 
             if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES
             begin
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
                       '" --owner-password="' + Versch3 + '" --bits=256' + DokuSicherheit + ' --allow-insecure -- "' + Ziel + '" "' + Ziel + '"')));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(Ziel)));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel) + ' <- 256-Bit AES'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 256-Bit AES'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
             end;
 
             if ((Encrypt_Form.BerechtigungCB.Checked = False) and (Encrypt_Form.KennwortCB.Checked = False)) then
@@ -6557,19 +6778,13 @@ begin
               if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // PDF
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
                 if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
-                begin
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel) + ' <- 128-Bit RC4'))
-                end else
-                begin
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-                end;
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
+                else
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
 
                 // Dateianlage vorne/hinten angefügt
                 if Dateianlage_Form.Datei1.Text <> '' then
@@ -6583,19 +6798,13 @@ begin
               if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // PDF
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
                 if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
-                begin
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel) + ' <- 128-Bit RC4'))
-                end else
-                begin
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-                end;
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
+                else
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end else
               // PS/DOCX/TXT/TIFF
               if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
@@ -6606,12 +6815,10 @@ begin
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end else
               // BMP, JPEG, PNG
               if (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
@@ -6619,11 +6826,9 @@ begin
                  (Einstellungen_Form.AuswahlRG.ItemIndex = 6) then
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
               end else
               // BMP, JPEG, PNG, TIFF zu PDF
               if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
@@ -6632,12 +6837,10 @@ begin
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick +
                         ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + '"'));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + ExtractFileName(AP3)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Quelldateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + IncludeTrailingBackslash(ExtractFilePath(Ziel))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFileName(Ziel)));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -       Zieldateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
               end;
             end;
             Closefile(F);
