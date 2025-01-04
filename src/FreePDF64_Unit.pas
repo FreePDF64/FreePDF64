@@ -86,7 +86,8 @@ uses
   LMDUnicodeDialogs,
   ActiveX,
   ComObj, MMSystem, JPEG, GDIPAPI, GDIPOBJ,
-  Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar;
+  Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection, Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar,
+  LMDVersionInfo;
 
 const
   WM_TASKBAREVENT = WM_USER + 1; // Taskbar message
@@ -345,6 +346,7 @@ end;
     FavRechts: TSpeedButton;
     ZielBtn: TSpeedButton;
     Ziellabel: TPanel;
+    AbfrageaufeinneuesUpdate1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -559,6 +561,7 @@ end;
       Shift: TShiftState; X, Y: Integer);
     procedure BtnEditorMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -1876,6 +1879,13 @@ begin
   LMDShellList2.Options := tmpt;
   SB_Left;
   SB_Right;
+end;
+
+// Aufruf der Github-Release-Seite von FreePDF64
+procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
+begin
+  ShowMessage('Diese Version: 6.0.0 vom 04.01.2025');
+  ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/releases'), NIL, NIL, SW_NORMAL);
 end;
 
 // Wasserzeichen...

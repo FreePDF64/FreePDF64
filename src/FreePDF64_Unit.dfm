@@ -2415,6 +2415,10 @@ object FreePDF64_Form: TFreePDF64_Form
         ShortCut = 112
         OnClick = FreePDFHowTo1Click
       end
+      object AbfrageaufeinneuesUpdate1: TMenuItem
+        Caption = 'Projektseite nach Update abfragen...'
+        OnClick = AbfrageaufeinneuesUpdate1Click
+      end
       object N1: TMenuItem
         Caption = '-'
       end
