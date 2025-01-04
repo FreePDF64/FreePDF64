@@ -1,4 +1,4 @@
-03.01.2025 V6.0.0
+04.01.2025 V6.0.0
 Neu -> Ein AutoSize-Button kann zur Symbolleiste hinzugefügt werden, zum schnellen AutoSize der Name-Spalten für eine bessere Übersicht.
 Neu -> Beim Verbinden wird nun das Zielverzeichnis per Hilfetext am Mauszeiger angezeigt. Dadurch bessere Lesbarkeit, wenn der Verzeichnisname zu groß ist.
 Fix -> Codeoptimierungen durchgeführt.

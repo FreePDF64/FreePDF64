@@ -77,7 +77,6 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Bottom = 4
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 1282
     object ToolBar1: TToolBar
       Left = 32
       Top = 1
@@ -93,7 +92,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
-      ExplicitWidth = 857
       object ToolButton7: TToolButton
         Left = 0
         Top = 0
@@ -483,7 +481,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 1
       TabStop = False
       OnClick = ConfigBtnClick
-      ExplicitLeft = 1021
     end
     object MonitorBtn: TBitBtn
       Left = 1041
@@ -512,7 +509,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
-      ExplicitLeft = 931
     end
     object StatusBitBtn: TBitBtn
       Left = 999
@@ -540,7 +536,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-      ExplicitLeft = 889
     end
     object AutoSize: TBitBtn
       Left = 1
@@ -588,8 +583,6 @@ object FreePDF64_Form: TFreePDF64_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
-    ExplicitTop = 501
-    ExplicitWidth = 1282
     object Btn_View: TSpeedButton
       Left = 151
       Top = 1
@@ -793,8 +786,6 @@ object FreePDF64_Form: TFreePDF64_Form
     Align = alBottom
     BevelOuter = bvNone
     TabOrder = 2
-    ExplicitTop = 542
-    ExplicitWidth = 1282
     object StatusBar1: TStatusBar
       Left = 0
       Top = 130
@@ -810,7 +801,6 @@ object FreePDF64_Form: TFreePDF64_Form
         end>
       ParentShowHint = False
       ShowHint = False
-      ExplicitWidth = 1282
     end
     object Memo1: TMemo
       Left = 0
@@ -841,7 +831,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnDblClick = Memo1DblClick
-      ExplicitWidth = 1282
     end
     object BottomPanel: TPanel
       Left = 0
@@ -857,7 +846,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentShowHint = False
       ShowHint = True
       TabOrder = 2
-      ExplicitWidth = 1282
       object FormatBtn: TSpeedButton
         Left = 1
         Top = 1
@@ -916,7 +904,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDF_ErstellungClick
         OnMouseEnter = PDF_ErstellungMouseEnter
         OnMouseLeave = PDF_ErstellungMouseLeave
-        ExplicitLeft = 881
       end
       object ProgressBar1: TProgressBar
         Left = 421
@@ -931,7 +918,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = False
         TabOrder = 1
-        ExplicitWidth = 230
       end
       object AbbrechenPn: TPanel
         Left = 761
@@ -960,7 +946,6 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 2
         Visible = False
         OnClick = AbbrechenPnClick
-        ExplicitLeft = 651
       end
     end
   end
@@ -977,8 +962,6 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 3
     OnResize = PanelRResize
-    ExplicitLeft = 632
-    ExplicitHeight = 454
     object Splitter4: TSplitter
       Left = 281
       Top = 1
@@ -1005,7 +988,6 @@ object FreePDF64_Form: TFreePDF64_Form
       BevelOuter = bvLowered
       Caption = 'Zielverzeichnis'
       TabOrder = 0
-      ExplicitHeight = 452
       object Panel3: TPanel
         Left = 1
         Top = 1
@@ -1059,7 +1041,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
-        ExplicitHeight = 422
       end
     end
     object PanelLMDShellList2: TPanel
@@ -1074,7 +1055,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 452
       DesignSize = (
         364
         499)
@@ -1168,7 +1148,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem
-        ExplicitHeight = 399
       end
       object ListBoxR: TListBox
         Left = 142
@@ -1219,7 +1198,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 908
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1239,7 +1217,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = False
         SimplePanel = True
         SizeGrip = False
-        ExplicitTop = 428
       end
       object Panel4: TPanel
         Left = 1
@@ -1456,7 +1433,6 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     Caption = 'Quellverzeichnis'
     TabOrder = 4
-    ExplicitHeight = 454
     object LMDShellTree1: TLMDShellTree
       Left = 1
       Top = 29
@@ -1490,7 +1466,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowNonFolders = False
       AutoContextMenus = False
       AutoSortSupport = False
-      ExplicitHeight = 424
     end
     object ListBoxL: TListBox
       Left = 17
@@ -1546,8 +1521,6 @@ object FreePDF64_Form: TFreePDF64_Form
     BevelOuter = bvLowered
     TabOrder = 5
     OnResize = PanelLResize
-    ExplicitWidth = 343
-    ExplicitHeight = 454
     DesignSize = (
       453
       501)
@@ -1642,8 +1615,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitWidth = 341
-      ExplicitHeight = 400
     end
     object FavLbL: TListBox
       Left = 1103
@@ -1674,8 +1645,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 814
-      ExplicitTop = 911
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1695,8 +1664,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowHint = False
       SimplePanel = True
       SizeGrip = False
-      ExplicitTop = 429
-      ExplicitWidth = 341
     end
     object Panel1: TPanel
       Left = 1
@@ -1709,7 +1676,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alTop
       TabOrder = 3
-      ExplicitWidth = 341
       object RootL: TSpeedButton
         Left = 24
         Top = 1
@@ -1897,7 +1863,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 1
         OnMouseEnter = QuelllabelMouseEnter
-        ExplicitWidth = 201
       end
     end
   end
@@ -2461,7 +2426,7 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object LMDShellFolder1: TLMDShellFolder
     RootFolder = 'C:\'
-    Options = [foIncludeHidden, foHighlightCompressed, foFilterDirs]
+    Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
     SortType = stName
     SortOrder = soDesc
     OnChange = LMDShellFolder1Change
