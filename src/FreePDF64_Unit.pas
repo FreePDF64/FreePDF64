@@ -4467,7 +4467,8 @@ begin
                                         z1 := ReadString('Monitoring', 'Fixed Folder', FreePDF64_Notify.ZielEdit.Text);
       Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File', Einstellungen_Form.AnzeigenCB.Checked);
       Einstellungen_Form.SystemklangCB.Checked := ReadBool('Format', 'System Sound', Einstellungen_Form.SystemklangCB.Checked);
-      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', Einstellungen_Form.PDF_Shrink.Checked);
+      Einstellungen_Form.PDF_Shrink.Checked  := ReadBool('Format', 'Shrink PDF',  Einstellungen_Form.PDF_Shrink.Checked);
+      Einstellungen_Form.PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2', Einstellungen_Form.PDF_Shrink2.Checked);
       ShowFolders1.Checked := ReadBool('Start', 'ShowFolders', ShowFolders1.Checked);
       ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
       Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
@@ -4747,6 +4748,7 @@ begin
     LMDShellList2.SortDirection := sdDescending;
 
   // Setze Cursor auf den ersten Eintrag der LMDShellList1
+  LMDShellList2.ClearSelection;
   LMDShellList1.ClearSelection;
   LMDShellList1.SetFocus;
   if LMDShellList1.Items.Count > 0 then
@@ -5201,9 +5203,10 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
-//  if LMDShellList2.Selected = NIL then
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.Selcount = 0) then
-    LMDShellList2.ItemFocused;
+    LMDShellList2.ItemIndex := 0;
+//  else
+//  if (LMDShellList2.Items.Count > 0) and (LMDShellList2.Selected = NIL) then
 //    LMDShellList2.ItemIndex := 0;
 
   if LMDShellList2.FileFilter <> '*.*' then
@@ -6062,11 +6065,18 @@ var
   fExitCode: Cardinal;
   AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, AP3_1, DokuSicherheit, AX, Memozeile,
   DS1, DS2, DS3, DS4, DS5, Spin1, Spin2, VonSpin, BisSpin, Ziel3, Zielanz,
-  PZiel, NZiel, QPDFZiel, QPDF_Zeile, z, JV, Endzielname, Datei_Vorne, Datei_Hinten: String;
+  PZiel, NZiel, QPDFZiel, QPDF_Zeile, z, JV, Endzielname, Datei_Vorne,
+  QPDF_ExtractFile, Datei_Hinten: String;
   F: TextFile;
   ProcID: Cardinal;
 begin
   FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcPrevious.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
 
   Timer1.Enabled := False;
   FormatBtn.Enabled := True;
@@ -6294,7 +6304,7 @@ begin
           end;
         end;
 
-        LMDShellList1.ItemIndex := - 1;
+//        LMDShellList1.ItemIndex := - 1;
 
         if (Einstellungen_Form.AuswahlRG.ItemIndex = 0)  or
            (Einstellungen_Form.AuswahlRG.ItemIndex = 10)  or
@@ -6524,7 +6534,7 @@ begin
               // Nun die Erstellung wieder zurück von PS zu PDF
               Res := CreateProcess(NIL,
                 PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
-                ' ' + '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + Ziel + '.ps' +
+                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps' +
                 Hochkommata + AP5)), NIL, NIL, True, CREATE_DEFAULT_ERROR_MODE or
                 CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, NIL, NIL,
                 StartUp, Process);
@@ -6544,6 +6554,25 @@ begin
                   PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
                 ShowMessage(SysErrorMessage(GetLastError));
               end;
+            end;
+
+            if Einstellungen_Form.PDF_Shrink2.Checked then
+            begin
+              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              QPDF_Zeile := (QPDF + ' --optimize-images --compression-level=9 "' + Ziel + '" "' +
+                             ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
+              Res := CreateProcess(NIL, PChar(QPDF_Zeile), NIL, NIL, True,
+                                   CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or
+                                   NORMAL_PRIORITY_CLASS, NIL, NIL, StartUp, Process);
+              if Res then
+              begin
+                repeat
+                  R := WaitForSingleObject(Process.hProcess, 200);
+                  ProgressBar1.Position := ProgressBar1.Position + 5;
+                  GetExitCodeProcess(Process.hProcess, fExitCode);
+                until R <> WAIT_TIMEOUT;
+              end;
+              Application.ProcessMessages;
             end;
 //==============================================================================
             // Nun die 128-Bit RC4 PDF-Erstellung, wenn gewünscht... ===========
@@ -6653,83 +6682,96 @@ begin
           end;
 
           // Memo füllen...
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // Auswahl ist PDF
+          if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
           begin
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4 ?
-            begin
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-                '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
-              Zielanz := Ziel;
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (QPDF + ' --allow-weak-crypto --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=128' +
-                DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel
-                + '" <- 128-Bit RC4');
-            end else
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES ?
-            begin
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-                '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
-              Zielanz := Ziel;
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (QPDF + ' --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=128 --use-aes=y' +
-                DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel
-                + '" <- 128-Bit AES');
-            end else
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES ?
-            begin
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-                '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
-              Zielanz := Ziel;
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (QPDF + ' --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=256' +
-                DokuSicherheit + ' --allow-insecure -- "' + Ziel + '" "' + Ziel
-                + '" <- 256-Bit AES');
-            end else
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES ?
-            begin
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-                '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 +
-                ' <- 128-Bit RC4' + #13));
-              Zielanz := Ziel;
-            end else
-            begin
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-                '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
-              Zielanz := Ziel;
-            end;
-            // Dateianlage vorne/hinten angefügt
-            if Dateianlage_Form.Datei1.Text <> '' then
-              Memo1.Lines.Text := Memo1.Lines.Text + 'Datei vorne angefügt:  ' + Dateianlage_Form.Datei1.Text + #13;
-            if Dateianlage_Form.Datei2.Text <> '' then
-              Memo1.Lines.Text := Memo1.Lines.Text + 'Datei hinten angefügt: ' + Dateianlage_Form.Datei2.Text;
+            QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+            Memo1.Lines.Text := Memo1.Lines.Text + (QPDF + ' --optimize-images --compression-level=9 "' + Ziel + '" "' +
+                                                    ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
           end else
-          if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // JPEG zu PDF
+          if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
           begin
-            Memo1.Lines.Text := Memo1.Lines.Text +
-              (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV);
-              Zielanz := Ziel;
+            Memo1.Lines.Text := Memo1.Lines.Text + (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
+                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps'));
           end else
-          // BMP/PNG/TIFF zu PDF
-          if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
-             (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
-            Memo1.Lines.Text := Memozeile
-          else
           begin
-            if (Einstellungen_Form.AuswahlRG.ItemIndex > 0) and
-               (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then
-            // Auswahl ist PS, TXT, BMP, JPG, PNG, TIFF
+            if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // Auswahl ist PDF
+            begin
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4 ?
+              begin
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
+                  '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+                Zielanz := Ziel;
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (QPDF + ' --allow-weak-crypto --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=128' +
+                  DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel
+                  + '" <- 128-Bit RC4');
+              end else
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES ?
+              begin
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
+                  '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+                Zielanz := Ziel;
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (QPDF + ' --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=128 --use-aes=y' +
+                  DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel
+                  + '" <- 128-Bit AES');
+              end else
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES ?
+              begin
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
+                  '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+                Zielanz := Ziel;
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (QPDF + ' --encrypt --user-password="' + Versch5 + '" --owner-password="' + Versch3 + '" --bits=256' +
+                  DokuSicherheit + ' --allow-insecure -- "' + Ziel + '" "' + Ziel
+                  + '" <- 256-Bit AES');
+              end else
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES ?
+              begin
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
+                  '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 +
+                  ' <- 128-Bit RC4' + #13));
+                Zielanz := Ziel;
+              end else
+              begin
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
+                  '-sOutputFile="' + Ziel + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+                Zielanz := Ziel;
+              end;
+              // Dateianlage vorne/hinten angefügt
+              if Dateianlage_Form.Datei1.Text <> '' then
+                Memo1.Lines.Text := Memo1.Lines.Text + 'Datei vorne angefügt:  ' + Dateianlage_Form.Datei1.Text + #13;
+              if Dateianlage_Form.Datei2.Text <> '' then
+                Memo1.Lines.Text := Memo1.Lines.Text + 'Datei hinten angefügt: ' + Dateianlage_Form.Datei2.Text;
+            end else
+            if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // JPEG zu PDF
+            begin
               Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' + Ziel
-                + '"' + AX + (Hochkommata + AP3 + Hochkommata + #13))
+                (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV);
+                Zielanz := Ziel;
+            end else
+            // BMP/PNG/TIFF zu PDF
+            if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+               (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
+              Memo1.Lines.Text := Memozeile
             else
-              Memo1.Lines.Text := Memo1.Lines.Text +
-                (Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' + Ziel
-                + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+            begin
+              if (Einstellungen_Form.AuswahlRG.ItemIndex > 0) and
+                 (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then
+              // Auswahl ist PS, TXT, BMP, JPG, PNG, TIFF
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' + Ziel
+                  + '"' + AX + (Hochkommata + AP3 + Hochkommata + #13))
+              else
+                Memo1.Lines.Text := Memo1.Lines.Text +
+                  (Ghostscript + ' ' + AP1_4 + AP1 + ' ' + '-sOutputFile="' + Ziel
+                  + '"' + AX + (Hochkommata + AP3 + Hochkommata + AP5 + #13));
+            end;
           end;
 
           // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
@@ -6741,125 +6783,149 @@ begin
             except
               Rewrite(F)
             end;
-            if Einstellungen_Form.PDF_Shrink.Enabled and
-               Einstellungen_Form.PDF_Shrink.Checked then
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn + '- komprimiert')) // PS/PDF/JPEG zu PDF/JPEG/TIFF'
-            else
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn)); // PS/PDF/JPEG zu PDF/JPEG/TIFF'
-
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4
+            if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
             begin
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --allow-weak-crypto --encrypt --user-password="' + Versch5 +
-                      '" --owner-password="' + Versch3 + '" --bits=128' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
+              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl: PDF zu PDF - komprimiert'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --optimize-images --compression-level=9 "'
+                      + Ziel + '" ' + '"' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata)));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-            end;
-
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) + QPDF_ExtractFile));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile))));
+            end else
             begin
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
-                      '" --owner-password="' + Versch3 + '" --bits=128 --use-aes=y' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit AES'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-            end;
+              if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn + '- komprimiert')) // PS/PDF/JPEG zu PDF/JPEG/TIFF'
+              else
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn)); // PS/PDF/JPEG zu PDF/JPEG/TIFF'
 
-            if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES
-            begin
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
-                      '" --owner-password="' + Versch3 + '" --bits=256' + DokuSicherheit + ' --allow-insecure -- "' + Ziel + '" "' + Ziel + '"')));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 256-Bit AES'));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
-            end;
-
-            if ((Encrypt_Form.BerechtigungCB.Checked = False) and (Encrypt_Form.KennwortCB.Checked = False)) then
-            begin
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // PDF
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4
               begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
-                else
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --allow-weak-crypto --encrypt --user-password="' + Versch5 +
+                        '" --owner-password="' + Versch3 + '" --bits=128' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              end;
 
-                // Dateianlage vorne/hinten angefügt
-                if Dateianlage_Form.Datei1.Text <> '' then
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -  Datei vorne anfügen: ' +
-                          IncludeTrailingBackslash(ExtractFilePath(Dateianlage_Form.Datei1.Text)) + ExtractFileName(Dateianlage_Form.Datei1.Text)));
-                if Dateianlage_Form.Datei2.Text <> '' then
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' - Datei hinten anfügen: ' +
-                          IncludeTrailingBackslash(ExtractFilePath(Dateianlage_Form.Datei2.Text)) + ExtractFileName(Dateianlage_Form.Datei2.Text)));
-
-              end else
-              if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // PDF
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES
               begin
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
-                else
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
+                        '" --owner-password="' + Versch3 + '" --bits=128 --use-aes=y' + DokuSicherheit + ' -- "' + Ziel + '" "' + Ziel + '"')));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit AES'));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              end;
+
+              if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES
+              begin
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --encrypt --user-password="' + Versch5 +
+                        '" --owner-password="' + Versch3 + '" --bits=256' + DokuSicherheit + ' --allow-insecure -- "' + Ziel + '" "' + Ziel + '"')));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 256-Bit AES'));
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+              end;
+
+              if ((Encrypt_Form.BerechtigungCB.Checked = False) and (Encrypt_Form.KennwortCB.Checked = False)) then
+              begin
+                if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // PDF
+                begin
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+
+                  if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+                    if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
+                      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + ' <- 128-Bit RC4'))
+                    else
+                      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel)))
+                  else
+                    if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
+                      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
+                    else
+                      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+
+                  if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel)
+                                     + 'Komprimiert_'+ ExtractFileName(Ziel)))))
+                  else
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+
+                  // Dateianlage vorne/hinten angefügt
+                  if Dateianlage_Form.Datei1.Text <> '' then
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -  Datei vorne anfügen: ' +
+                            IncludeTrailingBackslash(ExtractFilePath(Dateianlage_Form.Datei1.Text)) + ExtractFileName(Dateianlage_Form.Datei1.Text)));
+                  if Dateianlage_Form.Datei2.Text <> '' then
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' - Datei hinten anfügen: ' +
+                            IncludeTrailingBackslash(ExtractFilePath(Dateianlage_Form.Datei2.Text)) + ExtractFileName(Dateianlage_Form.Datei2.Text)));
+
+                end else
+                if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then // PDF
+                begin
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_1 + JV));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                  if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
+                  else
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                end else
+                // PS/DOCX/TXT/TIFF
+                if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 2) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 7) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 8) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
+                begin
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
-              end else
-              // PS/DOCX/TXT/TIFF
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 2) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 3) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 7) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 8) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 9) then
-              begin
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
-              end else
-              // BMP, JPEG, PNG
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 5) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 6) then
-              begin
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-              end else
-              // BMP, JPEG, PNG, TIFF zu PDF
-              if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
-                 (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
-              begin
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick +
-                        ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + '"'));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                end else
+                // BMP, JPEG, PNG
+                if (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 5) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 6) then
+                begin
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                end else
+                // BMP, JPEG, PNG, TIFF zu PDF
+                if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
+                   (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then
+                begin
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + ImageMagick +
+                          ' -define pdf:Author="" -define pdf:Creator="FreePDF64 (https://github.com/FreePDF64)" "' + AP3 + '" "' + Ziel + '"'));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                end;
               end;
             end;
             Closefile(F);
@@ -6876,8 +6942,18 @@ begin
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) or
              (Einstellungen_Form.AuswahlRG.ItemIndex = 11) then // PDF anzeigen
           begin
+            if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
+            begin
+              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              Zielanz := ExtractFilePath(Ziel) + QPDF_ExtractFile;
+            end else
+            if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+            begin
+              Zielanz := ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel)
+            end else
             if Zielanz = Ziel then
               Zielanz := Ziel;
+
             if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
                (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
                (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // PDF anzeigen
@@ -6951,7 +7027,7 @@ begin
   Ziel := Ziel3;
 
   // Nach der Erstellung den ersten Eintrag markieren
-  LMDShellList1.ItemIndex := 0;
+//  LMDShellList1.ItemIndex := 0;
 
   // Seiten wieder zurückstellen
   Seiten_Form.VonSE.Value := 0;
