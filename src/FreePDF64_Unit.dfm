@@ -2416,7 +2416,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FreePDFHowTo1Click
       end
       object AbfrageaufeinneuesUpdate1: TMenuItem
-        Caption = 'Projektseite nach Update abfragen...'
+        Caption = 'Homepage nach Updates abfragen...'
         OnClick = AbfrageaufeinneuesUpdate1Click
       end
       object N1: TMenuItem
@@ -17198,8 +17198,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = '11214_arrow_down_left_return_icon'
         SourceImages = <>
       end>
-    Left = 428
-    Top = 663
+    Left = 503
+    Top = 438
   end
   object VirtualImageList1: TVirtualImageList
     Images = <
@@ -17872,5 +17872,9 @@ object FreePDF64_Form: TFreePDF64_Form
   object ImageList1: TImageList
     Left = 660
     Top = 156
+  end
+  object LMDVersionInfo1: TLMDVersionInfo
+    Left = 828
+    Top = 368
   end
 end

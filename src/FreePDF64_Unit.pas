@@ -347,6 +347,7 @@ end;
     ZielBtn: TSpeedButton;
     Ziellabel: TPanel;
     AbfrageaufeinneuesUpdate1: TMenuItem;
+    LMDVersionInfo1: TLMDVersionInfo;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -1883,8 +1884,14 @@ end;
 
 // Aufruf der Github-Release-Seite von FreePDF64
 procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
+var
+  DatumOhneZeit: string;
 begin
-  ShowMessage('Diese Version: 6.0.0 vom 04.01.2025');
+  DatumOhneZeit := FormatDateTime('dd.mm.yyyy', Now); // nur das Datum formatieren
+  ShowMessage('>>>> Aktuelle Programminformationen <<<<' + #13 + #13
+              + LMDVersionInfo1.ProductName + ' Version '
+              + LMDVersionInfo1.ProductVersion + ' - 64 bit '
+              + 'vom ' + DatumOhneZeit);
   ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/releases'), NIL, NIL, SW_NORMAL);
 end;
 
