@@ -284,8 +284,6 @@ end;
     N13: TMenuItem;
     N16: TMenuItem;
     KlickaufX: TMenuItem;
-    ToolButton1: TToolButton;
-    Feedback: TToolButton;
     Status1: TMenuItem;
     PDFdecrypt: TToolButton;
     LMDOpenDialog1: TLMDOpenDialog;
@@ -348,6 +346,8 @@ end;
     Ziellabel: TPanel;
     AbfrageaufeinneuesUpdate1: TMenuItem;
     LMDVersionInfo1: TLMDVersionInfo;
+    Feedback1: TMenuItem;
+    PDF_Kompress: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -563,6 +563,7 @@ end;
     procedure BtnEditorMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
+    procedure PDF_KompressClick(Sender: TObject);
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -2407,7 +2408,6 @@ end;
 procedure TFreePDF64_Form.Timer1Timer(Sender: TObject);
 begin
   FormatBtn.Enabled := not FormatBtn.Enabled;
-  Feedback.Enabled  := not Feedback.Enabled;
 end;
 
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
@@ -2644,6 +2644,7 @@ begin
   else
     LMDShellList2.SetFocus;
 
+  LMDOpenDialog1.Title := 'PDF-Passwortschutz entfernen - Bitte PDF-Datei auswählen...';
   LMDOpenDialog1.InitialDir := LMDShellFolder1.ActiveFolder.PathName;
   if LMDOpenDialog1.Execute then
     PDFDatei := LMDOpenDialog1.Filename
@@ -2763,6 +2764,98 @@ begin
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
         ShowMessage('Passwort falsch - bitte erneut versuchen...');
+      end;
+    end;
+  end;
+end;
+
+// Komprimierung einer PDF-Datei mittels QPDF
+procedure TFreePDF64_Form.PDF_KompressClick(Sender: TObject);
+var
+  PDFDatei, QPDF_ExtractFile, Zeile, Zeile2, EndPDF, Ziel, s: String;
+  ProcID: Cardinal;
+  F: TextFile;
+begin
+  FavClose;
+
+  // Was war die letzte aktive Komponente?
+  if wcActive.Name = 'LMDShellList1' then
+    LMDShellList1.SetFocus
+  else
+    LMDShellList2.SetFocus;
+
+  LMDOpenDialog1.Title := 'Komprimierung - Bitte PDF-Datei auswählen...';
+  if LMDShellList1.Focused then
+    LMDOpenDialog1.InitialDir := LMDShellFolder1.ActiveFolder.PathName
+  else
+  if LMDShellList2.Focused then
+    LMDOpenDialog1.InitialDir := LMDShellFolder2.ActiveFolder.PathName;
+  if LMDOpenDialog1.Execute then
+    PDFDatei := LMDOpenDialog1.Filename
+  else
+    Exit;
+
+  // Wenn Erstellung Formatfolder angehakt...
+  if Formatverz_Date.Checked then
+  begin
+    // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
+    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
+      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
+  end else if Formatverz_OnlyDate.Checked then
+  begin
+    // Verzeichnis erstellen der gewünschten Endung (Datum)
+    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)) then
+      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)
+  end else if Formatverz.Checked then
+  begin
+    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
+      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
+  end else
+    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)) then
+      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
+
+  // QPDF-Pfad
+  QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(PDFDatei);
+    // QPDF-Pfad => Einstellungen_Form.Edit4.Text
+  EndPDF := IncludeTrailingBackslash(Ziel) + QPDF_ExtractFile;
+  Zeile  := Einstellungen_Form.Edit4.Text + ' --optimize-images --compression-level=9 "' + PDFDatei + '" "' + EndPDF + '"';
+
+  // Starte die Erstellung...
+  ProcID := 0;
+  if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
+  begin
+    Memo1.Lines.Text := Zeile;
+    // FreePDF64Log.txt
+    if Logdatei.Checked then
+    begin
+      // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+      AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+      try
+        Append(F);
+      except
+        Rewrite(F)
+      end;
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> PDF-Komprimierung: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+              + ExtractFileName(PDFDatei)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + ExtractFileName(EndPDF)));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
+      Closefile(F);
+
+      if Einstellungen_Form.SystemklangCB.Checked then
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
+
+      // Markierte Datei(en) mit einem Anzeigeprogramm anzeigen
+      if Einstellungen_Form.AnzeigenCB.Checked then
+      begin
+        // Pause von 1 sec. einbauen...
+        Sleep(1000);
+        if Einstellungen_Form.Edit3.Text = '' then
+          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+        else
+          PDFReader := Einstellungen_Form.Edit3.Text;
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
       end;
     end;
   end;
@@ -6080,7 +6173,6 @@ begin
 
   Timer1.Enabled := False;
   FormatBtn.Enabled := True;
-  Feedback.Enabled := True;
   // Ist der Pfad zum Ghostscript-Programm in den Einstellungen eingetragen?
   if not FileExists(Einstellungen_Form.Edit1.Text) then
   begin
@@ -6534,7 +6626,8 @@ begin
               // Nun die Erstellung wieder zurück von PS zu PDF
               Res := CreateProcess(NIL,
                 PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
-                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps' +
+                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel)
+                + '"' + AX + (Hochkommata + Ziel + '.ps' +
                 Hochkommata + AP5)), NIL, NIL, True, CREATE_DEFAULT_ERROR_MODE or
                 CREATE_NEW_CONSOLE or NORMAL_PRIORITY_CLASS, NIL, NIL,
                 StartUp, Process);
@@ -6682,16 +6775,19 @@ begin
           end;
 
           // Memo füllen...
-          if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
-          begin
-            QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
-            Memo1.Lines.Text := Memo1.Lines.Text + (QPDF + ' --optimize-images --compression-level=9 "' + Ziel + '" "' +
-                                                    ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
-          end else
-          if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+          if (Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked) or
+             (Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked) then
           begin
             Memo1.Lines.Text := Memo1.Lines.Text + (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
-                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps'));
+                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'+ ExtractFileName(Ziel) + '"'
+                + AX + (Hochkommata + Ziel + '.ps"'  + AP5 + ' '));
+             if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
+            begin
+              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              Memo1.Lines.Text := Memo1.Lines.Text + (QPDF + ' --optimize-images --compression-level=9 "' + Ziel + '" "' +
+                                                      ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
+
+            end
           end else
           begin
             if (Einstellungen_Form.AuswahlRG.ItemIndex = 0) then // Auswahl ist PDF
@@ -6787,6 +6883,7 @@ begin
             begin
               QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl: PDF zu PDF - komprimiert'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --optimize-images --compression-level=9 "'
                       + Ziel + '" ' + '"' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata)));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
@@ -7051,7 +7148,6 @@ procedure TFreePDF64_Form.PDF_ErstellungMouseLeave(Sender: TObject);
 begin
   Timer1.Enabled    := False;
   FormatBtn.Enabled := True;
-  Feedback.Enabled  := True;
 end;
 
 procedure TFreePDF64_Form.PfadimExplorerffnen1Click(Sender: TObject);

@@ -1,3 +1,6 @@
+06.01.2025 V6.1.0
+Neu -> Button für die "Komprimierung einer PDF-Datei" zur Symbolleiste hinzugefügt.
+Fix -> Button "Gebe Feedback ..." verlegt ins Menü 'Hilfe'.
 05.01.2025 V6.0.0
 Neu -> 2te PDF-Komprimierung - zu finden in den Einstellungen: Diese Prozedur komprimiert die erstellte PDF-Datei mittels QPDF meist besser als die 1ste PDF-Komprimierung mit Ghostscript.
 Neu -> Menüpunkt 'Hilfe' - 'Homepage auf Updates abfragen...'.
