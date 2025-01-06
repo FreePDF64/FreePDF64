@@ -308,7 +308,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object AnlagenBtn: TToolButton
         Left = 460
         Top = 0
-        Hint = 'Anlage einer PDF-Datei hinzuf'#252'gen'
+        Hint = 'Anlage der markierten PDF-Datei hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
         ImageIndex = 70
         ImageName = 'Item71'
@@ -327,9 +327,10 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 502
         Top = 0
         Hint = 
-          'Anlage aus einer PDF-Datei extrahieren/entfernen:'#13#10'1. Es werden ' +
-          'alle Anlagen im unteren Fenster angezeigt'#13#10'2. Nun gibt man die N' +
-          'ummer der Anlage an, welche extrahiert/entfernt werden soll'
+          'Anlage aus der markierten PDF-Datei extrahieren/entfernen:'#13#10'1. E' +
+          's werden alle Anlagen im unteren Fenster angezeigt'#13#10'2. Nun gibt ' +
+          'man die Nummer der Anlage an, welche extrahiert/entfernt werden ' +
+          'soll'
         Caption = 'PDFRemove'
         ImageIndex = 80
         ImageName = 'Item81'
@@ -339,8 +340,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 539
         Top = 0
         Hint = 
-          'Anlage(n) einer PDF-Datei anzeigen und ins Zielverzeichnis extra' +
-          'hieren'
+          'Anlage(n) der markierten PDF-Datei anzeigen und ins Zielverzeich' +
+          'nis extrahieren'
         Caption = 'PDFAttachment'
         ImageIndex = 43
         ImageName = 'Item44'
@@ -362,7 +363,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object HTMLBtn: TToolButton
         Left = 613
         Top = 0
-        Hint = 'Konvertieren von PDF zu HTML'
+        Hint = 'Konvertieren der markierten PDF-Datei von PDF zu HTML'
         Caption = 'Konvertieren von PDF zu HTML'
         ImageIndex = 46
         ImageName = 'Item47'
@@ -384,7 +385,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFInfoBtn: TToolButton
         Left = 655
         Top = 0
-        Hint = 'Informationen '#252'ber die ausgew'#228'hlte PDF-Datei anzeigen [auch F9]'
+        Hint = 'Informationen '#252'ber die markierte PDF-Datei anzeigen [auch F9]'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -392,7 +393,9 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFFontsBtn: TToolButton
         Left = 692
         Top = 0
-        Hint = 'Listet die in der PDF-Datei verwendeten Schriftarten auf'
+        Hint = 
+          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
+          'auf'
         Caption = 'PDFFonts'
         ImageIndex = 6
         ImageName = 'Item7'
@@ -401,7 +404,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFdecrypt: TToolButton
         Left = 729
         Top = 0
-        Hint = 'PDF-Passwortschutz entfernen'
+        Hint = 'PDF-Passwortschutz der markierten PDF-Datei entfernen'
         Caption = 'PDFdecrypt'
         ImageIndex = 104
         ImageName = '9051666_warning_danger_attention_exclamation_error_icon'
@@ -410,7 +413,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDF_Kompress: TToolButton
         Left = 766
         Top = 0
-        Hint = 'Komprimierung einer PDF-Datei'
+        Hint = 'Komprimierung einer markierten PDF-Datei'
         Caption = 'PDF_Kompress'
         ImageIndex = 102
         ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'

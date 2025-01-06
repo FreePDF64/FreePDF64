@@ -2475,7 +2475,7 @@ begin
     end
   end else
   begin
-    MessageDlgCenter('Anlage(n) extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Anlage(n) extrahieren: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 
@@ -2570,7 +2570,7 @@ begin
                    LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1)
   else
   begin
-    MessageDlgCenter('Informationen zu einer PDF-Datei anzeigen: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Informationen zu einer PDF-Datei anzeigen: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 
@@ -2615,7 +2615,7 @@ begin
                    LMDShellList2.SelectedItems[i].DisplayName + '"', Memo1)
   else
   begin
-    MessageDlgCenter('Die Schriftarten in der PDF-Datei werden aufgelistet: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Die Schriftarten in der PDF-Datei werden aufgelistet: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 
@@ -2635,6 +2635,7 @@ var
   PDFDatei, Zeile, Zeile2, EndPDF, Ziel, s: String;
   ProcID: Cardinal;
   F: TextFile;
+  i: Integer;
 begin
   FavClose;
 
@@ -2644,12 +2645,17 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  LMDOpenDialog1.Title := 'PDF-Passwortschutz entfernen - Bitte PDF-Datei auswählen...';
-  LMDOpenDialog1.InitialDir := LMDShellFolder1.ActiveFolder.PathName;
-  if LMDOpenDialog1.Execute then
-    PDFDatei := LMDOpenDialog1.Filename
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    for i := 0 to LMDShellList2.SelCount - 1 do
+      PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName
   else
+  begin
+    MessageDlgCenter('PDF-Passwortschutz entfernen: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
+  end;
 
   // Wenn Erstellung Formatfolder angehakt...
   if Formatverz_Date.Checked then
@@ -2772,9 +2778,10 @@ end;
 // Komprimierung einer PDF-Datei mittels QPDF
 procedure TFreePDF64_Form.PDF_KompressClick(Sender: TObject);
 var
-  PDFDatei, QPDF_ExtractFile, Zeile, Zeile2, EndPDF, Ziel, s: String;
+  PDFDatei, QPDF_ExtractFile, Zeile, EndPDF, Ziel: String;
   ProcID: Cardinal;
   F: TextFile;
+  i: Integer;
 begin
   FavClose;
 
@@ -2784,16 +2791,17 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  LMDOpenDialog1.Title := 'Komprimierung - Bitte PDF-Datei auswählen...';
-  if LMDShellList1.Focused then
-    LMDOpenDialog1.InitialDir := LMDShellFolder1.ActiveFolder.PathName
+  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+    for i := 0 to LMDShellList1.SelCount - 1 do
+      PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[i].DisplayName
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    for i := 0 to LMDShellList2.SelCount - 1 do
+      PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems[i].DisplayName
   else
-  if LMDShellList2.Focused then
-    LMDOpenDialog1.InitialDir := LMDShellFolder2.ActiveFolder.PathName;
-  if LMDOpenDialog1.Execute then
-    PDFDatei := LMDOpenDialog1.Filename
-  else
+  begin
+    MessageDlgCenter('PDF-Komprimierung: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
+  end;
 
   // Wenn Erstellung Formatfolder angehakt...
   if Formatverz_Date.Checked then
@@ -5031,9 +5039,12 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or (LMDShellList2.Focused and (LMDShellList2.SelCount = 1)) then
   begin
-    FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
+    if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+      FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName)
+    else
+      FileName := ExtractFileName(LMDShellList2.SelectedItem.PathName);
     // Wenn der Zielordner schon vorhanden ist, dann Umbenennen...
     repeat
       Ziel2 := BildZiel;
@@ -5049,7 +5060,9 @@ begin
 
     // Abfrage, ob das Extrahieren funktionieren wird...
     if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
-      Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" >NIL';
+      Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" >NIL'
+    else
+      Zeile := XPDF_Images + ' -j "' + LMDShellList2.SelectedItem.PathName + '" >NIL';
 
     ProcID := 0;
     // Ja wird funktionieren. Weiter geht's mit Erstellung der Ziel-Verzeichnisse...
@@ -5057,12 +5070,18 @@ begin
     begin
       // Verzeichnis erstellen "Extrahierte Bilder"
       if System.SysUtils.ForceDirectories(Bildziel) then
-        Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + Bildziel + '\' + FileName + '"';
-
+        if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+          Zeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' + Bildziel + '\' + FileName + '"'
+        else
+          Zeile := XPDF_Images + ' -j "' + LMDShellList2.SelectedItem.PathName + '" "' + Bildziel + '\' + FileName + '"';
       // Starte nun die richtige Erstellung...
       if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
-        Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
-                     Bildziel + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"';
+        if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+          Memozeile := XPDF_Images + ' -j "' + LMDShellList1.SelectedItem.PathName + '" "' +
+                       Bildziel + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
+        else
+          Memozeile := XPDF_Images + ' -j "' + LMDShellList2.SelectedItem.PathName + '" "' +
+                       Bildziel + '\' + ExtractFileName(FileName) + '-xxxx.xxx' + '"'
     end else
     begin
       MessageDlgCenter('Fehler beim Extrahieren von Bildern aus der Datei: "' + FileName + '".' + #13 +
@@ -5093,15 +5112,22 @@ begin
         Rewrite(F)
       end;
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+      if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+      begin
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+      end else
+      begin
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList2.SelectedItem.PathName));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList2.SelectedItem.PathName))));
+      end;
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -        Zieldatei(en): ' + IncludeTrailingBackslash(Bildziel)
               + ExtractFileName(FileName) + '-xxxx.xxx'));
       Closefile(F);
     end;
   end else
   begin
-    MessageDlgCenter('Bilder extrahieren: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!', mtInformation, [mbOk]);
+    MessageDlgCenter('Bilder extrahieren: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
     Exit;
   end;
 end;
@@ -5130,9 +5156,17 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
-  begin
-    FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName);
+  if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or (LMDShellList2.Focused and (LMDShellList2.SelCount = 1)) then
+    begin
+    if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+      FileName := ExtractFileName(LMDShellList1.SelectedItem.PathName)
+    else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+      FileName := ExtractFileName(LMDShellList2.SelectedItem.PathName)
+    else
+    begin
+      MessageDlgCenter('PDF-Komprimierung: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!', mtInformation, [mbOk]);
+      Exit;
+    end;
 
     // Wenn der Zielordner schon vorhanden ist, dann Umbenennen...
     repeat
@@ -5147,13 +5181,19 @@ begin
     until not DirectoryExists(Ziel2);
       HTMLZiel := Ziel2;
 
-    Zeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"';
+    if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+      Zeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '"'
+    else
+      Zeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList2.SelectedItem.PathName + '" "' + HTMLZiel + '"';
 
     // Starte die Erstellung...
     ProcID := 0;
     if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
     begin
-      Memozeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
+      if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+        Memozeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList1.SelectedItem.PathName + '" "' + HTMLZiel + '\"'
+      else
+        Memozeile := XPDF_toHTML + ' -meta -overwrite -q "' + LMDShellList2.SelectedItem.PathName + '" "' + HTMLZiel + '\"';
       Memo1.Lines.Text := Memozeile;
       // FreePDF64Log.txt
       if Logdatei.Checked then
@@ -5166,8 +5206,15 @@ begin
           Rewrite(F)
         end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =========> PDF zu HTML: ' + Zeile));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+        if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+        begin
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList1.SelectedItem.PathName))));
+        end else
+        begin
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList2.SelectedItem.PathName));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(LMDShellList2.SelectedItem.PathName))));
+        end;
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + HTMLZiel));
         Closefile(F);
 
@@ -5184,7 +5231,7 @@ begin
     end;
   end else
   begin
-    MessageDlgCenter('Konvertieren PDF zu HTML: Bitte EINE PDF-Datei aus dem Quellverzeichnis auswählen!',
+    MessageDlgCenter('Konvertieren PDF zu HTML: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
                       mtInformation, [mbOk]);
     Exit;
   end;
