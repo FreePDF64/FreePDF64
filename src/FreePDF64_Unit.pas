@@ -6218,12 +6218,6 @@ var
 begin
   FavClose;
 
-  // Was war die letzte aktive Komponente?
-  if wcPrevious.Name = 'LMDShellList1' then
-    LMDShellList1.SetFocus
-  else
-    LMDShellList2.SetFocus;
-
   Timer1.Enabled := False;
   FormatBtn.Enabled := True;
   // Ist der Pfad zum Ghostscript-Programm in den Einstellungen eingetragen?
