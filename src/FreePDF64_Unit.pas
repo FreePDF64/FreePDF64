@@ -564,6 +564,11 @@ end;
       Shift: TShiftState; X, Y: Integer);
     procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
     procedure PDF_KompressClick(Sender: TObject);
+  private
+    { Private-Deklarationen }
+    wcActive, wcPrevious : TWinControl;
+    FSortColumn, FSortColumn2: Integer;
+    FSortAscending, FSortAscending2: Boolean;
   public
     { Public-Deklarationen }
     procedure ExtAbfrage;
@@ -573,11 +578,6 @@ end;
     procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
     procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
     procedure ActiveControlChanged(Sender: TObject);
-  private
-    { Private-Deklarationen }
-    wcActive, wcPrevious : TWinControl;
-    FSortColumn, FSortColumn2: Integer;
-    FSortAscending, FSortAscending2: Boolean;
   published
     { Doppelclick auf Splitter }
     property OnDblClick;
@@ -4848,12 +4848,18 @@ begin
   else
     LMDShellList2.SortDirection := sdDescending;
 
+  // ===============================================================
+  // FreePDF64 ist nun komplett initialisiert... warte noch 1 Sec.
+  Application.ProcessMessages;
+  Sleep(1000);
+  // Nun gehts weiter...
   // Setze Cursor auf den ersten Eintrag der LMDShellList1
   LMDShellList2.ClearSelection;
   LMDShellList1.ClearSelection;
   LMDShellList1.SetFocus;
   if LMDShellList1.Items.Count > 0 then
     LMDShellList1.ItemIndex := 0;
+  // ===============================================================
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);

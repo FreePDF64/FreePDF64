@@ -1,3 +1,5 @@
+07.01.2025 V6.1.1
+Fix -> Codeoptimierungen an der Startphase von FreePDF64 durchgeführt.
 06.01.2025 V6.1.0
 Neu -> Button für die "Komprimierung einer PDF-Datei" zur Symbolleiste hinzugefügt.
 Fix -> Button "Gebe Feedback ..." verlegt ins Menü 'Hilfe'.
