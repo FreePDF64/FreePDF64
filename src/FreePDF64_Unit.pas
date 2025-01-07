@@ -6218,6 +6218,16 @@ var
 begin
   FavClose;
 
+  // Wenn FreePDF64 NICHT im Tray, dann...
+  if TrayIcon1.Visible = False then
+    begin
+    // Was war die letzte aktive Komponente?
+    if wcPrevious.Name = 'LMDShellList1' then
+      LMDShellList1.SetFocus
+    else
+      LMDShellList2.SetFocus
+    end;
+
   Timer1.Enabled := False;
   FormatBtn.Enabled := True;
   // Ist der Pfad zum Ghostscript-Programm in den Einstellungen eingetragen?
