@@ -4682,7 +4682,7 @@ begin
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 7  then Text_FormatBtn := ' PS/PDF zu TIFF G4 - BW '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 8  then Text_FormatBtn := ' PS/PDF zu TIFF LZW - BW '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 9  then Text_FormatBtn := ' PS/PDF zu TIFF (uncompressed) '
-  else if Einstellungen_Form.AuswahlRG.ItemIndex = 10  then Text_FormatBtn := ' BMP zu PDF '
+  else if Einstellungen_Form.AuswahlRG.ItemIndex = 10 then Text_FormatBtn := ' BMP zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 11 then Text_FormatBtn := ' JPEG zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 12 then Text_FormatBtn := ' PNG zu PDF '
   else if Einstellungen_Form.AuswahlRG.ItemIndex = 13 then Text_FormatBtn := ' TIFF zu PDF ';
