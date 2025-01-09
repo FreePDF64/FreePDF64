@@ -1891,8 +1891,7 @@ begin
   DatumOhneZeit := FormatDateTime('dd.mm.yyyy', Now); // nur das Datum formatieren
   ShowMessage('>>>> Aktuelle Programminformationen <<<<' + #13 + #13
               + LMDVersionInfo1.ProductName + ' Version '
-              + LMDVersionInfo1.ProductVersion + ' - 64 bit '
-              + 'vom ' + DatumOhneZeit);
+              + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + DatumOhneZeit + ')');
   ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/releases'), NIL, NIL, SW_NORMAL);
 end;
 
