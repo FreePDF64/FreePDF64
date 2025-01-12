@@ -2778,10 +2778,9 @@ end;
 procedure TFreePDF64_Form.PDF_KompressClick(Sender: TObject);
 var
   PDFDatei, QPDF_ExtractFile, Zeile, EndPDF, Ziel: String;
-  Komprimierung: Byte;
   ProcID: Cardinal;
   F: TextFile;
-  i: Integer;
+  i, Komprimierung: Integer;
 begin
   FavClose;
 
@@ -2826,7 +2825,7 @@ begin
   QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(PDFDatei);
     // QPDF-Pfad => Einstellungen_Form.Edit4.Text
   EndPDF := IncludeTrailingBackslash(Ziel) + QPDF_ExtractFile;
-  Zeile  := Einstellungen_Form.Edit4.Text + ' --optimize-images --compression-level=9 "' + PDFDatei + '" "' + EndPDF + '"';
+  Zeile  := Einstellungen_Form.Edit4.Text + ' --optimize-images --object-streams=generate --compression-level=9 --recompress-flate "' + PDFDatei + '" "' + EndPDF + '"';
 
   // Starte die Erstellung...
   ProcID := 0;
@@ -6198,19 +6197,17 @@ end;
 
 procedure TFreePDF64_Form.PDF_ErstellungClick(Sender: TObject);
 var
-  dpi, DP, DP1,
-  c, i, j, k, Level, PDFALevel, R: Integer;
+  dpi, DP, DP1, c, i, j, k, Level, PDFALevel, R, Komprimierung: Integer;
   Res: Boolean;
   StartUp: TStartupInfo;
   Process: TProcessInformation;
   InpHandle, OutpHandle: THandle;
-  fExitCode: Cardinal;
+  fExitCode, ProcID: Cardinal;
   AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, AP3_1, DokuSicherheit, AX, Memozeile,
   DS1, DS2, DS3, DS4, DS5, Spin1, Spin2, VonSpin, BisSpin, Ziel3, Zielanz,
   PZiel, NZiel, QPDFZiel, QPDF_Zeile, z, JV, Endzielname, Datei_Vorne,
   QPDF_ExtractFile, Datei_Hinten: String;
   F: TextFile;
-  ProcID: Cardinal;
 begin
   FavClose;
 
@@ -6705,7 +6702,7 @@ begin
             if Einstellungen_Form.PDF_Shrink2.Checked then
             begin
               QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
-              QPDF_Zeile := (QPDF + ' --optimize-images --compression-level=9 "' + Ziel + '" "' +
+              QPDF_Zeile := (QPDF + ' --optimize-images --object-streams=generate --compression-level=9 --recompress-flate "' + Ziel + '" "' +
                              ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
               Res := CreateProcess(NIL, PChar(QPDF_Zeile), NIL, NIL, True,
                                    CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or
@@ -6937,12 +6934,19 @@ begin
               QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> FORMATAUSWAHL: PDF zu PDF - komprimiert'));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --optimize-images --compression-level=9 "'
                       + Ziel + '" ' + '"' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata)));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) + QPDF_ExtractFile));
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile))));
+
+              Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile), 100, MyFileSize(Ziel)));
+              Komprimierung := 100 - Komprimierung;
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile))) +
+                               ' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
             end else
             begin
               if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
@@ -6962,7 +6966,11 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+
+                Komprimierung := (MulDiv(MyFileSize(Ziel), 100, MyFileSize(AP3)));
+                Komprimierung := 100 - Komprimierung;
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))) +
+                   		  ' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
               end;
 
               if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 AES
@@ -6977,7 +6985,11 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit AES'));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+
+                Komprimierung := (MulDiv(MyFileSize(Ziel), 100, MyFileSize(AP3)));
+                Komprimierung := 100 - Komprimierung;
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))) +
+                   		  ' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
               end;
 
               if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 256 AES
@@ -6992,7 +7004,11 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 256-Bit AES'));
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+
+                Komprimierung := (MulDiv(MyFileSize(Ziel), 100, MyFileSize(AP3)));
+                Komprimierung := 100 - Komprimierung;
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))) +
+                   		  ' (keine Komprimierung)');
               end;
 
               if ((Encrypt_Form.BerechtigungCB.Checked = False) and (Encrypt_Form.KennwortCB.Checked = False)) then
@@ -7002,6 +7018,8 @@ begin
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
 
                   if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
                     if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and (Encrypt_Form.BerechtigungCB.Checked or Encrypt_Form.KennwortCB.Checked) then // 128 RC4
@@ -7015,9 +7033,13 @@ begin
                       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
 
                   if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
+                  begin
+                    Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_'
+                                      + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
+                    Komprimierung := 100 - Komprimierung;
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel)
-                                     + 'Komprimiert_'+ ExtractFileName(Ziel)))))
-                  else
+                                     + 'Komprimiert_'+ ExtractFileName(Ziel)))) +' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
+                  end else
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
 
                   // Dateianlage vorne/hinten angefügt
@@ -7038,7 +7060,15 @@ begin
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel + ' <- 128-Bit RC4'))
                   else
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
+
+                  Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_'
+                                    + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
+                  Komprimierung := 100 - Komprimierung;
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel)
+                                   + 'Komprimiert_'+ ExtractFileName(Ziel)));
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(ExtractFilePath(Ziel)
+                                   + 'Komprimiert_'+ ExtractFileName(Ziel)))) +' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
                 end else
                 // PS/DOCX/TXT/TIFF
                 if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
@@ -7052,7 +7082,7 @@ begin
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
                   Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + Ziel));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))))
+                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(Ziel))));
                 end else
                 // BMP, JPEG, PNG
                 if (Einstellungen_Form.AuswahlRG.ItemIndex = 4) or
