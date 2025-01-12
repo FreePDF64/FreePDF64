@@ -2778,6 +2778,7 @@ end;
 procedure TFreePDF64_Form.PDF_KompressClick(Sender: TObject);
 var
   PDFDatei, QPDF_ExtractFile, Zeile, EndPDF, Ziel: String;
+  Komprimierung: Byte;
   ProcID: Cardinal;
   F: TextFile;
   i: Integer;
@@ -2842,12 +2843,15 @@ begin
       except
         Rewrite(F)
       end;
+      Komprimierung := MulDiv(MyFileSize(EndPDF), 100, MyFileSize(PDFDatei));
+      Komprimierung := 100 - Komprimierung;
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> PDF-KOMPRIMIERUNG: ' + Zeile));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
               + ExtractFileName(PDFDatei)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + ExtractFileName(EndPDF)));
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))) +
+              ' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
       Closefile(F);
 
       if Einstellungen_Form.SystemklangCB.Checked then
