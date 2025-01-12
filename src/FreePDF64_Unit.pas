@@ -1136,7 +1136,7 @@ begin
               except
                 Rewrite(F)
               end;
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> WZ/Stempel: ' + Memo1.Lines.Text));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> WZ/STEMPEL: ' + Memo1.Lines.Text));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + AP3));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(AP3))));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -          WZ/ST-Datei: ' + Wasserzeichen_Form.Edit1.Text));
@@ -1316,7 +1316,7 @@ begin
         except
           Rewrite(F)
         end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Anlage hinzufügen: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> ANLAGE HINZUFÜGEN: ' + Zeile));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
                 + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
@@ -1431,7 +1431,7 @@ begin
         except
           Rewrite(F)
         end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Anlage extrahieren: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> ANLAGE EXTRAHIEREN: ' + Zeile));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
                 + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + ExcludeTrailingBackslash(Ziel)));
@@ -1483,7 +1483,7 @@ begin
         except
           Rewrite(F)
         end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> Anlage entfernen: ' + Zeile2));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ====> ANLAGE ENTFERNEN: ' + Zeile2));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
                 + LMDShellList1.SelectedItems[0].DisplayName));
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
@@ -2101,7 +2101,7 @@ begin
       begin
         for i := 0 to LMDShellList1.SelCount - 1 do
         begin
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> Senden von: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + m[i]));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> SENDEN VON: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + m[i]));
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                   LMDShellList1.SelectedItems[i].DisplayName))));
         end;
@@ -2111,7 +2111,7 @@ begin
       begin
         for i := 0 to LMDShellList2.SelCount - 1 do
         begin
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> Senden von: ' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + m[i]));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==========> SENDEN VON: ' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + m[i]));
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                   LMDShellList2.SelectedItems[i].DisplayName))));
         end;
@@ -2507,7 +2507,7 @@ begin
       PDFDatei := ExtractFileName(PDFDatei);
       Delete(PDFDatei, Length(PDFDatei), 1);
 
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' => Anlage(n) speichern: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' => ANLAGE(N) SPEICHERN: ' + Zeile));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -     Quellverzeichnis: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + PDFDatei));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -      Zielverzeichnis: ' + LMDShellFolder2.ActiveFolder.PathName));
@@ -2694,7 +2694,7 @@ begin
       except
         Rewrite(F)
       end;
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Passwort entfernen: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> PASSWORT ENTFERNEN: ' + Zeile));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
               + ExtractFileName(PDFDatei)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
@@ -2742,7 +2742,7 @@ begin
           except
            Rewrite(F)
           end;
-          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> Passwort entfernen: ' + Zeile2));
+          Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ==> PASSWORT ENTFERNEN: ' + Zeile2));
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
                   + ExtractFileName(PDFDatei)));
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
@@ -2842,7 +2842,7 @@ begin
       except
         Rewrite(F)
       end;
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> PDF-Komprimierung: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> PDF-KOMPRIMIERUNG: ' + Zeile));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
               + ExtractFileName(PDFDatei)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(PDFDatei))));
@@ -5109,7 +5109,7 @@ begin
       except
         Rewrite(F)
       end;
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> Extrahiere Bilder: ' + Zeile));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===> EXTRAHIERE BILDER: ' + Zeile));
       if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
       begin
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
@@ -5203,7 +5203,7 @@ begin
         except
           Rewrite(F)
         end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =========> PDF zu HTML: ' + Zeile));
+        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =========> PDF ZU HTML: ' + Zeile));
         if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
         begin
           Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + LMDShellList1.SelectedItem.PathName));
@@ -5977,7 +5977,7 @@ begin
         Rewrite(F)
       end;
 
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===========> Verbinden: ' + Memo1.Lines.Text));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' ===========> VERBINDEN: ' + Memo1.Lines.Text));
       for i := 0 to Auswahl_Form.FileList.Items.Count - 1 do
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Dateiname: ' + PChar(Auswahl_Form.FileList.Items[i].Caption)));
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + IncludeTrailingBackslash(Ziel) + MERGEDATEI));
@@ -6931,7 +6931,7 @@ begin
             if Einstellungen_Form.PDF_Shrink2.Enabled and Einstellungen_Form.PDF_Shrink2.Checked then
             begin
               QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
-              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl: PDF zu PDF - komprimiert'));
+              Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> FORMATAUSWAHL: PDF zu PDF - komprimiert'));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' + (QPDF + ' --optimize-images --compression-level=9 "'
                       + Ziel + '" ' + '"' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata)));
@@ -6942,9 +6942,9 @@ begin
             end else
             begin
               if Einstellungen_Form.PDF_Shrink.Enabled and Einstellungen_Form.PDF_Shrink.Checked then
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn + '- komprimiert')) // PS/PDF/JPEG zu PDF/JPEG/TIFF'
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> FORMATAUSWAHL:' + Text_FormatBtn + '- komprimiert')) // PS/PDF/JPEG zu PDF/JPEG/TIFF'
               else
-                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> Formatauswahl:' + Text_FormatBtn)); // PS/PDF/JPEG zu PDF/JPEG/TIFF'
+                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> FORMATAUSWAHL:' + Text_FormatBtn)); // PS/PDF/JPEG zu PDF/JPEG/TIFF'
 
               if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and ((Encrypt_Form.BerechtigungCB.Checked = True) or (Encrypt_Form.KennwortCB.Checked = True)) then // 128 RC4
               begin
