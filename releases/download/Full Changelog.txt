@@ -1,4 +1,4 @@
-09.01.2025 V6.1.2
+12.01.2025 V6.1.2
 Neu -> In den Überwachungseinstellungen läßt sich das Überwachungsverzeichnis dem "Senden an"-Menü von Windows hinzufügen.
 07.01.2025 V6.1.1
 Fix -> Codeoptimierungen an der Startphase von FreePDF64 durchgeführt.
