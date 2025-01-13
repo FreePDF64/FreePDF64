@@ -348,6 +348,9 @@ end;
     LMDVersionInfo1: TLMDVersionInfo;
     Feedback1: TMenuItem;
     PDF_Kompress: TToolButton;
+    PDFInformationenanzeigen1: TMenuItem;
+    VerwendeteSchriftartenauflisten1: TMenuItem;
+    PDFkomprimieren1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2545,6 +2548,14 @@ var
   i: Integer;
 begin
   FavClose;
+
+  // Wenn das Panel schon auf ist, wieder schließen...
+  if PDFPanel.Height > PDFPanelH then
+  begin
+     Memo1.Clear;
+     PDFPanel.Height := PDFPanelH;
+     Exit;
+  end;
 
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then

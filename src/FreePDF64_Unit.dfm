@@ -2137,6 +2137,19 @@ object FreePDF64_Form: TFreePDF64_Form
         ShortCut = 32848
         OnClick = PDFdecryptClick
       end
+      object PDFInformationenanzeigen1: TMenuItem
+        Caption = 'PDF-Informationen anzeigen'
+        ShortCut = 120
+        OnClick = PDFInfoBtnClick
+      end
+      object VerwendeteSchriftartenauflisten1: TMenuItem
+        Caption = 'Verwendete Schriftarten auflisten'
+        OnClick = PDFFontsBtnClick
+      end
+      object PDFkomprimieren1: TMenuItem
+        Caption = 'PDF komprimieren'
+        OnClick = PDF_KompressClick
+      end
       object N10: TMenuItem
         Caption = '-'
       end
