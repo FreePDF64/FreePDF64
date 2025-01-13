@@ -2943,8 +2943,8 @@ begin
   if Button = mbRight then
   begin
     PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
-    PopupMenu3.Items.Items[1].Caption := ExcludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text);
-    PopupMenu3.Items.Items[2].Caption := ExcludeTrailingBackslash(MZiel);
+    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text) + '*.*';
+    PopupMenu3.Items.Items[2].Caption := IncludeTrailingBackslash(MZiel) + '*.*';
   end;
 end;
 
@@ -4449,7 +4449,7 @@ begin
     LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
     LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
     // Notify-Einstellungen...
-    FreePDF64_Notify.MonitoringFolder.Text := ExcludeTrailingBackslash(LMDShellFolder1.RootFolder);
+    FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
     LMDShellList1.GridLines := True;
     LMDShellList2.GridLines := True;
 
@@ -4548,7 +4548,7 @@ begin
       LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
-        FreePDF64_Notify.MonitoringFolder.Text := ExcludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
+        FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
       if not ValueExists('Folder','Left') then
       begin
@@ -4584,7 +4584,7 @@ begin
       Einstellungen_Form.HeightSpin.Value := ReadInteger('Start',  'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
       Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
 
-      FreePDF64_Notify.ZielEdit.Text := ExcludeTrailingBackslash(z1);
+      FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(z1);
 
       if not ValueExists('Start','Counter') then
         Counter := 0
@@ -4617,7 +4617,7 @@ begin
       else
         Einstellungen_Form.Zusatz.Enabled := True;
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text := ExcludeTrailingBackslash(LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
       // Filter lesen
       for ie1 := 1 to 10 do
@@ -5666,7 +5666,7 @@ begin
 
   if FreePDF64_Notify.Ziel_FestCB.Checked then
     Ziel := FreePDF64_Notify.ZielEdit.Text;
-  p := ExcludeTrailingBackslash(Ziel);
+  p := IncludeTrailingBackslash(Ziel);
 
   if MyInputQuery_Verbinden('Verbinden', 'Zielverzeichnis -> siehe Hinweis beim Mauszeiger!' + #13 + #13 + 'Dateiname:',
                             'Zielverzeichnis: ' + p + #13 +
