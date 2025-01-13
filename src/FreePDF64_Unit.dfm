@@ -413,7 +413,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDF_Kompress: TToolButton
         Left = 766
         Top = 0
-        Hint = 'Komprimierung einer markierten PDF-Datei'
+        Hint = 'Komprimierung einer markierten PDF-Datei mittels QPDF'
         Caption = 'PDF_Kompress'
         ImageIndex = 102
         ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'

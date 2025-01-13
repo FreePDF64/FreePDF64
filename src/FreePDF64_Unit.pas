@@ -2833,6 +2833,7 @@ begin
   if RunProcess(Zeile, SW_HIDE, True, @ProcID) = 0 then
   begin
     Memo1.Lines.Text := Zeile;
+
     // FreePDF64Log.txt
     if Logdatei.Checked then
     begin
@@ -2853,6 +2854,9 @@ begin
       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' + FormatByteString(MyFileSize(EndPDF))) +
               ' (um ' + IntToStr(Komprimierung) + '% komprimiert)');
       Closefile(F);
+      Memo1.Lines.Text := Memo1.Lines.Text + #13 + #13 + 'Ergebnis: "' + ExtractFileName(PDFDatei) +
+                          '" wurde um ' + IntToStr(Komprimierung) + '% komprimiert -> "' +
+                          ExtractFileName(EndPDF) + '"';
 
       if Einstellungen_Form.SystemklangCB.Checked then
         PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
