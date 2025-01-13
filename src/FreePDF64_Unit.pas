@@ -2803,24 +2803,9 @@ begin
     Exit;
   end;
 
-  // Wenn Erstellung Formatfolder angehakt...
-  if Formatverz_Date.Checked then
-  begin
-    // Verzeichnis erstellen der gewünschten Endung (hier PDF + Datum)
-    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)) then
-      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF' + ' ' + DateToStr(NOW)
-  end else if Formatverz_OnlyDate.Checked then
-  begin
-    // Verzeichnis erstellen der gewünschten Endung (Datum)
-    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)) then
-      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + DateToStr(NOW)
-  end else if Formatverz.Checked then
-  begin
-    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF') then
-      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'PDF';
-  end else
-    if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)) then
-      Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
+  // Verzeichnis erstellen 'Komprimierung'
+  if System.SysUtils.ForceDirectories(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'Komprimierte PDF') then
+    Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + 'Komprimierte PDF';
 
   // QPDF-Pfad
   QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(PDFDatei);
