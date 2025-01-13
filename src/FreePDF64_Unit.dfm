@@ -4731,10 +4731,6 @@ object FreePDF64_Form: TFreePDF64_Form
           end>
       end
       item
-        Name = 'Item2'
-        SourceImages = <>
-      end
-      item
         Name = 'Item5'
         SourceImages = <
           item
@@ -17265,17 +17261,9 @@ object FreePDF64_Form: TFreePDF64_Form
               3C4F13A6C4646E4D0A1011B68423E130088EFC58513FF34CE6AFF1B4C1754DF8
               5CFACDF3FF488F328308B6BB300000000049454E44AE426082}
           end>
-      end
-      item
-        Name = '49269_like_thumbs_thumbs up_up_vote_icon'
-        SourceImages = <>
-      end
-      item
-        Name = '11214_arrow_down_left_return_icon'
-        SourceImages = <>
       end>
-    Left = 503
-    Top = 438
+    Left = 824
+    Top = 298
   end
   object VirtualImageList1: TVirtualImageList
     Images = <
@@ -17286,466 +17274,466 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       item
         CollectionIndex = 1
-        CollectionName = 'Item2'
+        CollectionName = 'Item5'
         Name = 'Item2'
       end
       item
-        CollectionIndex = 2
+        CollectionIndex = 1
         CollectionName = 'Item5'
         Name = 'Item3'
       end
       item
-        CollectionIndex = 3
+        CollectionIndex = 2
         CollectionName = 'Item6'
         Name = 'Item4'
       end
       item
-        CollectionIndex = 2
+        CollectionIndex = 1
         CollectionName = 'Item5'
         Name = 'Item5'
       end
       item
-        CollectionIndex = 3
+        CollectionIndex = 2
         CollectionName = 'Item6'
         Name = 'Item6'
       end
       item
-        CollectionIndex = 4
+        CollectionIndex = 3
         CollectionName = 'Item7'
         Name = 'Item7'
       end
       item
-        CollectionIndex = 5
+        CollectionIndex = 4
         CollectionName = 'Item8'
         Name = 'Item8'
       end
       item
-        CollectionIndex = 6
+        CollectionIndex = 5
         CollectionName = 'Item9'
         Name = 'Item9'
       end
       item
-        CollectionIndex = 7
+        CollectionIndex = 6
         CollectionName = 'Item10'
         Name = 'Item10'
       end
       item
-        CollectionIndex = 8
+        CollectionIndex = 7
         CollectionName = 'Item16'
         Name = 'Item11'
       end
       item
-        CollectionIndex = 8
+        CollectionIndex = 7
         CollectionName = 'Item16'
         Name = 'Item12'
       end
       item
-        CollectionIndex = 10
+        CollectionIndex = 9
         CollectionName = 'Item18'
         Name = 'Item13'
       end
       item
-        CollectionIndex = 9
+        CollectionIndex = 8
         CollectionName = 'Item17'
         Name = 'Item14'
       end
       item
-        CollectionIndex = 10
+        CollectionIndex = 9
         CollectionName = 'Item18'
         Name = 'Item15'
       end
       item
-        CollectionIndex = 8
+        CollectionIndex = 7
         CollectionName = 'Item16'
         Name = 'Item16'
       end
       item
-        CollectionIndex = 9
+        CollectionIndex = 8
         CollectionName = 'Item17'
         Name = 'Item17'
       end
       item
-        CollectionIndex = 10
+        CollectionIndex = 9
         CollectionName = 'Item18'
         Name = 'Item18'
       end
       item
-        CollectionIndex = 11
+        CollectionIndex = 10
         CollectionName = 'Item19'
         Name = 'Item19'
       end
       item
-        CollectionIndex = 12
+        CollectionIndex = 11
         CollectionName = 'Item20'
         Name = 'Item20'
       end
       item
-        CollectionIndex = 13
+        CollectionIndex = 12
         CollectionName = 'Item21'
         Name = 'Item21'
       end
       item
-        CollectionIndex = 17
+        CollectionIndex = 16
         CollectionName = 'Item35'
         Name = 'Item22'
       end
       item
-        CollectionIndex = 18
+        CollectionIndex = 17
         CollectionName = 'Item39'
         Name = 'Item23'
       end
       item
-        CollectionIndex = 19
+        CollectionIndex = 18
         CollectionName = 'Item41'
         Name = 'Item24'
       end
       item
-        CollectionIndex = 15
+        CollectionIndex = 14
         CollectionName = 'Item30'
         Name = 'Item25'
       end
       item
-        CollectionIndex = 16
+        CollectionIndex = 15
         CollectionName = 'Item33'
         Name = 'Item26'
       end
       item
-        CollectionIndex = 20
+        CollectionIndex = 19
         CollectionName = 'Item42'
         Name = 'Item27'
       end
       item
-        CollectionIndex = 16
+        CollectionIndex = 15
         CollectionName = 'Item33'
         Name = 'Item28'
       end
       item
-        CollectionIndex = 14
+        CollectionIndex = 13
         CollectionName = 'Item29'
         Name = 'Item29'
       end
       item
-        CollectionIndex = 15
+        CollectionIndex = 14
         CollectionName = 'Item30'
         Name = 'Item30'
       end
       item
-        CollectionIndex = 16
+        CollectionIndex = 15
         CollectionName = 'Item33'
         Name = 'Item31'
       end
       item
-        CollectionIndex = 17
+        CollectionIndex = 16
         CollectionName = 'Item35'
         Name = 'Item32'
       end
       item
-        CollectionIndex = 16
+        CollectionIndex = 15
         CollectionName = 'Item33'
         Name = 'Item33'
       end
       item
-        CollectionIndex = 19
+        CollectionIndex = 18
         CollectionName = 'Item41'
         Name = 'Item34'
       end
       item
-        CollectionIndex = 17
+        CollectionIndex = 16
         CollectionName = 'Item35'
         Name = 'Item35'
       end
       item
-        CollectionIndex = 22
+        CollectionIndex = 21
         CollectionName = 'Item44'
         Name = 'Item36'
       end
       item
-        CollectionIndex = 26
+        CollectionIndex = 25
         CollectionName = 'Item52'
         Name = 'Item37'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 28
         CollectionName = 'Item58'
         Name = 'Item38'
       end
       item
-        CollectionIndex = 18
+        CollectionIndex = 17
         CollectionName = 'Item39'
         Name = 'Item39'
       end
       item
-        CollectionIndex = 22
+        CollectionIndex = 21
         CollectionName = 'Item44'
         Name = 'Item40'
       end
       item
-        CollectionIndex = 19
+        CollectionIndex = 18
         CollectionName = 'Item41'
         Name = 'Item41'
       end
       item
-        CollectionIndex = 20
+        CollectionIndex = 19
         CollectionName = 'Item42'
         Name = 'Item42'
       end
       item
-        CollectionIndex = 21
+        CollectionIndex = 20
         CollectionName = 'Item43'
         Name = 'Item43'
       end
       item
-        CollectionIndex = 22
+        CollectionIndex = 21
         CollectionName = 'Item44'
         Name = 'Item44'
       end
       item
-        CollectionIndex = 26
+        CollectionIndex = 25
         CollectionName = 'Item52'
         Name = 'Item45'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 28
         CollectionName = 'Item58'
         Name = 'Item46'
       end
       item
-        CollectionIndex = 23
+        CollectionIndex = 22
         CollectionName = 'Item47'
         Name = 'Item47'
       end
       item
-        CollectionIndex = 24
+        CollectionIndex = 23
         CollectionName = 'Item48'
         Name = 'Item48'
       end
       item
-        CollectionIndex = 25
+        CollectionIndex = 24
         CollectionName = 'Item49'
         Name = 'Item49'
       end
       item
-        CollectionIndex = 31
+        CollectionIndex = 30
         CollectionName = 'Item60'
         Name = 'Item50'
       end
       item
-        CollectionIndex = 32
+        CollectionIndex = 31
         CollectionName = 'Item61'
         Name = 'Item51'
       end
       item
-        CollectionIndex = 26
+        CollectionIndex = 25
         CollectionName = 'Item52'
         Name = 'Item52'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 26
         CollectionName = 'Item53'
         Name = 'Item53'
       end
       item
-        CollectionIndex = 28
+        CollectionIndex = 27
         CollectionName = 'Item54'
         Name = 'Item54'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 28
         CollectionName = 'Item58'
         Name = 'Item55'
       end
       item
-        CollectionIndex = 34
+        CollectionIndex = 33
         CollectionName = 'Item64'
         Name = 'Item56'
       end
       item
-        CollectionIndex = 35
+        CollectionIndex = 34
         CollectionName = 'Item65'
         Name = 'Item57'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 28
         CollectionName = 'Item58'
         Name = 'Item58'
       end
       item
-        CollectionIndex = 30
+        CollectionIndex = 29
         CollectionName = 'Item59'
         Name = 'Item59'
       end
       item
-        CollectionIndex = 31
+        CollectionIndex = 30
         CollectionName = 'Item60'
         Name = 'Item60'
       end
       item
-        CollectionIndex = 32
+        CollectionIndex = 31
         CollectionName = 'Item61'
         Name = 'Item61'
       end
       item
-        CollectionIndex = 43
+        CollectionIndex = 42
         CollectionName = 'Item73'
         Name = 'Item62'
       end
       item
-        CollectionIndex = 33
+        CollectionIndex = 32
         CollectionName = 'Item63'
         Name = 'Item63'
       end
       item
-        CollectionIndex = 34
+        CollectionIndex = 33
         CollectionName = 'Item64'
         Name = 'Item64'
       end
       item
-        CollectionIndex = 35
+        CollectionIndex = 34
         CollectionName = 'Item65'
         Name = 'Item65'
       end
       item
-        CollectionIndex = 36
+        CollectionIndex = 35
         CollectionName = 'Item66'
         Name = 'Item66'
       end
       item
-        CollectionIndex = 37
+        CollectionIndex = 36
         CollectionName = 'Item67'
         Name = 'Item67'
       end
       item
-        CollectionIndex = 38
+        CollectionIndex = 37
         CollectionName = 'Item68'
         Name = 'Item68'
       end
       item
-        CollectionIndex = 39
+        CollectionIndex = 38
         CollectionName = 'Item69'
         Name = 'Item69'
       end
       item
-        CollectionIndex = 40
+        CollectionIndex = 39
         CollectionName = 'Item70'
         Name = 'Item70'
       end
       item
-        CollectionIndex = 41
+        CollectionIndex = 40
         CollectionName = 'Item71'
         Name = 'Item71'
       end
       item
-        CollectionIndex = 42
+        CollectionIndex = 41
         CollectionName = 'Item72'
         Name = 'Item72'
       end
       item
-        CollectionIndex = 43
+        CollectionIndex = 42
         CollectionName = 'Item73'
         Name = 'Item73'
       end
       item
-        CollectionIndex = 51
+        CollectionIndex = 50
         CollectionName = 'Item82'
         Name = 'Item74'
       end
       item
-        CollectionIndex = 44
+        CollectionIndex = 43
         CollectionName = 'Item75'
         Name = 'Item75'
       end
       item
-        CollectionIndex = 45
+        CollectionIndex = 44
         CollectionName = 'Item76'
         Name = 'Item76'
       end
       item
-        CollectionIndex = 46
+        CollectionIndex = 45
         CollectionName = 'Item77'
         Name = 'Item77'
       end
       item
-        CollectionIndex = 47
+        CollectionIndex = 46
         CollectionName = 'Item78'
         Name = 'Item78'
       end
       item
-        CollectionIndex = 48
+        CollectionIndex = 47
         CollectionName = 'Item79'
         Name = 'Item79'
       end
       item
-        CollectionIndex = 49
+        CollectionIndex = 48
         CollectionName = 'Item80'
         Name = 'Item80'
       end
       item
-        CollectionIndex = 50
+        CollectionIndex = 49
         CollectionName = 'Item81'
         Name = 'Item81'
       end
       item
-        CollectionIndex = 51
+        CollectionIndex = 50
         CollectionName = 'Item82'
         Name = 'Item82'
       end
       item
-        CollectionIndex = 52
+        CollectionIndex = 51
         CollectionName = 'Item83'
         Name = 'Item83'
       end
       item
-        CollectionIndex = 53
+        CollectionIndex = 52
         CollectionName = 'Item84'
         Name = 'Item84'
       end
       item
-        CollectionIndex = 54
+        CollectionIndex = 53
         CollectionName = 'Item85'
         Name = 'Item85'
       end
       item
-        CollectionIndex = 55
+        CollectionIndex = 54
         CollectionName = 'Item86'
         Name = 'Item86'
       end
       item
-        CollectionIndex = 56
+        CollectionIndex = 55
         CollectionName = 'Key'
         Name = 'Key'
       end
       item
-        CollectionIndex = 57
+        CollectionIndex = 56
         CollectionName = 'Write'
         Name = 'Write'
       end
       item
-        CollectionIndex = 58
+        CollectionIndex = 57
         CollectionName = 'trashcan'
         Name = 'trashcan'
       end
       item
-        CollectionIndex = 59
+        CollectionIndex = 58
         CollectionName = 'Plus sign'
         Name = 'Plus sign'
       end
       item
-        CollectionIndex = 60
+        CollectionIndex = 59
         CollectionName = '103291_down_full_arrow_icon'
         Name = '103291_down_full_arrow_icon'
       end
       item
-        CollectionIndex = 61
+        CollectionIndex = 60
         CollectionName = '103296_full_up_arrow_icon'
         Name = '103296_full_up_arrow_icon'
       end
       item
-        CollectionIndex = 62
+        CollectionIndex = 61
         CollectionName = '31189_arrow_forward_green_icon'
         Name = '31189_arrow_forward_green_icon'
       end
       item
-        CollectionIndex = 63
+        CollectionIndex = 62
         CollectionName = 'touch'
         Name = 'touch'
       end
@@ -17754,7 +17742,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = '2739109_house_building_estate_real_icon'
       end
       item
-        CollectionIndex = 64
+        CollectionIndex = 63
         CollectionName = '6843063_accuracy_archery_arrow_business_goal_icon'
         Name = '6843063_accuracy_archery_arrow_business_goal_icon'
       end
@@ -17763,42 +17751,42 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = '8687064_ic_fluent_folder_arrow_up_icon'
       end
       item
-        CollectionIndex = 65
+        CollectionIndex = 64
         CollectionName = '2530841_document_general_letter_note_office_icon'
         Name = '2530841_document_general_letter_note_office_icon'
       end
       item
-        CollectionIndex = 66
+        CollectionIndex = 65
         CollectionName = '172480_home_icon'
         Name = '172480_home_icon'
       end
       item
-        CollectionIndex = 67
+        CollectionIndex = 66
         CollectionName = '4829871_arrows_up_upload_icon'
         Name = '4829871_arrows_up_upload_icon'
       end
       item
-        CollectionIndex = 68
+        CollectionIndex = 67
         CollectionName = '172525_plus_icon'
         Name = '172525_plus_icon'
       end
       item
-        CollectionIndex = 69
+        CollectionIndex = 68
         CollectionName = '211863_minus_round_icon'
         Name = '211863_minus_round_icon'
       end
       item
-        CollectionIndex = 70
+        CollectionIndex = 69
         CollectionName = '4835103_feedback_like_ok_thumb_thumb up_icon'
         Name = '4835103_feedback_like_ok_thumb_thumb up_icon'
       end
       item
-        CollectionIndex = 71
+        CollectionIndex = 70
         CollectionName = '1976057_config_configuration_settings_icon'
         Name = '1976057_config_configuration_settings_icon'
       end
       item
-        CollectionIndex = 72
+        CollectionIndex = 71
         CollectionName = '9051666_warning_danger_attention_exclamation_error_icon'
         Name = '9051666_warning_danger_attention_exclamation_error_icon'
       end>
