@@ -1891,7 +1891,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '13.01.2025';
+  Datum := '18.01.2025';
   Delete(Datum, 11, 9);  // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13
               + LMDVersionInfo1.ProductName + ' Version '

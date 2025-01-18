@@ -1,5 +1,6 @@
+18.01.2025 V6.1.4
+Fix -> Codeoptimierungen durchgeführt.
 13.01.2025 V6.1.3
-Neu -> Anzeige der prozentualen Komprimierungsrate (siehe Log-Datei).
 Fix -> Codeoptimierungen durchgeführt.
 12.01.2025 V6.1.2
 Neu -> In den Überwachungseinstellungen läßt sich das Überwachungsverzeichnis dem "Senden an"-Menü von Windows hinzufügen.
