@@ -18013,7 +18013,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 156
   end
   object LMDVersionInfo1: TLMDVersionInfo
-    Left = 828
-    Top = 368
+    Left = 893
+    Top = 413
   end
 end

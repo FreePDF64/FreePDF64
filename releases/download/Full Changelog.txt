@@ -1,3 +1,5 @@
+19.01.2025 V6.1.5
+Fix -> Verzeichnisauswahldialoge erneuert.
 18.01.2025 V6.1.4
 Fix -> Codeoptimierungen durchgeführt.
 13.01.2025 V6.1.3
