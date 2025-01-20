@@ -351,6 +351,7 @@ end;
     PDFInformationenanzeigen1: TMenuItem;
     VerwendeteSchriftartenauflisten1: TMenuItem;
     PDFkomprimieren1: TMenuItem;
+    LMDShellRestartDialog1: TLMDShellRestartDialog;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -1561,8 +1562,7 @@ begin
 
     case AKind of
       akRun, akUserRun:
-        Result := Reg.OpenKey
-          ('\Software\Microsoft\Windows\CurrentVersion\Run', True);
+        Result := Reg.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run', True);
     end;
     Reg.WriteString(AName, AFilename);
   finally
@@ -1642,7 +1642,7 @@ begin
     Reg := TRegistry.Create;
     try
       Reg.Rootkey := HKEY_CURRENT_USER;
-      Reg.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run\', false);
+      Reg.OpenKey('\Software\Microsoft\Windows\CurrentVersion\Run\', False);
       Reg.DeleteValue('FreePDF64');
       Reg.CloseKey;
     finally
@@ -1891,7 +1891,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '19.01.2025';
+  Datum := '20.01.2025';
   Delete(Datum, 11, 9);  // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13
               + LMDVersionInfo1.ProductName + ' Version '
@@ -4229,7 +4229,7 @@ begin
   Info_Form.ShowModal;
 end;
 
-// Manuelle Installation von Mfilemon, anschließend dir mfilemon.reg-Datei ausführen lassen...
+// Manuelle Installation von Mfilemon, anschließend die mfilemon.reg-Datei ausführen lassen...
 procedure TFreePDF64_Form.Installation1Click(Sender: TObject);
 var
   MFDatei, Reg, s1: String;
@@ -4288,6 +4288,7 @@ begin
     // Starte die Erstellung...
     ShellExecute(Handle, NIL, PChar(Reg), NIL, NIL, SW_SHOWNORMAL);
     MessageDlgCenter('Nach der erfolgten Registry-Anpassung ist ein Windows-Neustart erforderlich!', mtInformation, [mbOk]);
+    LMDShellRestartDialog1.Execute;
     Exit;
   end else
   if Einstellungen_Form.SystemklangCB.Checked then
