@@ -1013,6 +1013,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Bottom = 4
         Align = alClient
         AutoExpand = True
+        ChangeDelay = 50
         Color = 16777214
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
@@ -1438,6 +1439,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alClient
       AutoExpand = True
+      ChangeDelay = 50
       Color = 16777214
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
