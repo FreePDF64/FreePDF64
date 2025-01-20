@@ -3943,10 +3943,6 @@ var
   iec: Array [0 .. 255] of String;
   Log: Boolean;
 begin
-  // Unterbricht die Ausführung einer Anwendung, während Windows eine
-  // Botschaft aus der Windows-Botschaftswarteschlange verarbeitet wird.
-  Application.HandleMessage;
-
   UseLatestCommonDialogs := False;
   MsgDlgIcons[TMsgDlgType.mtInformation] := TMsgDlgIcon.mdiInformation;
 
@@ -4082,8 +4078,6 @@ begin
   end else
     Splash1.Checked := True;
 
-  TClickSplitter(Splitter2).OnDblClick := SplDblClick;
-  TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
   MenuItemRightJustify(Hilfe1);
 
   // Die Buttons werden dargestellt und ausgerichtet!
@@ -4700,7 +4694,7 @@ begin
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
   else
-    Gitternetzlinien1.Checked := false;
+    Gitternetzlinien1.Checked := False;
 
   if AutoSpalte.Checked then
   begin
@@ -4850,6 +4844,9 @@ begin
   Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
   LMDShellList2.Visible := Splitter2.Visible;
   PanelR.Visible        := Splitter2.Visible;
+
+  TClickSplitter(Splitter2).OnDblClick := SplDblClick;
+  TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
 
   // Setze Cursor auf den ersten Eintrag der LMDShellList1
   LMDShellList2.ClearSelection;
