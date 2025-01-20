@@ -1615,7 +1615,7 @@ end;
 procedure TFreePDF64_Form.RootLClick(Sender: TObject);
 begin
   FavClose;
-  LMDShellFolder1.RootFolder := IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder1.ActiveFolder.PathName));
+  LMDShellFolder1.ChDir(IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder1.ActiveFolder.PathName)));
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
 end;
@@ -1623,7 +1623,7 @@ end;
 procedure TFreePDF64_Form.RootRClick(Sender: TObject);
 begin
   FavClose;
-  LMDShellFolder2.RootFolder := IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder2.ActiveFolder.PathName));
+  LMDShellFolder2.ChDir(IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder2.ActiveFolder.PathName)));
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
 end;
@@ -1872,16 +1872,30 @@ end;
 
 procedure TFreePDF64_Form.VersteckteDateienanzeigen1Click(Sender: TObject);
 var
-  tmpt: TLMDShellListOptions;
+  tmpt : TLMDShellListOptions;
+  tmpt2: TLMDShellTreeOptions;
 begin
   VersteckteDateienanzeigen1.Checked := not VersteckteDateienanzeigen1.Checked;
-  tmpt := LMDShellList1.Options;
+
+  tmpt  := LMDShellList1.Options;
+  tmpt2 := LMDShellTree1.Options;
   if VersteckteDateienanzeigen1.Checked then
-    Include(tmpt, loShowHidden)
-  else
-    Exclude(tmpt, loShowHidden);
+  begin
+    Include(tmpt,  loShowHidden);
+    Include(tmpt2, toShowHidden);
+  end else
+  begin
+    Exclude(tmpt,  loShowHidden);
+    Exclude(tmpt2, toShowHidden);
+  end;
   LMDShellList1.Options := tmpt;
   LMDShellList2.Options := tmpt;
+  LMDShellTree1.Options := tmpt2;
+  LMDShellTree2.Options := tmpt2;
+
+  LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
+  LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
+
   SB_Left;
   SB_Right;
 end;
@@ -2362,6 +2376,7 @@ begin
   LMDShellFolder1.ActiveFolder.Refresh;
   LMDShellFolder2.ActiveFolder.Refresh;
   LMDShellTree1.Refresh;
+  LMDShellTree2.Refresh;
   LMDShellList1.Refresh;
   LMDShellList2.Refresh;
   LMDShellList1.RefreshData;
@@ -4386,7 +4401,8 @@ var
   c, i, ie1: Integer;
   IniDat: TIniFile;
   IniFile, ies, s, s1, z1: string;
-  tmpt: TLMDShellListOptions;
+  tmpt : TLMDShellListOptions;
+  tmpt2: TLMDShellTreeOptions;
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
   Notify_Active: Boolean;
@@ -4704,13 +4720,21 @@ begin
     FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
   end;
 
-  tmpt := LMDShellList1.Options;
+  tmpt  := LMDShellList1.Options;
+  tmpt2 := LMDShellTree1.Options;
   if VersteckteDateienanzeigen1.Checked then
-    Include(tmpt, loShowHidden)
-  else
-    Exclude(tmpt, loShowHidden);
+  begin
+    Include(tmpt,  loShowHidden);
+    Include(tmpt2, toShowHidden);
+  end else
+  begin
+    Exclude(tmpt,  loShowHidden);
+    Exclude(tmpt2, toShowHidden);
+  end;
   LMDShellList1.Options := tmpt;
   LMDShellList2.Options := tmpt;
+  LMDShellTree1.Options := tmpt2;
+  LMDShellTree2.Options := tmpt2;
 
   if Ziel = '' then
   begin
