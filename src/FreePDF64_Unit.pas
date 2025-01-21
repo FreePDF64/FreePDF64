@@ -2603,9 +2603,12 @@ end;
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-  TrayIcon1.Visible := True;
-  FreePDF64_Form.Hide;
-  Timer2.Enabled := False;
+  If FreePDF64_Form.Visible and FreePDF64_Form.Active then
+  begin
+    TrayIcon1.Visible := True;
+    FreePDF64_Form.Hide;
+    Timer2.Enabled := False;
+  end;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -5354,8 +5357,8 @@ begin
     end;
   end;
 
-  // Ist die FreePDF64_Form nun sichtbar und aktiv?
-  if FreePDF64_Form.Visible and FreePDF64_Form.Active then
+  // Ist die FreePDF64_Form nun sichtbar?
+  if FreePDF64_Form.Visible then
   begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
@@ -5367,7 +5370,6 @@ begin
       Beide_FolderBtn.Visible := True;
       ShowFolders1.Visible := True;
     end;
-
     // Wenn beide ShowFolders = False...
     if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False)
     then
@@ -5390,14 +5392,14 @@ begin
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
-
-    // Setze Cursor auf den ersten Eintrag der LMDShellList1
-    LMDShellList2.ClearSelection;
-    LMDShellList1.ClearSelection;
-    LMDShellList1.SetFocus;
-    if LMDShellList1.Items.Count > 0 then
-      LMDShellList1.ItemIndex := 0;
   end;
+
+  // Setze Cursor auf den ersten Eintrag der LMDShellList1
+  LMDShellList1.ClearSelection;
+  LMDShellList2.ClearSelection;
+  if LMDShellList1.Items.Count > 0 then
+    LMDShellList1.ItemIndex := 0;
+  LMDShellList1.SetFocus;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
