@@ -1905,7 +1905,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '20.01.2025';
+  Datum := '21.01.2025';
   Delete(Datum, 11, 9);  // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13
               + LMDVersionInfo1.ProductName + ' Version '
@@ -2220,6 +2220,7 @@ begin
   PanelR.Visible := Zielverzeichnisanzeigen1.Checked;
   Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
   Splitter4.Visible := Zielverzeichnisanzeigen1.Checked;
+
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
     Beide_FolderBtn.Visible := False;
@@ -2928,7 +2929,6 @@ begin
   ShowVomTray := True;
   FreePDF64_Form.Show;
   Application.BringToFront;
-//  LMDShellList1.SetFocus;
 
   // Hide the system tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
@@ -3671,9 +3671,6 @@ begin
           if not System.SysUtils.DirectoryExists(s) then
           begin
             ShowMessage('"' + s + '" ist nicht mehr vorhanden!');
-//            FavLbR.Items.Delete(i);
-//            ListBoxR.Items.Delete(i);
-//            Favoritenspeichern1.Click;
             s := Ziel;
             Exit;
           end else
@@ -4004,10 +4001,14 @@ begin
 
         AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
         if AutoSizeBtn.Checked then
+{
           AutoSize.Visible := True
         else
           AutoSize.Visible := False;
-
+}
+          AutoSize.Enabled := True
+        else
+          AutoSize.Enabled := False;
         if not ValueExists('Files','PDF-Reader') then
           PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
         PDFReader  := ReadString('Files', 'PDF-Reader', PDFReader);
@@ -4186,12 +4187,16 @@ procedure TFreePDF64_Form.FormResize(Sender: TObject);
 var
   Laenge: Integer;
 begin
-  if ResizeEqual.Checked then
-    // Splitter soll sich in der Mitte befinden.
-    if Panel_Right.Visible then
-      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
-    else
-      PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+  // Ist die FreePDF64_Form nun sichtbar?
+  if Assigned(FreePDF64_Form) then
+  begin
+    if ResizeEqual.Checked then
+      // Splitter soll sich in der Mitte befinden.
+      if Panel_Right.Visible then
+        PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
+      else
+        PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+  end;
 
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := FreePDF64_Form.Width div 7;
@@ -4243,6 +4248,7 @@ procedure TFreePDF64_Form.Installation1Click(Sender: TObject);
 var
   MFDatei, Reg, s1: String;
   ProcID: Cardinal;
+  F: TextFile;
 begin
   if MessageDlgCenter('Hierüber wird automatisch der FreePDF64-Drucker eingerichtet!' + #13 + #13 +
                       'Bitte einfach die nachfolgende Installation durchklicken:' + #13 +
@@ -4295,8 +4301,26 @@ begin
   if FileExists(Reg) then
   begin
     // Starte die Erstellung...
-    ShellExecute(Handle, NIL, PChar(Reg), NIL, NIL, SW_SHOWNORMAL);
+    if ShellExecute(Handle, NIL, PChar(Reg), NIL, NIL, SW_SHOWNORMAL) <= 32 then
+    begin
+      ShowMessage('Es ist ein Fehler aufgetreten!');
+      Exit;
+    end;
     MessageDlgCenter('Nach der erfolgten Registry-Anpassung ist ein Windows-Neustart erforderlich!', mtInformation, [mbOk]);
+
+    if (FreePDF64_Form.Logdatei.Checked) then
+    begin
+      // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
+      AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
+      try
+        Append(F);
+      except
+        Rewrite(F)
+      end;
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' - Der FreePDF64-Drucker wurde erfolgreich installiert.'));
+      Closefile(F);
+    end;
+
     LMDShellRestartDialog1.Execute;
     Exit;
   end else
@@ -4510,6 +4534,7 @@ begin
 
     Exit;
   end;
+  // Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
   //============================================================================
 
   // Ghostscript
@@ -4655,8 +4680,8 @@ begin
       end;
       FSortAscending  := True;
       FSortAscending2 := True;
-      FSortColumn  := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
       FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
@@ -4828,8 +4853,11 @@ begin
   else
     LMDShellList2.SortDirection := sdDescending;
 
-  // Wenn TrayIcon sichtbar ist...
+  // Wenn TrayIcon nicht sichtbar ist...
+{
   if TrayIcon1.Visible = False then
+}
+  if WindowState = wsMinimized then
   begin
     // Wenn Splashscreen = True, dann Splashscreen anzeigen
     if Splash1.Checked then
@@ -4839,35 +4867,39 @@ begin
     end;
   end;
 
-  if Zielverzeichnisanzeigen1.Checked = False then
+  Application.ProcessMessages;
+  // Ist die FreePDF64_Form nun sichtbar?
+  if Assigned(FreePDF64_Form) then
   begin
-    Beide_FolderBtn.Visible := False;
-    ShowFolders1.Visible    := False;
-  end else
-  begin
-    Beide_FolderBtn.Visible := True;
-    ShowFolders1.Visible    := True;
-  end;
+    if Zielverzeichnisanzeigen1.Checked = False then
+    begin
+      Beide_FolderBtn.Visible := False;
+      ShowFolders1.Visible    := False;
+    end else
+    begin
+      Beide_FolderBtn.Visible := True;
+      ShowFolders1.Visible    := True;
+    end;
 
-  // Wenn beide ShowFolders = False...
-  if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False) then
-  begin
-    ShowFolders1.Checked     := False;
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible        := False;
-    Splitter4.Visible        := False;
-    LMDShellTree1.Visible    := False;
-    LMDShellTree2.Visible    := False;
-    Panel_Left.Visible       := False;
-    Panel_Right.Visible      := False;
-    Panel2.Visible           := False;
-    Panel3.Visible           := False;
+    // Wenn beide ShowFolders = False...
+    if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False) then
+    begin
+      ShowFolders1.Checked     := False;
+      ShowFolders_Left.Checked := False;
+      Splitter1.Visible        := False;
+      Splitter4.Visible        := False;
+      LMDShellTree1.Visible    := False;
+      LMDShellTree2.Visible    := False;
+      Panel_Left.Visible       := False;
+      Panel_Right.Visible      := False;
+      Panel2.Visible           := False;
+      Panel3.Visible           := False;
+    end;
+    // Rechtes Zielverzeichnis anzeigen
+    Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
+    LMDShellList2.Visible := Splitter2.Visible;
+    PanelR.Visible        := Splitter2.Visible;
   end;
-
-  // Rechtes Zielverzeichnis anzeigen
-  Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
-  LMDShellList2.Visible := Splitter2.Visible;
-  PanelR.Visible        := Splitter2.Visible;
 
   TClickSplitter(Splitter2).OnDblClick := SplDblClick;
   TClickSplitter(Splitter3).OnDblClick := SplDblClick3;

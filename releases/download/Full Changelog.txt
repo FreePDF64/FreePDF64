@@ -1,4 +1,4 @@
-20.01.2025 V6.1.6
+21.01.2025 V6.1.6
 Neu -> Bei Änderung des Überwachungsverzeichnisses in den Überwachungseinstellungen, wird dieses nun auch dem FreePDF64-Drucker übergeben. Dazu wird ein Registry-Eintrag angepasst - und ein Windows-Neustart ist danach nötig.
 19.01.2025 V6.1.5
 Fix -> Verzeichnisauswahldialoge erneuert.
