@@ -1227,7 +1227,7 @@ object FreePDF64_Form: TFreePDF64_Form
         object RootR: TSpeedButton
           Left = 24
           Top = 1
-          Width = 20
+          Width = 25
           Height = 26
           Hint = 'Sprung zu Root'
           Margins.Left = 4
@@ -1248,12 +1248,11 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = RootRClick
-          ExplicitHeight = 27
         end
         object ParentFolderR: TSpeedButton
-          Left = 44
+          Left = 49
           Top = 1
-          Width = 20
+          Width = 25
           Height = 26
           Hint = 'Eine Ebene h'#246'her'
           Margins.Left = 4
@@ -1273,7 +1272,6 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = ParentFolderRClick
-          ExplicitHeight = 27
         end
         object FavSpR: TSpeedButton
           Left = 311
@@ -1332,7 +1330,7 @@ object FreePDF64_Form: TFreePDF64_Form
           ExplicitHeight = 27
         end
         object ZielBtn: TSpeedButton
-          Left = 64
+          Left = 74
           Top = 1
           Width = 25
           Height = 26
@@ -1358,6 +1356,7 @@ object FreePDF64_Form: TFreePDF64_Form
           ShowHint = True
           OnClick = ZielBtnClick
           OnMouseEnter = ZielBtnMouseEnter
+          ExplicitLeft = 64
           ExplicitHeight = 27
         end
         object ComboBoxR: TComboBox
@@ -1391,9 +1390,9 @@ object FreePDF64_Form: TFreePDF64_Form
           OnDropDown = ComboBoxRDropDown
         end
         object Ziellabel: TPanel
-          Left = 89
+          Left = 99
           Top = 1
-          Width = 222
+          Width = 212
           Height = 26
           Margins.Left = 4
           Margins.Top = 4
@@ -1411,6 +1410,8 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentFont = False
           TabOrder = 1
           OnMouseEnter = ZiellabelMouseEnter
+          ExplicitLeft = 89
+          ExplicitWidth = 222
         end
       end
     end
@@ -1675,7 +1676,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object RootL: TSpeedButton
         Left = 24
         Top = 1
-        Width = 20
+        Width = 25
         Height = 26
         Hint = 'Sprung zu Root'
         Margins.Left = 4
@@ -1696,12 +1697,11 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = RootLClick
-        ExplicitHeight = 27
       end
       object ParentFolderL: TSpeedButton
-        Left = 44
+        Left = 49
         Top = 1
-        Width = 20
+        Width = 25
         Height = 26
         Hint = 'Eine Ebene h'#246'her'
         Margins.Left = 4
@@ -1721,10 +1721,9 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = ParentFolderLClick
-        ExplicitHeight = 27
       end
       object QuellBtn: TSpeedButton
-        Left = 64
+        Left = 74
         Top = 1
         Width = 25
         Height = 26
@@ -1750,6 +1749,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = QuellBtnClick
         OnMouseEnter = QuellBtnMouseEnter
+        ExplicitLeft = 64
         ExplicitHeight = 27
       end
       object FavSpL: TSpeedButton
@@ -1839,9 +1839,9 @@ object FreePDF64_Form: TFreePDF64_Form
         OnDropDown = ComboBoxLDropDown
       end
       object Quelllabel: TPanel
-        Left = 89
+        Left = 99
         Top = 1
-        Width = 311
+        Width = 301
         Height = 26
         Margins.Left = 4
         Margins.Top = 4
@@ -1859,6 +1859,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 1
         OnMouseEnter = QuelllabelMouseEnter
+        ExplicitLeft = 89
+        ExplicitWidth = 311
       end
     end
   end
