@@ -1410,8 +1410,6 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentFont = False
           TabOrder = 1
           OnMouseEnter = ZiellabelMouseEnter
-          ExplicitLeft = 89
-          ExplicitWidth = 222
         end
       end
     end
@@ -1612,6 +1610,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitTop = 15
     end
     object FavLbL: TListBox
       Left = 1103
@@ -1859,8 +1858,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 1
         OnMouseEnter = QuelllabelMouseEnter
-        ExplicitLeft = 89
-        ExplicitWidth = 311
       end
     end
   end
@@ -18304,7 +18301,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 413
   end
   object LMDShellRestartDialog1: TLMDShellRestartDialog
-    Left = 568
-    Top = 417
+    Left = 915
+    Top = 291
   end
 end

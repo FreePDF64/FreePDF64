@@ -3278,6 +3278,7 @@ begin
     Bewegen1.Click
   else
     MoveTo.Click;
+
   LMDShellList1.ClearSelection;
   LMDShellList2.ClearSelection;
 
@@ -3835,12 +3836,17 @@ begin
     LMDShellList1.CutToClipboard;
     LMDShellList2.ClearSelection;
     LMDShellList2.PasteFromClipboard;
+    if LMDShellList1.Selcount > 0 then
+      LMDShellList1.ItemIndex := 0;
   end
   else if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
   begin
     LMDShellList2.CutToClipboard;
     LMDShellList1.ClearSelection;
     LMDShellList1.PasteFromClipboard;
+    LMDShellList2.SetFocus;
+    if LMDShellList2.Selcount > 0 then
+      LMDShellList2.ItemIndex := 0;
   end;
   RefreshBt.Click;
 end;
