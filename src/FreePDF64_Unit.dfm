@@ -1610,7 +1610,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitTop = 15
     end
     object FavLbL: TListBox
       Left = 1103
