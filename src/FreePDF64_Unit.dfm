@@ -314,17 +314,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item71'
         OnClick = AnlagenBtnClick
       end
-      object ToolButton2: TToolButton
-        Left = 497
-        Top = 0
-        Width = 5
-        Caption = 'ToolButton2'
-        ImageIndex = 103
-        ImageName = '1976057_config_configuration_settings_icon'
-        Style = tbsSeparator
-      end
       object PDFRemove: TToolButton
-        Left = 502
+        Left = 497
         Top = 0
         Hint = 
           'Anlage aus der markierten PDF-Datei extrahieren/entfernen:'#13#10'1. E' +
@@ -335,6 +326,15 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageIndex = 80
         ImageName = 'Item81'
         OnClick = PDFRemoveClick
+      end
+      object ToolButton2: TToolButton
+        Left = 534
+        Top = 0
+        Width = 5
+        Caption = 'ToolButton2'
+        ImageIndex = 103
+        ImageName = '1976057_config_configuration_settings_icon'
+        Style = tbsSeparator
       end
       object PDFAttachment: TToolButton
         Left = 539
@@ -385,7 +385,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFInfoBtn: TToolButton
         Left = 655
         Top = 0
-        Hint = 'Informationen '#252'ber die markierte PDF-Datei anzeigen [auch F9]'
+        Hint = 'Datei-Informationen anzeigen [F9]'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -803,8 +803,8 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 86
       Hint = 
         'Anzeige der Verarbeitungsbefehle der PDF-Tools sowie '#13#10'Anzeigefe' +
-        'nster der Informationen zu einer PDF-Datei '#13#10'- Doppelklick passt' +
-        ' die Fensterh'#246'he den Zeilen an'
+        'nster f'#252'r die Informationen zu einer Datei: '#13#10'Doppelklick passt ' +
+        'die Fensterh'#246'he den Zeilen an'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -819,6 +819,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Font.Style = []
       Lines.Strings = (
         '')
+      OEMConvert = True
       ParentFont = False
       ReadOnly = True
       ScrollBars = ssVertical
@@ -2138,7 +2139,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFdecryptClick
       end
       object PDFInformationenanzeigen1: TMenuItem
-        Caption = 'PDF-Informationen anzeigen'
+        Caption = 'Datei-Informationen anzeigen'
         ShortCut = 120
         OnClick = PDFInfoBtnClick
       end
@@ -2466,8 +2467,8 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object LMDShellAppletLoader1: TLMDShellAppletLoader
     Applet = cplControlPanel
-    Left = 558
-    Top = 338
+    Left = 583
+    Top = 133
   end
   object PrinterSetupDialog1: TPrinterSetupDialog
     Left = 820
@@ -18302,5 +18303,11 @@ object FreePDF64_Form: TFreePDF64_Form
   object LMDShellRestartDialog1: TLMDShellRestartDialog
     Left = 915
     Top = 291
+  end
+  object LMDShellConsoleView1: TLMDShellConsoleView
+    OnLineAdd = LMDShellConsoleView1LineAdd
+    OnTerminated = LMDShellConsoleView1Terminated
+    Left = 568
+    Top = 347
   end
 end
