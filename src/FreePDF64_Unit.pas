@@ -514,7 +514,6 @@ type
       Rebuild: Boolean);
     procedure HTMLBtnClick(Sender: TObject);
     procedure PDFInfoBtnClick(Sender: TObject);
-    procedure Memo1DblClick(Sender: TObject);
     procedure PDFAttachmentClick(Sender: TObject);
     procedure AnlagenBtnClick(Sender: TObject);
     procedure PDFRemoveClick(Sender: TObject);
@@ -6250,29 +6249,6 @@ end;
 procedure TFreePDF64_Form.Memo1Click(Sender: TObject);
 begin
   FavClose;
-end;
-
-procedure TFreePDF64_Form.Memo1DblClick(Sender: TObject);
-var
-  I: Integer;
-begin
-  FavClose;
-
-  // Was war die letzte aktive Komponente?
-  if wcPrevious.Name = 'LMDShellList1' then
-    LMDShellList1.SetFocus
-  else
-    LMDShellList2.SetFocus;
-
-  if PDFPanelH > PDFPanel.Height then
-    PDFPanel.Height := PDFPanelH;
-
-  if Memo1.Lines.Count > 0 then
-  begin
-    I := TextHoehe(Memo1.Font, Memo1.Text);
-    I := (I * Memo1.Lines.Count) + 80;
-    PDFPanel.Height := I;
-  end;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);

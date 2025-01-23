@@ -801,10 +801,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Top = 44
       Width = 1392
       Height = 86
-      Hint = 
-        'Anzeige der Verarbeitungsbefehle der PDF-Tools sowie '#13#10'Anzeigefe' +
-        'nster f'#252'r die Informationen zu einer Datei: '#13#10'Doppelklick passt ' +
-        'die Fensterh'#246'he den Zeilen an'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -825,7 +821,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ScrollBars = ssVertical
       TabOrder = 0
       OnClick = Memo1Click
-      OnDblClick = Memo1DblClick
     end
     object BottomPanel: TPanel
       Left = 0
@@ -18297,8 +18292,8 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 156
   end
   object LMDVersionInfo1: TLMDVersionInfo
-    Left = 893
-    Top = 413
+    Left = 881
+    Top = 411
   end
   object LMDShellRestartDialog1: TLMDShellRestartDialog
     Left = 915
