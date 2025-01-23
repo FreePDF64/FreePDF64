@@ -578,6 +578,7 @@ type
     procedure PDF_KompressClick(Sender: TObject);
     procedure LMDShellConsoleView1LineAdd(Sender: TObject; LString: string);
     procedure LMDShellConsoleView1Terminated(Sender: TObject);
+    procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious: TWinControl;
@@ -6249,6 +6250,20 @@ end;
 procedure TFreePDF64_Form.Memo1Click(Sender: TObject);
 begin
   FavClose;
+end;
+
+procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+  begin
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
+  end;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
