@@ -10,6 +10,7 @@
 // Was braucht man auﬂer 'FreePDF64' noch:
 // - GhostScript
 // - ImageMagick
+// - ExifTool
 // - QPDF
 // - PDFtk
 // - XpdfReader und die Xpdf-Tools
@@ -603,9 +604,9 @@ var
   // Globale Variablen
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
-    PDFReader, ImageMagick, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
+    PDFReader, ImageMagick, ExifTool, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
     Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1,
-    XPDF_Images, XPDF_ToHTML,Datei_Info, XPDF_Detach, XPDF_Fonts: String;
+    XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9, Versch10,
     Versch11, Do1, In1, ‹berwachung_Erstellung, Links, Rechts,
@@ -2766,18 +2767,17 @@ begin
   else
     LMDShellList2.SetFocus;
 
-  if not FileExists(Datei_Info) then
+  if not FileExists(ExifTool) then
   begin
     MessageDlgCenter('Achtung: Die Datei "exiftool.exe" fehlt im Ordner "' +
-      IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + '"!',
-      mtError, [mbOk]);
+                     IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + '"!', mtError, [mbOk]);
     Exit;
   end;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     s := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    LMDShellConsoleView1.CommandLine := Datei_Info + ' "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                         LMDShellList1.Selected.Caption + '"';
     LMDShellConsoleView1.WorkingDirectory := s;
     LMDShellConsoleView1.Execute;
@@ -2785,7 +2785,7 @@ begin
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
     s := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    LMDShellConsoleView1.CommandLine := Datei_Info + ' "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                         LMDShellList2.Selected.Caption + '"';
     LMDShellConsoleView1.WorkingDirectory := s;
     LMDShellConsoleView1.Execute;
@@ -4854,42 +4854,30 @@ begin
     (ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
     // Ghostscript
-    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
-      'gs\bin\gswin64c.exe';
+    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
     // QPDF
-    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) +
-      'qpdf\bin\qpdf.exe';
+    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
     // PDFtk
-    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
-      'pdftk\pdftk.exe';
+    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
     // ImageMagick-Converter
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) +
-      'ImageMagick';
-    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) +
-      'magick.exe';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
+    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
     // ExifTool
-    Datei_Info := ExtractFilePath(Application.ExeName) + 'exiftool\exiftool.exe';
+    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
+    ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
     // XPDF-Tools
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\bin64';
-    XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-      'pdfimages.exe';
-    XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-      'pdftohtml.exe';
-    XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-      'pdfdetach.exe';
-    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-      'pdffonts.exe';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\';
+    XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+    XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+    XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
 
     // XPDFReader
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
-    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) +
-      'Quellverzeichnis';
-    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) +
-      'Zielverzeichnis';
+    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
     // Notify-Einstellungen...
     FreePDF64_Notify.MonitoringFolder.Text :=
       IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
@@ -4948,41 +4936,32 @@ begin
 
   // Ghostscript
   if Einstellungen_Form.Edit1.Text = '' then
-    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
-      'gs\bin\gswin64c.exe';
+    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
   // QPDF
   if Einstellungen_Form.Edit4.Text = '' then
-    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) +
-      'qpdf\bin\qpdf.exe';
+    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
   // PDFtk
   if Einstellungen_Form.Edit5.Text = '' then
-    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
-      'pdftk\pdftk.exe';
+    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
   // ImageMagick-Converter
   if Einstellungen_Form.Edit7.Text = '' then
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) +
-      'ImageMagick';
-  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) +
-    'magick.exe';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
+  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
   // ExifTool
-  Datei_Info := ExtractFilePath(Application.ExeName) + 'exiftool\exiftool.exe';
+  if Einstellungen_Form.Edit8.Text = '' then
+    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
+  ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
   // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\bin64';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\';
   // XPDF-Tools
-  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdfimages.exe';
-  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdftohtml.exe';
-  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdfdetach.exe';
-  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdffonts.exe';
+  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
 
   Application.HintHidePause := 10000; // 10 Sekunden
   Memo1.Height := 64;
