@@ -195,17 +195,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = FwdBtnClick
       end
-      object SearchBtn: TToolButton
-        Left = 232
-        Top = 0
-        Hint = #214'ffnet das Suchenfenster'
-        Caption = 'SearchBtn'
-        ImageIndex = 10
-        ImageName = 'Item11'
-        OnClick = SearchBtnClick
-      end
       object ToolButton3: TToolButton
-        Left = 269
+        Left = 232
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -217,20 +208,31 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item5'
         Style = tbsSeparator
       end
-      object PropertiesBtn: TToolButton
-        Left = 274
+      object TauschenTB: TToolButton
+        Left = 237
         Top = 0
-        Hint = 'Eigenschaften anzeigen [auch LEERTASTE]'
+        Hint = 'Fenster tauschen'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
-        Caption = 'Eigenschaften anzeigen'
-        ImageIndex = 75
-        ImageName = 'Item76'
-        ParentShowHint = False
-        ShowHint = True
-        OnClick = PropertiesBtnClick
+        Caption = 'TauschenTB'
+        ImageIndex = 64
+        ImageName = 'Item65'
+        OnClick = TauschenTBClick
+      end
+      object AngleichenTB: TToolButton
+        Left = 274
+        Top = 0
+        Hint = 'Fenster angleichen'
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Caption = 'AngleichenTB'
+        ImageIndex = 65
+        ImageName = 'Item66'
+        OnClick = AngleichenTBClick
       end
       object FilterTB: TToolButton
         Left = 311
@@ -247,31 +249,33 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = FilterTBClick
       end
-      object TauschenTB: TToolButton
+      object PropertiesBtn: TToolButton
         Left = 348
         Top = 0
-        Hint = 'Fenster tauschen'
+        Hint = 'Eigenschaften anzeigen [auch LEERTASTE]'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
-        Caption = 'TauschenTB'
-        ImageIndex = 64
-        ImageName = 'Item65'
-        OnClick = TauschenTBClick
+        Caption = 'Eigenschaften anzeigen'
+        ImageIndex = 75
+        ImageName = 'Item76'
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = PropertiesBtnClick
       end
-      object AngleichenTB: TToolButton
+      object MailBtn: TToolButton
         Left = 385
         Top = 0
-        Hint = 'Fenster angleichen'
+        Hint = 'Markierte Datei(en) versenden (Senden an > E-Mail-Empf'#228'nger)'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
-        Caption = 'AngleichenTB'
-        ImageIndex = 65
-        ImageName = 'Item66'
-        OnClick = AngleichenTBClick
+        Caption = 'MailBtn'
+        ImageIndex = 84
+        ImageName = 'Item85'
+        OnClick = Sendenan1Click
       end
       object ToolButton4: TToolButton
         Left = 422
@@ -394,8 +398,19 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
         OnClick = PDF_KompressClick
       end
-      object ToolButton5: TToolButton
+      object PDFFontsBtn: TToolButton
         Left = 765
+        Top = 0
+        Hint = 
+          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
+          'auf'
+        Caption = 'PDFFonts'
+        ImageIndex = 6
+        ImageName = 'Item7'
+        OnClick = PDFFontsBtnClick
+      end
+      object ToolButton5: TToolButton
+        Left = 802
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -407,29 +422,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item33'
         Style = tbsSeparator
       end
-      object PDFFontsBtn: TToolButton
-        Left = 770
-        Top = 0
-        Hint = 
-          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
-          'auf'
-        Caption = 'PDFFonts'
-        ImageIndex = 6
-        ImageName = 'Item7'
-        OnClick = PDFFontsBtnClick
-      end
-      object MailBtn: TToolButton
+      object SearchBtn: TToolButton
         Left = 807
         Top = 0
-        Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        Caption = 'MailBtn'
-        ImageIndex = 84
-        ImageName = 'Item85'
-        OnClick = Sendenan1Click
+        Hint = #214'ffnet das Suchenfenster'
+        Caption = 'SearchBtn'
+        ImageIndex = 10
+        ImageName = 'Item11'
+        OnClick = SearchBtnClick
       end
       object PDFInfoBtn: TToolButton
         Left = 844
