@@ -394,32 +394,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
         OnClick = PDF_KompressClick
       end
-      object PDFFontsBtn: TToolButton
-        Left = 765
-        Top = 0
-        Hint = 
-          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
-          'auf'
-        Caption = 'PDFFonts'
-        ImageIndex = 6
-        ImageName = 'Item7'
-        OnClick = PDFFontsBtnClick
-      end
-      object MailBtn: TToolButton
-        Left = 802
-        Top = 0
-        Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        Caption = 'MailBtn'
-        ImageIndex = 84
-        ImageName = 'Item85'
-        OnClick = Sendenan1Click
-      end
       object ToolButton5: TToolButton
-        Left = 839
+        Left = 765
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -430,6 +406,30 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageIndex = 32
         ImageName = 'Item33'
         Style = tbsSeparator
+      end
+      object PDFFontsBtn: TToolButton
+        Left = 770
+        Top = 0
+        Hint = 
+          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
+          'auf'
+        Caption = 'PDFFonts'
+        ImageIndex = 6
+        ImageName = 'Item7'
+        OnClick = PDFFontsBtnClick
+      end
+      object MailBtn: TToolButton
+        Left = 807
+        Top = 0
+        Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Caption = 'MailBtn'
+        ImageIndex = 84
+        ImageName = 'Item85'
+        OnClick = Sendenan1Click
       end
       object PDFInfoBtn: TToolButton
         Left = 844
@@ -859,7 +859,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Cursor = crHandPoint
         Hint = 
           'Auf geht'#39's - Mit Klick wird die Erstellung ins gew'#252'nschte Format' +
-          ' gestartet [auch F10]'
+          ' gestartet!'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -2141,12 +2141,6 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Beenden'
         ShortCut = 32883
         OnClick = Exit1Click
-      end
-      object Start1: TMenuItem
-        Caption = 'Start'
-        ShortCut = 121
-        Visible = False
-        OnClick = PDF_ErstellungClick
       end
     end
     object Ansicht1: TMenuItem

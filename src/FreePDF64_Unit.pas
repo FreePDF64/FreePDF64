@@ -194,7 +194,6 @@ type
     MarkEntf: TMenuItem;
     Allelschen1: TMenuItem;
     Anleitung1: TMenuItem;
-    Start1: TMenuItem;
     Anderes1: TMenuItem;
     Systemsteuerungaufrufen1: TMenuItem;
     LMDShellAppletLoader1: TLMDShellAppletLoader;
