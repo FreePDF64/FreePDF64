@@ -92,8 +92,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
-      ExplicitLeft = 32
-      ExplicitWidth = 967
       object AutoSize: TToolButton
         Left = 0
         Top = 0
@@ -336,17 +334,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item81'
         OnClick = PDFRemoveClick
       end
-      object ToolButton2: TToolButton
-        Left = 575
-        Top = 0
-        Width = 5
-        Caption = 'ToolButton2'
-        ImageIndex = 103
-        ImageName = '1976057_config_configuration_settings_icon'
-        Style = tbsSeparator
-      end
       object PDFAttachment: TToolButton
-        Left = 580
+        Left = 575
         Top = 0
         Hint = 
           'Anlage(n) der markierten PDF-Datei anzeigen und ins Zielverzeich' +
@@ -355,6 +344,15 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageIndex = 43
         ImageName = 'Item44'
         OnClick = PDFAttachmentClick
+      end
+      object ToolButton2: TToolButton
+        Left = 612
+        Top = 0
+        Width = 5
+        Caption = 'ToolButton2'
+        ImageIndex = 103
+        ImageName = '1976057_config_configuration_settings_icon'
+        Style = tbsSeparator
       end
       object ExtractBtn: TToolButton
         Left = 617
@@ -378,8 +376,50 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item47'
         OnClick = HTMLBtnClick
       end
-      object ToolButton5: TToolButton
+      object PDFdecrypt: TToolButton
         Left = 691
+        Top = 0
+        Hint = 'PDF-Passwortschutz der markierten PDF-Datei entfernen'
+        Caption = 'PDFdecrypt'
+        ImageIndex = 104
+        ImageName = '9051666_warning_danger_attention_exclamation_error_icon'
+        OnClick = PDFdecryptClick
+      end
+      object PDF_Kompress: TToolButton
+        Left = 728
+        Top = 0
+        Hint = 'Komprimierung einer markierten PDF-Datei mittels QPDF'
+        Caption = 'PDF_Kompress'
+        ImageIndex = 102
+        ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
+        OnClick = PDF_KompressClick
+      end
+      object PDFFontsBtn: TToolButton
+        Left = 765
+        Top = 0
+        Hint = 
+          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
+          'auf'
+        Caption = 'PDFFonts'
+        ImageIndex = 6
+        ImageName = 'Item7'
+        OnClick = PDFFontsBtnClick
+      end
+      object MailBtn: TToolButton
+        Left = 802
+        Top = 0
+        Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Caption = 'MailBtn'
+        ImageIndex = 84
+        ImageName = 'Item85'
+        OnClick = Sendenan1Click
+      end
+      object ToolButton5: TToolButton
+        Left = 839
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -392,57 +432,24 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PDFInfoBtn: TToolButton
-        Left = 696
+        Left = 844
         Top = 0
         Hint = 'Datei-Informationen anzeigen [F9] - ESC f'#252'r Beenden'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
       end
-      object PDFFontsBtn: TToolButton
-        Left = 733
+      object ToolButton7: TToolButton
+        Left = 881
         Top = 0
-        Hint = 
-          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
-          'auf'
-        Caption = 'PDFFonts'
-        ImageIndex = 6
-        ImageName = 'Item7'
-        OnClick = PDFFontsBtnClick
-      end
-      object PDFdecrypt: TToolButton
-        Left = 770
-        Top = 0
-        Hint = 'PDF-Passwortschutz der markierten PDF-Datei entfernen'
-        Caption = 'PDFdecrypt'
-        ImageIndex = 104
-        ImageName = '9051666_warning_danger_attention_exclamation_error_icon'
-        OnClick = PDFdecryptClick
-      end
-      object PDF_Kompress: TToolButton
-        Left = 807
-        Top = 0
-        Hint = 'Komprimierung einer markierten PDF-Datei mittels QPDF'
-        Caption = 'PDF_Kompress'
-        ImageIndex = 102
-        ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
-        OnClick = PDF_KompressClick
-      end
-      object MailBtn: TToolButton
-        Left = 844
-        Top = 0
-        Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        Caption = 'MailBtn'
-        ImageIndex = 84
-        ImageName = 'Item85'
-        OnClick = Sendenan1Click
+        Width = 5
+        Caption = 'ToolButton7'
+        ImageIndex = 78
+        ImageName = 'Item79'
+        Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 881
+        Left = 886
         Top = 0
         Hint = 'Logdatei ansehen'
         Margins.Left = 4

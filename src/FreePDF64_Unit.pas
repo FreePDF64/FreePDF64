@@ -356,6 +356,7 @@ type
     LMDShellConsoleView1: TLMDShellConsoleView;
     AutoSize: TToolButton;
     ToolButton1: TToolButton;
+    ToolButton7: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
