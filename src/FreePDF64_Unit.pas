@@ -2038,7 +2038,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '23.01.2025';
+  Datum := '24.01.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2778,7 +2778,7 @@ begin
   begin
     s := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
     LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                         LMDShellList1.Selected.Caption + '"';
     LMDShellConsoleView1.Execute;
   end else
@@ -2786,7 +2786,7 @@ begin
   begin
     s := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
     LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L  -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                         LMDShellList2.Selected.Caption + '"';
     LMDShellConsoleView1.Execute;
   end else
