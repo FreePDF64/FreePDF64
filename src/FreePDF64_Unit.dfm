@@ -78,9 +78,9 @@ object FreePDF64_Form: TFreePDF64_Form
     Align = alTop
     TabOrder = 0
     object ToolBar1: TToolBar
-      Left = 32
+      Left = 1
       Top = 1
-      Width = 967
+      Width = 998
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -92,21 +92,30 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
-      object ToolButton7: TToolButton
+      ExplicitLeft = 32
+      ExplicitWidth = 967
+      object AutoSize: TToolButton
         Left = 0
         Top = 0
-        Width = 1
-        Margins.Left = 2
-        Margins.Top = 2
-        Margins.Right = 2
-        Margins.Bottom = 2
-        Caption = 'ToolButton7'
-        ImageIndex = 103
-        ImageName = '1976057_config_configuration_settings_icon'
+        Hint = 
+          'Schnelles Autosize beider Name-Spalten (nicht anwendbar bei maxi' +
+          'miertem Fenster)'
+        Caption = 'AutoSize'
+        ImageIndex = 63
+        ImageName = 'Item64'
+        OnClick = AutoSizeClick
+      end
+      object ToolButton1: TToolButton
+        Left = 37
+        Top = 0
+        Width = 5
+        Caption = 'ToolButton1'
+        ImageIndex = 78
+        ImageName = 'Item79'
         Style = tbsSeparator
       end
       object Linker_FolderBtn: TToolButton
-        Left = 1
+        Left = 42
         Top = 0
         Hint = 'Zeige Baumstruktur (nur links)'
         Margins.Left = 4
@@ -119,7 +128,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Linker_FolderBtnClick
       end
       object Beide_FolderBtn: TToolButton
-        Left = 38
+        Left = 79
         Top = 0
         Hint = 'Zeige Baumstruktur (beide Seiten)'
         Margins.Left = 4
@@ -132,7 +141,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Beide_FolderBtnClick
       end
       object ToolButton6: TToolButton
-        Left = 75
+        Left = 116
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -145,7 +154,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object RefreshBt: TToolButton
-        Left = 80
+        Left = 121
         Top = 0
         Hint = 'Aktualisieren'
         Margins.Left = 4
@@ -159,7 +168,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = RefreshBtClick
       end
       object BackBtn: TToolButton
-        Left = 117
+        Left = 158
         Top = 0
         Hint = 'Zur'#252'ck'
         Margins.Left = 4
@@ -174,7 +183,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = BackBtnClick
       end
       object FwdBtn: TToolButton
-        Left = 154
+        Left = 195
         Top = 0
         Hint = 'Vorw'#228'rts'
         Margins.Left = 4
@@ -189,7 +198,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FwdBtnClick
       end
       object SearchBtn: TToolButton
-        Left = 191
+        Left = 232
         Top = 0
         Hint = #214'ffnet das Suchenfenster'
         Caption = 'SearchBtn'
@@ -198,7 +207,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = SearchBtnClick
       end
       object ToolButton3: TToolButton
-        Left = 228
+        Left = 269
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -211,7 +220,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PropertiesBtn: TToolButton
-        Left = 233
+        Left = 274
         Top = 0
         Hint = 'Eigenschaften anzeigen [auch LEERTASTE]'
         Margins.Left = 4
@@ -226,7 +235,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PropertiesBtnClick
       end
       object FilterTB: TToolButton
-        Left = 270
+        Left = 311
         Top = 0
         Hint = 'Dateifilter festlegen'
         Margins.Left = 4
@@ -241,7 +250,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FilterTBClick
       end
       object TauschenTB: TToolButton
-        Left = 307
+        Left = 348
         Top = 0
         Hint = 'Fenster tauschen'
         Margins.Left = 4
@@ -254,7 +263,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = TauschenTBClick
       end
       object AngleichenTB: TToolButton
-        Left = 344
+        Left = 385
         Top = 0
         Hint = 'Fenster angleichen'
         Margins.Left = 4
@@ -267,7 +276,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AngleichenTBClick
       end
       object ToolButton4: TToolButton
-        Left = 381
+        Left = 422
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -280,7 +289,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object VerbindenBt: TToolButton
-        Left = 386
+        Left = 427
         Top = 0
         Hint = 'Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei'
         Margins.Left = 4
@@ -293,7 +302,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = VerbindenBtClick
       end
       object WZSTTB: TToolButton
-        Left = 423
+        Left = 464
         Top = 0
         Hint = 'Wasserzeichen/Stempel einer PDF-Datei hinzuf'#252'gen'
         Margins.Left = 4
@@ -306,7 +315,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = WZSTTBClick
       end
       object AnlagenBtn: TToolButton
-        Left = 460
+        Left = 501
         Top = 0
         Hint = 'Anlage der markierten PDF-Datei hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
@@ -315,7 +324,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AnlagenBtnClick
       end
       object PDFRemove: TToolButton
-        Left = 497
+        Left = 538
         Top = 0
         Hint = 
           'Anlage aus der markierten PDF-Datei extrahieren/entfernen:'#13#10'1. E' +
@@ -328,7 +337,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFRemoveClick
       end
       object ToolButton2: TToolButton
-        Left = 534
+        Left = 575
         Top = 0
         Width = 5
         Caption = 'ToolButton2'
@@ -337,7 +346,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PDFAttachment: TToolButton
-        Left = 539
+        Left = 580
         Top = 0
         Hint = 
           'Anlage(n) der markierten PDF-Datei anzeigen und ins Zielverzeich' +
@@ -348,7 +357,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFAttachmentClick
       end
       object ExtractBtn: TToolButton
-        Left = 576
+        Left = 617
         Top = 0
         Hint = 'Extrahiere Bilder aus der markierten PDF-Datei'
         Margins.Left = 4
@@ -361,7 +370,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = ExtractBtnClick
       end
       object HTMLBtn: TToolButton
-        Left = 613
+        Left = 654
         Top = 0
         Hint = 'Konvertieren der markierten PDF-Datei von PDF zu HTML'
         Caption = 'Konvertieren von PDF zu HTML'
@@ -370,7 +379,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = HTMLBtnClick
       end
       object ToolButton5: TToolButton
-        Left = 650
+        Left = 691
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -383,7 +392,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object PDFInfoBtn: TToolButton
-        Left = 655
+        Left = 696
         Top = 0
         Hint = 'Datei-Informationen anzeigen [F9] - ESC f'#252'r Beenden'
         ImageIndex = 62
@@ -391,7 +400,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFInfoBtnClick
       end
       object PDFFontsBtn: TToolButton
-        Left = 692
+        Left = 733
         Top = 0
         Hint = 
           'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
@@ -402,7 +411,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFFontsBtnClick
       end
       object PDFdecrypt: TToolButton
-        Left = 729
+        Left = 770
         Top = 0
         Hint = 'PDF-Passwortschutz der markierten PDF-Datei entfernen'
         Caption = 'PDFdecrypt'
@@ -411,7 +420,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFdecryptClick
       end
       object PDF_Kompress: TToolButton
-        Left = 766
+        Left = 807
         Top = 0
         Hint = 'Komprimierung einer markierten PDF-Datei mittels QPDF'
         Caption = 'PDF_Kompress'
@@ -420,7 +429,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDF_KompressClick
       end
       object MailBtn: TToolButton
-        Left = 803
+        Left = 844
         Top = 0
         Hint = 'Markierte Datei(en) versenden (Senden an E-Mail-Empf'#228'nger)'
         Margins.Left = 4
@@ -433,7 +442,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Sendenan1Click
       end
       object LogBt: TToolButton
-        Left = 840
+        Left = 881
         Top = 0
         Hint = 'Logdatei ansehen'
         Margins.Left = 4
@@ -530,35 +539,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-    end
-    object AutoSize: TBitBtn
-      Left = 1
-      Top = 1
-      Width = 31
-      Height = 45
-      Hint = 
-        'Schnelles Autosize beider Name-Spalten (nicht anwendbar bei maxi' +
-        'miertem Fenster)'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      Align = alLeft
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -15
-      Font.Name = 'Segoe UI'
-      Font.Style = [fsBold]
-      ImageIndex = 63
-      ImageName = 'Item64'
-      Images = VirtualImageList1
-      NumGlyphs = 2
-      ParentFont = False
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 4
-      TabStop = False
-      OnClick = AutoSizeClick
     end
   end
   object PanelBottom: TPanel

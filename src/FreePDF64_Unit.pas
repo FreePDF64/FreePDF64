@@ -323,8 +323,6 @@ type
     Formatverz_OnlyDate: TMenuItem;
     ResizeEqual: TMenuItem;
     Nullstellung: TMenuItem;
-    AutoSize: TBitBtn;
-    ToolButton7: TToolButton;
     AutoSizeBtn: TMenuItem;
     PanelL: TPanel;
     Image2: TImage;
@@ -356,6 +354,8 @@ type
     PDFkomprimieren1: TMenuItem;
     LMDShellRestartDialog1: TLMDShellRestartDialog;
     LMDShellConsoleView1: TLMDShellConsoleView;
+    AutoSize: TToolButton;
+    ToolButton1: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
