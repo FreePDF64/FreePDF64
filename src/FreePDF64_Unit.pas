@@ -2778,7 +2778,8 @@ begin
   begin
     s := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
     LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+                                        IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                         LMDShellList1.Selected.Caption + '"';
     LMDShellConsoleView1.Execute;
   end else
@@ -2786,7 +2787,8 @@ begin
   begin
     s := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
     LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+                                        IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                         LMDShellList2.Selected.Caption + '"';
     LMDShellConsoleView1.Execute;
   end else
