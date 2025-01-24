@@ -2810,6 +2810,7 @@ begin
 
   Memo1.Text := StringReplace(Memo1.Text, '├╝', 'ü', [rfReplaceAll]);
   Memo1.Text := StringReplace(Memo1.Text, '³' , 'ü', [rfReplaceAll]);
+  Memo1.Text := StringReplace(Memo1.Text, '?' , 'ü', [rfReplaceAll]);
   Memo1.Text := StringReplace(Memo1.Text, '▄' , 'Ü', [rfReplaceAll]);
 
   Memo1.Text := StringReplace(Memo1.Text, '▀' , 'ß', [rfReplaceAll]);
