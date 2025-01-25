@@ -442,7 +442,6 @@ type
     procedure Positionspeichern1Click(Sender: TObject);
     procedure Exit1Click(Sender: TObject);
     procedure FormatverzClick(Sender: TObject);
-    procedure LogBtClick(Sender: TObject);
     procedure AutostartClick(Sender: TObject);
     procedure Linker_FolderBtnClick(Sender: TObject);
     procedure SplDblClick(Sender: TObject);
@@ -465,7 +464,6 @@ type
     procedure MonitoringBtnMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure Logdateiansehen2Click(Sender: TObject);
     procedure Verbinden1Click(Sender: TObject);
     procedure Allemarkieren1Click(Sender: TObject);
     procedure LMDShellList1Change(Sender: TObject; Item: TListItem;
@@ -577,6 +575,8 @@ type
     procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
     procedure PDF_KompressClick(Sender: TObject);
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure LogBtMouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious: TWinControl;
@@ -4840,8 +4840,8 @@ begin
 
   // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/Ab und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
-  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
+  PDFA_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
+  PDFX_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -5116,11 +5116,11 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-      FSortAscending := True;
+      FSortAscending  := True;
       FSortAscending2 := True;
-      FSortColumn := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
-      FSortAscending := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
@@ -5271,7 +5271,7 @@ begin
   end;
 
   Quelllabel.Color := RGB(220, 220, 220);
-  Ziellabel.Color := clBtnFace;
+  Ziellabel.Color  := clBtnFace;
 
   // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
   s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
@@ -5291,6 +5291,11 @@ begin
     finally
       Free;
     end;
+
+
+  // Hinweistext auf Log-Button
+  LogBt.Hint := ('- Ansehen im externen Editor') + #13 +
+                ('- [Umsch]: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
   FreePDF64_Notify.LMDShellNotify.WatchFolder :=
@@ -6074,10 +6079,40 @@ begin
   Btn_Delete.Click;
 end;
 
-procedure TFreePDF64_Form.LogBtClick(Sender: TObject);
+procedure TFreePDF64_Form.LogBtMouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  I: Integer;
 begin
   FavClose;
-  Logdateiansehen1.Click;
+
+  if ssShift in Shift then
+  begin
+    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
+    // zur letzen Zeile:
+    Memo1.Perform(EM_LineScroll, 0 , Memo1.Lines.Count - 1);
+    if Memo1.Lines.Count > 0 then
+    begin
+      I := TextHoehe(Memo1.Font, Memo1.Text);
+      I := (I * Memo1.Lines.Count) + MHA;
+      if I < Memo1.Parent.Height then
+        Exit;
+      if FreePDF64_Form.Height < 400 then
+        Exit;
+      if I >= (FreePDF64_Form.Height - 350) then
+        I := FreePDF64_Form.Height - 350;
+      PDFPanel.Height := I;
+    end;
+  end else
+  begin
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
+    Logdateiansehen1.Click;
+  end;
 end;
 
 procedure TFreePDF64_Form.Logdateiansehen1Click(Sender: TObject);
@@ -6085,21 +6120,8 @@ begin
   if Einstellungen_Form.Edit2.Text = '' then
     Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
-  if ExtractFileName(Einstellungen_Form.Edit2.Text) = 'notepad++.exe' then
-    ShellExecute(Application.Handle, 'open',
-      PChar(Einstellungen_Form.Edit2.Text),
-      PChar(' -n999999 "' + ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt' + '"'), NIL, SW_SHOWNORMAL)
-  else
-    ShellExecute(Application.Handle, 'open',
-      PChar(Einstellungen_Form.Edit2.Text),
-      PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' +
-      '"'), NIL, SW_SHOWNORMAL)
-end;
-
-procedure TFreePDF64_Form.Logdateiansehen2Click(Sender: TObject);
-begin
-  LogBt.Click;
+  ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+               PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'), NIL, SW_SHOWNORMAL)
 end;
 
 procedure TFreePDF64_Form.LogdateiClick(Sender: TObject);

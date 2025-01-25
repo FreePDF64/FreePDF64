@@ -451,7 +451,6 @@ object FreePDF64_Form: TFreePDF64_Form
       object LogBt: TToolButton
         Left = 886
         Top = 0
-        Hint = 'Logdatei ansehen'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -459,7 +458,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'LogBt'
         ImageIndex = 77
         ImageName = 'Item78'
-        OnClick = LogBtClick
+        OnMouseDown = LogBtMouseDown
       end
     end
     object ConfigBtn: TButton
@@ -2522,7 +2521,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'Logdatei ansehen'
       ImageIndex = 77
       ImageName = 'Item78'
-      OnClick = Logdateiansehen2Click
     end
     object berFreePDF641: TMenuItem
       Caption = #220'ber FreePDF64'
