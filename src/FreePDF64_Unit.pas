@@ -3229,10 +3229,8 @@ begin
   if Button = mbRight then
   begin
     PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
-    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash
-      (FreePDF64_Notify.MonitoringFolder.Text) + '*.*';
-    PopupMenu3.Items.Items[2].Caption := IncludeTrailingBackslash
-      (MZiel) + '*.*';
+    PopupMenu3.Items.Items[1].Caption    := IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text);
+    PopupMenu3.Items.Items[2].Caption    := IncludeTrailingBackslash(MZiel);
   end;
 end;
 
