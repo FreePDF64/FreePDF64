@@ -5835,7 +5835,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList1Click(Sender: TObject);
 begin
   FavClose;
-  Memo1.Clear;
+//  Memo1.Clear;
 
   if LMDShellList1.SelCount = 0 then
     Exit
@@ -5865,10 +5865,8 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
-  // if LMDShellList1.Selected = NIL then
   if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
     LMDShellList1.ItemFocused;
-  // LMDShellList1.ItemIndex := 0;
 
   if LMDShellList1.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
@@ -5905,7 +5903,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
 begin
   FavClose;
-  Memo1.Clear;
+//  Memo1.Clear;
 
   if LMDShellList2.SelCount = 0 then
     Exit
@@ -5941,9 +5939,6 @@ procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
     LMDShellList2.ItemIndex := 0;
-  // else
-  // if (LMDShellList2.Items.Count > 0) and (LMDShellList2.Selected = NIL) then
-  // LMDShellList2.ItemIndex := 0;
 
   if LMDShellList2.FileFilter <> '*.*' then
     FilterTB.ImageIndex := 69
@@ -5961,6 +5956,16 @@ end;
 procedure TFreePDF64_Form.LMDShellList1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if (Key = VK_ESCAPE) then
+  begin
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
+  end;
+
   if (Key = VK_DELETE) and (LMDShellList1.IsEditing = False) then
     Btn_Delete.Click;
 
@@ -5981,6 +5986,16 @@ end;
 procedure TFreePDF64_Form.LMDShellList2KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
+  if (Key = VK_ESCAPE) then
+  begin
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
+  end;
+
   if (Key = VK_DELETE) and (LMDShellList2.IsEditing = False) then
     Btn_Delete.Click;
 
@@ -6001,13 +6016,14 @@ end;
 procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  if PDFPanel.Height > PDFPanelH then
   begin
-    Memo1.Clear;
-    PDFPanel.Height := PDFPanelH;
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
   end;
-
   SB_Left;
 
   // Linkes Bild anzeigen durch KeyUp/Down - linke Maustaste wurde nicht gedrückt...
@@ -6015,10 +6031,10 @@ begin
   begin
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
       if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
       begin
         Auswahl := LMDShellList1.SelectedItem.PathName;
         LMDShellList2.Visible := False;
@@ -6030,13 +6046,14 @@ end;
 procedure TFreePDF64_Form.LMDShellList2SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  if PDFPanel.Height > PDFPanelH then
   begin
-    Memo1.Clear;
-    PDFPanel.Height := PDFPanelH;
+    // Wenn das Panel schon auf ist, wieder schließen...
+    if PDFPanel.Height > PDFPanelH then
+    begin
+      Memo1.Clear;
+      PDFPanel.Height := PDFPanelH;
+    end;
   end;
-
   SB_Right;
 
   // Rechtes Bild anzeigen durch KeyUp/Down - linke Maustaste wurde nicht gedrückt...
@@ -6044,10 +6061,10 @@ begin
   begin
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
       if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
       begin
         Auswahl := LMDShellList2.SelectedItem.PathName;
         LMDShellList1.Visible := False;
