@@ -2521,6 +2521,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'Logdatei ansehen'
       ImageIndex = 77
       ImageName = 'Item78'
+      OnClick = Logdateiansehen1Click
     end
     object berFreePDF641: TMenuItem
       Caption = #220'ber FreePDF64'
