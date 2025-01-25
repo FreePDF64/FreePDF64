@@ -18281,10 +18281,4 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 915
     Top = 291
   end
-  object LMDShellConsoleView1: TLMDShellConsoleView
-    OnLineAdd = LMDShellConsoleView1LineAdd
-    OnTerminated = LMDShellConsoleView1Terminated
-    Left = 568
-    Top = 347
-  end
 end

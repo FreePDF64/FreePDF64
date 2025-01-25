@@ -352,7 +352,6 @@ type
     VerwendeteSchriftartenauflisten1: TMenuItem;
     PDFkomprimieren1: TMenuItem;
     LMDShellRestartDialog1: TLMDShellRestartDialog;
-    LMDShellConsoleView1: TLMDShellConsoleView;
     AutoSize: TToolButton;
     ToolButton1: TToolButton;
     ToolButton7: TToolButton;
@@ -577,8 +576,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
     procedure PDF_KompressClick(Sender: TObject);
-    procedure LMDShellConsoleView1LineAdd(Sender: TObject; LString: string);
-    procedure LMDShellConsoleView1Terminated(Sender: TObject);
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private-Deklarationen }
@@ -1209,81 +1206,59 @@ begin
 end;
 
 // Ausgabe Consolelog -> Memofenster
-procedure RunDosInMemo(DosApp: string; AMemo: TMemo);
-const
-  READ_BUFFER_SIZE = 2400;
+procedure GetDosOutput(Output: TMemo; CommandLine: String; Work: String);
 var
-  Security: TSecurityAttributes;
-  readableEndOfPipe, writeableEndOfPipe: THandle;
-  start: TStartupInfo;
-  ProcessInfo: TProcessInformation;
-  Buffer: PAnsiChar;
-  BytesRead: DWORD;
-  AppRunning: DWORD;
+  SA: TSecurityAttributes;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  StdOutPipeRead, StdOutPipeWrite: THandle;
+  WasOK: Boolean;
+  Buffer: Array[0..255] of AnsiChar;
+  BytesRead: Cardinal;
+  WorkDir: String;
+  Handle: Boolean;
 begin
-  Security.nLength := SizeOf(TSecurityAttributes);
-  Security.bInheritHandle := True;
-  Security.lpSecurityDescriptor := NIL;
-
-  if CreatePipe( { var } readableEndOfPipe, { var } writeableEndOfPipe,
-    @Security, 0) then
-  begin
-    Buffer := AllocMem(READ_BUFFER_SIZE + 1);
-    FillChar(start, SizeOf(start), #0);
-    start.cb := SizeOf(start);
-
-    // Set up members of the STARTUPINFO structure.
-    // This structure specifies the STDIN and STDOUT handles for redirection.
-    // - Redirect the output and error to the writeable end of our pipe.
-    // - We must still supply a valid StdInput handle (because we used STARTF_USESTDHANDLES to swear that all three handles will be valid)
-    start.dwFlags := start.dwFlags or STARTF_USESTDHANDLES;
-    start.hStdInput := GetStdHandle(STD_INPUT_HANDLE);
-    // we're not redirecting stdInput; but we still have to give it a valid handle
-    start.hStdOutput := writeableEndOfPipe;
-    // we give the writeable end of the pipe to the child process; we read from the readable end
-    start.hStdError := writeableEndOfPipe;
-
-    // We can also choose to say that the wShowWindow member contains a value.
-    // In our case we want to force the console window to be hidden.
-    start.dwFlags := start.dwFlags + STARTF_USESHOWWINDOW;
-    start.wShowWindow := SW_HIDE;
-
-    // Don't forget to set up members of the PROCESS_INFORMATION structure.
-    ProcessInfo := Default (TProcessInformation);
-
-    // WARNING: The unicode version of CreateProcess (CreateProcessW) can modify the command-line "DosApp" string.
-    // Therefore "DosApp" cannot be a pointer to read-only memory, or an ACCESS_VIOLATION will occur.
-    // We can ensure it's not read-only with the RTL function: UniqueString
-    UniqueString( { var } DosApp);
-
-    if CreateProcess(NIL, PChar(DosApp), NIL, NIL, True, NORMAL_PRIORITY_CLASS,
-      NIL, NIL, start, { var } ProcessInfo) then
+  with SA do begin
+    nLength              := SizeOf(SA);
+    bInheritHandle       := True;
+    lpSecurityDescriptor := NIL;
+  end;
+  CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
+  try
+    with SI do
     begin
-      // Wait for the application to terminate, as it writes it's output to the pipe.
-      // WARNING: If the console app outputs more than 2400 bytes (ReadBuffer),
-      // it will block on writing to the pipe and *never* close.
-      repeat
-        AppRunning := WaitForSingleObject(ProcessInfo.hProcess, 100);
-        Application.ProcessMessages;
-      until (AppRunning <> WAIT_TIMEOUT);
-
-      // Read the contents of the pipe out of the readable end
-      // WARNING: if the console app never writes anything to the StdOutput, then ReadFile will block and never return
-      repeat
-        BytesRead := 0;
-        ReadFile(readableEndOfPipe, Buffer[0], READ_BUFFER_SIZE,
-          { var } BytesRead, NIL);
-        Buffer[BytesRead] := #0;
-        // Die nächste Zeile konvertiert NICHT die deutschen Umlaute?!
-        // OemToAnsi(Buffer, Buffer);
-        AMemo.Text := AMemo.Text + String(Buffer);
-      until (BytesRead < READ_BUFFER_SIZE);
+      FillChar(SI, SizeOf(SI), 0);
+      cb          := SizeOf(SI);
+      dwFlags     := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+      wShowWindow := SW_HIDE;
+      hStdInput   := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdin
+      hStdOutput  := StdOutPipeWrite;
+      hStdError   := StdOutPipeWrite;
     end;
-    FreeMem(Buffer);
-    CloseHandle(ProcessInfo.hProcess);
-    CloseHandle(ProcessInfo.hThread);
-    CloseHandle(readableEndOfPipe);
-    CloseHandle(writeableEndOfPipe);
+    WorkDir := Work;
+    Handle  := CreateProcess(NIL, PChar('cmd.exe /C ' + CommandLine),
+                             NIL, NIL, True, 0, NIL,
+                             PChar(WorkDir), SI, PI);
+    CloseHandle(StdOutPipeWrite);
+    if Handle then
+      try
+  repeat
+    WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
+    if WasOK and (BytesRead > 0) then
+    begin
+      Buffer[BytesRead] := #0;
+      Output.SelStart   := Output.GetTextLen;
+      Output.SelLength  := 0;
+      Output.SelText    := Buffer;
+    end;
+  until (not WasOK) or (BytesRead = 0);
+        WaitForSingleObject(PI.hProcess, INFINITE);
+      finally
+        CloseHandle(PI.hThread);
+        CloseHandle(PI.hProcess);
+      end;
+  finally
+    CloseHandle(StdOutPipeRead);
   end;
 end;
 
@@ -1439,7 +1414,8 @@ end;
 // Anlage(n) aus einer PDF-Datei extrahieren/entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile, Zeile2, Ausgabe: String;
+  PDFDatei, Zieldatei, Anlage, Zeile, Zeile2, Ausgabe,
+  Befehlszeile, Work: String;
   ProcID: Cardinal;
   F: TextFile;
   I, j: Integer;
@@ -1456,9 +1432,15 @@ begin
   // Zeige die Attachments der ausgewählten PDF-Datei
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
+    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                                  LMDShellList1.Selected.Caption + '"';
+
     // Anlagen anzeigen...
-    RunDosInMemo(XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                 LMDShellList1.Selected.Caption + '"', Memo1);
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+
     // Wenn keine Anlagen in der PDF-Datei enthalten sind, Routine mit Hinweisfenster beenden!
     if Memo1.Lines[0] = '0 embedded files' then
     begin
@@ -2038,7 +2020,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '24.01.2025';
+  Datum := '25.01.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2640,7 +2622,7 @@ end;
 procedure TFreePDF64_Form.PDFAttachmentClick(Sender: TObject);
 var
   I, j: Integer;
-  PDFDatei, Zeile: String;
+  PDFDatei, Zeile, Befehlszeile, Work: String;
   ProcID: Cardinal;
   F: TextFile;
 begin
@@ -2663,15 +2645,27 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    RunDosInMemo(XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                 LMDShellList1.selected.Caption + '"', Memo1);
+    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                                  LMDShellList1.Selected.Caption + '"';
+    // DOS-Ausgabe nach Memo1
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+
     PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption + '"';
     Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel) + '" "' + PDFDatei;
   end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
-    RunDosInMemo(XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                 LMDShellList2.Selected.Caption + '"', Memo1);
+    Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                                  LMDShellList2.Selected.Caption + '"';
+    // DOS-Ausgabe nach Memo1
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+
     PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption + '"';
     Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel) + '" "' + PDFDatei;
   end else
@@ -2756,7 +2750,7 @@ end;
 procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
   I: Integer;
-  s: String;
+  Work, Befehlszeile: String;
 begin
   FavClose;
   Memo1.Clear;
@@ -2776,21 +2770,17 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    s := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
-                                        IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                                        LMDShellList1.Selected.Caption + '"';
-    LMDShellConsoleView1.Execute;
+    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+                               IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                               LMDShellList1.Selected.Caption + '"';
   end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
-    s := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    LMDShellConsoleView1.WorkingDirectory := s;
-    LMDShellConsoleView1.CommandLine := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
-                                        IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                                        LMDShellList2.Selected.Caption + '"';
-    LMDShellConsoleView1.Execute;
+    Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+                               IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                               LMDShellList2.Selected.Caption + '"';
   end else
   begin
     MessageDlgCenter
@@ -2798,44 +2788,21 @@ begin
       mtInformation, [mbOk]);
     Exit;
   end;
-end;
 
-procedure TFreePDF64_Form.LMDShellConsoleView1LineAdd(Sender: TObject; LString: string);
-begin
-  Memo1.Text := StringReplace(Memo1.Text, 'Ã¤', 'ä', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, 'õ',  'ä', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, '─',  'Ä', [rfReplaceAll]);
-
-  Memo1.Text := StringReplace(Memo1.Text, 'Ã¶', 'ö', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, '÷',  'ö', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, 'Í',  'Ö', [rfReplaceAll]);
-
-  Memo1.Text := StringReplace(Memo1.Text, '├╝', 'ü', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, '³' , 'ü', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, '?' , 'ü', [rfReplaceAll]);
-  Memo1.Text := StringReplace(Memo1.Text, '▄' , 'Ü', [rfReplaceAll]);
-
-  Memo1.Text := StringReplace(Memo1.Text, '▀' , 'ß', [rfReplaceAll]);
-
-  Memo1.Lines.Add(LString);
-end;
-
-procedure TFreePDF64_Form.LMDShellConsoleView1Terminated(Sender: TObject);
-var
-  I: Integer;
-begin
+  // DOS-Ausgabe nach Memo1
+  GetDosOutput(Memo1, Befehlszeile, Work);
+  // Zur ersten Memo-Zeile gehen...
+  Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
   if Memo1.Lines.Count > 0 then
   begin
     I := TextHoehe(Memo1.Font, Memo1.Text);
     I := (I * Memo1.Lines.Count) + MHA;
     if I < Memo1.Parent.Height then
       Exit;
-
     if FreePDF64_Form.Height < 400 then
       Exit;
     if I >= (FreePDF64_Form.Height - 350) then
       I := FreePDF64_Form.Height - 350;
-
     PDFPanel.Height := I;
   end;
 end;
@@ -2843,6 +2810,7 @@ end;
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
 var
   I: Integer;
+  Befehlszeile, Work: String;
 begin
   FavClose;
 
@@ -2863,13 +2831,25 @@ begin
   Memo1.Clear;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
-      RunDosInMemo(XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                   LMDShellList1.Selected.Caption + '"', Memo1)
-  else
+  begin
+      Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+      Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                      LMDShellList1.Selected.Caption + '"';
+      // DOS-Ausgabe nach Memo1
+      GetDosOutput(Memo1, Befehlszeile, Work);
+      // Zur ersten Memo-Zeile gehen...
+      Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+  end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
-      RunDosInMemo(XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                   LMDShellList2.Selected.Caption + '"', Memo1)
-  else
+  begin
+      Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+      Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                      LMDShellList2.Selected.Caption + '"';
+      // DOS-Ausgabe nach Memo1
+      GetDosOutput(Memo1, Befehlszeile, Work);
+      // Zur ersten Memo-Zeile gehen...
+      Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+  end else
   begin
     MessageDlgCenter
       ('Die Schriftarten in der PDF-Datei werden aufgelistet: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
