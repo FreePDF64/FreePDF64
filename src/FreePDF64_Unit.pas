@@ -4502,10 +4502,7 @@ begin
     end;
   end;
 
-//
-  LMDShellFolder1.RootFolder := ExtractFilePath(s);
   LMDShellFolder1.ChDir(s);
-//
   if LMDShellList1.Selected = NIL then
       LMDShellList1.ItemIndex := 0;
 end;
@@ -5371,6 +5368,7 @@ begin
 
   LMDShellFolder1.RootFolder := A_S;
   LMDShellFolder2.RootFolder := B_Z;
+
   QuellBtn.Click;
   ZielBtn.Click;
 end;
@@ -5387,7 +5385,8 @@ var
   I, j: Integer;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
-  I := LMDShellFolder1.BackwardPathList.Count - 2;
+  if LMDShellFolder1.BackwardPathList.Count >=2 then
+   I := LMDShellFolder1.BackwardPathList.Count - 2;
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then

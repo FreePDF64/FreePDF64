@@ -1730,8 +1730,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = QuellBtnClick
         OnMouseEnter = QuellBtnMouseEnter
-        ExplicitLeft = 64
-        ExplicitHeight = 27
+        ExplicitLeft = 77
       end
       object FavSpL: TSpeedButton
         Left = 400
