@@ -704,6 +704,7 @@ begin
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Form soll mittig angezeigt werden.
@@ -1277,6 +1278,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
@@ -1429,6 +1431,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Zeige die Attachments der ausgewählten PDF-Datei
@@ -1951,6 +1954,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Merge.Click;
@@ -2170,6 +2174,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 0)) or
@@ -2513,6 +2518,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.IsEditing = False) then
@@ -2634,6 +2640,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if not FileExists(XPDF_Detach) then
@@ -2761,7 +2768,8 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
-    LMDShellList2.SetFocus;
+  if wcActive.Name = 'LMDShellList2' then
+      LMDShellList2.SetFocus;
 
   if not FileExists(ExifTool) then
   begin
@@ -2821,6 +2829,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if not FileExists(XPDF_Fonts) then
@@ -2885,6 +2894,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
@@ -3072,6 +3082,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
@@ -3766,7 +3777,7 @@ begin
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
-  if wcPrevious.Name = 'LMDShellList1' then
+  if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Einstellungen_Form.Position := poMainFormCenter;
@@ -4155,6 +4166,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Filter1.Click;
@@ -4190,6 +4202,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Einstellungen1.Click;
@@ -5578,6 +5591,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or
@@ -5723,6 +5737,7 @@ begin
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or
@@ -6781,6 +6796,7 @@ begin
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Form soll mittig angezeigt werden.
@@ -6965,6 +6981,7 @@ begin
     if wcPrevious.Name = 'LMDShellList1' then
       LMDShellList1.SetFocus
     else
+    if wcPrevious.Name = 'LMDShellList2' then
       LMDShellList2.SetFocus
   end;
 
