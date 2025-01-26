@@ -4490,21 +4490,24 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat := TIniFile.Create(IniFile);
+    IniDat  := TIniFile.Create(IniFile);
     with IniDat do
       s := ReadString('Folder', 'Left', A_S);
     IniDat.Free;
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
+
+//
+  LMDShellFolder1.RootFolder := ExtractFilePath(s);
   LMDShellFolder1.ChDir(s);
+//
   if LMDShellList1.Selected = NIL then
-    LMDShellList1.ItemIndex := 0;
+      LMDShellList1.ItemIndex := 0;
 end;
 
 procedure TFreePDF64_Form.ZielBtnClick(Sender: TObject);
@@ -4516,15 +4519,14 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat := TIniFile.Create(IniFile);
+    IniDat  := TIniFile.Create(IniFile);
     with IniDat do
       s := ReadString('Folder', 'Target', B_Z);
     IniDat.Free;
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -4822,10 +4824,8 @@ begin
     Exit;
   end;
 
-  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: '
-    + GetCurrentUserName;
-  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' +
-    ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
+  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUserName;
+  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
   FAbbrechen := False;
   // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
@@ -4928,7 +4928,6 @@ begin
   end;
   // Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
   // ============================================================================
-
   // Ghostscript
   if Einstellungen_Form.Edit1.Text = '' then
     Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
@@ -5177,16 +5176,12 @@ begin
     Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
-  Ziellabel.Caption := 'Ziel - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width));
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
+                        ComboBoxL.Width));
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
+                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
@@ -5207,8 +5202,7 @@ begin
   begin
     Include(tmpt, loShowHidden);
     Include(tmpt2, toShowHidden);
-  end
-  else
+  end else
   begin
     Exclude(tmpt, loShowHidden);
     Exclude(tmpt2, toShowHidden);
@@ -5224,9 +5218,6 @@ begin
     LMDShellFolder2.RootFolder := Ziel;
   end;
 
-  LMDShellFolder1.RootFolder := A_S;
-  LMDShellFolder2.RootFolder := B_Z;
-  FreePDF64_Form.QuellBtn.Click;
   FreePDF64_Notify.LMDShellNotify.Active := Notify_Active;
 
   DokuInfo_Form.Clear.Click;
@@ -5243,9 +5234,8 @@ begin
   SB_Left;
   SB_Right;
 
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
-    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
-    IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
+                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   // Abfrage auf FreePDF64-Registry-Eintrag...
   begin
@@ -5378,6 +5368,11 @@ begin
   if LMDShellList1.Items.Count > 0 then
     LMDShellList1.ItemIndex := 0;
   LMDShellList1.SetFocus;
+
+  LMDShellFolder1.RootFolder := A_S;
+  LMDShellFolder2.RootFolder := B_Z;
+  QuellBtn.Click;
+  ZielBtn.Click;
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);
