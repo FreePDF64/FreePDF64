@@ -3766,6 +3766,7 @@ begin
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
   else
+  if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList2.SetFocus;
 
   Einstellungen_Form.Position := poMainFormCenter;
@@ -7856,7 +7857,7 @@ begin
                 ' -           Dateigröße: ' +
                 FormatByteString(MyFileSize(ExtractFilePath(Ziel) +
                 QPDF_ExtractFile))) + ' (um ' + IntToStr(Komprimierung) +
-                '% komprimiert)');
+                '% komprimiert vom Original)');
             end
             else
             begin
@@ -7906,7 +7907,7 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
                   ' -           Dateigröße: ' +
                   FormatByteString(MyFileSize(Ziel))) + ' (um ' +
-                  IntToStr(Komprimierung) + '% komprimiert)');
+                  IntToStr(Komprimierung) + '% komprimiert vom Original)');
               end;
 
               if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and
@@ -7945,7 +7946,7 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
                   ' -           Dateigröße: ' +
                   FormatByteString(MyFileSize(Ziel))) + ' (um ' +
-                  IntToStr(Komprimierung) + '% komprimiert)');
+                  IntToStr(Komprimierung) + '% komprimiert vom Original)');
               end;
 
               if (Encrypt_Form.EncryptCombo.ItemIndex = 2) and
@@ -8041,7 +8042,7 @@ begin
                       Now) + ' -           Dateigröße: ' +
                       FormatByteString(MyFileSize(ExtractFilePath(Ziel) +
                       'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
-                      IntToStr(Komprimierung) + '% komprimiert)');
+                      IntToStr(Komprimierung) + '% komprimiert vom Original)');
                   end;
 
                   // Dateianlage vorne/hinten angefügt
@@ -8093,7 +8094,7 @@ begin
                     ' -           Dateigröße: ' +
                     FormatByteString(MyFileSize(ExtractFilePath(Ziel) +
                     'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
-                    IntToStr(Komprimierung) + '% komprimiert)');
+                    IntToStr(Komprimierung) + '% komprimiert vom Original)');
                 end
                 else
                   // PS/DOCX/TXT/TIFF
