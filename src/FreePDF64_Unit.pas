@@ -355,6 +355,7 @@ type
     AutoSize: TToolButton;
     ToolButton1: TToolButton;
     ToolButton7: TToolButton;
+    MemoBtn: TBitBtn;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -577,6 +578,7 @@ type
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LogBtMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure MemoBtnClick(Sender: TObject);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious: TWinControl;
@@ -2805,6 +2807,7 @@ begin
       I := FreePDF64_Form.Height - 350;
     PDFPanel.Height := I;
   end;
+  MemoBtn.Visible := True;
 end;
 
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
@@ -2865,6 +2868,7 @@ begin
       Exit;
     PDFPanel.Height := I;
   end;
+  MemoBtn.Visible := True;
 end;
 
 // PDF-Passwortschutz entfernen
@@ -5955,6 +5959,7 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
   end;
 
@@ -5985,6 +5990,7 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
   end;
 
@@ -6014,6 +6020,7 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
   end;
   SB_Left;
@@ -6044,6 +6051,7 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
   end;
   SB_Right;
@@ -6111,6 +6119,7 @@ begin
       if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
       PDFPanel.Height := I;
+      MemoBtn.Visible := True;
     end;
   end else
   begin
@@ -6119,6 +6128,7 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
     Logdateiansehen1.Click;
   end;
@@ -6269,7 +6279,19 @@ begin
     begin
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
+      MemoBtn.Visible := False;
     end;
+  end;
+end;
+
+procedure TFreePDF64_Form.MemoBtnClick(Sender: TObject);
+begin
+  // Wenn das Panel schon auf ist, wieder schließen...
+  if PDFPanel.Height > PDFPanelH then
+  begin
+    Memo1.Clear;
+    PDFPanel.Height := PDFPanelH;
+    MemoBtn.Visible := False;
   end;
 end;
 
