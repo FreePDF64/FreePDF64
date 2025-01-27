@@ -80,7 +80,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 1112
+      Width = 1142
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -96,6 +96,7 @@ object FreePDF64_Form: TFreePDF64_Form
       AllowTextButtons = True
       ShowHint = True
       TabOrder = 0
+      ExplicitWidth = 1112
       object AutoSize: TToolButton
         Left = 0
         Top = 0
@@ -475,9 +476,9 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object ConfigBtn: TButton
-      Left = 1240
+      Left = 1270
       Top = 1
-      Width = 230
+      Width = 200
       Height = 45
       Cursor = crHandPoint
       Hint = #214'ffnet das Einstellungsfenster'
@@ -503,10 +504,10 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 1
       TabStop = False
       OnClick = ConfigBtnClick
-      ExplicitLeft = 1210
+      ExplicitLeft = 1240
     end
     object MonitorBtn: TBitBtn
-      Left = 1155
+      Left = 1185
       Top = 1
       Width = 85
       Height = 45
@@ -532,10 +533,10 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
-      ExplicitLeft = 1130
+      ExplicitLeft = 1155
     end
     object StatusBitBtn: TBitBtn
-      Left = 1113
+      Left = 1143
       Top = 1
       Width = 42
       Height = 45
@@ -560,7 +561,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-      ExplicitLeft = 1078
+      ExplicitLeft = 1113
     end
   end
   object PanelBottom: TPanel
@@ -845,7 +846,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Width = 420
         Height = 42
         Cursor = crHandPoint
-        Hint = 'Das Fenster zur Formatauswahl wird ge'#246'ffnet'
+        Hint = #214'ffnet das Einstellungsfenster'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
