@@ -2026,7 +2026,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '25.01.2025';
+  Datum := '27.01.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -4941,8 +4941,9 @@ begin
 
     Exit;
   end;
-  // Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
+  // ende von -> Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
   // ============================================================================
+
   // Ghostscript
   if Einstellungen_Form.Edit1.Text = '' then
     Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
@@ -4975,6 +4976,8 @@ begin
   Application.HintHidePause := 10000; // 10 Sekunden
   Memo1.Height := 64;
 
+  // ============================================================================
+  // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
@@ -5144,6 +5147,8 @@ begin
       ShowMessage('Error');
     end;
   end;
+  // ende von -> Wenn die FreePDF64-Ini-Datei vorgefunden wird...
+  // ============================================================================
 
   // Show Folders Both Pane
   if ShowFolders1.Checked then
@@ -5211,7 +5216,7 @@ begin
     FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
   end;
 
-  tmpt := LMDShellList1.Options;
+  tmpt  := LMDShellList1.Options;
   tmpt2 := LMDShellTree1.Options;
   if VersteckteDateienanzeigen1.Checked then
   begin
@@ -5301,8 +5306,7 @@ begin
                 ('- [Umsch]: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
-  FreePDF64_Notify.LMDShellNotify.WatchFolder :=
-    Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
+  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
     MonitorBtn.ImageIndex := 57;
@@ -5375,20 +5379,21 @@ begin
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
+
+    // Setze Cursor auf den ersten Eintrag der LMDShellList1
+    LMDShellList1.ClearSelection;
+    LMDShellList2.ClearSelection;
+    if LMDShellList1.Items.Count > 0 then
+      LMDShellList1.ItemIndex := 0;
+    LMDShellList1.SetFocus;
+
+    LMDShellFolder1.RootFolder := A_S;
+    LMDShellFolder2.RootFolder := B_Z;
+
+    QuellBtn.Click;
+    ZielBtn.Click;
   end;
-
-  // Setze Cursor auf den ersten Eintrag der LMDShellList1
-  LMDShellList1.ClearSelection;
-  LMDShellList2.ClearSelection;
-  if LMDShellList1.Items.Count > 0 then
-    LMDShellList1.ItemIndex := 0;
-  LMDShellList1.SetFocus;
-
-  LMDShellFolder1.RootFolder := A_S;
-  LMDShellFolder2.RootFolder := B_Z;
-
-  QuellBtn.Click;
-  ZielBtn.Click;
+  // Ende von -> Ist die FreePDF64_Form nun sichtbar?
 end;
 
 procedure TFreePDF64_Form.Gitternetzlinien1Click(Sender: TObject);

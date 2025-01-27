@@ -434,7 +434,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFInfoBtn: TToolButton
         Left = 844
         Top = 0
-        Hint = 'Datei-Informationen anzeigen [F9] - ESC f'#252'r Beenden'
+        Hint = 'Umfangreiche Datei-Informationen (Metadaten) anzeigen'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick

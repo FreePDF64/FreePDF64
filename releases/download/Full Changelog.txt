@@ -1,5 +1,5 @@
-25.01.2025 V6.1.7
-Neu -> Es werden nun Datei-Informationen zu jeglicher Art von Datei angezeigt, nicht nur zu PDF-Dateien... - siehe Symbolleiste oder Taste F9.
+27.01.2025 V6.1.7
+Neu -> Es werden nun Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigt, nicht nur zu PDF-Dateien... - siehe Symbolleiste oder Taste F9.
 21.01.2025 V6.1.6
 Neu -> Bei Änderung des Überwachungsverzeichnisses in den Überwachungseinstellungen, wird dieses nun auch dem FreePDF64-Drucker übergeben. Dazu wird ein Registry-Eintrag angepasst - und ein Windows-Neustart ist danach nötig.
 19.01.2025 V6.1.5
