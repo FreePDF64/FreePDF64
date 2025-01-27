@@ -80,7 +80,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 1035
+      Width = 1077
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -92,6 +92,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       TabOrder = 0
+      ExplicitWidth = 1035
       object AutoSize: TToolButton
         Left = 0
         Top = 0
@@ -460,6 +461,15 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item78'
         OnMouseDown = LogBtMouseDown
       end
+      object MemoBtn: TToolButton
+        Left = 923
+        Top = 0
+        Hint = 'Unteres Programmfenster schlie'#223'en'
+        ImageIndex = 76
+        ImageName = 'Item77'
+        Visible = False
+        OnClick = MemoBtnClick
+      end
     end
     object ConfigBtn: TButton
       Left = 1210
@@ -545,34 +555,6 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-    end
-    object MemoBtn: TBitBtn
-      Left = 1036
-      Top = 1
-      Width = 42
-      Height = 45
-      Hint = 'Unteres Programmfenster schlie'#223'en'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      Align = alRight
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clBlack
-      Font.Height = -15
-      Font.Name = 'Segoe UI'
-      Font.Style = [fsBold]
-      ImageIndex = 76
-      ImageName = 'Item77'
-      Images = VirtualImageList1
-      NumGlyphs = 2
-      ParentFont = False
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 4
-      TabStop = False
-      Visible = False
-      OnClick = MemoBtnClick
     end
   end
   object PanelBottom: TPanel
@@ -1367,8 +1349,8 @@ object FreePDF64_Form: TFreePDF64_Form
           ShowHint = True
           OnClick = ZielBtnClick
           OnMouseEnter = ZielBtnMouseEnter
-          ExplicitLeft = 64
-          ExplicitHeight = 27
+          ExplicitLeft = 70
+          ExplicitTop = 5
         end
         object ComboBoxR: TComboBox
           Left = 1

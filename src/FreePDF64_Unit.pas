@@ -355,7 +355,7 @@ type
     AutoSize: TToolButton;
     ToolButton1: TToolButton;
     ToolButton7: TToolButton;
-    MemoBtn: TBitBtn;
+    MemoBtn: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -4520,9 +4520,12 @@ begin
     end;
   end;
 
-  LMDShellFolder1.ChDir(s);
-  if LMDShellList1.Selected = NIL then
-      LMDShellList1.ItemIndex := 0;
+  if FreePDF64_Form.Visible then
+  begin
+    LMDShellFolder1.ChDir(s);
+    if LMDShellList1.Selected = NIL then
+        LMDShellList1.ItemIndex := 0;
+  end;
 end;
 
 procedure TFreePDF64_Form.ZielBtnClick(Sender: TObject);
@@ -4545,9 +4548,13 @@ begin
       ShowMessage('Error');
     end;
   end;
-  LMDShellFolder2.ChDir(s);
-  if LMDShellList2.Selected = NIL then
-    LMDShellList2.ItemIndex := 0;
+
+  if FreePDF64_Form.Visible then
+  begin
+    LMDShellFolder2.ChDir(s);
+    if LMDShellList2.Selected = NIL then
+      LMDShellList2.ItemIndex := 0;
+  end;
 end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
