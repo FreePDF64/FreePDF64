@@ -2784,14 +2784,14 @@ begin
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -lang de -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                LMDShellList1.Selected.Caption + '"';
   end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -lang de -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                LMDShellList2.Selected.Caption + '"';
   end else
