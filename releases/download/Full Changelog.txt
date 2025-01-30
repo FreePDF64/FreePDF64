@@ -1,3 +1,5 @@
+30.01.2025 V6.1.8
+Neu -> Im Suche_Fenster lassen sich nun auch die Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigen.
 27.01.2025 V6.1.7
 Neu -> Es werden nun Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigt, nicht nur zu PDF-Dateien... - siehe Symbolleiste oder Taste F9.
 21.01.2025 V6.1.6

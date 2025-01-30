@@ -2026,7 +2026,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '27.01.2025';
+  Datum := '30.01.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2604,7 +2604,10 @@ end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
 begin
-  Suche_Form.Show;
+  if IsIconic(Suche_Form.Handle) then
+    Suche_Form.WindowState := wsNormal
+  else
+    Suche_Form.Show;
 end;
 
 // Ist Verzeichnis leer?
@@ -2781,14 +2784,14 @@ begin
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L -lang de -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                LMDShellList1.Selected.Caption + '"';
   end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L -lang de -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                LMDShellList2.Selected.Caption + '"';
   end else
@@ -5982,6 +5985,9 @@ procedure TFreePDF64_Form.LMDShellList1KeyDown(Sender: TObject; var Key: Word;
 begin
   if (Key = VK_ESCAPE) then
   begin
+    if IsIconic(Suche_Form.Handle) then
+      Suche_Form.WindowState := wsNormal;
+
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
     begin
@@ -6013,6 +6019,9 @@ procedure TFreePDF64_Form.LMDShellList2KeyDown(Sender: TObject; var Key: Word;
 begin
   if (Key = VK_ESCAPE) then
   begin
+    if IsIconic(Suche_Form.Handle) then
+      Suche_Form.WindowState := wsNormal;
+
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
     begin
@@ -6302,6 +6311,9 @@ procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_ESCAPE then
   begin
+    if IsIconic(Suche_Form.Handle) then
+      Suche_Form.WindowState := wsNormal;
+
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
     begin
@@ -6314,6 +6326,9 @@ end;
 
 procedure TFreePDF64_Form.MemoBtnClick(Sender: TObject);
 begin
+  if IsIconic(Suche_Form.Handle) then
+    Suche_Form.WindowState := wsNormal;
+
   // Wenn das Panel schon auf ist, wieder schließen...
   if PDFPanel.Height > PDFPanelH then
   begin
