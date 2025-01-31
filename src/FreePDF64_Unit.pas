@@ -5317,8 +5317,8 @@ begin
 
 
   // Hinweistext auf Log-Button
-  LogBt.Hint := ('- Ansehen im externen Editor') + #13 +
-                ('- [Umsch]: Ansehen im unteren Programmfenster');
+  LogBt.Hint := ('- Linksklick: Ansehen im externen Editor') + #13 +
+                ('- Rechtsklick: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
   FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
@@ -6145,7 +6145,8 @@ var
 begin
   FavClose;
 
-  if ssShift in Shift then
+// mbRight: Rechte Maustaste
+  if Button = mbright then
   begin
     Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
     // zur letzen Zeile:
