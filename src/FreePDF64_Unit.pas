@@ -603,14 +603,14 @@ var
   // Globale Variablen
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
-    PDFReader, ImageMagick, ExifTool, Versch3, Versch5, A_S, B_Z, Ziel, AP3, MERGEDATEI,
-    Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1, PDFX_1,
-    XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
+  PDFReader, ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel,
+  AP3, MERGEDATEI, Ziel2, MonitoringFile, StartFolder, Text_FormatBtn,
+  PDFA_1, PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9, Versch10,
-    Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
-    Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
-    ShowVomTray, Suche_ItemAnzeigen: Boolean;
+  Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
+  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
+  ShowVomTray, Suche_ItemAnzeigen: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -2026,7 +2026,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '30.01.2025';
+  Datum := '31.01.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2784,14 +2784,14 @@ begin
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
                                LMDShellList1.Selected.Caption + '"';
   end else
   if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
     Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L -g1 -charset filename=cp1252 -a -All:All -e "' +
+    Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
                                IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
                                LMDShellList2.Selected.Caption + '"';
   end else
@@ -4882,7 +4882,7 @@ begin
     // ImageMagick-Converter
     Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
     ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
-    // ExifTool
+    // ExifToolf
     Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
     ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
     // XPDF-Tools
@@ -5106,15 +5106,20 @@ begin
         not FileExists(Dateianlage_Form.Datei2.Text) then
         Dateianlage_Form.Clear.Click;
 
-      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off',
-        Einstellungen_Form.ZusatzAnAus.Checked);
+      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
       if Einstellungen_Form.ZusatzAnAus.Checked = False then
         Einstellungen_Form.Zusatz.Enabled := False
       else
         Einstellungen_Form.Zusatz.Enabled := True;
+
+      Einstellungen_Form.ExifToolGE.Checked := ReadBool('Zusatz', 'German/English', Einstellungen_Form.ExifToolGE.Checked);
+      if Einstellungen_Form.ExifToolGE.Checked = True then
+        GE := '-lang de' // deutsch
+      else
+        GE := ''; // englisch
+
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash
-          (LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
       // Filter lesen
       for ie1 := 1 to 10 do
