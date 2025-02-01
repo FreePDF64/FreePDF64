@@ -1,3 +1,6 @@
+01.02.2025 V6.2.0
+Fix -> Update ExifTool auf neueste Version.
+Fix -> Codeoptimierungen durchgeführt.
 31.01.2025 V6.1.8
 Neu -> Umschalten zwischen deutscher/englischer Ausgabe der Datei-Informationen (Metadaten).
 Neu -> Im Suche_Fenster lassen sich nun auch die Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigen.
