@@ -429,7 +429,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object SearchBtn: TToolButton
         Left = 828
         Top = 0
-        Hint = #214'ffnet das Suchenfenster'
+        Hint = 'Suchen...'
         Caption = 'SearchBtn'
         ImageIndex = 10
         ImageName = 'Item11'
