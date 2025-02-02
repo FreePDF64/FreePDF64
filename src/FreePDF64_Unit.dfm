@@ -88,7 +88,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alClient
       ButtonHeight = 45
-      ButtonWidth = 37
+      ButtonWidth = 38
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       List = True

@@ -610,7 +610,7 @@ var
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9, Versch10,
   Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
   Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
-  ShowVomTray, Suche_ItemAnzeigen: Boolean;
+  ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -1220,7 +1220,10 @@ var
   BytesRead: Cardinal;
   WorkDir: String;
   Handle: Boolean;
+  i: Integer;
 begin
+  // Memo-Inhalt-Schriftfarbe auf Weiss setzen
+  FreePDF64_Form.Memo1.Font.Color := clWhite;
   with SA do begin
     nLength              := SizeOf(SA);
     bInheritHandle       := True;
@@ -1245,24 +1248,30 @@ begin
     CloseHandle(StdOutPipeWrite);
     if Handle then
       try
-  repeat
-    WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, nil);
-    if WasOK and (BytesRead > 0) then
-    begin
-      Buffer[BytesRead] := #0;
-      Output.SelStart   := Output.GetTextLen;
-      Output.SelLength  := 0;
-      Output.SelText    := Buffer;
-    end;
-  until (not WasOK) or (BytesRead = 0);
+        repeat
+          WasOK := ReadFile(StdOutPipeRead, Buffer, 255, BytesRead, NIL);
+          if WasOK and (BytesRead > 0) then
+          begin
+            Buffer[BytesRead] := #0;
+            Output.SelStart   := Output.GetTextLen;
+            Output.SelLength  := 0;
+            Output.SelText    := Buffer;
+          end;
+        until (not WasOK) or (BytesRead = 0);
         WaitForSingleObject(PI.hProcess, INFINITE);
       finally
         CloseHandle(PI.hThread);
         CloseHandle(PI.hProcess);
       end;
+      if (Einstellungen_Form.ExifToolGE.Checked = True) and Info_Anzeigen then
+        // Textausgabe ausrichten
+        for i := 1 to FreePDF64_Form.Memo1.Lines.Count do
+          FreePDF64_Form.Memo1.Lines[i] := StringReplace(FreePDF64_Form.Memo1.Lines[i], ':', #9 + ':',[rfIgnoreCase]);
   finally
     CloseHandle(StdOutPipeRead);
   end;
+  // Memo-Inhalt-Schriftfarbe wieder auf Schwarz setzen
+  FreePDF64_Form.Memo1.Font.Color := clBlack;
 end;
 
 // Anlage(n) einer PDF-Datei hinzufügen
@@ -2761,9 +2770,10 @@ end;
 // Informationen über jegliche Art von Datei (auch PDF) anzeigen
 procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
-  I: Integer;
+  I, j: Integer;
   Work, Befehlszeile: String;
 begin
+  Info_Anzeigen := True;
   FavClose;
   Memo1.Clear;
 
@@ -2819,11 +2829,12 @@ begin
     PDFPanel.Height := I;
   end;
   MemoBtn.Visible := True;
+  Info_Anzeigen   := False;
 end;
 
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
 var
-  I: Integer;
+  I, j: Integer;
   Befehlszeile, Work: String;
 begin
   FavClose;
@@ -4852,7 +4863,8 @@ begin
   FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUserName;
   FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
-  FAbbrechen := False;
+  FAbbrechen    := False;
+  Info_Anzeigen := False;
   // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
   if ParamCount > 0 then
   begin
