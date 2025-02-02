@@ -581,6 +581,8 @@ type
     procedure MemoBtnClick(Sender: TObject);
     procedure Memo1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure Memo1ContextPopup(Sender: TObject; MousePos: TPoint;
+      var Handled: Boolean);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious: TWinControl;
@@ -6335,6 +6337,12 @@ end;
 procedure TFreePDF64_Form.Memo1Click(Sender: TObject);
 begin
   FavClose;
+end;
+
+procedure TFreePDF64_Form.Memo1ContextPopup(Sender: TObject; MousePos: TPoint;
+  var Handled: Boolean);
+begin
+  Handled := True;
 end;
 
 procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);

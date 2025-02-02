@@ -822,6 +822,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ScrollBars = ssVertical
       TabOrder = 0
       OnClick = Memo1Click
+      OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
     end
