@@ -438,7 +438,9 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFInfoBtn: TToolButton
         Left = 866
         Top = 0
-        Hint = 'Umfangreiche Datei-Informationen (Metadaten) anzeigen'
+        Hint = 
+          'Umfangreiche Datei-Informationen (Metadaten) anzeigen:'#13#10'RMB im u' +
+          'nteren Programmfenster zeigt die Metadaten im Editor an'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -821,6 +823,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 0
       OnClick = Memo1Click
       OnKeyDown = Memo1KeyDown
+      OnMouseDown = Memo1MouseDown
     end
     object BottomPanel: TPanel
       Left = 0

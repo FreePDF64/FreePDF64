@@ -579,6 +579,8 @@ type
     procedure LogBtMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure MemoBtnClick(Sender: TObject);
+    procedure Memo1MouseDown(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
   private
     { Private-Deklarationen }
     wcActive, wcPrevious: TWinControl;
@@ -679,8 +681,7 @@ end;
 // Doppelklick auf Splitter3
 procedure TFreePDF64_Form.SplDblClick3(Sender: TObject);
 begin
-  if not FileExists(IncludeTrailingBackslash
-    (ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
+  if not FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
     Exit;
 
   PDFPanel.Height := PDFPanelH;
@@ -3885,11 +3886,9 @@ begin
         // Der interne Editor (Notepad) oder der in die FreePDF64.ini eingetragene wird aufgerufen...
         if Einstellungen_Form.Edit2.Text = '' then
           Einstellungen_Form.Edit2.Text := 'notepad.exe';
-        ShellExecute(Application.Handle, 'open',
-          PChar(Einstellungen_Form.Edit2.Text),
-          PChar(' "' + IncludeTrailingBackslash
-          (LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems
-          [I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
+        ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+                     PChar(' "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                     LMDShellList1.SelectedItems[I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
       end;
     end
     else if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True
@@ -3900,11 +3899,9 @@ begin
         // Der interne Editor (Notepad) oder der in die FreePDF64.ini eingetragene wird aufgerufen...
         if Einstellungen_Form.Edit2.Text = '' then
           Einstellungen_Form.Edit2.Text := 'notepad.exe';
-        ShellExecute(Application.Handle, 'open',
-          PChar(Einstellungen_Form.Edit2.Text),
-          PChar(' "' + IncludeTrailingBackslash
-          (LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems
-          [I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
+        ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+                     PChar(' "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                     LMDShellList2.SelectedItems[I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
       end;
     end;
   except
@@ -6012,6 +6009,14 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
+
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      begin
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        ShowMessage(SysErrorMessage(GetLastError));
+      end;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList1.IsEditing = False) then
@@ -6046,6 +6051,14 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
+
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      begin
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        ShowMessage(SysErrorMessage(GetLastError));
+      end;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList2.IsEditing = False) then
@@ -6324,8 +6337,7 @@ begin
   FavClose;
 end;
 
-procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
+procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
   begin
@@ -6339,7 +6351,34 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
+
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+      begin
+        if Einstellungen_Form.SystemklangCB.Checked then
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        ShowMessage(SysErrorMessage(GetLastError));
+      end;
   end;
+end;
+
+procedure TFreePDF64_Form.Memo1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+begin
+// mbRight: Rechte Maustaste
+  if Button = mbright then
+    if Trim(Memo1.Text) <> '' then
+    begin
+      Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) + 'Memo.txt');
+
+      if Einstellungen_Form.Edit2.Text = '' then
+        Einstellungen_Form.Edit2.Text := 'notepad.exe';
+
+      Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'Memo.txt');
+	    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+                   PChar(' "' + ExtractFilePath(Application.ExeName) + 'Memo.txt' + '"'),
+                   NIL, SW_SHOWNORMAL);
+    end;
 end;
 
 procedure TFreePDF64_Form.MemoBtnClick(Sender: TObject);
@@ -6354,6 +6393,14 @@ begin
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;
   end;
+
+  if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+    begin
+      if Einstellungen_Form.SystemklangCB.Checked then
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+      ShowMessage(SysErrorMessage(GetLastError));
+    end;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
@@ -7593,8 +7640,7 @@ begin
               if not DeleteFile(Ziel + '.ps') then
               begin
                 if Einstellungen_Form.SystemklangCB.Checked then
-                  PlaySoundFile(ExtractFilePath(Application.ExeName) +
-                    'sounds\alert.wav');
+                  PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
                 ShowMessage(SysErrorMessage(GetLastError));
               end;
             end;
