@@ -6011,14 +6011,6 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
-
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      begin
-        if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
-        ShowMessage(SysErrorMessage(GetLastError));
-      end;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList1.IsEditing = False) then
@@ -6053,14 +6045,6 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
-
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      begin
-        if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
-        ShowMessage(SysErrorMessage(GetLastError));
-      end;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList2.IsEditing = False) then
@@ -6359,14 +6343,6 @@ begin
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
     end;
-
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-      begin
-        if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
-        ShowMessage(SysErrorMessage(GetLastError));
-      end;
   end;
 end;
 
@@ -6386,6 +6362,7 @@ begin
 	    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
                    PChar(' "' + ExtractFilePath(Application.ExeName) + 'Metadata.txt' + '"'),
                    NIL, SW_SHOWNORMAL);
+      StatusBar1.Panels[0].Text := 'Datei "Metadata.txt" liegt nun unter: ' + ExtractFilePath(Application.ExeName);
     end;
 end;
 
@@ -6401,14 +6378,8 @@ begin
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;
   end;
-
-  if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
-    begin
-      if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
-      ShowMessage(SysErrorMessage(GetLastError));
-    end;
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
+                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
@@ -6884,9 +6855,8 @@ begin
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
     Counter := 0;
 
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
-    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
-    IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
+                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
