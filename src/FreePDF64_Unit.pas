@@ -6358,7 +6358,6 @@ begin
       if Einstellungen_Form.Edit2.Text = '' then
         Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
-      Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt');
 	    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
                    PChar(' "' + ExtractFilePath(Application.ExeName) + 'Metadata.txt' + '"'),
                    NIL, SW_SHOWNORMAL);

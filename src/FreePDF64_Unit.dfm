@@ -440,7 +440,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 0
         Hint = 
           'Umfangreiche Datei-Informationen (Metadaten) anzeigen:'#13#10'Rechtskl' +
-          'ick im unteren Programmfenster zeigt die Metadaten im Editor an'
+          'ick im unteren Programmfenster zeigt die Metadaten '#13#10'im externen' +
+          ' Editor an'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
