@@ -812,8 +812,8 @@ object FreePDF64_Form: TFreePDF64_Form
       Color = 16777214
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -17
-      Font.Name = 'Courier New'
+      Font.Height = -18
+      Font.Name = 'Consolas'
       Font.Style = []
       Lines.Strings = (
         '')
