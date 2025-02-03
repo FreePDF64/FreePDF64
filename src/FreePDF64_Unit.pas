@@ -2038,7 +2038,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '02.02.2025';
+  Datum := '03.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2773,7 +2773,7 @@ end;
 // Informationen über jegliche Art von Datei (auch PDF) anzeigen
 procedure TFreePDF64_Form.PDFInfoBtnClick(Sender: TObject);
 var
-  I, j: Integer;
+  I: Integer;
   Work, Befehlszeile: String;
 begin
   Info_Anzeigen := True;
@@ -2837,7 +2837,7 @@ end;
 
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
 var
-  I, j: Integer;
+  I: Integer;
   Befehlszeile, Work: String;
 begin
   FavClose;
@@ -2903,7 +2903,6 @@ var
   PDFDatei, Zeile, Zeile2, EndPDF, Ziel, s: String;
   ProcID: Cardinal;
   F: TextFile;
-  I: Integer;
 begin
   FavClose;
 
@@ -3091,7 +3090,7 @@ var
   PDFDatei, QPDF_ExtractFile, Zeile, EndPDF, Ziel: String;
   ProcID: Cardinal;
   F: TextFile;
-  I, Komprimierung: Integer;
+  Komprimierung: Integer;
 begin
   FavClose;
 
@@ -6012,8 +6011,8 @@ begin
       MemoBtn.Visible := False;
     end;
 
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
@@ -6054,8 +6053,8 @@ begin
       MemoBtn.Visible := False;
     end;
 
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
@@ -6360,8 +6359,8 @@ begin
       MemoBtn.Visible := False;
     end;
 
-    if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
-      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+    if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
+      if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
           PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
@@ -6377,14 +6376,14 @@ begin
   if Button = mbright then
     if Trim(Memo1.Text) <> '' then
     begin
-      Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) + 'Memo.txt');
+      Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt');
 
       if Einstellungen_Form.Edit2.Text = '' then
         Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
-      Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'Memo.txt');
+      Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt');
 	    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-                   PChar(' "' + ExtractFilePath(Application.ExeName) + 'Memo.txt' + '"'),
+                   PChar(' "' + ExtractFilePath(Application.ExeName) + 'Metadata.txt' + '"'),
                    NIL, SW_SHOWNORMAL);
     end;
 end;
@@ -6402,8 +6401,8 @@ begin
     MemoBtn.Visible := False;
   end;
 
-  if FileExists(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
-    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Memo.txt') then
+  if FileExists(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
+    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt') then
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
         PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
