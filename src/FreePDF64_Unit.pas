@@ -2606,7 +2606,8 @@ end;
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-  If FreePDF64_Form.Visible and FreePDF64_Form.Active then
+//If FreePDF64_Form.Visible and FreePDF64_Form.Active then
+  If FreePDF64_Form.Visible then
   begin
     TrayIcon1.Visible := True;
     FreePDF64_Form.Hide;
