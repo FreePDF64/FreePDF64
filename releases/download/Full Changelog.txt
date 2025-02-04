@@ -1,3 +1,5 @@
+04.02.2025 V6.2.1
+Neu -> Umschalten zwischen der Schriftart Consolas und Courier New im unteren Programmfenster.
 03.02.2025 V6.2.0
 Fix -> Update ExifTool auf neueste Version.
 Fix -> Codeoptimierungen durchgeführt (u.a. Geschwindigkeit der Suche-Routinen erhöht).

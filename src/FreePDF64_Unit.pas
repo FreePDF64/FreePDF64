@@ -758,7 +758,7 @@ begin
       DialogUnits := GetAveCharSize(Canvas);
       BorderStyle := bsDialog;
       Caption := ACaption;
-      ClientWidth := MulDiv(193, DialogUnits.X, 4);
+      ClientWidth  := MulDiv(193, DialogUnits.X, 4);
       ClientHeight := MulDiv(74, DialogUnits.Y, 8);
 
       // Horizontal zentrieren
@@ -867,7 +867,7 @@ begin
       DialogUnits := GetAveCharSize(Canvas);
       BorderStyle := bsDialog;
       Caption := ACaption;
-      ClientWidth := MulDiv(193, DialogUnits.X, 4);
+      ClientWidth  := MulDiv(193, DialogUnits.X, 4);
       ClientHeight := MulDiv(58, DialogUnits.Y, 8);
 
       // Horizontal zentrieren
@@ -2038,7 +2038,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '03.02.2025';
+  Datum := '04.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2606,8 +2606,8 @@ end;
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-//If FreePDF64_Form.Visible and FreePDF64_Form.Active then
-  If FreePDF64_Form.Visible then
+//  If FreePDF64_Form.Visible and FreePDF64_Form.Active then
+  if FreePDF64_Form.WindowState = wsNormal then
   begin
     TrayIcon1.Visible := True;
     FreePDF64_Form.Hide;
@@ -5129,6 +5129,17 @@ begin
       else
         GE := ''; // englisch
 
+      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font', Einstellungen_Form.FontCB.Checked);
+      if Einstellungen_Form.FontCB.Checked = True then
+      begin
+        Memo1.Font.Name := 'Consolas';
+        Memo1.Font.Size := 11;
+      end else
+      begin
+        Memo1.Font.Name := 'Courier New';
+        Memo1.Font.Size := 10;
+      end;
+
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
         FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
@@ -5371,7 +5382,8 @@ begin
   end;
 
   // Ist die FreePDF64_Form nun sichtbar?
-  if FreePDF64_Form.Visible then
+//  if FreePDF64_Form.Visible then
+  if FreePDF64_Form.WindowState = wsNormal then
   begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
