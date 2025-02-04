@@ -1345,7 +1345,6 @@ object FreePDF64_Form: TFreePDF64_Form
           ImageIndex = 95
           ImageName = '6843063_accuracy_archery_arrow_business_goal_icon'
           Images = VirtualImageList1
-          Flat = True
           Font.Charset = DEFAULT_CHARSET
           Font.Color = clWindowText
           Font.Height = -14
@@ -1736,7 +1735,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageIndex = 98
         ImageName = '172480_home_icon'
         Images = VirtualImageList1
-        Flat = True
         Font.Charset = DEFAULT_CHARSET
         Font.Color = clWindowText
         Font.Height = -14

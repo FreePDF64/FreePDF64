@@ -22,15 +22,15 @@
 // Hinweis: Wenn ein Formular erzeugt wird und seine Eigenschaft
 // Visible auf True gesetzt ist, werden die folgenden
 // Ereignisse in der angegebenen Reihenfolge ausgelöst:
-// 1. OnCreate
-// 2. OnShow        -> Form erscheint
-// 3. OnPaint
-// 4. OnActivate
-// 5. OnResize
-// 6. ARBEITEN MIT DEM PROGRAMM
-// 7. PROGRAMM BEENDEN
-// 8. OnCloseQuery
-// 9. OnClose
+// 1.  OnCreate
+// 2.  OnShow        -> Form erscheint
+// 3.  OnPaint
+// 4.  OnActivate
+// 5.  OnResize
+// 6.  ARBEITEN MIT DEM PROGRAMM
+// 7.  PROGRAMM BEENDEN
+// 8.  OnCloseQuery
+// 9.  OnClose
 // 10. OnHide        -> Form verschwindet
 // 11. OnDestroy
 //
@@ -2606,13 +2606,14 @@ end;
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-//  If FreePDF64_Form.Visible and FreePDF64_Form.Active then
-  if FreePDF64_Form.WindowState = wsNormal then
+  // Ist die FreePDF64_Form nun sichtbar?
+//  if FreePDF64_Form.WindowState = wsNormal then
+  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
   begin
-    TrayIcon1.Visible := True;
-    FreePDF64_Form.Hide;
-    Timer2.Enabled := False;
+    FreePDF64_Form.Visible := False;
+    TrayIcon1.Visible      := True;
   end;
+  Timer2.Enabled := False;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -3228,7 +3229,7 @@ end;
 procedure TFreePDF64_Form.TrayIcon1Click(Sender: TObject);
 begin
   ShowVomTray := True;
-  FreePDF64_Form.Show;
+  FreePDF64_Form.Visible := True;
   Application.BringToFront;
 
   // Hide the system tray icon and show the window, setting its state property to wsNormal
@@ -3629,8 +3630,7 @@ begin
       Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
         Auswahl + '"';
       Auswahl := Ghostscript + ' ' + Param;
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
-        '', SW_HIDE);
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param), '', SW_HIDE);
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end
@@ -3640,8 +3640,7 @@ begin
       Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
         Auswahl + '"';
       Auswahl := Ghostscript + ' ' + Param;
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
-        '', SW_HIDE);
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param), '', SW_HIDE);
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
@@ -4311,7 +4310,7 @@ begin
     else
       AutospalteJN := False;
 
-    FreePDF64_Form.Hide;
+    FreePDF64_Form.Visible := False;
     TrayIcon1.Visible := True;
   end;
 end;
@@ -4330,14 +4329,13 @@ begin
   Screen.OnActiveControlChange := ActiveControlChanged;
 
   // Initialisieren...
-  PDFPanelH   := 0;
-  AutospalteJN := False;
-  ShowVomTray := False;
+  PDFPanelH          := 0;
+  AutospalteJN       := False;
+  ShowVomTray        := False;
   Suche_ItemAnzeigen := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
-  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
-    'FreePDF64.ini') then
+  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
@@ -4345,61 +4343,37 @@ begin
       IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
-        FreePDF64_Form.Left := ReadInteger('Position', 'Left',
-          FreePDF64_Form.Left);
-        FreePDF64_Form.Top := ReadInteger('Position', 'Top',
-          FreePDF64_Form.Top);
+        FreePDF64_Form.Left := ReadInteger('Position', 'Left', FreePDF64_Form.Left);
+        FreePDF64_Form.Top := ReadInteger('Position', 'Top', FreePDF64_Form.Top);
         Width := ReadInteger('Position', 'Width', FreePDF64_Form.Width);
         Height := ReadInteger('Position', 'Height', FreePDF64_Form.Height);
-        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width',
-          Panel_Left.Width);
-        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width',
-          Panel_Right.Width);
-        PanelR.Width := ReadInteger('Position', 'Right Panel Width',
-          PanelR.Width);
-        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height',
-          PDFPanel.Height);
+        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
+        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
+        PanelR.Width := ReadInteger('Position', 'Right Panel Width', PanelR.Width);
+        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
         PDFPanelH := PDFPanel.Height;
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
-        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines',
-          LMDShellList1.GridLines);
-        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines',
-          LMDShellList1.GridLines);
-        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual',
-          ResizeEqual.Checked);
-        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden',
-          VersteckteDateienanzeigen1.Checked);
-        InDenTray.Checked := ReadBool('Start', 'System Tray',
-          InDenTray.Checked);
+        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
+        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
+        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
+        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
+        InDenTray.Checked := ReadBool('Start', 'System Tray', InDenTray.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
-        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick',
-          DoppelK.Checked);
-        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder',
-          Formatverz.Checked);
-        Formatverz_Date.Checked :=
-          ReadBool('Start', 'Create Formatfolder with Date',
-          Formatverz_Date.Checked);
-        Formatverz_OnlyDate.Checked :=
-          ReadBool('Start', 'Create Formatfolder only Date',
-          Formatverz_OnlyDate.Checked);
+        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick', DoppelK.Checked);
+        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
+        Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
+        Formatverz_OnlyDate.Checked := ReadBool('Start', 'Create Formatfolder only Date', Formatverz_OnlyDate.Checked);
 
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
-        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button',
-          AutoSizeBtn.Checked);
+        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
         if AutoSizeBtn.Checked then
-          {
-            AutoSize.Visible := True
-            else
-            AutoSize.Visible := False;
-          }
           AutoSize.Enabled := True
         else
           AutoSize.Enabled := False;
         if not ValueExists('Files', 'PDF-Reader') then
-          PDFReader := ExtractFilePath(Application.ExeName) +
-            'xpdf\xpdfreader\xpdf.exe';
+          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
 
         if not ValueExists('Start', 'Splashscreen') then
@@ -4822,8 +4796,8 @@ begin
     else
       AutospalteJN := False;
 
-    FreePDF64_Form.Hide;
-    TrayIcon1.Visible := True;
+    FreePDF64_Form.Visible := False;
+    TrayIcon1.Visible      := True;
   end
   else
     inherited;
@@ -4891,17 +4865,17 @@ begin
     // PDFtk
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
     // ImageMagick-Converter
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName)  + 'ImageMagick\';
     ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
     // ExifToolf
     Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
-    ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
+    ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text)   + 'exiftool.exe';
     // XPDF-Tools
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName)  + 'xpdf\bin64\';
     XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
     XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
     XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
-    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
+    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text)  + 'pdffonts.exe';
 
     // XPDFReader
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
@@ -4919,13 +4893,13 @@ begin
     PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
     // Überwachung ist AUS
     MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption := '  AUS';
+    MonitorBtn.Caption    := '  AUS';
     MHA := 80;
 
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
       IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-      IniDat := TIniFile.Create(IniFile);
+      IniDat  := TIniFile.Create(IniFile);
       with IniDat do
       begin
         // Linke, rechte Column-Breite schreiben
@@ -4937,9 +4911,9 @@ begin
         WriteInteger('Start', 'ColumnsR Width1', 100);
         WriteInteger('Start', 'ColumnsR Width2', 70);
         WriteInteger('Start', 'ColumnsR Width3', 100);
-        WriteBool('Start', 'ShowFolders', ShowFolders1.Checked);
-        WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
-        WriteBool('Start', 'Autostart', Autostart.Checked);
+        WriteBool('Start',  'ShowFolders', ShowFolders1.Checked);
+        WriteBool('Start',  'ShowFolders Left', ShowFolders_Left.Checked);
+        WriteBool('Start',  'Autostart', Autostart.Checked);
         WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
         WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
@@ -4949,8 +4923,7 @@ begin
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) +
-            'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
@@ -4989,7 +4962,7 @@ begin
   XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
   XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
   XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
-  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
+  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text)  + 'pdffonts.exe';
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
@@ -5002,91 +4975,55 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat := TIniFile.Create(IniFile);
+    IniDat  := TIniFile.Create(IniFile);
     with IniDat do
     begin
       // Linke, rechte Tree-Column-Breite lesen
-      LMDShellList1.Column[0].Width :=
-        ReadInteger('Start', 'ColumnsL Width0', c);
-      LMDShellList1.Column[1].Width :=
-        ReadInteger('Start', 'ColumnsL Width1', c);
-      LMDShellList1.Column[2].Width :=
-        ReadInteger('Start', 'ColumnsL Width2', c);
-      LMDShellList1.Column[3].Width :=
-        ReadInteger('Start', 'ColumnsL Width3', c);
-      LMDShellList2.Column[0].Width :=
-        ReadInteger('Start', 'ColumnsR Width0', c);
-      LMDShellList2.Column[1].Width :=
-        ReadInteger('Start', 'ColumnsR Width1', c);
-      LMDShellList2.Column[2].Width :=
-        ReadInteger('Start', 'ColumnsR Width2', c);
-      LMDShellList2.Column[3].Width :=
-        ReadInteger('Start', 'ColumnsR Width3', c);
+      LMDShellList1.Column[0].Width := ReadInteger('Start', 'ColumnsL Width0', c);
+      LMDShellList1.Column[1].Width := ReadInteger('Start', 'ColumnsL Width1', c);
+      LMDShellList1.Column[2].Width := ReadInteger('Start', 'ColumnsL Width2', c);
+      LMDShellList1.Column[3].Width := ReadInteger('Start', 'ColumnsL Width3', c);
+      LMDShellList2.Column[0].Width := ReadInteger('Start', 'ColumnsR Width0', c);
+      LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
+      LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
+      LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
-        FreePDF64_Notify.MonitoringFolder.Text :=
-          IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
+        FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
       if not ValueExists('Folder', 'Left') then
       begin
         Ziel := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
-        A_S := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-        B_Z := Ziel;
-      end
-      else
+        A_S  := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+        B_Z  := Ziel;
+      end else
       begin
-        A_S := ReadString('Folder', 'Left', A_S);
-        B_Z := ReadString('Folder', 'Target', B_Z);
+        A_S  := ReadString('Folder', 'Left', A_S);
+        B_Z  := ReadString('Folder', 'Target', B_Z);
         Ziel := B_Z;
       end;
 
-      Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView',
-        Zielverzeichnisanzeigen1.Checked);
-      FreePDF64_Notify.MonitoringFolder.Text :=
-        ReadString('Monitoring', 'Folder',
-        FreePDF64_Notify.MonitoringFolder.Text);
-      Notify_Active := ReadBool('Monitoring', 'Start',
-        FreePDF64_Notify.LMDShellNotify.Active);
-      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time',
-        FreePDF64_Notify.SpinEditSec.Value);
-      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed',
-        FreePDF64_Notify.Ziel_FestCB.Checked);
-      z1 := ReadString('Monitoring', 'Fixed Folder',
-        FreePDF64_Notify.ZielEdit.Text);
-      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File',
-        Einstellungen_Form.AnzeigenCB.Checked);
-      Einstellungen_Form.SystemklangCB.Checked :=
-        ReadBool('Format', 'System Sound',
-        Einstellungen_Form.SystemklangCB.Checked);
-      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF',
-        Einstellungen_Form.PDF_Shrink.Checked);
-      Einstellungen_Form.PDF_Shrink2.Checked :=
-        ReadBool('Format', 'Shrink PDF2',
-        Einstellungen_Form.PDF_Shrink2.Checked);
-      ShowFolders1.Checked := ReadBool('Start', 'ShowFolders',
-        ShowFolders1.Checked);
-      ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left',
-        ShowFolders_Left.Checked);
-      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp',
-        Wasserzeichen_Form.Edit1.Text);
-      Wasserzeichen_Form.bgWatermark.Checked :=
-        ReadBool('Start', 'Watermark bg',
-        Wasserzeichen_Form.bgWatermark.Checked);
-      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg',
-        Wasserzeichen_Form.vgStamp.Checked);
-      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name',
-        AutoSpalte.Checked);
+      Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
+      FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
+      Notify_Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
+      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time', FreePDF64_Notify.SpinEditSec.Value);
+      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed', FreePDF64_Notify.Ziel_FestCB.Checked);
+      z1 := ReadString('Monitoring', 'Fixed Folder', FreePDF64_Notify.ZielEdit.Text);
+      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File', Einstellungen_Form.AnzeigenCB.Checked);
+      Einstellungen_Form.SystemklangCB.Checked := ReadBool('Format', 'System Sound', Einstellungen_Form.SystemklangCB.Checked);
+      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', Einstellungen_Form.PDF_Shrink.Checked);
+      Einstellungen_Form.PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2', Einstellungen_Form.PDF_Shrink2.Checked);
+      ShowFolders1.Checked := ReadBool('Start', 'ShowFolders', ShowFolders1.Checked);
+      ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
+      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
+      Wasserzeichen_Form.bgWatermark.Checked := ReadBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
+      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
+      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name', AutoSpalte.Checked);
       Autostart.Checked := ReadBool('Start', 'Autostart', Autostart.Checked);
-      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne',
-        Dateianlage_Form.Datei1.Text);
-      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten',
-        Dateianlage_Form.Datei2.Text);
-      Einstellungen_Form.HeightSpin.Value :=
-        ReadInteger('Start', 'Memo Height Addition',
-        Einstellungen_Form.HeightSpin.Value);
-      Einstellungen_Form.SoundSpin.Value :=
-        ReadInteger('Format', 'System Sound Volume 0-65535',
-        Einstellungen_Form.SoundSpin.Value);
+      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne', Dateianlage_Form.Datei1.Text);
+      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten', Dateianlage_Form.Datei2.Text);
+      Einstellungen_Form.HeightSpin.Value := ReadInteger('Start', 'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
+      Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
 
       FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(z1);
 
@@ -5105,16 +5042,14 @@ begin
       // Memo Height Addition
       MHA := Einstellungen_Form.HeightSpin.Value;
 
-      if (Dateianlage_Form.Datei1.Text <> '') or
-        (Dateianlage_Form.Datei2.Text <> '') then
+      if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
         Dateianlage_Form.DateianlageCB.Checked := True
       else
       begin
         Dateianlage_Form.DateianlageCB.Checked := False;
         Dateianlage_Form.Clear.Click;
       end;
-      if not FileExists(Dateianlage_Form.Datei1.Text) or
-        not FileExists(Dateianlage_Form.Datei2.Text) then
+      if not FileExists(Dateianlage_Form.Datei1.Text) or not FileExists(Dateianlage_Form.Datei2.Text) then
         Dateianlage_Form.Clear.Click;
 
       Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
@@ -5146,8 +5081,7 @@ begin
       // Filter lesen
       for ie1 := 1 to 10 do
       begin
-        iec[ie1 - 1] := IniDat.ReadString('Filter',
-          'Filter' + IntToStr(ie1 - 1), ies);
+        iec[ie1 - 1] := IniDat.ReadString('Filter', 'Filter' + IntToStr(ie1 - 1), ies);
         if iec[ie1 - 1] = '' then
           Break;
         Filter_Form.FilterCB.Items.Insert(ie1 - 1, iec[ie1 - 1]);
@@ -5159,8 +5093,7 @@ begin
       begin
         Zusatz_Form.ZusatzCB.Items.BeginUpdate;
         try
-          iec[ie1 - 1] := IniDat.ReadString('Zusatz',
-            'Zeichenketten' + IntToStr(ie1 - 1), ies);
+          iec[ie1 - 1] := IniDat.ReadString('Zusatz', 'Zeichenketten' + IntToStr(ie1 - 1), ies);
           if iec[ie1 - 1] = '' then
             Break;
           Zusatz_Form.ZusatzCB.Items.Add(iec[ie1 - 1]);
@@ -5179,8 +5112,7 @@ begin
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -5196,7 +5128,7 @@ begin
   // Show Folders Left Pane
   if ShowFolders_Left.Checked then
   begin
-    ShowFolders1.Checked := True;
+    ShowFolders1.Checked     := True;
     ShowFolders_Left.Checked := False;
     ShowFolders_Left.Click;
   end;
@@ -5320,39 +5252,36 @@ begin
 
   // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
   s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
-  s := s1;
+  s  := s1;
   for I := 1 to Length(s) do
     if s[I] = '\' then
       s[I] := '/';
   s1 := s;
   with TStringList.Create do
     try
-      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)
-        ) + 'Definition files\PDFA.ps');
+      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
       Delete(6);
       Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
-      SaveToFile(ExtractFilePath(Application.ExeName) +
-        'Definition files\PDFA.ps');
+      SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps');
     finally
       Free;
     end;
 
 
   // Hinweistext auf Log-Button
-  LogBt.Hint := ('- Linksklick: Ansehen im externen Editor') + #13 +
-                ('- Rechtsklick: Ansehen im unteren Programmfenster');
+  LogBt.Hint := ('- Linksklick: Ansehen im externen Editor') + #13 + ('- Rechtsklick: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
   FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
     MonitorBtn.ImageIndex := 57;
-    MonitorBtn.Caption := '  AN';
+    MonitorBtn.Caption    := '  AN';
   end
   else
   begin
     MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption := '  AUS';
+    MonitorBtn.Caption    := '  AUS';
   end;
 
   // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
@@ -5371,49 +5300,45 @@ begin
     LMDShellList2.SortDirection := sdDescending;
 
   // Wenn TrayIcon nicht sichtbar ist...
-  if WindowState = wsMinimized then
-  begin
+  if FreePDF64_Form.WindowState = wsMinimized then
     // Wenn Splashscreen = True, dann Splashscreen anzeigen
     if Splash1.Checked then
     begin
       Splashscreen_Form.Position := poScreenCenter;
       Splashscreen_Form.ShowModal;
     end;
-  end;
 
   // Ist die FreePDF64_Form nun sichtbar?
-//  if FreePDF64_Form.Visible then
-  if FreePDF64_Form.WindowState = wsNormal then
+  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
   begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
       Beide_FolderBtn.Visible := False;
-      ShowFolders1.Visible := False;
-    end
-    else
+      ShowFolders1.Visible    := False;
+    end else
     begin
       Beide_FolderBtn.Visible := True;
-      ShowFolders1.Visible := True;
+      ShowFolders1.Visible    := True;
     end;
     // Wenn beide ShowFolders = False...
     if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False)
     then
     begin
-      ShowFolders1.Checked := False;
+      ShowFolders1.Checked     := False;
       ShowFolders_Left.Checked := False;
-      Splitter1.Visible := False;
-      Splitter4.Visible := False;
-      LMDShellTree1.Visible := False;
-      LMDShellTree2.Visible := False;
-      Panel_Left.Visible := False;
-      Panel_Right.Visible := False;
-      Panel2.Visible := False;
-      Panel3.Visible := False;
+      Splitter1.Visible        := False;
+      Splitter4.Visible        := False;
+      LMDShellTree1.Visible    := False;
+      LMDShellTree2.Visible    := False;
+      Panel_Left.Visible       := False;
+      Panel_Right.Visible      := False;
+      Panel2.Visible           := False;
+      Panel3.Visible           := False;
     end;
     // Rechtes Zielverzeichnis anzeigen
-    Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
+    Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
     LMDShellList2.Visible := Splitter2.Visible;
-    PanelR.Visible := Splitter2.Visible;
+    PanelR.Visible        := Splitter2.Visible;
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
