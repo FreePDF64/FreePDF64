@@ -2612,8 +2612,8 @@ begin
   begin
     FreePDF64_Form.Visible := False;
     TrayIcon1.Visible      := True;
+    Timer2.Enabled         := False;
   end;
-  Timer2.Enabled := False;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -4380,11 +4380,6 @@ begin
           WriteBool('Start', 'Splashscreen', True);
         Splash1.Checked := ReadBool('Start', 'Splashscreen', Splash);
 
-        if InDenTray.Checked then
-          Timer2.Enabled := True
-        else
-          Timer2.Enabled := False;
-
         // History Links lesen
         for I := 1 to 254 do
         begin
@@ -4450,40 +4445,43 @@ begin
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) +
-            'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
-  end
-  else
+  end else
     Splash1.Checked := True;
 
   MenuItemRightJustify(Hilfe1);
 
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := FreePDF64_Form.Width div 7;
-  Btn_Rename.Left := 1;
-  Btn_Rename.Align := alLeft;
-  Btn_Rename.Width := Laenge;
-  BtnEditor.Left := 2;
-  BtnEditor.Align := alLeft;
-  BtnEditor.Width := Laenge;
-  Btn_View.Left := 3;
-  Btn_View.Align := alLeft;
-  Btn_View.Width := Laenge;
-  Btn_Copy.Left := 4;
-  Btn_Copy.Align := alLeft;
-  Btn_Copy.Width := Laenge;
-  Btn_Move.Left := 5;
-  Btn_Move.Align := alLeft;
-  Btn_Move.Width := Laenge;
-  Btn_NewFolder.Left := 6;
+  Btn_Rename.Left     := 1;
+  Btn_Rename.Align    := alLeft;
+  Btn_Rename.Width    := Laenge;
+  BtnEditor.Left      := 2;
+  BtnEditor.Align     := alLeft;
+  BtnEditor.Width     := Laenge;
+  Btn_View.Left       := 3;
+  Btn_View.Align      := alLeft;
+  Btn_View.Width      := Laenge;
+  Btn_Copy.Left       := 4;
+  Btn_Copy.Align      := alLeft;
+  Btn_Copy.Width      := Laenge;
+  Btn_Move.Left       := 5;
+  Btn_Move.Align      := alLeft;
+  Btn_Move.Width      := Laenge;
+  Btn_NewFolder.Left  := 6;
   Btn_NewFolder.Align := alLeft;
   Btn_NewFolder.Width := Laenge;
-  Btn_Delete.Left := 7;
-  Btn_Delete.Align := alClient;
-  Btn_Delete.Width := Laenge;
+  Btn_Delete.Left     := 7;
+  Btn_Delete.Align    := alClient;
+  Btn_Delete.Width    := Laenge;
+
+  if InDenTray.Checked then
+    Timer2.Enabled := True
+  else
+    Timer2.Enabled := False;
 end;
 
 procedure TFreePDF64_Form.QuellBtnClick(Sender: TObject);

@@ -19033,8 +19033,8 @@ object FreePDF64_Form: TFreePDF64_Form
     Enabled = False
     Interval = 3000
     OnTimer = Timer2Timer
-    Left = 503
-    Top = 129
+    Left = 517
+    Top = 241
   end
   object LMDOpenDialog1: TLMDOpenDialog
     Filter = '*.pdf |*.pdf'
