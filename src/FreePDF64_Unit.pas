@@ -583,23 +583,24 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure Memo1ContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
-  private
-    { Private-Deklarationen }
-    wcActive, wcPrevious: TWinControl;
-    FSortColumn, FSortColumn2: Integer;
-    FSortAscending, FSortAscending2: Boolean;
-  public
-    { Public-Deklarationen }
-    procedure ExtAbfrage;
-    procedure AllesSpeichern;
-    procedure FavClose;
-    procedure PlaySoundFile(FileName: string);
-    procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
-    procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
-    procedure ActiveControlChanged(Sender: TObject);
-  published
-    { Doppelclick auf Splitter }
-    property OnDblClick;
+    private
+      { Private-Deklarationen }
+      wcActive, wcPrevious: TWinControl;
+      FSortColumn, FSortColumn2: Integer;
+      FSortAscending, FSortAscending2: Boolean;
+    public
+      { Public-Deklarationen }
+      procedure ExtAbfrage;
+      procedure AllesSpeichern;
+      procedure FavClose;
+      procedure PlaySoundFile(FileName: string);
+      procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
+      procedure WMSettingChange(var Message: TMessage);
+        message WM_SETTINGCHANGE;
+      procedure ActiveControlChanged(Sender: TObject);
+    published
+      { Doppelclick auf Splitter }
+      property OnDblClick;
   end;
 
 var
@@ -607,14 +608,14 @@ var
   // Globale Variablen
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
-  PDFReader, ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel,
-  AP3, MERGEDATEI, Ziel2, MonitoringFile, StartFolder, Text_FormatBtn,
-  PDFA_1, PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
+    PDFReader, ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel, AP3,
+    MERGEDATEI, Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
+    PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9, Versch10,
-  Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
-  Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
-  ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
+    Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
+    Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
+    ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
   Hochkommata: String[1];
 
 implementation
@@ -683,7 +684,8 @@ end;
 // Doppelklick auf Splitter3
 procedure TFreePDF64_Form.SplDblClick3(Sender: TObject);
 begin
-  if not FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
+  if not FileExists(IncludeTrailingBackslash
+    (ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
     Exit;
 
   PDFPanel.Height := PDFPanelH;
@@ -706,8 +708,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcPrevious.Name = 'LMDShellList2' then
+  else if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Form soll mittig angezeigt werden.
@@ -758,7 +759,7 @@ begin
       DialogUnits := GetAveCharSize(Canvas);
       BorderStyle := bsDialog;
       Caption := ACaption;
-      ClientWidth  := MulDiv(193, DialogUnits.X, 4);
+      ClientWidth := MulDiv(193, DialogUnits.X, 4);
       ClientHeight := MulDiv(74, DialogUnits.Y, 8);
 
       // Horizontal zentrieren
@@ -867,7 +868,7 @@ begin
       DialogUnits := GetAveCharSize(Canvas);
       BorderStyle := bsDialog;
       Caption := ACaption;
-      ClientWidth  := MulDiv(193, DialogUnits.X, 4);
+      ClientWidth := MulDiv(193, DialogUnits.X, 4);
       ClientHeight := MulDiv(58, DialogUnits.Y, 8);
 
       // Horizontal zentrieren
@@ -1219,17 +1220,18 @@ var
   PI: TProcessInformation;
   StdOutPipeRead, StdOutPipeWrite: THandle;
   WasOK: Boolean;
-  Buffer: Array[0..255] of AnsiChar;
+  Buffer: Array [0 .. 255] of AnsiChar;
   BytesRead: Cardinal;
   WorkDir: String;
   Handle: Boolean;
-  i: Integer;
+  I: Integer;
 begin
   // Memo-Inhalt-Schriftfarbe auf Weiss setzen
   FreePDF64_Form.Memo1.Font.Color := clWhite;
-  with SA do begin
-    nLength              := SizeOf(SA);
-    bInheritHandle       := True;
+  with SA do
+  begin
+    nLength := SizeOf(SA);
+    bInheritHandle := True;
     lpSecurityDescriptor := NIL;
   end;
   CreatePipe(StdOutPipeRead, StdOutPipeWrite, @SA, 0);
@@ -1237,17 +1239,16 @@ begin
     with SI do
     begin
       FillChar(SI, SizeOf(SI), 0);
-      cb          := SizeOf(SI);
-      dwFlags     := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
+      cb := SizeOf(SI);
+      dwFlags := STARTF_USESHOWWINDOW or STARTF_USESTDHANDLES;
       wShowWindow := SW_HIDE;
-      hStdInput   := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdin
-      hStdOutput  := StdOutPipeWrite;
-      hStdError   := StdOutPipeWrite;
+      hStdInput := GetStdHandle(STD_INPUT_HANDLE); // don't redirect stdin
+      hStdOutput := StdOutPipeWrite;
+      hStdError := StdOutPipeWrite;
     end;
     WorkDir := Work;
-    Handle  := CreateProcess(NIL, PChar('cmd.exe /C ' + CommandLine),
-                             NIL, NIL, True, 0, NIL,
-                             PChar(WorkDir), SI, PI);
+    Handle := CreateProcess(NIL, PChar('cmd.exe /C ' + CommandLine), NIL, NIL,
+      True, 0, NIL, PChar(WorkDir), SI, PI);
     CloseHandle(StdOutPipeWrite);
     if Handle then
       try
@@ -1256,9 +1257,9 @@ begin
           if WasOK and (BytesRead > 0) then
           begin
             Buffer[BytesRead] := #0;
-            Output.SelStart   := Output.GetTextLen;
-            Output.SelLength  := 0;
-            Output.SelText    := Buffer;
+            Output.SelStart := Output.GetTextLen;
+            Output.SelLength := 0;
+            Output.SelText := Buffer;
           end;
         until (not WasOK) or (BytesRead = 0);
         WaitForSingleObject(PI.hProcess, INFINITE);
@@ -1266,10 +1267,12 @@ begin
         CloseHandle(PI.hThread);
         CloseHandle(PI.hProcess);
       end;
-      if (Einstellungen_Form.ExifToolGE.Checked = True) and Info_Anzeigen then
-        // Textausgabe ausrichten
-        for i := 1 to FreePDF64_Form.Memo1.Lines.Count do
-          FreePDF64_Form.Memo1.Lines[i] := StringReplace(FreePDF64_Form.Memo1.Lines[i], ':', #9 + ':',[rfIgnoreCase]);
+    if (Einstellungen_Form.ExifToolGE.Checked = True) and Info_Anzeigen then
+      // Textausgabe ausrichten
+      for I := 1 to FreePDF64_Form.Memo1.Lines.Count do
+        FreePDF64_Form.Memo1.Lines[I] :=
+          StringReplace(FreePDF64_Form.Memo1.Lines[I], ':', #9 + ':',
+          [rfIgnoreCase]);
   finally
     CloseHandle(StdOutPipeRead);
   end;
@@ -1289,8 +1292,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
@@ -1430,8 +1432,8 @@ end;
 // Anlage(n) aus einer PDF-Datei extrahieren/entfernen
 procedure TFreePDF64_Form.PDFRemoveClick(Sender: TObject);
 var
-  PDFDatei, Zieldatei, Anlage, Zeile, Zeile2, Ausgabe,
-  Befehlszeile, Work: String;
+  PDFDatei, Zieldatei, Anlage, Zeile, Zeile2, Ausgabe, Befehlszeile,
+    Work: String;
   ProcID: Cardinal;
   F: TextFile;
   I, j: Integer;
@@ -1442,21 +1444,21 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Zeige die Attachments der ausgewählten PDF-Datei
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                                  LMDShellList1.Selected.Caption + '"';
+    Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash
+      (LMDShellFolder1.ActiveFolder.PathName) +
+      LMDShellList1.Selected.Caption + '"';
 
     // Anlagen anzeigen...
     GetDosOutput(Memo1, Befehlszeile, Work);
     // Zur ersten Memo-Zeile gehen...
-    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
 
     // Wenn keine Anlagen in der PDF-Datei enthalten sind, Routine mit Hinweisfenster beenden!
     if Memo1.Lines[0] = '0 embedded files' then
@@ -1965,8 +1967,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Merge.Click;
@@ -2038,7 +2039,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '04.02.2025';
+  Datum := '05.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2185,8 +2186,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 0)) or
@@ -2529,8 +2529,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.IsEditing = False) then
@@ -2607,12 +2606,12 @@ end;
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
   // Ist die FreePDF64_Form nun sichtbar?
-//  if FreePDF64_Form.WindowState = wsNormal then
+  // if FreePDF64_Form.WindowState = wsNormal then
   if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
   begin
     FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible      := True;
-    Timer2.Enabled         := False;
+    TrayIcon1.Visible := True;
+    Timer2.Enabled := False;
   end;
 end;
 
@@ -2656,14 +2655,14 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if not FileExists(XPDF_Detach) then
   begin
     MessageDlgCenter('Achtung: Die Datei "pdfdetach.exe" fehlt im Ordner "' +
-                     IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + '"!', mtError, [mbOk]);
+      IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + '"!',
+      mtError, [mbOk]);
     Exit;
   end;
 
@@ -2671,30 +2670,37 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                                  LMDShellList1.Selected.Caption + '"';
+    Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash
+      (LMDShellFolder1.ActiveFolder.PathName) +
+      LMDShellList1.Selected.Caption + '"';
     // DOS-Ausgabe nach Memo1
     GetDosOutput(Memo1, Befehlszeile, Work);
     // Zur ersten Memo-Zeile gehen...
-    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
 
-    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption + '"';
-    Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel) + '" "' + PDFDatei;
-  end else
-  if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+      + LMDShellList1.Selected.Caption + '"';
+    Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel)
+      + '" "' + PDFDatei;
+  end
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
-    Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                                  LMDShellList2.Selected.Caption + '"';
+    Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Detach + ' -list "' + IncludeTrailingBackslash
+      (LMDShellFolder2.ActiveFolder.PathName) +
+      LMDShellList2.Selected.Caption + '"';
     // DOS-Ausgabe nach Memo1
     GetDosOutput(Memo1, Befehlszeile, Work);
     // Zur ersten Memo-Zeile gehen...
-    Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
 
-    PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption + '"';
-    Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel) + '" "' + PDFDatei;
-  end else
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
+      + LMDShellList2.Selected.Caption + '"';
+    Zeile := XPDF_Detach + ' -saveall -o "' + ExcludeTrailingPathDelimiter(Ziel)
+      + '" "' + PDFDatei;
+  end
+  else
   begin
     MessageDlgCenter
       ('Anlage(n) extrahieren: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
@@ -2785,31 +2791,34 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
-      LMDShellList2.SetFocus;
+  else if wcActive.Name = 'LMDShellList2' then
+    LMDShellList2.SetFocus;
 
   if not FileExists(ExifTool) then
   begin
     MessageDlgCenter('Achtung: Die Datei "exiftool.exe" fehlt im Ordner "' +
-                     IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + '"!', mtError, [mbOk]);
+      IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + '"!',
+      mtError, [mbOk]);
     Exit;
   end;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-                               IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                               LMDShellList1.Selected.Caption + '"';
-  end else
-  if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := ExifTool + ' -L ' + GE +
+      ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+      IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+      LMDShellList1.Selected.Caption + '"';
+  end
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
-    Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-                               IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                               LMDShellList2.Selected.Caption + '"';
-  end else
+    Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+    Befehlszeile := ExifTool + ' -L ' + GE +
+      ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+      IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+      LMDShellList2.Selected.Caption + '"';
+  end
+  else
   begin
     MessageDlgCenter
       ('Datei-Informationen anzeigen: Bitte EINE Datei aus dem Quell- oder Zielverzeichnis auswählen!',
@@ -2820,7 +2829,7 @@ begin
   // DOS-Ausgabe nach Memo1
   GetDosOutput(Memo1, Befehlszeile, Work);
   // Zur ersten Memo-Zeile gehen...
-  Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
+  Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
   if Memo1.Lines.Count > 0 then
   begin
     I := TextHoehe(Memo1.Font, Memo1.Text);
@@ -2834,7 +2843,7 @@ begin
     PDFPanel.Height := I;
   end;
   MemoBtn.Visible := True;
-  Info_Anzeigen   := False;
+  Info_Anzeigen := False;
 end;
 
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
@@ -2847,8 +2856,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if not FileExists(XPDF_Fonts) then
@@ -2863,24 +2871,27 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-      Work         := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-      Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                      LMDShellList1.Selected.Caption + '"';
-      // DOS-Ausgabe nach Memo1
-      GetDosOutput(Memo1, Befehlszeile, Work);
-      // Zur ersten Memo-Zeile gehen...
-      Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
-  end else
-  if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash
+      (LMDShellFolder1.ActiveFolder.PathName) +
+      LMDShellList1.Selected.Caption + '"';
+    // DOS-Ausgabe nach Memo1
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
+  end
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
   begin
-      Work         := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-      Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                      LMDShellList2.Selected.Caption + '"';
-      // DOS-Ausgabe nach Memo1
-      GetDosOutput(Memo1, Befehlszeile, Work);
-      // Zur ersten Memo-Zeile gehen...
-      Memo1.Perform(EM_LineScroll, 0 , - Memo1.Lines.Count - 1);
-  end else
+    Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+    Befehlszeile := XPDF_Fonts + ' -loc "' + IncludeTrailingBackslash
+      (LMDShellFolder2.ActiveFolder.PathName) +
+      LMDShellList2.Selected.Caption + '"';
+    // DOS-Ausgabe nach Memo1
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
+  end
+  else
   begin
     MessageDlgCenter
       ('Die Schriftarten in der PDF-Datei werden aufgelistet: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
@@ -2911,15 +2922,15 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
-      PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption
-  else
-  if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
-      PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+      + LMDShellList1.Selected.Caption
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
+      + LMDShellList2.Selected.Caption
   else
   begin
     MessageDlgCenter
@@ -3099,15 +3110,15 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
-      PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption
-  else
-  if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
-      PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+      + LMDShellList1.Selected.Caption
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
+      + LMDShellList2.Selected.Caption
   else
   begin
     MessageDlgCenter
@@ -3262,8 +3273,9 @@ begin
   if Button = mbRight then
   begin
     PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
-    PopupMenu3.Items.Items[1].Caption    := IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text);
-    PopupMenu3.Items.Items[2].Caption    := IncludeTrailingBackslash(MZiel);
+    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash
+      (FreePDF64_Notify.MonitoringFolder.Text);
+    PopupMenu3.Items.Items[2].Caption := IncludeTrailingBackslash(MZiel);
   end;
 end;
 
@@ -3630,7 +3642,8 @@ begin
       Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
         Auswahl + '"';
       Auswahl := Ghostscript + ' ' + Param;
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param), '', SW_HIDE);
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
+        '', SW_HIDE);
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end
@@ -3640,7 +3653,8 @@ begin
       Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
         Auswahl + '"';
       Auswahl := Ghostscript + ' ' + Param;
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param), '', SW_HIDE);
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
+        '', SW_HIDE);
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
@@ -3792,8 +3806,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcPrevious.Name = 'LMDShellList2' then
+  else if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Einstellungen_Form.Position := poMainFormCenter;
@@ -3887,9 +3900,11 @@ begin
         // Der interne Editor (Notepad) oder der in die FreePDF64.ini eingetragene wird aufgerufen...
         if Einstellungen_Form.Edit2.Text = '' then
           Einstellungen_Form.Edit2.Text := 'notepad.exe';
-        ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-                     PChar(' "' + IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                     LMDShellList1.SelectedItems[I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
+        ShellExecute(Application.Handle, 'open',
+          PChar(Einstellungen_Form.Edit2.Text),
+          PChar(' "' + IncludeTrailingBackslash
+          (LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems
+          [I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
       end;
     end
     else if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True
@@ -3900,9 +3915,11 @@ begin
         // Der interne Editor (Notepad) oder der in die FreePDF64.ini eingetragene wird aufgerufen...
         if Einstellungen_Form.Edit2.Text = '' then
           Einstellungen_Form.Edit2.Text := 'notepad.exe';
-        ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-                     PChar(' "' + IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                     LMDShellList2.SelectedItems[I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
+        ShellExecute(Application.Handle, 'open',
+          PChar(Einstellungen_Form.Edit2.Text),
+          PChar(' "' + IncludeTrailingBackslash
+          (LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.SelectedItems
+          [I].DisplayName + '"'), NIL, SW_SHOWNORMAL)
       end;
     end;
   except
@@ -4177,8 +4194,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Filter1.Click;
@@ -4213,8 +4229,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   Einstellungen1.Click;
@@ -4329,13 +4344,14 @@ begin
   Screen.OnActiveControlChange := ActiveControlChanged;
 
   // Initialisieren...
-  PDFPanelH          := 0;
-  AutospalteJN       := False;
-  ShowVomTray        := False;
+  PDFPanelH := 0;
+  AutospalteJN := False;
+  ShowVomTray := False;
   Suche_ItemAnzeigen := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
-  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
+  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
+    'FreePDF64.ini') then
   begin
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
@@ -4343,37 +4359,56 @@ begin
       IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
-        FreePDF64_Form.Left := ReadInteger('Position', 'Left', FreePDF64_Form.Left);
-        FreePDF64_Form.Top := ReadInteger('Position', 'Top', FreePDF64_Form.Top);
+        FreePDF64_Form.Left := ReadInteger('Position', 'Left',
+          FreePDF64_Form.Left);
+        FreePDF64_Form.Top := ReadInteger('Position', 'Top',
+          FreePDF64_Form.Top);
         Width := ReadInteger('Position', 'Width', FreePDF64_Form.Width);
         Height := ReadInteger('Position', 'Height', FreePDF64_Form.Height);
-        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
-        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
-        PanelR.Width := ReadInteger('Position', 'Right Panel Width', PanelR.Width);
-        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
+        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width',
+          Panel_Left.Width);
+        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width',
+          Panel_Right.Width);
+        PanelR.Width := ReadInteger('Position', 'Right Panel Width',
+          PanelR.Width);
+        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height',
+          PDFPanel.Height);
         PDFPanelH := PDFPanel.Height;
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
-        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
-        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
-        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
-        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
-        InDenTray.Checked := ReadBool('Start', 'System Tray', InDenTray.Checked);
+        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines',
+          LMDShellList1.GridLines);
+        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines',
+          LMDShellList1.GridLines);
+        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual',
+          ResizeEqual.Checked);
+        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden',
+          VersteckteDateienanzeigen1.Checked);
+        InDenTray.Checked := ReadBool('Start', 'System Tray',
+          InDenTray.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
-        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick', DoppelK.Checked);
-        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
-        Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
-        Formatverz_OnlyDate.Checked := ReadBool('Start', 'Create Formatfolder only Date', Formatverz_OnlyDate.Checked);
+        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick',
+          DoppelK.Checked);
+        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder',
+          Formatverz.Checked);
+        Formatverz_Date.Checked :=
+          ReadBool('Start', 'Create Formatfolder with Date',
+          Formatverz_Date.Checked);
+        Formatverz_OnlyDate.Checked :=
+          ReadBool('Start', 'Create Formatfolder only Date',
+          Formatverz_OnlyDate.Checked);
 
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
-        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
+        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button',
+          AutoSizeBtn.Checked);
         if AutoSizeBtn.Checked then
           AutoSize.Enabled := True
         else
           AutoSize.Enabled := False;
         if not ValueExists('Files', 'PDF-Reader') then
-          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
+          PDFReader := ExtractFilePath(Application.ExeName) +
+            'xpdf\xpdfreader\xpdf.exe';
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
 
         if not ValueExists('Start', 'Splashscreen') then
@@ -4445,38 +4480,40 @@ begin
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) +
+            'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
-  end else
+  end
+  else
     Splash1.Checked := True;
 
   MenuItemRightJustify(Hilfe1);
 
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := FreePDF64_Form.Width div 7;
-  Btn_Rename.Left     := 1;
-  Btn_Rename.Align    := alLeft;
-  Btn_Rename.Width    := Laenge;
-  BtnEditor.Left      := 2;
-  BtnEditor.Align     := alLeft;
-  BtnEditor.Width     := Laenge;
-  Btn_View.Left       := 3;
-  Btn_View.Align      := alLeft;
-  Btn_View.Width      := Laenge;
-  Btn_Copy.Left       := 4;
-  Btn_Copy.Align      := alLeft;
-  Btn_Copy.Width      := Laenge;
-  Btn_Move.Left       := 5;
-  Btn_Move.Align      := alLeft;
-  Btn_Move.Width      := Laenge;
-  Btn_NewFolder.Left  := 6;
+  Btn_Rename.Left := 1;
+  Btn_Rename.Align := alLeft;
+  Btn_Rename.Width := Laenge;
+  BtnEditor.Left := 2;
+  BtnEditor.Align := alLeft;
+  BtnEditor.Width := Laenge;
+  Btn_View.Left := 3;
+  Btn_View.Align := alLeft;
+  Btn_View.Width := Laenge;
+  Btn_Copy.Left := 4;
+  Btn_Copy.Align := alLeft;
+  Btn_Copy.Width := Laenge;
+  Btn_Move.Left := 5;
+  Btn_Move.Align := alLeft;
+  Btn_Move.Width := Laenge;
+  Btn_NewFolder.Left := 6;
   Btn_NewFolder.Align := alLeft;
   Btn_NewFolder.Width := Laenge;
-  Btn_Delete.Left     := 7;
-  Btn_Delete.Align    := alClient;
-  Btn_Delete.Width    := Laenge;
+  Btn_Delete.Left := 7;
+  Btn_Delete.Align := alClient;
+  Btn_Delete.Width := Laenge;
 
   if InDenTray.Checked then
     Timer2.Enabled := True
@@ -4493,14 +4530,15 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat  := TIniFile.Create(IniFile);
+    IniDat := TIniFile.Create(IniFile);
     with IniDat do
       s := ReadString('Folder', 'Left', A_S);
     IniDat.Free;
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) +
+          'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -4509,7 +4547,7 @@ begin
   begin
     LMDShellFolder1.ChDir(s);
     if LMDShellList1.Selected = NIL then
-        LMDShellList1.ItemIndex := 0;
+      LMDShellList1.ItemIndex := 0;
   end;
 end;
 
@@ -4522,14 +4560,15 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat  := TIniFile.Create(IniFile);
+    IniDat := TIniFile.Create(IniFile);
     with IniDat do
       s := ReadString('Folder', 'Target', B_Z);
     IniDat.Free;
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) +
+          'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -4795,7 +4834,7 @@ begin
       AutospalteJN := False;
 
     FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible      := True;
+    TrayIcon1.Visible := True;
   end
   else
     inherited;
@@ -4831,10 +4870,12 @@ begin
     Exit;
   end;
 
-  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUserName;
-  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
+  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: '
+    + GetCurrentUserName;
+  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' +
+    ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
-  FAbbrechen    := False;
+  FAbbrechen := False;
   Info_Anzeigen := False;
   // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
   if ParamCount > 0 then
@@ -4846,8 +4887,8 @@ begin
 
   // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/Ab und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
-  PDFX_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
+  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
+  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -4857,30 +4898,45 @@ begin
     (ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
     // Ghostscript
-    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
+    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
+      'gs\bin\gswin64c.exe';
     // QPDF
-    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
+    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) +
+      'qpdf\bin\qpdf.exe';
     // PDFtk
-    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
+    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
+      'pdftk\pdftk.exe';
     // ImageMagick-Converter
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName)  + 'ImageMagick\';
-    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) +
+      'ImageMagick\';
+    ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) +
+      'magick.exe';
     // ExifToolf
-    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
-    ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text)   + 'exiftool.exe';
+    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) +
+      'ExifTool\';
+    ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) +
+      'exiftool.exe';
     // XPDF-Tools
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName)  + 'xpdf\bin64\';
-    XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
-    XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
-    XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
-    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text)  + 'pdffonts.exe';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) +
+      'xpdf\bin64\';
+    XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+      'pdfimages.exe';
+    XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+      'pdftohtml.exe';
+    XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+      'pdfdetach.exe';
+    XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+      'pdffonts.exe';
 
     // XPDFReader
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
+      'xpdf\xpdfreader\xpdf.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
-    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
+    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) +
+      'Quellverzeichnis';
+    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) +
+      'Zielverzeichnis';
     // Notify-Einstellungen...
     FreePDF64_Notify.MonitoringFolder.Text :=
       IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
@@ -4891,13 +4947,13 @@ begin
     PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
     // Überwachung ist AUS
     MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption    := '  AUS';
+    MonitorBtn.Caption := '  AUS';
     MHA := 80;
 
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
       IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-      IniDat  := TIniFile.Create(IniFile);
+      IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
         // Linke, rechte Column-Breite schreiben
@@ -4909,9 +4965,9 @@ begin
         WriteInteger('Start', 'ColumnsR Width1', 100);
         WriteInteger('Start', 'ColumnsR Width2', 70);
         WriteInteger('Start', 'ColumnsR Width3', 100);
-        WriteBool('Start',  'ShowFolders', ShowFolders1.Checked);
-        WriteBool('Start',  'ShowFolders Left', ShowFolders_Left.Checked);
-        WriteBool('Start',  'Autostart', Autostart.Checked);
+        WriteBool('Start', 'ShowFolders', ShowFolders1.Checked);
+        WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
+        WriteBool('Start', 'Autostart', Autostart.Checked);
         WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
         WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
@@ -4921,7 +4977,8 @@ begin
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) +
+            'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
@@ -4938,32 +4995,45 @@ begin
 
   // Ghostscript
   if Einstellungen_Form.Edit1.Text = '' then
-    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
+    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
+      'gs\bin\gswin64c.exe';
   // QPDF
   if Einstellungen_Form.Edit4.Text = '' then
-    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
+    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) +
+      'qpdf\bin\qpdf.exe';
   // PDFtk
   if Einstellungen_Form.Edit5.Text = '' then
-    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
+    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
+      'pdftk\pdftk.exe';
   // ImageMagick-Converter
   if Einstellungen_Form.Edit7.Text = '' then
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
-  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) +
+      'ImageMagick\';
+  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) +
+    'magick.exe';
   // ExifTool
   if Einstellungen_Form.Edit8.Text = '' then
-    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
-  ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
+    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) +
+      'ExifTool\';
+  ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) +
+    'exiftool.exe';
   // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) +
+      'xpdf\bin64\';
   // XPDF-Tools
-  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
-  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
-  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
-  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text)  + 'pdffonts.exe';
+  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+    'pdfimages.exe';
+  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+    'pdftohtml.exe';
+  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+    'pdfdetach.exe';
+  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
+    'pdffonts.exe';
   // XPDFReader
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
+      'xpdf\xpdfreader\xpdf.exe';
 
   Application.HintHidePause := 10000; // 10 Sekunden
   Memo1.Height := 64;
@@ -4973,55 +5043,91 @@ begin
   try
     // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
-    IniDat  := TIniFile.Create(IniFile);
+    IniDat := TIniFile.Create(IniFile);
     with IniDat do
     begin
       // Linke, rechte Tree-Column-Breite lesen
-      LMDShellList1.Column[0].Width := ReadInteger('Start', 'ColumnsL Width0', c);
-      LMDShellList1.Column[1].Width := ReadInteger('Start', 'ColumnsL Width1', c);
-      LMDShellList1.Column[2].Width := ReadInteger('Start', 'ColumnsL Width2', c);
-      LMDShellList1.Column[3].Width := ReadInteger('Start', 'ColumnsL Width3', c);
-      LMDShellList2.Column[0].Width := ReadInteger('Start', 'ColumnsR Width0', c);
-      LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
-      LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
-      LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
+      LMDShellList1.Column[0].Width :=
+        ReadInteger('Start', 'ColumnsL Width0', c);
+      LMDShellList1.Column[1].Width :=
+        ReadInteger('Start', 'ColumnsL Width1', c);
+      LMDShellList1.Column[2].Width :=
+        ReadInteger('Start', 'ColumnsL Width2', c);
+      LMDShellList1.Column[3].Width :=
+        ReadInteger('Start', 'ColumnsL Width3', c);
+      LMDShellList2.Column[0].Width :=
+        ReadInteger('Start', 'ColumnsR Width0', c);
+      LMDShellList2.Column[1].Width :=
+        ReadInteger('Start', 'ColumnsR Width1', c);
+      LMDShellList2.Column[2].Width :=
+        ReadInteger('Start', 'ColumnsR Width2', c);
+      LMDShellList2.Column[3].Width :=
+        ReadInteger('Start', 'ColumnsR Width3', c);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
-        FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
+        FreePDF64_Notify.MonitoringFolder.Text :=
+          IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
       if not ValueExists('Folder', 'Left') then
       begin
         Ziel := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
-        A_S  := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-        B_Z  := Ziel;
-      end else
+        A_S := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+        B_Z := Ziel;
+      end
+      else
       begin
-        A_S  := ReadString('Folder', 'Left', A_S);
-        B_Z  := ReadString('Folder', 'Target', B_Z);
+        A_S := ReadString('Folder', 'Left', A_S);
+        B_Z := ReadString('Folder', 'Target', B_Z);
         Ziel := B_Z;
       end;
 
-      Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
-      FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
-      Notify_Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
-      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time', FreePDF64_Notify.SpinEditSec.Value);
-      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed', FreePDF64_Notify.Ziel_FestCB.Checked);
-      z1 := ReadString('Monitoring', 'Fixed Folder', FreePDF64_Notify.ZielEdit.Text);
-      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File', Einstellungen_Form.AnzeigenCB.Checked);
-      Einstellungen_Form.SystemklangCB.Checked := ReadBool('Format', 'System Sound', Einstellungen_Form.SystemklangCB.Checked);
-      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', Einstellungen_Form.PDF_Shrink.Checked);
-      Einstellungen_Form.PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2', Einstellungen_Form.PDF_Shrink2.Checked);
-      ShowFolders1.Checked := ReadBool('Start', 'ShowFolders', ShowFolders1.Checked);
-      ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
-      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
-      Wasserzeichen_Form.bgWatermark.Checked := ReadBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
-      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
-      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name', AutoSpalte.Checked);
+      Zielverzeichnisanzeigen1.Checked := ReadBool('Start', 'TargetView',
+        Zielverzeichnisanzeigen1.Checked);
+      FreePDF64_Notify.MonitoringFolder.Text :=
+        ReadString('Monitoring', 'Folder',
+        FreePDF64_Notify.MonitoringFolder.Text);
+      Notify_Active := ReadBool('Monitoring', 'Start',
+        FreePDF64_Notify.LMDShellNotify.Active);
+      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time',
+        FreePDF64_Notify.SpinEditSec.Value);
+      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed',
+        FreePDF64_Notify.Ziel_FestCB.Checked);
+      z1 := ReadString('Monitoring', 'Fixed Folder',
+        FreePDF64_Notify.ZielEdit.Text);
+      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File',
+        Einstellungen_Form.AnzeigenCB.Checked);
+      Einstellungen_Form.SystemklangCB.Checked :=
+        ReadBool('Format', 'System Sound',
+        Einstellungen_Form.SystemklangCB.Checked);
+      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF',
+        Einstellungen_Form.PDF_Shrink.Checked);
+      Einstellungen_Form.PDF_Shrink2.Checked :=
+        ReadBool('Format', 'Shrink PDF2',
+        Einstellungen_Form.PDF_Shrink2.Checked);
+      ShowFolders1.Checked := ReadBool('Start', 'ShowFolders',
+        ShowFolders1.Checked);
+      ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left',
+        ShowFolders_Left.Checked);
+      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp',
+        Wasserzeichen_Form.Edit1.Text);
+      Wasserzeichen_Form.bgWatermark.Checked :=
+        ReadBool('Start', 'Watermark bg',
+        Wasserzeichen_Form.bgWatermark.Checked);
+      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg',
+        Wasserzeichen_Form.vgStamp.Checked);
+      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name',
+        AutoSpalte.Checked);
       Autostart.Checked := ReadBool('Start', 'Autostart', Autostart.Checked);
-      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne', Dateianlage_Form.Datei1.Text);
-      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten', Dateianlage_Form.Datei2.Text);
-      Einstellungen_Form.HeightSpin.Value := ReadInteger('Start', 'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
-      Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
+      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne',
+        Dateianlage_Form.Datei1.Text);
+      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten',
+        Dateianlage_Form.Datei2.Text);
+      Einstellungen_Form.HeightSpin.Value :=
+        ReadInteger('Start', 'Memo Height Addition',
+        Einstellungen_Form.HeightSpin.Value);
+      Einstellungen_Form.SoundSpin.Value :=
+        ReadInteger('Format', 'System Sound Volume 0-65535',
+        Einstellungen_Form.SoundSpin.Value);
 
       FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(z1);
 
@@ -5040,46 +5146,55 @@ begin
       // Memo Height Addition
       MHA := Einstellungen_Form.HeightSpin.Value;
 
-      if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
+      if (Dateianlage_Form.Datei1.Text <> '') or
+        (Dateianlage_Form.Datei2.Text <> '') then
         Dateianlage_Form.DateianlageCB.Checked := True
       else
       begin
         Dateianlage_Form.DateianlageCB.Checked := False;
         Dateianlage_Form.Clear.Click;
       end;
-      if not FileExists(Dateianlage_Form.Datei1.Text) or not FileExists(Dateianlage_Form.Datei2.Text) then
+      if not FileExists(Dateianlage_Form.Datei1.Text) or
+        not FileExists(Dateianlage_Form.Datei2.Text) then
         Dateianlage_Form.Clear.Click;
 
-      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
+      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off',
+        Einstellungen_Form.ZusatzAnAus.Checked);
       if Einstellungen_Form.ZusatzAnAus.Checked = False then
         Einstellungen_Form.Zusatz.Enabled := False
       else
         Einstellungen_Form.Zusatz.Enabled := True;
 
-      Einstellungen_Form.ExifToolGE.Checked := ReadBool('Zusatz', 'German/English', Einstellungen_Form.ExifToolGE.Checked);
+      Einstellungen_Form.ExifToolGE.Checked :=
+        ReadBool('Zusatz', 'German/English',
+        Einstellungen_Form.ExifToolGE.Checked);
       if Einstellungen_Form.ExifToolGE.Checked = True then
         GE := '-lang de' // deutsch
       else
         GE := ''; // englisch
 
-      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font', Einstellungen_Form.FontCB.Checked);
+      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font',
+        Einstellungen_Form.FontCB.Checked);
       if Einstellungen_Form.FontCB.Checked = True then
       begin
         Memo1.Font.Name := 'Consolas';
         Memo1.Font.Size := 11;
-      end else
+      end
+      else
       begin
         Memo1.Font.Name := 'Courier New';
         Memo1.Font.Size := 10;
       end;
 
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash
+          (LMDShellFolder2.RootFolder);
 
       // Filter lesen
       for ie1 := 1 to 10 do
       begin
-        iec[ie1 - 1] := IniDat.ReadString('Filter', 'Filter' + IntToStr(ie1 - 1), ies);
+        iec[ie1 - 1] := IniDat.ReadString('Filter',
+          'Filter' + IntToStr(ie1 - 1), ies);
         if iec[ie1 - 1] = '' then
           Break;
         Filter_Form.FilterCB.Items.Insert(ie1 - 1, iec[ie1 - 1]);
@@ -5091,7 +5206,8 @@ begin
       begin
         Zusatz_Form.ZusatzCB.Items.BeginUpdate;
         try
-          iec[ie1 - 1] := IniDat.ReadString('Zusatz', 'Zeichenketten' + IntToStr(ie1 - 1), ies);
+          iec[ie1 - 1] := IniDat.ReadString('Zusatz',
+            'Zeichenketten' + IntToStr(ie1 - 1), ies);
           if iec[ie1 - 1] = '' then
             Break;
           Zusatz_Form.ZusatzCB.Items.Add(iec[ie1 - 1]);
@@ -5099,18 +5215,19 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-      FSortAscending  := True;
+      FSortAscending := True;
       FSortAscending2 := True;
-      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
-      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortColumn := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) +
+          'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -5126,7 +5243,7 @@ begin
   // Show Folders Left Pane
   if ShowFolders_Left.Checked then
   begin
-    ShowFolders1.Checked     := True;
+    ShowFolders1.Checked := True;
     ShowFolders_Left.Checked := False;
     ShowFolders_Left.Click;
   end;
@@ -5163,12 +5280,16 @@ begin
     Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-                        ComboBoxL.Width));
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
+  Quelllabel.Caption := 'Quelle - ' +
+    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
+    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
+    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
+    ComboBoxL.Width));
+  Ziellabel.Caption := 'Ziel - ' +
+    MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
+    + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
+    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
+    ComboBoxR.Width));
 
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
@@ -5183,13 +5304,14 @@ begin
     FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
   end;
 
-  tmpt  := LMDShellList1.Options;
+  tmpt := LMDShellList1.Options;
   tmpt2 := LMDShellTree1.Options;
   if VersteckteDateienanzeigen1.Checked then
   begin
     Include(tmpt, loShowHidden);
     Include(tmpt2, toShowHidden);
-  end else
+  end
+  else
   begin
     Exclude(tmpt, loShowHidden);
     Exclude(tmpt2, toShowHidden);
@@ -5221,8 +5343,9 @@ begin
   SB_Left;
   SB_Right;
 
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
-                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
+    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
+    IntToStr(Counter);
 
   // Abfrage auf FreePDF64-Registry-Eintrag...
   begin
@@ -5246,40 +5369,43 @@ begin
   end;
 
   Quelllabel.Color := RGB(220, 220, 220);
-  Ziellabel.Color  := clBtnFace;
+  Ziellabel.Color := clBtnFace;
 
   // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
   s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
-  s  := s1;
+  s := s1;
   for I := 1 to Length(s) do
     if s[I] = '\' then
       s[I] := '/';
   s1 := s;
   with TStringList.Create do
     try
-      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
+      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)
+        ) + 'Definition files\PDFA.ps');
       Delete(6);
       Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
-      SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps');
+      SaveToFile(ExtractFilePath(Application.ExeName) +
+        'Definition files\PDFA.ps');
     finally
       Free;
     end;
 
-
   // Hinweistext auf Log-Button
-  LogBt.Hint := ('- Linksklick: Ansehen im externen Editor') + #13 + ('- Rechtsklick: Ansehen im unteren Programmfenster');
+  LogBt.Hint := ('- Linksklick: Ansehen im externen Editor') + #13 +
+    ('- Rechtsklick: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
-  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
+  FreePDF64_Notify.LMDShellNotify.WatchFolder :=
+    Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
     MonitorBtn.ImageIndex := 57;
-    MonitorBtn.Caption    := '  AN';
+    MonitorBtn.Caption := '  AN';
   end
   else
   begin
     MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption    := '  AUS';
+    MonitorBtn.Caption := '  AUS';
   end;
 
   // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
@@ -5312,31 +5438,32 @@ begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
       Beide_FolderBtn.Visible := False;
-      ShowFolders1.Visible    := False;
-    end else
+      ShowFolders1.Visible := False;
+    end
+    else
     begin
       Beide_FolderBtn.Visible := True;
-      ShowFolders1.Visible    := True;
+      ShowFolders1.Visible := True;
     end;
     // Wenn beide ShowFolders = False...
     if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False)
     then
     begin
-      ShowFolders1.Checked     := False;
+      ShowFolders1.Checked := False;
       ShowFolders_Left.Checked := False;
-      Splitter1.Visible        := False;
-      Splitter4.Visible        := False;
-      LMDShellTree1.Visible    := False;
-      LMDShellTree2.Visible    := False;
-      Panel_Left.Visible       := False;
-      Panel_Right.Visible      := False;
-      Panel2.Visible           := False;
-      Panel3.Visible           := False;
+      Splitter1.Visible := False;
+      Splitter4.Visible := False;
+      LMDShellTree1.Visible := False;
+      LMDShellTree2.Visible := False;
+      Panel_Left.Visible := False;
+      Panel_Right.Visible := False;
+      Panel2.Visible := False;
+      Panel3.Visible := False;
     end;
     // Rechtes Zielverzeichnis anzeigen
-    Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
+    Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
     LMDShellList2.Visible := Splitter2.Visible;
-    PanelR.Visible        := Splitter2.Visible;
+    PanelR.Visible := Splitter2.Visible;
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
@@ -5369,8 +5496,8 @@ var
   I, j: Integer;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
-  if LMDShellFolder1.BackwardPathList.Count >=2 then
-   I := LMDShellFolder1.BackwardPathList.Count - 2;
+  if LMDShellFolder1.BackwardPathList.Count >= 2 then
+    I := LMDShellFolder1.BackwardPathList.Count - 2;
 
   // Wenn aus dem Suchefenster heraus das markierte Item angezeigt werden soll...
   if Suche_ItemAnzeigen = False then
@@ -5556,8 +5683,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or
@@ -5702,8 +5828,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcActive.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcActive.Name = 'LMDShellList2' then
+  else if wcActive.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   if (LMDShellList1.Focused and (LMDShellList1.SelCount = 1)) or
@@ -5813,7 +5938,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList1Click(Sender: TObject);
 begin
   FavClose;
-//  Memo1.Clear;
+  // Memo1.Clear;
 
   if LMDShellList1.SelCount = 0 then
     Exit
@@ -5864,7 +5989,7 @@ procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
 begin
   if LMDShellList1.SelCount > 0 then
     PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) +
-                               ' => Erstellung starten!')
+      ' => Erstellung starten!')
   else
     PDF_Erstellung.Caption := ('Erstellung starten!');
   // Abfrage auf Hinweis bzgl. der Extension
@@ -5881,7 +6006,7 @@ end;
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
 begin
   FavClose;
-//  Memo1.Clear;
+  // Memo1.Clear;
 
   if LMDShellList2.SelCount = 0 then
     Exit
@@ -6018,10 +6143,10 @@ begin
   begin
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
       if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
       begin
         Auswahl := LMDShellList1.SelectedItem.PathName;
         LMDShellList2.Visible := False;
@@ -6049,10 +6174,10 @@ begin
   begin
     if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
       if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+        (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
       begin
         Auswahl := LMDShellList2.SelectedItem.PathName;
         LMDShellList1.Visible := False;
@@ -6091,12 +6216,13 @@ var
 begin
   FavClose;
 
-// mbRight: Rechte Maustaste
-  if Button = mbright then
+  // mbRight: Rechte Maustaste
+  if Button = mbRight then
   begin
-    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
+    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) +
+      'FreePDF64Log.txt');
     // zur letzen Zeile:
-    Memo1.Perform(EM_LineScroll, 0 , Memo1.Lines.Count - 1);
+    Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
     if Memo1.Lines.Count > 0 then
     begin
       I := TextHoehe(Memo1.Font, Memo1.Text);
@@ -6110,7 +6236,8 @@ begin
       PDFPanel.Height := I;
       MemoBtn.Visible := True;
     end;
-  end else
+  end
+  else
   begin
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
@@ -6129,7 +6256,8 @@ begin
     Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
   ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-               PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'), NIL, SW_SHOWNORMAL)
+    PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' +
+    '"'), NIL, SW_SHOWNORMAL)
 end;
 
 procedure TFreePDF64_Form.LogdateiClick(Sender: TObject);
@@ -6264,7 +6392,8 @@ begin
   Handled := True;
 end;
 
-procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
   begin
@@ -6284,19 +6413,22 @@ end;
 procedure TFreePDF64_Form.Memo1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
-// mbRight: Rechte Maustaste
-  if Button = mbright then
+  // mbRight: Rechte Maustaste
+  if Button = mbRight then
     if Trim(Memo1.Text) <> '' then
     begin
-      Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) + 'Metadata.txt');
+      Memo1.Lines.SaveToFile(ExtractFilePath(Application.ExeName) +
+        'Metadata.txt');
 
       if Einstellungen_Form.Edit2.Text = '' then
         Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
-	    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
-                   PChar(' "' + ExtractFilePath(Application.ExeName) + 'Metadata.txt' + '"'),
-                   NIL, SW_SHOWNORMAL);
-      StatusBar1.Panels[0].Text := 'Datei "Metadata.txt" liegt nun unter: ' + ExtractFilePath(Application.ExeName);
+      ShellExecute(Application.Handle, 'open',
+        PChar(Einstellungen_Form.Edit2.Text),
+        PChar(' "' + ExtractFilePath(Application.ExeName) + 'Metadata.txt' +
+        '"'), NIL, SW_SHOWNORMAL);
+      StatusBar1.Panels[0].Text := 'Datei "Metadata.txt" liegt nun unter: ' +
+        ExtractFilePath(Application.ExeName);
     end;
 end;
 
@@ -6312,8 +6444,9 @@ begin
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;
   end;
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
-                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
+    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
+    IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
@@ -6789,8 +6922,9 @@ begin
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
     Counter := 0;
 
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
-                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
+    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
+    IntToStr(Counter);
 end;
 
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
@@ -6799,8 +6933,7 @@ begin
   // Was war die letzte aktive Komponente?
   if wcPrevious.Name = 'LMDShellList1' then
     LMDShellList1.SetFocus
-  else
-  if wcPrevious.Name = 'LMDShellList2' then
+  else if wcPrevious.Name = 'LMDShellList2' then
     LMDShellList2.SetFocus;
 
   // Form soll mittig angezeigt werden.
@@ -6984,8 +7117,7 @@ begin
     // Was war die letzte aktive Komponente?
     if wcPrevious.Name = 'LMDShellList1' then
       LMDShellList1.SetFocus
-    else
-    if wcPrevious.Name = 'LMDShellList2' then
+    else if wcPrevious.Name = 'LMDShellList2' then
       LMDShellList2.SetFocus
   end;
 
@@ -7136,25 +7268,25 @@ begin
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=txtwrite'; // TXT
       4:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=bmp256 ' + '-r' + Spin2;
-        // BMP
+      // BMP
       5:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=jpeg -dJPEGQ=' + Spin1 +
           ' ' + '-r' + Spin2; // JPEG
       6:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=png16m ' + '-r' + Spin2;
-        // PNG
+      // PNG
       7:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiffg4 ' + '-r' + Spin2;
-        // TIFF G4
+      // TIFF G4
       8:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tifflzw ' + '-r' + Spin2;
-        // TIFF LZW
+      // TIFF LZW
       9:
         AP1 := '-dNOPAUSE -dBATCH ' + AP6 + '-sDEVICE=tiff24nc ' + '-r' + Spin2;
       // TIFF - 24-bit RGB output (8 bits per component) uncompressed
       11:
         AP1 := '-dNOPAUSE -dNOSAFER -dBATCH -sDEVICE=pdfwrite' + AP1_5;
-        // JPEG zu PDF
+      // JPEG zu PDF
     end;
 
     // -------------------------------------------------------------------------
@@ -7552,7 +7684,8 @@ begin
               if not DeleteFile(Ziel + '.ps') then
               begin
                 if Einstellungen_Form.SystemklangCB.Checked then
-                  PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+                  PlaySoundFile(ExtractFilePath(Application.ExeName) +
+                    'sounds\alert.wav');
                 ShowMessage(SysErrorMessage(GetLastError));
               end;
             end;

@@ -470,7 +470,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object MemoBtn: TToolButton
         Left = 947
         Top = 0
-        Hint = 'Unteres Programmfenster schlie'#223'en'
+        Hint = 'Unteres Programmfenster schlie'#223'en [ESC]'
         ImageIndex = 76
         ImageName = 'Item77'
         Visible = False
