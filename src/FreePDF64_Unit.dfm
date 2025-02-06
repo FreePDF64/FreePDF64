@@ -5,7 +5,7 @@ object FreePDF64_Form: TFreePDF64_Form
   ClientHeight = 751
   ClientWidth = 1471
   Color = clBtnFace
-  Constraints.MinHeight = 375
+  Constraints.MinHeight = 450
   Constraints.MinWidth = 375
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -587,14 +587,15 @@ object FreePDF64_Form: TFreePDF64_Form
       Hint = 
         '- Markierte PS/PDF-Datei entweder mit dem PDF-Anzeiger oder mit ' +
         'Ghostscript anzeigen'#13#10'- Bilder werden im gegen'#252'berliegenden Fens' +
-        'ter angezeigt. Fenster schlie'#223'en mit F3'
+        'ter angezeigt. Fenster schlie'#223'en mit F3'#13#10'- Alle anderen Dateien ' +
+        'werden "versucht" im unteren Programmfenster anzuzeigen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
-      Caption = 'F3 PS/PDF/Bilder anzeigen'
+      Caption = 'F3 Anzeigen'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
