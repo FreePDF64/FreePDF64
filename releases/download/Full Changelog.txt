@@ -1,4 +1,4 @@
-06.02.2025 V6.2.2
+07.02.2025 V6.2.2
 Neu -> Darstellung der Suche-Routinen und deren Code optimiert auf Geschwindigkeit!  
 04.02.2025 V6.2.1
 Neu -> Umschalten zwischen der Schriftart Consolas und Courier New im unteren Programmfenster.

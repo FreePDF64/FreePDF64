@@ -606,7 +606,7 @@ type
 var
   FreePDF64_Form: TFreePDF64_Form;
   // Globale Variablen
-  Left, Top, Width, Height, SFH: Integer;
+  Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
   PDFReader, ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel, AP3,
   MERGEDATEI, Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
@@ -2031,7 +2031,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '06.02.2025';
+  Datum := '07.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
