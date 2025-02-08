@@ -2250,6 +2250,10 @@ object FreePDF64_Form: TFreePDF64_Form
       object N5: TMenuItem
         Caption = '-'
       end
+      object SuchenHistorylschen1: TMenuItem
+        Caption = 'Suchen-History l'#246'schen'
+        OnClick = SuchenHistorylschen1Click
+      end
       object History1: TMenuItem
         Caption = 'Verzeichnis-History l'#246'schen'
         OnClick = History1Click
