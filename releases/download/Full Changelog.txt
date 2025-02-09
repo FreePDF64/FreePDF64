@@ -1,4 +1,4 @@
-08.02.2025 V6.2.3
+09.02.2025 V6.2.3
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 07.02.2025 V6.2.2
 Neu -> Darstellung der Suche-Routinen und deren Code optimiert auf Geschwindigkeit!  
