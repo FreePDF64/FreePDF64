@@ -5212,7 +5212,7 @@ begin
       if Einstellungen_Form.FontCB.Checked = True then
       begin
         Memo1.Font.Name := 'Consolas';
-        Memo1.Font.Size := 11;
+        Memo1.Font.Size := 10;
       end
       else
       begin
