@@ -4661,11 +4661,12 @@ procedure TFreePDF64_Form.SuchenHistorylschen1Click(Sender: TObject);
 var
   Msg: String;
 begin
-  Msg := 'Soll die Suchen nach-/Suchen in-History im Suche-Fenster wirklich gelöscht werden?';
+  Msg := 'Soll die Suchen nach-/Suchen in-/Textsuche-History im Suche-Fenster wirklich gelöscht werden?';
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
   begin
     Suche_Form.SearchField.Items.Clear;
-    Suche_Form.FileField.Items.Clear
+    Suche_Form.FileField.Items.Clear;
+    Suche_Form.TextCB.Items.Clear;
   end;
 end;
 
@@ -5236,6 +5237,15 @@ begin
         if iec[I - 1] = '' then
           Break;
         Suche_Form.FileField.Items.Insert(I - 1, iec[I - 1]);
+      end;
+      // Suche-Textsuche lesen
+      for I := 1 to 254 do
+      begin
+        iec[I - 1] := IniDat.ReadString('Suche',
+          'Textsearch' + IntToStr(I - 1), s);
+        if iec[I - 1] = '' then
+          Break;
+        Suche_Form.TextCB.Items.Insert(I - 1, iec[I - 1]);
       end;
 
       // Filter lesen
