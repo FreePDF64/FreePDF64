@@ -4904,12 +4904,10 @@ begin
     Exit;
   end;
 
-  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: '
-    + GetCurrentUserName;
-  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' +
-    ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
+  FreePDF64_Form.Caption := 'FreePDF64 - die PDF-Toolsammlung | Benutzername: ' + GetCurrentUserName;
+  FreePDF64_Form.Caption := FreePDF64_Form.Caption + ' | Computername: ' + ComputerName + ' | Betriebssystem: ' + OperatingSystemDisplayName;
 
-  FAbbrechen := False;
+  FAbbrechen    := False;
   Info_Anzeigen := False;
   // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
   if ParamCount > 0 then
@@ -4921,8 +4919,8 @@ begin
 
   // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/Ab und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
-  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
+  PDFA_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
+  PDFX_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -4972,8 +4970,7 @@ begin
     LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) +
       'Zielverzeichnis';
     // Notify-Einstellungen...
-    FreePDF64_Notify.MonitoringFolder.Text :=
-      IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
+    FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
     LMDShellList1.GridLines := True;
     LMDShellList2.GridLines := True;
 
@@ -5011,8 +5008,7 @@ begin
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) +
-            'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
@@ -5024,7 +5020,7 @@ begin
 
     Exit;
   end;
-  // ende von -> Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
+  // Ende von -> Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
   // ============================================================================
 
   // Ghostscript
@@ -5099,19 +5095,18 @@ begin
         ReadInteger('Start', 'ColumnsR Width3', c);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
-        FreePDF64_Notify.MonitoringFolder.Text :=
-          IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
+        FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
       if not ValueExists('Folder', 'Left') then
       begin
         Ziel := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
-        A_S := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
-        B_Z := Ziel;
+        A_S  := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+        B_Z  := Ziel;
       end
       else
       begin
-        A_S := ReadString('Folder', 'Left', A_S);
-        B_Z := ReadString('Folder', 'Target', B_Z);
+        A_S  := ReadString('Folder', 'Left', A_S);
+        B_Z  := ReadString('Folder', 'Target', B_Z);
         Ziel := B_Z;
       end;
 
@@ -5268,11 +5263,11 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-      FSortAscending := True;
+      FSortAscending  := True;
       FSortAscending2 := True;
-      FSortColumn := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
-      FSortAscending := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
@@ -5284,7 +5279,7 @@ begin
       ShowMessage('Error');
     end;
   end;
-  // ende von -> Wenn die FreePDF64-Ini-Datei vorgefunden wird...
+  // Ende von -> Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   // ============================================================================
 
   // Show Folders Both Pane
@@ -5363,8 +5358,7 @@ begin
   begin
     Include(tmpt, loShowHidden);
     Include(tmpt2, toShowHidden);
-  end
-  else
+  end else
   begin
     Exclude(tmpt, loShowHidden);
     Exclude(tmpt2, toShowHidden);
@@ -5396,9 +5390,8 @@ begin
   SB_Left;
   SB_Right;
 
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
-    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
-    IntToStr(Counter);
+  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
+                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
   // Abfrage auf FreePDF64-Registry-Eintrag...
   begin
@@ -5422,7 +5415,7 @@ begin
   end;
 
   Quelllabel.Color := RGB(220, 220, 220);
-  Ziellabel.Color := clBtnFace;
+  Ziellabel.Color  := clBtnFace;
 
   // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
   s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
@@ -5433,33 +5426,29 @@ begin
   s1 := s;
   with TStringList.Create do
     try
-      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)
-        ) + 'Definition files\PDFA.ps');
+      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
       Delete(6);
       Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
-      SaveToFile(ExtractFilePath(Application.ExeName) +
-        'Definition files\PDFA.ps');
+      SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps');
     finally
       Free;
     end;
 
   // Hinweistext auf Log-Button
-  LogBt.Hint := ('Logdatei:') + #13 +
-    ('- Linksklick: Ansehen im externen Editor') + #13 +
-    ('- Rechtsklick: Ansehen im unteren Programmfenster');
+  LogBt.Hint := ('Logdatei:') + #13 + ('- Linksklick: Ansehen im externen Editor') + #13 +
+                ('- Rechtsklick: Ansehen im unteren Programmfenster');
 
   // Überwachung auf...
-  FreePDF64_Notify.LMDShellNotify.WatchFolder :=
-    Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
+  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
     MonitorBtn.ImageIndex := 57;
-    MonitorBtn.Caption := '  AN';
+    MonitorBtn.Caption    := '  AN';
   end
   else
   begin
     MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption := '  AUS';
+    MonitorBtn.Caption    := '  AUS';
   end;
 
   // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
@@ -5492,32 +5481,32 @@ begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
       Beide_FolderBtn.Visible := False;
-      ShowFolders1.Visible := False;
+      ShowFolders1.Visible    := False;
     end
     else
     begin
       Beide_FolderBtn.Visible := True;
-      ShowFolders1.Visible := True;
+      ShowFolders1.Visible    := True;
     end;
     // Wenn beide ShowFolders = False...
     if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False)
     then
     begin
-      ShowFolders1.Checked := False;
+      ShowFolders1.Checked     := False;
       ShowFolders_Left.Checked := False;
-      Splitter1.Visible := False;
-      Splitter4.Visible := False;
-      LMDShellTree1.Visible := False;
-      LMDShellTree2.Visible := False;
-      Panel_Left.Visible := False;
-      Panel_Right.Visible := False;
-      Panel2.Visible := False;
-      Panel3.Visible := False;
+      Splitter1.Visible        := False;
+      Splitter4.Visible        := False;
+      LMDShellTree1.Visible    := False;
+      LMDShellTree2.Visible    := False;
+      Panel_Left.Visible       := False;
+      Panel_Right.Visible      := False;
+      Panel2.Visible           := False;
+      Panel3.Visible           := False;
     end;
     // Rechtes Zielverzeichnis anzeigen
-    Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
+    Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
     LMDShellList2.Visible := Splitter2.Visible;
-    PanelR.Visible := Splitter2.Visible;
+    PanelR.Visible        := Splitter2.Visible;
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
