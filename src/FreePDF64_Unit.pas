@@ -2041,7 +2041,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '09.02.2025';
+  Datum := '12.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
     LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
@@ -2608,12 +2608,12 @@ end;
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
   // Ist die FreePDF64_Form nun sichtbar?
-  // if FreePDF64_Form.WindowState = wsNormal then
-  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
+//  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
+ if Self.Visible then
   begin
     FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible := True;
-    Timer2.Enabled := False;
+    TrayIcon1.Visible      := True;
+    Timer2.Enabled         := False;
   end;
 end;
 
@@ -3807,7 +3807,7 @@ begin
     ComboBoxL.Items.Add(LMDShellFolder1.ActiveFolder.PathName);
 
   SendMessage(ComboBoxL.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxL) + 30, 0);
+    MaxValueCB(ComboBoxL) + 10, 0);
 end;
 
 procedure TFreePDF64_Form.ComboBoxRDropDown(Sender: TObject);
@@ -3818,7 +3818,7 @@ begin
     ComboBoxR.Items.Add(LMDShellFolder2.ActiveFolder.PathName);
 
   SendMessage(ComboBoxR.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxR) + 30, 0);
+    MaxValueCB(ComboBoxR) + 10, 0);
 end;
 
 procedure TFreePDF64_Form.ConfigBtnClick(Sender: TObject);
@@ -4622,7 +4622,8 @@ var
   Laenge: Integer;
 begin
   // Ist die FreePDF64_Form nun sichtbar?
-  if Assigned(FreePDF64_Form) then
+  //  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
+  if Self.Visible then
   begin
     if ResizeEqual.Checked then
       // Splitter soll sich in der Mitte befinden.
@@ -5016,8 +5017,11 @@ begin
     // Erstmal eine gut gefüllte FreePDF64.ini erzeugen!
     AllesSpeichern;
 
-    Splashscreen_Form.Position := poScreenCenter;
-    Splashscreen_Form.ShowModal;
+    if Self.Visible then
+    begin
+      Splashscreen_Form.Position := poScreenCenter;
+      Splashscreen_Form.ShowModal;
+    end;
 
     Exit;
   end;
@@ -5486,7 +5490,8 @@ begin
     end;
 
   // Ist die FreePDF64_Form nun sichtbar?
-  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
+  //  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
+  if Self.Visible then
   begin
     if Zielverzeichnisanzeigen1.Checked = False then
     begin
