@@ -1057,9 +1057,9 @@ object FreePDF64_Form: TFreePDF64_Form
         508)
       object Image1: TImage
         Left = 1
-        Top = 29
+        Top = 31
         Width = 362
-        Height = 455
+        Height = 453
         Hint = 
           '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
           ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -1073,14 +1073,15 @@ object FreePDF64_Form: TFreePDF64_Form
         Visible = False
         OnClick = Image1Click
         OnContextPopup = Image1ContextPopup
+        ExplicitTop = 29
         ExplicitWidth = 364
         ExplicitHeight = 479
       end
       object LMDShellList2: TLMDShellList
         Left = 1
-        Top = 29
+        Top = 31
         Width = 362
-        Height = 455
+        Height = 453
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1145,6 +1146,8 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem
+        ExplicitTop = 29
+        ExplicitHeight = 455
       end
       object ListBoxR: TListBox
         Left = 142
@@ -1219,18 +1222,24 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 1
         Top = 1
         Width = 362
-        Height = 28
+        Height = 30
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
         Align = alTop
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
         TabOrder = 4
         object RootR: TSpeedButton
-          Left = 24
+          Left = 26
           Top = 1
           Width = 25
-          Height = 26
+          Height = 28
           Hint = 'Sprung zu Root'
           Margins.Left = 4
           Margins.Top = 4
@@ -1250,12 +1259,14 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = RootRClick
+          ExplicitLeft = 24
+          ExplicitHeight = 26
         end
         object ParentFolderR: TSpeedButton
-          Left = 49
+          Left = 51
           Top = 1
           Width = 25
-          Height = 26
+          Height = 28
           Hint = 'Eine Ebene h'#246'her'
           Margins.Left = 4
           Margins.Top = 4
@@ -1274,12 +1285,14 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = ParentFolderRClick
+          ExplicitLeft = 49
+          ExplicitHeight = 26
         end
         object FavSpR: TSpeedButton
-          Left = 311
+          Left = 288
           Top = 1
           Width = 25
-          Height = 26
+          Height = 28
           Hint = 'Hinzuf'#252'gen zur rechten Schnellzugriffsliste'
           Margins.Left = 4
           Margins.Top = 4
@@ -1295,6 +1308,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Font.Height = -14
           Font.Name = 'MS Sans Serif'
           Font.Style = [fsBold]
+          Layout = blGlyphTop
           ParentFont = False
           ParentShowHint = False
           ShowHint = True
@@ -1303,10 +1317,10 @@ object FreePDF64_Form: TFreePDF64_Form
           ExplicitHeight = 27
         end
         object FavRechts: TSpeedButton
-          Left = 336
+          Left = 313
           Top = 1
           Width = 25
-          Height = 26
+          Height = 28
           Hint = 'Rechte Schnellzugriffsliste'
           Margins.Left = 4
           Margins.Top = 4
@@ -1332,10 +1346,10 @@ object FreePDF64_Form: TFreePDF64_Form
           ExplicitHeight = 27
         end
         object ZielBtn: TSpeedButton
-          Left = 74
+          Left = 1
           Top = 1
           Width = 25
-          Height = 26
+          Height = 28
           Hint = 'Ins gespeicherte Zielverzeichnis wechseln'
           Margins.Left = 4
           Margins.Top = 4
@@ -1357,11 +1371,11 @@ object FreePDF64_Form: TFreePDF64_Form
           ShowHint = True
           OnClick = ZielBtnClick
           OnMouseEnter = ZielBtnMouseEnter
-          ExplicitLeft = 70
-          ExplicitTop = 5
+          ExplicitLeft = 16
+          ExplicitHeight = 26
         end
         object ComboBoxR: TComboBox
-          Left = 1
+          Left = 338
           Top = 1
           Width = 23
           Height = 28
@@ -1370,19 +1384,13 @@ object FreePDF64_Form: TFreePDF64_Form
           Margins.Top = 4
           Margins.Right = 4
           Margins.Bottom = 4
-          Align = alLeft
+          Align = alRight
           AutoDropDown = True
           Style = csDropDownList
           Color = clBtnFace
           Ctl3D = True
           DropDownCount = 25
-          Font.Charset = ANSI_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -15
-          Font.Name = 'Segoe UI'
-          Font.Style = []
           ParentCtl3D = False
-          ParentFont = False
           ParentShowHint = False
           ShowHint = True
           TabOrder = 0
@@ -1391,10 +1399,10 @@ object FreePDF64_Form: TFreePDF64_Form
           OnDropDown = ComboBoxRDropDown
         end
         object Ziellabel: TPanel
-          Left = 99
+          Left = 76
           Top = 1
           Width = 212
-          Height = 26
+          Height = 28
           Margins.Left = 4
           Margins.Top = 4
           Margins.Right = 4
@@ -1411,6 +1419,9 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentFont = False
           TabOrder = 1
           OnMouseEnter = ZiellabelMouseEnter
+          ExplicitLeft = 99
+          ExplicitWidth = 154
+          ExplicitHeight = 26
         end
       end
     end
@@ -1522,9 +1533,9 @@ object FreePDF64_Form: TFreePDF64_Form
       510)
     object Image2: TImage
       Left = 1
-      Top = 29
+      Top = 31
       Width = 530
-      Height = 456
+      Height = 454
       Hint = 
         '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
         ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -1538,18 +1549,19 @@ object FreePDF64_Form: TFreePDF64_Form
       Visible = False
       OnClick = Image2Click
       OnContextPopup = Image2ContextPopup
+      ExplicitTop = 29
       ExplicitWidth = 535
       ExplicitHeight = 479
     end
     object LMDShellList1: TLMDShellList
       Left = 1
-      Top = 29
+      Top = 31
       Width = 530
-      Height = 456
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 10
+      Height = 454
+      Margins.Left = 0
+      Margins.Top = 0
+      Margins.Right = 0
+      Margins.Bottom = 0
       ParentThemeMode = False
       ThemeMode = ttmNone
       FileFilter = '*.*'
@@ -1611,6 +1623,8 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
+      ExplicitTop = 29
+      ExplicitHeight = 456
     end
     object FavLbL: TListBox
       Left = 1311
@@ -1665,18 +1679,24 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 1
       Top = 1
       Width = 530
-      Height = 28
+      Height = 30
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
       Align = alTop
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Segoe UI'
+      Font.Style = []
+      ParentFont = False
       TabOrder = 3
       object RootL: TSpeedButton
-        Left = 24
+        Left = 26
         Top = 1
         Width = 25
-        Height = 26
+        Height = 28
         Hint = 'Sprung zu Root'
         Margins.Left = 4
         Margins.Top = 4
@@ -1696,12 +1716,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = RootLClick
+        ExplicitLeft = 24
+        ExplicitHeight = 26
       end
       object ParentFolderL: TSpeedButton
-        Left = 49
+        Left = 51
         Top = 1
         Width = 25
-        Height = 26
+        Height = 28
         Hint = 'Eine Ebene h'#246'her'
         Margins.Left = 4
         Margins.Top = 4
@@ -1720,12 +1742,14 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = ParentFolderLClick
+        ExplicitLeft = 49
+        ExplicitHeight = 26
       end
       object QuellBtn: TSpeedButton
-        Left = 74
+        Left = 1
         Top = 1
         Width = 25
-        Height = 26
+        Height = 28
         Hint = 'Ins gespeicherte Quellverzeichnis wechseln'
         Margins.Left = 4
         Margins.Top = 4
@@ -1747,13 +1771,15 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = QuellBtnClick
         OnMouseEnter = QuellBtnMouseEnter
-        ExplicitLeft = 77
+        ExplicitLeft = 16
+        ExplicitTop = 6
+        ExplicitHeight = 26
       end
       object FavSpL: TSpeedButton
-        Left = 479
+        Left = 456
         Top = 1
         Width = 25
-        Height = 26
+        Height = 28
         Hint = 'Hinzuf'#252'gen zur linken Schnellzugriffsliste'
         Margins.Left = 4
         Margins.Top = 4
@@ -1769,6 +1795,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Font.Height = -14
         Font.Name = 'MS Sans Serif'
         Font.Style = [fsBold]
+        Layout = blGlyphTop
         ParentFont = False
         ParentShowHint = False
         ShowHint = True
@@ -1777,10 +1804,10 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 27
       end
       object FavLinks: TSpeedButton
-        Left = 504
+        Left = 481
         Top = 1
         Width = 25
-        Height = 26
+        Height = 28
         Hint = 'Linke Schnellzugriffsliste'
         Margins.Left = 4
         Margins.Top = 4
@@ -1806,7 +1833,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 27
       end
       object ComboBoxL: TComboBox
-        Left = 1
+        Left = 506
         Top = 1
         Width = 23
         Height = 28
@@ -1815,19 +1842,13 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
-        Align = alLeft
+        Align = alRight
         AutoDropDown = True
         Style = csDropDownList
         Color = clBtnFace
         Ctl3D = True
         DropDownCount = 25
-        Font.Charset = ANSI_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -15
-        Font.Name = 'Segoe UI'
-        Font.Style = []
         ParentCtl3D = False
-        ParentFont = False
         ParentShowHint = False
         ShowHint = True
         TabOrder = 0
@@ -1836,10 +1857,10 @@ object FreePDF64_Form: TFreePDF64_Form
         OnDropDown = ComboBoxLDropDown
       end
       object Quelllabel: TPanel
-        Left = 99
+        Left = 76
         Top = 1
         Width = 380
-        Height = 26
+        Height = 28
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1856,6 +1877,9 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 1
         OnMouseEnter = QuelllabelMouseEnter
+        ExplicitLeft = 99
+        ExplicitWidth = 326
+        ExplicitHeight = 26
       end
     end
   end
@@ -17691,17 +17715,17 @@ object FreePDF64_Form: TFreePDF64_Form
           item
             Image.Data = {
               89504E470D0A1A0A0000000D4948445200000080000000800806000000C33E61
-              CB000000097048597300000B1300000B1301009A9C180000011C49444154789C
-              EDDBB10D8330004541F6661376621CEA042670112576F4EEA4DF5BF02A4BDE36
-              00000000000000000000000000008015EDF78EC1F669A7E3EBCE7BAFC1CE69A7
-              E3EB041027803801C409204E0071028813409C00E2041027803801C409204E00
-              71028813409C00E2041027803801C409204E0071028813409C00E20410278038
-              012CE4798479FE78D7360EE09A70AEE483D4E725EEE86754767CF82DFF920004
-              30FDC3AF3201C42780F804109F00E213407CC9005C04C52F826670151C278038
-              01C409204E0071028813409C00E2041027803801C409204E0071028813409C00
-              E2041027803801C409204E0071028813409C00E2041027803801C40920EE7984
-              790CE6A1260000000000000000000000000000B0A037AD31AAA9C64CC2F80000
-              000049454E44AE426082}
+              CB000000017352474200AECE1CE90000000467414D410000B18F0BFC61050000
+              00097048597300000B1100000B11017F645F91000000FC49444154785EEDDB31
+              0AC2401440C168E949ECBDFF11EC3D89AD26249522368A8B6F063EBB45AAF060
+              614926000000000000000000000000000000000000809F3ACF737B33CB3319FB
+              6D254A0071028813409C00E2041027803801C409204E0071028813409C00E204
+              1027803801C409204E007102881340DC6E5B47F48D8F338FF31CD6ED4BD7792E
+              EBF6A34EDB3A94910358BED0FD2743BE6B47409C00E2041027803801C409204E
+              00712E829EA52E826AFC1EFEC0111027803801C409204E0071028813409C00E2
+              041027803801C409204E0071028813409C00E2041027803801C4090000000000
+              00000000000000000000000000006020D3740713151A865D2344950000000049
+              454E44AE426082}
           end>
       end
       item
