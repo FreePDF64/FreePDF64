@@ -87,7 +87,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Right = 4
       Margins.Bottom = 4
       Align = alClient
-      ButtonHeight = 45
+      ButtonHeight = 36
       ButtonWidth = 38
       Caption = 'ToolBar1'
       Images = VirtualImageList1
@@ -1146,8 +1146,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnSelectItem = LMDShellList2SelectItem
-        ExplicitTop = 29
-        ExplicitHeight = 455
       end
       object ListBoxR: TListBox
         Left = 142
@@ -1386,6 +1384,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Margins.Bottom = 4
           Align = alRight
           AutoDropDown = True
+          AutoDropDownWidth = True
           Style = csDropDownList
           Color = clBtnFace
           Ctl3D = True
@@ -1419,9 +1418,6 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentFont = False
           TabOrder = 1
           OnMouseEnter = ZiellabelMouseEnter
-          ExplicitLeft = 99
-          ExplicitWidth = 154
-          ExplicitHeight = 26
         end
       end
     end
@@ -1623,8 +1619,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitTop = 29
-      ExplicitHeight = 456
     end
     object FavLbL: TListBox
       Left = 1311
@@ -1844,6 +1838,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Bottom = 4
         Align = alRight
         AutoDropDown = True
+        AutoDropDownWidth = True
         Style = csDropDownList
         Color = clBtnFace
         Ctl3D = True
@@ -1877,9 +1872,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 1
         OnMouseEnter = QuelllabelMouseEnter
-        ExplicitLeft = 99
-        ExplicitWidth = 326
-        ExplicitHeight = 26
       end
     end
   end
@@ -2200,6 +2192,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object VersteckteDateienanzeigen1: TMenuItem
         Caption = 'Versteckte Dateien anzeigen'
+        Checked = True
         OnClick = VersteckteDateienanzeigen1Click
       end
       object N4: TMenuItem
@@ -19085,7 +19078,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 411
   end
   object LMDShellRestartDialog1: TLMDShellRestartDialog
-    Left = 915
-    Top = 291
+    Left = 967
+    Top = 259
   end
 end

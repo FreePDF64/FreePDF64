@@ -2041,14 +2041,11 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '12.02.2025';
+  Datum := '14.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
-  ShowMessage('>>> Aktuelle Programminformationen <<<' + #13 + #13 +
-    LMDVersionInfo1.ProductName + ' Version ' + LMDVersionInfo1.ProductVersion +
-    ' - 64 bit (' + Datum + ')');
-  ShellExecute(Application.Handle, 'open',
-    PChar('https://github.com/FreePDF64/FreePDF64/releases'), NIL, NIL,
-    SW_NORMAL);
+  if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
+                   #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
+    ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/releases'), NIL, NIL, SW_NORMAL);
 end;
 
 // Wasserzeichen...
@@ -2803,7 +2800,6 @@ begin
       mtError, [mbOk]);
     Exit;
   end;
-
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
     Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
@@ -3781,33 +3777,12 @@ begin
   LMDShellList2.SetFocus;
 end;
 
-// Max. Breite der ComboBox
-function MaxValueCB(Box: TComboBox): Integer;
-var
-  I, max: Integer;
-begin
-  // der Variablen max die oberste Zahl in der ComboBox zugewiesen
-  max := Box.Canvas.TextWidth(Box.Items[0]);
-  // for-Schleife, alle Zahlen der ComboBox werden durchgegangen
-  for I := 0 to Box.Items.Count - 1 do
-  begin
-    // wenn eine Zahl größer als max ist wird diese Zahl in der Variablen max gespeichert
-    if max < Box.Canvas.TextWidth(Box.Items[I]) then
-      max := Box.Canvas.TextWidth(Box.Items[I]);
-  end;
-  // der Rückgabewert, also die größte Zahl
-  Result := max;
-end;
-
 procedure TFreePDF64_Form.ComboBoxLDropDown(Sender: TObject);
 begin
   FavClose;
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
-    ComboBoxL.Items.Add(LMDShellFolder1.ActiveFolder.PathName);
-
-  SendMessage(ComboBoxL.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxL) + 10, 0);
+    ComboBoxL.Items.Insert(0, LMDShellFolder1.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.ComboBoxRDropDown(Sender: TObject);
@@ -3815,10 +3790,7 @@ begin
   FavClose;
   // Keine doppelten Einträge zulassen...
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
-    ComboBoxR.Items.Add(LMDShellFolder2.ActiveFolder.PathName);
-
-  SendMessage(ComboBoxR.Handle, CB_SETDROPPEDWIDTH,
-    MaxValueCB(ComboBoxR) + 10, 0);
+    ComboBoxR.Items.Insert(0, LMDShellFolder2.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.ConfigBtnClick(Sender: TObject);
@@ -5579,7 +5551,7 @@ begin
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
-    ComboBoxL.Items.Add(LMDShellFolder1.ActiveFolder.PathName);
+    ComboBoxL.Items.Insert(0, LMDShellFolder1.ActiveFolder.PathName);
 
   SB_Left;
 
@@ -5620,7 +5592,7 @@ begin
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
-    ComboBoxR.Items.Add(LMDShellFolder2.ActiveFolder.PathName);
+    ComboBoxR.Items.Insert(0, LMDShellFolder2.ActiveFolder.PathName);
 
   SB_Right;
 
@@ -7030,8 +7002,7 @@ end;
 
 procedure TFreePDF64_Form.MonitorBtnMouseEnter(Sender: TObject);
 begin
-  FreePDF64_Form.MonitorBtn.Hint :=
-    'Schnelles Überwachung-AN/-AUS durch rechte Maustaste';
+  FreePDF64_Form.MonitorBtn.Hint := 'Schnelles Überwachung-AN/-AUS durch rechte Maustaste';
 
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
