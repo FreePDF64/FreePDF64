@@ -1,4 +1,4 @@
-14.02.2025 V6.2.4
+15.02.2025 V6.2.4
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 Fix -> Update ExifTool auf neueste Version.
 Fix -> Kosmetische Veränderungen an der Oberfläche vorgenommen.

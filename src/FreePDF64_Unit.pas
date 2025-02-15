@@ -2041,7 +2041,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '14.02.2025';
+  Datum := '15.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2800,48 +2800,49 @@ begin
       mtError, [mbOk]);
     Exit;
   end;
-  if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+  if Self.Visible then
   begin
-    Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L ' + GE +
-      ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-      IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-      LMDShellList1.Selected.Caption + '"';
-  end
-  else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
-  begin
-    Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
-    Befehlszeile := ExifTool + ' -L ' + GE +
-      ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-      IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-      LMDShellList2.Selected.Caption + '"';
-  end
-  else
-  begin
-    MessageDlgCenter
-      ('Datei-Informationen anzeigen: Bitte EINE Datei aus dem Quell- oder Zielverzeichnis auswählen!',
-      mtInformation, [mbOk]);
-    Exit;
-  end;
+    if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
+    begin
+      Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+      Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+                      IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption + '"';
+    end
+    else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+    begin
+      Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+      Befehlszeile := ExifTool + ' -L ' + GE +
+        ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+        IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+        LMDShellList2.Selected.Caption + '"';
+    end
+    else
+    begin
+      MessageDlgCenter
+        ('Datei-Informationen anzeigen: Bitte EINE Datei aus dem Quell- oder Zielverzeichnis auswählen!',
+        mtInformation, [mbOk]);
+      Exit;
+    end;
 
-  // DOS-Ausgabe nach Memo1
-  GetDosOutput(Memo1, Befehlszeile, Work);
-  // Zur ersten Memo-Zeile gehen...
-  Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
-  if Memo1.Lines.Count > 0 then
-  begin
-    I := TextHoehe(Memo1.Font, Memo1.Text);
-    I := (I * Memo1.Lines.Count) + MHA;
-    if I < Memo1.Parent.Height then
-      Exit;
-    if FreePDF64_Form.Height < 400 then
-      Exit;
-    if I >= (FreePDF64_Form.Height - 350) then
-      I := FreePDF64_Form.Height - 350;
-    PDFPanel.Height := I;
+    // DOS-Ausgabe nach Memo1
+    GetDosOutput(Memo1, Befehlszeile, Work);
+    // Zur ersten Memo-Zeile gehen...
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
+    if Memo1.Lines.Count > 0 then
+    begin
+      I := TextHoehe(Memo1.Font, Memo1.Text);
+      I := (I * Memo1.Lines.Count) + MHA;
+      if I < Memo1.Parent.Height then
+        Exit;
+      if FreePDF64_Form.Height < 400 then
+        Exit;
+      if I >= (FreePDF64_Form.Height - 350) then
+        I := FreePDF64_Form.Height - 350;
+      PDFPanel.Height := I;
+    end;
+    MemoBtn.Visible := True;
+    Info_Anzeigen := False;
   end;
-  MemoBtn.Visible := True;
-  Info_Anzeigen := False;
 end;
 
 procedure TFreePDF64_Form.PDFFontsBtnClick(Sender: TObject);
