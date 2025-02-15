@@ -357,6 +357,7 @@ type
     ToolButton7: TToolButton;
     MemoBtn: TToolButton;
     SuchenHistorylschen1: TMenuItem;
+    Systray_Taskleiste: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -585,6 +586,7 @@ type
     procedure Memo1ContextPopup(Sender: TObject; MousePos: TPoint;
       var Handled: Boolean);
     procedure SuchenHistorylschen1Click(Sender: TObject);
+    procedure Systray_TaskleisteClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2452,6 +2454,7 @@ begin
     WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
     WriteBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
     WriteBool('Start', 'System Tray', InDenTray.Checked);
+    WriteBool('Start', 'System Tray/Taskbar', Systray_Taskleiste.Checked);
     WriteBool('Start', 'Splashscreen', Splash1.Checked);
     WriteBool('Start', 'Minimize', KlickaufX.Checked);
     WriteBool('Start', 'Autostart', Autostart.Checked);
@@ -2564,6 +2567,14 @@ begin
   LMDShellAppletLoader1.Execute;
 end;
 
+procedure TFreePDF64_Form.Systray_TaskleisteClick(Sender: TObject);
+begin
+  if Systray_Taskleiste.Checked then
+    Systray_Taskleiste.Checked := False
+  else
+    Systray_Taskleiste.Checked := True;
+end;
+
 procedure TFreePDF64_Form.TaskManager1Click(Sender: TObject);
 begin
   ShellExecute(HWND(NIL), 'open', 'taskmgr', '', '', SW_SHOWNORMAL);
@@ -2607,11 +2618,18 @@ begin
   // Ist die FreePDF64_Form nun sichtbar?
 //  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
  if Self.Visible then
-  begin
-    FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible      := True;
-    Timer2.Enabled         := False;
-  end;
+ begin
+    if Systray_Taskleiste.Checked then
+    begin
+      FreePDF64_Form.Visible := False;
+      TrayIcon1.Visible      := True;
+      Timer2.Enabled         := False;
+    end else
+    begin
+      FreePDF64_Form.WindowState := wsMinimized;
+      Timer2.Enabled             := False;
+    end;
+ end;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -4320,8 +4338,12 @@ begin
     else
       AutospalteJN := False;
 
-    FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible := True;
+    if Systray_Taskleiste.Checked then
+    begin
+      FreePDF64_Form.Visible := False;
+      TrayIcon1.Visible := True;
+    end else
+      FreePDF64_Form.WindowState := wsMinimized;
   end;
 end;
 
@@ -4380,6 +4402,7 @@ begin
           VersteckteDateienanzeigen1.Checked);
         InDenTray.Checked := ReadBool('Start', 'System Tray',
           InDenTray.Checked);
+        Systray_Taskleiste.Checked := ReadBool('Start', 'System Tray/Taskbar', Systray_Taskleiste.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
         DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick',
           DoppelK.Checked);
@@ -4842,8 +4865,12 @@ begin
     else
       AutospalteJN := False;
 
-    FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible := True;
+    if Systray_Taskleiste.Checked then
+    begin
+     FreePDF64_Form.Visible := False;
+      TrayIcon1.Visible := True;
+    end else
+     FreePDF64_Form.WindowState := wsMinimized;
   end
   else
     inherited;
@@ -4864,7 +4891,7 @@ end;
 
 procedure TFreePDF64_Form.FormShow(Sender: TObject);
 var
-  c, I, ie1: Integer;
+  c, i, ie1: Integer;
   IniDat: TIniFile;
   IniFile, ies, s, s1, z1: string;
   tmpt: TLMDShellListOptions;
@@ -5198,54 +5225,50 @@ begin
           (LMDShellFolder2.RootFolder);
 
       // Suche-SearchField lesen
-      for I := 1 to 254 do
+      for i := 0 to 254 do
       begin
-        iec[I - 1] := IniDat.ReadString('Suche',
-          'SearchField' + IntToStr(I - 1), s);
-        if iec[I - 1] = '' then
+        iec[i] := IniDat.ReadString('Suche', 'SearchField' + IntToStr(i), s);
+        if iec[i] = '' then
           Break;
-        Suche_Form.SearchField.Items.Insert(I - 1, iec[I - 1]);
+        Suche_Form.SearchField.Items.Insert(i, iec[i]);
       end;
       // Suche-FileField lesen
-      for I := 1 to 254 do
+      for i := 0 to 254 do
       begin
-        iec[I - 1] := IniDat.ReadString('Suche',
-          'FileField' + IntToStr(I - 1), s);
-        if iec[I - 1] = '' then
+        iec[i] := IniDat.ReadString('Suche', 'FileField' + IntToStr(i), s);
+        if iec[i] = '' then
           Break;
-        Suche_Form.FileField.Items.Insert(I - 1, iec[I - 1]);
+        Suche_Form.FileField.Items.Insert(i, iec[i]);
       end;
       // Suche-Textsuche lesen
-      for I := 1 to 254 do
+      for i := 0 to 254 do
       begin
-        iec[I - 1] := IniDat.ReadString('Suche',
-          'Textsearch' + IntToStr(I - 1), s);
-        if iec[I - 1] = '' then
+        iec[i] := IniDat.ReadString('Suche', 'Textsearch' + IntToStr(i), s);
+        if iec[i] = '' then
           Break;
-        Suche_Form.TextCB.Items.Insert(I - 1, iec[I - 1]);
+        Suche_Form.TextCB.Items.Insert(i, iec[i]);
       end;
 
       // Filter lesen
-      for ie1 := 1 to 10 do
+      for ie1 := 0 to 9 do
       begin
-        iec[ie1 - 1] := IniDat.ReadString('Filter',
-          'Filter' + IntToStr(ie1 - 1), ies);
-        if iec[ie1 - 1] = '' then
+        iec[ie1] := IniDat.ReadString('Filter', 'Filter' + IntToStr(ie1), ies);
+        if iec[ie1] = '' then
           Break;
-        Filter_Form.FilterCB.Items.Insert(ie1 - 1, iec[ie1 - 1]);
+        Filter_Form.FilterCB.Items.Insert(ie1, iec[ie1]);
       end;
 
       // Zusatz lesen
       Zusatz_Form.ZusatzCB.Items.Clear;
-      for ie1 := 1 to 20 do
+      for ie1 := 0 to 19 do
       begin
         Zusatz_Form.ZusatzCB.Items.BeginUpdate;
         try
-          iec[ie1 - 1] := IniDat.ReadString('Zusatz',
-            'Zeichenketten' + IntToStr(ie1 - 1), ies);
-          if iec[ie1 - 1] = '' then
+          iec[ie1] := IniDat.ReadString('Zusatz',
+            'Zeichenketten' + IntToStr(ie1), ies);
+          if iec[ie1] = '' then
             Break;
-          Zusatz_Form.ZusatzCB.Items.Add(iec[ie1 - 1]);
+          Zusatz_Form.ZusatzCB.Items.Add(iec[ie1]);
         finally
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;

@@ -2310,8 +2310,13 @@ object FreePDF64_Form: TFreePDF64_Form
           OnClick = Formatverz_OnlyDateClick
         end
       end
+      object Systray_Taskleiste: TMenuItem
+        Caption = 'In System Tray verkleinern (sonst Taskleiste)'
+        Checked = True
+        OnClick = Systray_TaskleisteClick
+      end
       object InDenTray: TMenuItem
-        Caption = 'In den System Tray beim Start'
+        Caption = 'In System Tray/Taskleiste beim Start'
         OnClick = InDenTrayClick
       end
       object Splash1: TMenuItem
