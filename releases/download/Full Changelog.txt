@@ -1,7 +1,8 @@
-15.02.2025 V6.2.4
+16.02.2025 V6.2.4
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 Fix -> Update ExifTool auf neueste Version.
 Fix -> Kosmetische Veränderungen an der Oberfläche vorgenommen.
+Fix -> QPDF-Update auf Version 11.10.1.
 09.02.2025 V6.2.3
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
 Fix -> QPDF-Update auf Version 11.10.0.

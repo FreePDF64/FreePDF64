@@ -2043,7 +2043,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '15.02.2025';
+  Datum := '16.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -5070,7 +5070,6 @@ begin
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
       'xpdf\xpdfreader\xpdf.exe';
 
-  Application.HintHidePause := 10000; // 10 Sekunden
   Memo1.Height := 64;
 
   // ============================================================================
