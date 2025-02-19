@@ -1,4 +1,4 @@
-18.02.2025 V6.3.0
+19.02.2025 V6.3.0
 Fix/Update -> Die Suche nochmals grundlegend optimiert und neue Funktionen hinzugefügt.
 17.02.2025 V6.2.4
 Fix -> Codeoptimierungen an den Suche-Routinen durchgeführt.
