@@ -5994,7 +5994,8 @@ begin
   Memo1.Clear;
 
   if LMDShellList1.SelCount = 0 then
-    Exit
+    // war vorher: Exit
+    ParentFolderL.Click
   else if Image1.Visible then
     Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.PathName);
 end;
@@ -6062,7 +6063,8 @@ begin
   Memo1.Clear;
 
   if LMDShellList2.SelCount = 0 then
-    Exit
+    // war vorher: Exit
+    ParentFolderR.Click
   else if Image2.Visible then
     Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.PathName);
 end;
