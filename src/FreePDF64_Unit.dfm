@@ -1145,6 +1145,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnColumnClick = LMDShellList2ColumnClick
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
+        OnMouseDown = LMDShellList2MouseDown
         OnSelectItem = LMDShellList2SelectItem
       end
       object ListBoxR: TListBox
@@ -1618,6 +1619,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnDblClick = LMDShellList1DblClick
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
+      OnMouseDown = LMDShellList1MouseDown
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox

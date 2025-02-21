@@ -587,6 +587,8 @@ type
       var Handled: Boolean);
     procedure SuchenHistorylschen1Click(Sender: TObject);
     procedure Systray_TaskleisteClick(Sender: TObject);
+    procedure LMDShellList1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure LMDShellList2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2043,7 +2045,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '20.02.2025';
+  Datum := '21.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -5994,8 +5996,7 @@ begin
   Memo1.Clear;
 
   if LMDShellList1.SelCount = 0 then
-    // war vorher: Exit
-    ParentFolderL.Click
+    Exit
   else if Image1.Visible then
     Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.PathName);
 end;
@@ -6063,8 +6064,7 @@ begin
   Memo1.Clear;
 
   if LMDShellList2.SelCount = 0 then
-    // war vorher: Exit
-    ParentFolderR.Click
+    Exit
   else if Image2.Visible then
     Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.PathName);
 end;
@@ -6145,6 +6145,13 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.LMDShellList1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Button = mbMiddle then
+    ParentFolderL.Click;
+end;
+
 procedure TFreePDF64_Form.LMDShellList2KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -6177,6 +6184,13 @@ begin
     if LMDShellList2.SelCount = 0 then
       LMDShellList2.Selected := LMDShellList2.ItemFocused;
   end;
+end;
+
+procedure TFreePDF64_Form.LMDShellList2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
+begin
+  if Button = mbMiddle then
+    ParentFolderR.Click;
 end;
 
 procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject;
