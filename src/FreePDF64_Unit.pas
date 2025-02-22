@@ -1742,8 +1742,7 @@ end;
 procedure TFreePDF64_Form.RootLClick(Sender: TObject);
 begin
   FavClose;
-  LMDShellFolder1.ChDir(IncludeTrailingBackslash
-    (ExtractFileDrive(LMDShellFolder1.ActiveFolder.PathName)));
+  LMDShellFolder1.ChDir(IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder1.ActiveFolder.PathName)));
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
 end;
@@ -1751,8 +1750,7 @@ end;
 procedure TFreePDF64_Form.RootRClick(Sender: TObject);
 begin
   FavClose;
-  LMDShellFolder2.ChDir(IncludeTrailingBackslash
-    (ExtractFileDrive(LMDShellFolder2.ActiveFolder.PathName)));
+  LMDShellFolder2.ChDir(IncludeTrailingBackslash(ExtractFileDrive(LMDShellFolder2.ActiveFolder.PathName)));
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
 end;
@@ -2045,7 +2043,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '21.02.2025';
+  Datum := '22.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2065,12 +2063,16 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellTree2Change(Sender: TObject; Node: TTreeNode);
+var
+  s: String;
 begin
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
+  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder1.ActiveFolder.PathName;
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
   // JPEG-Fenster schließen
   if Image2.Visible then
@@ -2299,6 +2301,8 @@ end;
 
 // Beide Baumstrukturen anzeigen
 procedure TFreePDF64_Form.ShowFolders1Click(Sender: TObject);
+var
+  s: String;
 begin
   // Show Folders Pane
   if ShowFolders1.Checked then
@@ -2328,20 +2332,27 @@ begin
     Panel3.Visible := True;
   end;
 
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
-  Ziellabel.Caption := 'Ziel - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width))
+  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder1.ActiveFolder.PathName;
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+
+  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder2.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder2.ActiveFolder.PathName;
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) +
+                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
+                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width))
 end;
 
 // Nur linke Baumstruktur anzeigen
 procedure TFreePDF64_Form.ShowFolders_LeftClick(Sender: TObject);
+var
+  s: String;
 begin
   // Show Folders Pane
   if ShowFolders1.Checked then
@@ -2375,11 +2386,13 @@ begin
     Panel2.Visible := True;
   end;
 
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
+  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder1.ActiveFolder.PathName;
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 end;
 
 procedure TFreePDF64_Form.Zielverzeichnisanzeigen1Click(Sender: TObject);
@@ -3593,12 +3606,10 @@ end;
 procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
   I: Integer;
-  Param, XPDFReader, speicher: String;
-  fromf: TextFile;
+  Param, XPDFReader: String;
 begin
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
   XPDFReader := Einstellungen_Form.Edit3.Text;
   PDFReader := XPDFReader;
 
@@ -3656,12 +3667,10 @@ begin
   then
   begin
     // XPDFReader aufrufen...
-    ShellExecute(Application.Handle, 'open', PChar(XPDFReader),
-      PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+    ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
     KillTask(XPDFReader);
   end
-  else if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or
-    (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
+  else if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
   // Ghostscript aufrufen...
   begin
     Ghostscript := Einstellungen_Form.Edit1.Text;
@@ -3669,10 +3678,8 @@ begin
     if ((LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True) or
       ((LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True) then
     begin
-      Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
-        Auswahl + '"';
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
-        '', SW_HIDE);
+      Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' + Auswahl + '"';
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param), '', SW_HIDE);
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
@@ -4077,10 +4084,9 @@ begin
       end;
   FavLbR.Visible := False;
   Ziel := IncludeTrailingBackslash(s);
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel) +
-    '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width))
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel) + '*.*', FreePDF64_Form.Canvas,
+                       Ziellabel.Width - (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
+                       ComboBoxR.Width))
 end;
 
 procedure TFreePDF64_Form.FavLbRMouseDown(Sender: TObject; Button: TMouseButton;
@@ -4895,7 +4901,7 @@ procedure TFreePDF64_Form.FormShow(Sender: TObject);
 var
   c, i, ie1: Integer;
   IniDat: TIniFile;
-  IniFile, ies, s, s1, z1: string;
+  IniFile, ies, s, s1, s2, z1: string;
   tmpt: TLMDShellListOptions;
   tmpt2: TLMDShellTreeOptions;
   iec: Array [0 .. 255] of String;
@@ -5339,16 +5345,21 @@ begin
     Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
-  Ziellabel.Caption := 'Ziel - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width));
+  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+    s2 := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s2 := LMDShellFolder1.ActiveFolder.PathName;
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s2) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+
+  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
+    s2 := LMDShellFolder2.ActiveFolder.DisplayName
+  else
+    s2 := LMDShellFolder2.ActiveFolder.PathName;
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s2) +
+                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
+                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
   if LMDShellList1.GridLines then
     Gitternetzlinien1.Checked := True
@@ -5549,6 +5560,7 @@ end;
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
 var
   I, j: Integer;
+  s: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   if LMDShellFolder1.BackwardPathList.Count >= 2 then
@@ -5568,11 +5580,13 @@ begin
       LMDShellList1.ItemIndex := 0;
   end;
 
-  Quelllabel.Caption := 'Quelle - ' +
-    MinimizeName(IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-    + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width +
-    ComboBoxL.Width));
+  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder1.ActiveFolder.PathName;
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
+                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
@@ -5591,6 +5605,7 @@ end;
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
 var
   I, j: Integer;
+  s: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   I := LMDShellFolder2.BackwardPathList.Count - 2;
@@ -5609,11 +5624,13 @@ begin
       LMDShellList2.ItemIndex := 0;
   end;
 
+  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
+    s := LMDShellFolder2.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(Ziel) +
-    '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width));
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
+                       (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
   // Keine doppelten Einträge zulassen...
   if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then

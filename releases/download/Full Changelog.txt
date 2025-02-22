@@ -1,4 +1,4 @@
-21.02.2025 V6.3.0
+22.02.2025 V6.3.0
 Fix/Update -> Die Suche nochmals grundlegend optimiert und neue Funktionen hinzugefügt.
 Fix -> Update ExifTool auf neueste Version.
 17.02.2025 V6.2.4
