@@ -2060,20 +2060,17 @@ procedure TFreePDF64_Form.ZiellabelMouseEnter(Sender: TObject);
 begin
   Ziellabel.Hint := IncludeTrailingBackslash
     (LMDShellFolder2.ActiveFolder.PathName);
+
+end;
+
+// Abfrage auf :: am Anfang von LMDShellFolder.ActiveFolder.DisplayName
+function StartsWithColons(const AText: string): Boolean;
+begin
+  Result := (Length(AText) > 0) and (AText[1] = ':') and (AText[2] = ':');
 end;
 
 procedure TFreePDF64_Form.LMDShellTree2Change(Sender: TObject; Node: TTreeNode);
-var
-  s: String;
 begin
-  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
-    s := LMDShellFolder1.ActiveFolder.DisplayName
-  else
-    s := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
-                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
-                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
-
   // JPEG-Fenster schließen
   if Image2.Visible then
   begin
@@ -2332,7 +2329,7 @@ begin
     Panel3.Visible := True;
   end;
 
-  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
     s := LMDShellFolder1.ActiveFolder.DisplayName
   else
     s := LMDShellFolder1.ActiveFolder.PathName;
@@ -2340,10 +2337,10 @@ begin
                         '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
                         ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
-  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
-    s := LMDShellFolder2.ActiveFolder.DisplayName
+  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
   else
-    s := LMDShellFolder2.ActiveFolder.PathName;
+    s := LMDShellFolder1.ActiveFolder.PathName;
   Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) +
                        '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
                        ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width))
@@ -2386,7 +2383,7 @@ begin
     Panel2.Visible := True;
   end;
 
-  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
     s := LMDShellFolder1.ActiveFolder.DisplayName
   else
     s := LMDShellFolder1.ActiveFolder.PathName;
@@ -3806,19 +3803,32 @@ begin
 end;
 
 procedure TFreePDF64_Form.ComboBoxLDropDown(Sender: TObject);
+var
+  s: String;
 begin
   FavClose;
+  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
+    s := LMDShellFolder1.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder1.ActiveFolder.PathName;
   // Keine doppelten Einträge zulassen...
-  if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
-    ComboBoxL.Items.Insert(0, LMDShellFolder1.ActiveFolder.PathName);
+  if ComboBoxL.Items.IndexOf(s) = -1 then
+    ComboBoxL.Items.Insert(0, s);
 end;
 
 procedure TFreePDF64_Form.ComboBoxRDropDown(Sender: TObject);
+var
+  s: String;
 begin
   FavClose;
+
+  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
+    s := LMDShellFolder2.ActiveFolder.DisplayName
+  else
+    s := LMDShellFolder2.ActiveFolder.PathName;
   // Keine doppelten Einträge zulassen...
-  if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
-    ComboBoxR.Items.Insert(0, LMDShellFolder2.ActiveFolder.PathName);
+  if ComboBoxR.Items.IndexOf(s) = -1 then
+    ComboBoxR.Items.Insert(0, s);
 end;
 
 procedure TFreePDF64_Form.ConfigBtnClick(Sender: TObject);
@@ -5345,7 +5355,7 @@ begin
     Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
-  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
     s2 := LMDShellFolder1.ActiveFolder.DisplayName
   else
     s2 := LMDShellFolder1.ActiveFolder.PathName;
@@ -5353,7 +5363,7 @@ begin
                         '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
                         ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
-  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
     s2 := LMDShellFolder2.ActiveFolder.DisplayName
   else
     s2 := LMDShellFolder2.ActiveFolder.PathName;
@@ -5580,17 +5590,16 @@ begin
       LMDShellList1.ItemIndex := 0;
   end;
 
-  if LMDShellFolder1.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
     s := LMDShellFolder1.ActiveFolder.DisplayName
   else
     s := LMDShellFolder1.ActiveFolder.PathName;
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
                         '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
                         ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
-
   // Keine doppelten Einträge zulassen...
-  if ComboBoxL.Items.IndexOf(LMDShellFolder1.ActiveFolder.PathName) = -1 then
-    ComboBoxL.Items.Insert(0, LMDShellFolder1.ActiveFolder.PathName);
+  if ComboBoxL.Items.IndexOf(s) = -1 then
+    ComboBoxL.Items.Insert(0, s);
 
   SB_Left;
 
@@ -5624,17 +5633,16 @@ begin
       LMDShellList2.ItemIndex := 0;
   end;
 
-  if LMDShellFolder2.ActiveFolder.DisplayName = 'Dieser PC' then
+  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
     s := LMDShellFolder2.ActiveFolder.DisplayName
   else
     s := LMDShellFolder2.ActiveFolder.PathName;
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
   Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
                        (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
-
   // Keine doppelten Einträge zulassen...
-  if ComboBoxR.Items.IndexOf(LMDShellFolder2.ActiveFolder.PathName) = -1 then
-    ComboBoxR.Items.Insert(0, LMDShellFolder2.ActiveFolder.PathName);
+  if ComboBoxR.Items.IndexOf(s) = -1 then
+    ComboBoxR.Items.Insert(0, s);
 
   SB_Right;
 

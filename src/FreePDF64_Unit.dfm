@@ -1026,6 +1026,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Indent = 29
         ParentColor = False
         ParentFont = False
+        ShowRoot = False
         TabOrder = 1
         TabStop = False
         OnChange = LMDShellTree2Change
@@ -1033,7 +1034,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Folder = LMDShellFolder2
         CompressedColor = clBlue
         Filtered = False
-        Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toShellMenu]
+        Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
         ShowCheckBoxes = False
         ShowNonFolders = False
         AutoContextMenus = False
@@ -1458,6 +1459,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Indent = 29
       ParentColor = False
       ParentFont = False
+      ShowRoot = False
       TabOrder = 0
       TabStop = False
       OnChange = LMDShellTree1Change
@@ -1465,7 +1467,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Folder = LMDShellFolder1
       CompressedColor = clBlue
       Filtered = False
-      Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toShellMenu]
+      Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
       ShowCheckBoxes = False
       ShowNonFolders = False
       AutoContextMenus = False
