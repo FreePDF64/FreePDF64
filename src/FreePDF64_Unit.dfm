@@ -1419,7 +1419,9 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentBackground = False
           ParentFont = False
           TabOrder = 1
+          OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
+          ExplicitTop = 5
         end
       end
     end
@@ -1875,6 +1877,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentBackground = False
         ParentFont = False
         TabOrder = 1
+        OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
       end
     end

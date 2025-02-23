@@ -589,6 +589,8 @@ type
     procedure Systray_TaskleisteClick(Sender: TObject);
     procedure LMDShellList1MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure LMDShellList2MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ZiellabelClick(Sender: TObject);
+    procedure QuelllabelClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2043,7 +2045,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '22.02.2025';
+  Datum := '23.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2056,11 +2058,9 @@ begin
   WZSTTB.Click;
 end;
 
-procedure TFreePDF64_Form.ZiellabelMouseEnter(Sender: TObject);
+procedure TFreePDF64_Form.ZiellabelClick(Sender: TObject);
 begin
-  Ziellabel.Hint := IncludeTrailingBackslash
-    (LMDShellFolder2.ActiveFolder.PathName);
-
+  ParentFolderR.Click;
 end;
 
 // Abfrage auf :: am Anfang von LMDShellFolder.ActiveFolder.DisplayName
@@ -2552,10 +2552,20 @@ begin
     LMDShellList2.ShowProperties;
 end;
 
+procedure TFreePDF64_Form.QuelllabelClick(Sender: TObject);
+begin
+  ParentFolderL.Click;
+end;
+
 procedure TFreePDF64_Form.QuelllabelMouseEnter(Sender: TObject);
 begin
-  Quelllabel.Hint := IncludeTrailingBackslash
-    (LMDShellFolder1.ActiveFolder.PathName);
+  Quelllabel.Hint := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + #13 +
+                     '(LMB: Eine Ebene höher)';
+end;
+procedure TFreePDF64_Form.ZiellabelMouseEnter(Sender: TObject);
+begin
+  Ziellabel.Hint := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + #13 +
+                    '(LMB: Eine Ebene höher)';
 end;
 
 procedure TFreePDF64_Form.RefreshBtClick(Sender: TObject);
