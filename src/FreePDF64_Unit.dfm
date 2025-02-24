@@ -1421,7 +1421,6 @@ object FreePDF64_Form: TFreePDF64_Form
           TabOrder = 1
           OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
-          ExplicitTop = 5
         end
       end
     end

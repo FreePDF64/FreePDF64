@@ -2045,7 +2045,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '23.02.2025';
+  Datum := '24.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -3797,7 +3797,7 @@ end;
 procedure TFreePDF64_Form.ComboBoxLCloseUp(Sender: TObject);
 begin
   if System.SysUtils.DirectoryExists(ComboBoxL.Items[ComboBoxL.ItemIndex]) then
-    LMDShellFolder1.RootFolder := ComboBoxL.Items[ComboBoxL.ItemIndex]
+    LMDShellFolder1.ChDir(ComboBoxL.Items[ComboBoxL.ItemIndex])
   else
     ComboBoxL.Items.Delete(ComboBoxL.ItemIndex);
   LMDShellList1.SetFocus;
@@ -3806,7 +3806,7 @@ end;
 procedure TFreePDF64_Form.ComboBoxRCloseUp(Sender: TObject);
 begin
   if System.SysUtils.DirectoryExists(ComboBoxR.Items[ComboBoxR.ItemIndex]) then
-    LMDShellFolder2.RootFolder := ComboBoxR.Items[ComboBoxR.ItemIndex]
+    LMDShellFolder2.ChDir(ComboBoxR.Items[ComboBoxR.ItemIndex])
   else
     ComboBoxR.Items.Delete(ComboBoxR.ItemIndex);
   LMDShellList2.SetFocus;
