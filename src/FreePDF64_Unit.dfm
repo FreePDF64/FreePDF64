@@ -1868,6 +1868,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Align = alClient
         BevelOuter = bvNone
         Caption = 'Quelle'
+        Color = clGradientActiveCaption
         Font.Charset = ANSI_CHARSET
         Font.Color = clWindowText
         Font.Height = -15

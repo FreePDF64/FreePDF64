@@ -2607,9 +2607,9 @@ procedure TFreePDF64_Form.AngleichenTBClick(Sender: TObject);
 begin
   FavClose;
   if LMDShellList1.Focused then
-    LMDShellFolder2.RootFolder := LMDShellFolder1.ActiveFolder.PathName
+    LMDShellFolder2.ChDir(LMDShellFolder1.ActiveFolder.PathName)
   else
-    LMDShellFolder1.RootFolder := LMDShellFolder2.ActiveFolder.PathName;
+    LMDShellFolder1.ChDir(LMDShellFolder2.ActiveFolder.PathName);
   SB_Left;
   SB_Right;
 end;
@@ -5456,9 +5456,6 @@ begin
     end;
   end;
 
-  Quelllabel.Color := RGB(220, 220, 220);
-  Ziellabel.Color  := clBtnFace;
-
   // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
   s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
   s := s1;
@@ -6070,8 +6067,8 @@ begin
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
     IntToStr(Counter);
 
-  Quelllabel.Color := RGB(220, 220, 220);
-  Ziellabel.Color := clBtnFace;
+  Quelllabel.Color := clGradientActiveCaption;
+  Ziellabel.Color  := clBtnFace;
 end;
 
 procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
@@ -6142,7 +6139,7 @@ begin
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
     IntToStr(Counter);
 
-  Ziellabel.Color := RGB(220, 220, 220);
+  Ziellabel.Color  := clGradientActiveCaption;
   Quelllabel.Color := clBtnFace;
 end;
 
