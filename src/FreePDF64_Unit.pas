@@ -243,7 +243,6 @@ type
     FormatBtn: TSpeedButton;
     N10: TMenuItem;
     Autostart: TMenuItem;
-    Linker_FolderBtn: TToolButton;
     Panel_Right: TPanel;
     Panel3: TPanel;
     LMDShellTree2: TLMDShellTree;
@@ -269,8 +268,7 @@ type
     ExtractBtn: TToolButton;
     Sendenan1: TMenuItem;
     MailBtn: TToolButton;
-    ShowFolders_Left: TMenuItem;
-    Beide_FolderBtn: TToolButton;
+    FolderBtn: TToolButton;
     ImageCollection1: TImageCollection;
     VirtualImageList1: TVirtualImageList;
     ZielverzeichnisimExplorerffnen1: TMenuItem;
@@ -446,7 +444,6 @@ type
     procedure Exit1Click(Sender: TObject);
     procedure FormatverzClick(Sender: TObject);
     procedure AutostartClick(Sender: TObject);
-    procedure Linker_FolderBtnClick(Sender: TObject);
     procedure SplDblClick(Sender: TObject);
     procedure SplDblClick3(Sender: TObject);
     procedure PropertiesBtnClick(Sender: TObject);
@@ -476,8 +473,7 @@ type
     procedure ExtractBtnClick(Sender: TObject);
     procedure Btn_ViewClick(Sender: TObject);
     procedure Sendenan1Click(Sender: TObject);
-    procedure ShowFolders_LeftClick(Sender: TObject);
-    procedure Beide_FolderBtnClick(Sender: TObject);
+    procedure FolderBtnClick(Sender: TObject);
     procedure QuellBtnClick(Sender: TObject);
     procedure ZielBtnClick(Sender: TObject);
     procedure QuellBtnMouseEnter(Sender: TObject);
@@ -624,6 +620,7 @@ var
     Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
     Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
     ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
+  Baum: Byte;
   Hochkommata: String[1];
 
 implementation
@@ -2045,7 +2042,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '24.02.2025';
+  Datum := '26.02.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2108,7 +2105,7 @@ begin
   Exit1.Click;
 end;
 
-procedure TFreePDF64_Form.Beide_FolderBtnClick(Sender: TObject);
+procedure TFreePDF64_Form.FolderBtnClick(Sender: TObject);
 begin
   FavClose;
   ShowFolders1.Click;
@@ -2296,100 +2293,50 @@ begin
   end;
 end;
 
-// Beide Baumstrukturen anzeigen
+// Baumansichten durchschalten
 procedure TFreePDF64_Form.ShowFolders1Click(Sender: TObject);
-var
-  s: String;
 begin
-  // Show Folders Pane
-  if ShowFolders1.Checked then
+  FavClose;
+
+  // Beide Baumansichten nicht sichtbar? Dann linke Baumansicht einschalten
+  if not LMDShellTree1.Visible and not LMDShellTree2.Visible then
   begin
-    ShowFolders1.Checked := False;
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible := False;
-    Splitter4.Visible := False;
-    LMDShellTree1.Visible := False;
-    LMDShellTree2.Visible := False;
-    Panel_Left.Visible := False;
-    Panel_Right.Visible := False;
-    Panel2.Visible := False;
-    Panel3.Visible := False;
-  end
-  else
+    LMDShellTree1.Visible := True;
+    Splitter1.Visible     := True;
+    Panel_Left.Visible    := True;
+    Panel2.Visible        := True;
+    Splitter4.Visible     := False;
+    Panel_Right.Visible   := False;
+    Panel3.Visible        := False;
+    Baum                  := 1;
+  end else
+  // Linke Baumansicht sichtbar? Dann beide Baumansichten einschalten
+  if LMDShellTree1.Visible and not LMDShellTree2.Visible then
   begin
-    ShowFolders1.Checked := True;
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible := True;
-    Splitter4.Visible := True;
     LMDShellTree1.Visible := True;
     LMDShellTree2.Visible := True;
-    Panel_Left.Visible := True;
-    Panel_Right.Visible := True;
-    Panel2.Visible := True;
-    Panel3.Visible := True;
-  end;
-
-  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
-    s := LMDShellFolder1.ActiveFolder.DisplayName
-  else
-    s := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
-                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
-                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
-
-  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
-    s := LMDShellFolder1.ActiveFolder.DisplayName
-  else
-    s := LMDShellFolder1.ActiveFolder.PathName;
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) +
-                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width))
-end;
-
-// Nur linke Baumstruktur anzeigen
-procedure TFreePDF64_Form.ShowFolders_LeftClick(Sender: TObject);
-var
-  s: String;
-begin
-  // Show Folders Pane
-  if ShowFolders1.Checked then
+    Splitter1.Visible     := True;
+    Splitter4.Visible     := True;
+    Panel_Left.Visible    := True;
+    Panel_Right.Visible   := True;
+    Panel2.Visible        := True;
+    Panel3.Visible        := True;
+    Baum                  := 2;
+  end else
+  // Beide Baumansichten sichtbar? Dann beide Baumansichten abschalten
+  if LMDShellTree1.Visible and LMDShellTree2.Visible then
   begin
-    ShowFolders1.Checked := False;
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible := False;
-    Splitter4.Visible := False;
-    LMDShellTree1.Visible := False;
+      LMDShellTree1.Visible := False;
     LMDShellTree2.Visible := False;
-    Panel_Left.Visible := False;
-    Panel_Right.Visible := False;
-    Panel2.Visible := False;
-    Panel3.Visible := False;
+    Splitter1.Visible     := False;
+    Splitter4.Visible     := False;
+    Panel_Left.Visible    := False;
+    Panel_Right.Visible   := False;
+    Panel2.Visible        := False;
+    Panel3.Visible        := False;
+    Baum                  := 3;
   end;
-  // Show Folders Pane
-  if ShowFolders_Left.Checked then
-  begin
-    ShowFolders_Left.Checked := False;
-    Splitter1.Visible := False;
-    LMDShellTree1.Visible := False;
-    Panel_Left.Visible := False;
-    Panel2.Visible := False;
-  end
-  else
-  begin
-    ShowFolders_Left.Checked := True;
-    Splitter1.Visible := True;
-    LMDShellTree1.Visible := True;
-    Panel_Left.Visible := True;
-    Panel2.Visible := True;
-  end;
-
-  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
-    s := LMDShellFolder1.ActiveFolder.DisplayName
-  else
-    s := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
-                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
-                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+  AutoSize.Click;
 end;
 
 procedure TFreePDF64_Form.Zielverzeichnisanzeigen1Click(Sender: TObject);
@@ -2402,12 +2349,12 @@ begin
 
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
-    Beide_FolderBtn.Visible := False;
+    FolderBtn.Visible := False;
     ShowFolders1.Visible := False;
   end
   else
   begin
-    Beide_FolderBtn.Visible := True;
+    FolderBtn.Visible := True;
     ShowFolders1.Visible := True;
   end;
 end;
@@ -2462,8 +2409,7 @@ begin
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
     WriteBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
-    WriteBool('Start', 'ShowFolders', ShowFolders1.Checked);
-    WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
+    WriteInteger('Start', 'ShowFolders', Baum);
     WriteBool('Start', 'TargetView', Zielverzeichnisanzeigen1.Checked);
     WriteBool('Start', 'System Tray', InDenTray.Checked);
     WriteBool('Start', 'System Tray/Taskbar', Systray_Taskleiste.Checked);
@@ -3239,12 +3185,6 @@ begin
   end;
 end;
 
-procedure TFreePDF64_Form.Linker_FolderBtnClick(Sender: TObject);
-begin
-  FavClose;
-  ShowFolders_Left.Click;
-end;
-
 procedure TFreePDF64_Form.Image1Click(Sender: TObject);
 begin
   if Image1.Proportional then
@@ -3378,6 +3318,11 @@ procedure TFreePDF64_Form.Btn_NewFolderMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
   Btn_NewFolder.Flat := True;
+
+  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
+    LMDShellList1.ClearSelection
+  else if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
+    LMDShellList2.ClearSelection
 end;
 
 procedure TFreePDF64_Form.Btn_NewFolderMouseUp(Sender: TObject;
@@ -4393,6 +4338,7 @@ begin
   AutospalteJN := False;
   ShowVomTray := False;
   Suche_ItemAnzeigen := False;
+  Baum := 0;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
@@ -4684,7 +4630,9 @@ end;
 
 procedure TFreePDF64_Form.SuchenHistorylschen1Click(Sender: TObject);
 var
-  Msg: String;
+  IniDat: TIniFile;
+  IniFile, Msg: String;
+  i: Integer;
 begin
   Msg := 'Soll die Suchen nach-/Suchen in-/Textsuche-History im Suche-Fenster wirklich gelöscht werden?';
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
@@ -4692,6 +4640,35 @@ begin
     Suche_Form.SearchField.Items.Clear;
     Suche_Form.FileField.Items.Clear;
     Suche_Form.TextCB.Items.Clear;
+    try
+      IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
+      IniDat := TIniFile.Create(IniFile);
+      // Speichere beim Beenden des Programmes in die 'FreePDF64.ini'
+      with IniDat do
+        // Verlauf Suche-Form schreiben.
+        IniDat.EraseSection('Suche');
+        if Suche_Form.SearchField.Items.Count > 0 then
+          for i := 0 to Suche_Form.SearchField.Items.Count do
+            IniDat.WriteString('Suche', 'SearchField' + IntToStr(i), Suche_Form.SearchField.Items[i]);
+
+        if Suche_Form.FileField.Items.Count > 0 then
+          for i := 0 to Suche_Form.FileField.Items.Count do
+            IniDat.WriteString('Suche', 'FileField' + IntToStr(i), Suche_Form.FileField.Items[i]);
+
+        // Textsuche schreiben.
+        if Suche_Form.TextCB.Items.Count > 0 then
+        for i := 0 to Suche_Form.TextCB.Items.Count do
+          IniDat.WriteString('Suche', 'Textsearch' + IntToStr(i), Suche_Form.TextCB.Items[i]);
+
+      IniDat.WriteInteger('Suche', 'Top',    Suche_Form.Top);
+      IniDat.WriteInteger('Suche', 'Left',   Suche_Form.Left);
+      IniDat.WriteInteger('Suche', 'Height', Suche_Form.Height);
+      IniDat.WriteInteger('Suche', 'Width',  Suche_Form.Width);
+      // Speicher wird wieder freigeben
+      IniDat.Free;
+    except
+      Showmessage('Fehler festgestellt!');
+    end;
   end;
 end;
 
@@ -5026,8 +5003,7 @@ begin
         WriteInteger('Start', 'ColumnsR Width1', 100);
         WriteInteger('Start', 'ColumnsR Width2', 70);
         WriteInteger('Start', 'ColumnsR Width3', 100);
-        WriteBool('Start', 'ShowFolders', ShowFolders1.Checked);
-        WriteBool('Start', 'ShowFolders Left', ShowFolders_Left.Checked);
+        WriteInteger('Start', 'ShowFolders', Baum);
         WriteBool('Start', 'Autostart', Autostart.Checked);
         WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
         WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
@@ -5165,10 +5141,7 @@ begin
       Einstellungen_Form.PDF_Shrink2.Checked :=
         ReadBool('Format', 'Shrink PDF2',
         Einstellungen_Form.PDF_Shrink2.Checked);
-      ShowFolders1.Checked := ReadBool('Start', 'ShowFolders',
-        ShowFolders1.Checked);
-      ShowFolders_Left.Checked := ReadBool('Start', 'ShowFolders Left',
-        ShowFolders_Left.Checked);
+      Baum := ReadInteger('Start', 'ShowFolders', Baum);
       Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp',
         Wasserzeichen_Form.Edit1.Text);
       Wasserzeichen_Form.bgWatermark.Checked :=
@@ -5318,20 +5291,6 @@ begin
   end;
   // Ende von -> Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   // ============================================================================
-
-  // Show Folders Both Pane
-  if ShowFolders1.Checked then
-  begin
-    ShowFolders1.Checked := False;
-    ShowFolders1.Click
-  end;
-  // Show Folders Left Pane
-  if ShowFolders_Left.Checked then
-  begin
-    ShowFolders1.Checked := True;
-    ShowFolders_Left.Checked := False;
-    ShowFolders_Left.Click;
-  end;
 
   // Vorgabewert beim Start des Programms
   // Encrypt_Form.EncryptCombo.ItemIndex := 1;
@@ -5514,39 +5473,25 @@ begin
       Splashscreen_Form.ShowModal;
     end;
 
-  // Ist die FreePDF64_Form nun sichtbar?
-  //  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
   if Self.Visible then
   begin
-    if Zielverzeichnisanzeigen1.Checked = False then
+    // Startabfrage, wenn Baum noch den Standardwert hat...
+    if (Baum = 0) or (Baum = 1) then
     begin
-      Beide_FolderBtn.Visible := False;
-      ShowFolders1.Visible    := False;
-    end
-    else
-    begin
-      Beide_FolderBtn.Visible := True;
-      ShowFolders1.Visible    := True;
+      LMDShellTree1.Visible := False;
+      LMDShellTree2.Visible := False;
     end;
-    // Wenn beide ShowFolders = False...
-    if (ShowFolders1.Checked = False) and (ShowFolders_Left.Checked = False)
-    then
+    if Baum = 2 then
     begin
-      ShowFolders1.Checked     := False;
-      ShowFolders_Left.Checked := False;
-      Splitter1.Visible        := False;
-      Splitter4.Visible        := False;
-      LMDShellTree1.Visible    := False;
-      LMDShellTree2.Visible    := False;
-      Panel_Left.Visible       := False;
-      Panel_Right.Visible      := False;
-      Panel2.Visible           := False;
-      Panel3.Visible           := False;
+      LMDShellTree1.Visible := True;
+      LMDShellTree2.Visible := False;
     end;
-    // Rechtes Zielverzeichnis anzeigen
-    Splitter2.Visible     := Zielverzeichnisanzeigen1.Checked;
-    LMDShellList2.Visible := Splitter2.Visible;
-    PanelR.Visible        := Splitter2.Visible;
+    if Baum = 3 then
+    begin
+      LMDShellTree1.Visible := True;
+      LMDShellTree2.Visible := True;
+    end;
+    FolderBtn.Click;
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
@@ -5558,7 +5503,9 @@ begin
       LMDShellList1.ItemIndex := 0;
     LMDShellList1.SetFocus;
 
+    LMDShellFolder1.ChDir(A_S);
     LMDShellFolder1.RootFolder := A_S;
+    LMDShellFolder2.ChDir(B_Z);
     LMDShellFolder2.RootFolder := B_Z;
 
     QuellBtn.Click;
@@ -6023,13 +5970,19 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellList1Click(Sender: TObject);
+var
+  i: Integer;
 begin
   FavClose;
   Memo1.Clear;
 
-  if LMDShellList1.SelCount = 0 then
-    Exit
-  else if Image1.Visible then
+  if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
+  begin
+    for i := 0 to LMDShellList1.Items.Count - 1 do
+    LMDShellList1.Items[i].Selected := LMDShellList1.Items[i].Selected or LMDShellList1.Items[i].Focused;
+    Exit;
+  end else
+  if Image1.Visible then
     Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.PathName);
 end;
 
@@ -6091,13 +6044,19 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Click(Sender: TObject);
+var
+  i: Integer;
 begin
   FavClose;
   Memo1.Clear;
 
-  if LMDShellList2.SelCount = 0 then
-    Exit
-  else if Image2.Visible then
+  if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
+  begin
+    for i := 0 to LMDShellList2.Items.Count - 1 do
+    LMDShellList2.Items[i].Selected := LMDShellList2.Items[i].Selected or LMDShellList2.Items[i].Focused;
+    Exit;
+  end else
+  if Image2.Visible then
     Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.PathName);
 end;
 
