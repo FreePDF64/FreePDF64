@@ -4193,8 +4193,7 @@ begin
   begin
     Links := True;
     Rechts := False;
-  end
-  else
+  end else
   begin
     Links := False;
     Rechts := True;
