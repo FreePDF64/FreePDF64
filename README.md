@@ -86,4 +86,5 @@ Here are some ideas to get you started:
 ![FreePDF64_Überwachung](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Ueberwachung.JPG)
 
 ### Suche
-![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Suche.JPG)
+![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Suche.jpg)
+
