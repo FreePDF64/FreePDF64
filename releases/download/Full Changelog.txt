@@ -1,4 +1,4 @@
-28.02.2025 V6.3.1
+01.03.2025 V6.3.1
 Fix -> Baumansichten optimiert.
 Fix -> Farbgestaltung markierte Einträge optimiert.
 24.02.2025 V6.3.0

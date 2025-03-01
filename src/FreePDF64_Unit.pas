@@ -667,9 +667,6 @@ begin
   end;
 
   a := LMDShellList1.Column[0].AutoSize;
-  // AutoSize Spalte "Name"
-  // FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
-  // FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
   LMDShellList1.Column[0].AutoSize := True;
   LMDShellList2.Column[0].AutoSize := True;
 
@@ -1707,13 +1704,33 @@ begin
 end;
 
 procedure TFreePDF64_Form.AutoSizeClick(Sender: TObject);
+var
+  a: Boolean;
 begin
+  // JPEG-Fenster vorher schließen
+  if Image1.Visible or Image2.Visible then
+  begin
+    SplDblClick(Sender);
+    Exit;
+  end;
+
+  a := LMDShellList1.Column[0].AutoSize;
   LMDShellList1.Column[0].AutoSize := True;
   LMDShellList2.Column[0].AutoSize := True;
+
+  // Splitter soll sich in der Mitte befinden.
+  if Panel_Right.Visible then
+    PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
+  else
+    PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
   FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
   FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
-  LMDShellList1.Column[0].AutoSize := False;
-  LMDShellList2.Column[0].AutoSize := False;
+
+  LMDShellList1.Column[0].AutoSize := a;
+  LMDShellList2.Column[0].AutoSize := a;
+
+  Sleep(100);
+  RefreshBt.Click
 end;
 
 procedure TFreePDF64_Form.AutoSpalteClick(Sender: TObject);
@@ -2042,7 +2059,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '28.02.2025';
+  Datum := '01.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2326,7 +2343,7 @@ begin
   // Beide Baumansichten sichtbar? Dann beide Baumansichten abschalten
   if LMDShellTree1.Visible and LMDShellTree2.Visible then
   begin
-      LMDShellTree1.Visible := False;
+    LMDShellTree1.Visible := False;
     LMDShellTree2.Visible := False;
     Splitter1.Visible     := False;
     Splitter4.Visible     := False;
