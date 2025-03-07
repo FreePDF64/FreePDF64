@@ -1,4 +1,4 @@
-06.03.2025 V6.3.1
+07.03.2025 V6.3.1
 Fix -> Baumansichten optimiert.
 Fix -> Farbgestaltung markierte Einträge optimiert.
 Fix -> Update ExifTool auf neueste Version.

@@ -2059,7 +2059,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '02.03.2025';
+  Datum := '07.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -5489,8 +5489,20 @@ begin
       Splashscreen_Form.ShowModal;
     end;
 
-  if Self.Visible then
+  if FreePDF64_Form.Visible then
   begin
+    // Setze Cursor auf den ersten Eintrag der LMDShellList1
+    LMDShellList1.ClearSelection;
+    LMDShellList2.ClearSelection;
+    if LMDShellList1.Items.Count > 0 then
+      LMDShellList1.ItemIndex := 0;
+    LMDShellList1.SetFocus;
+
+    LMDShellFolder1.ChDir(A_S);
+    LMDShellFolder1.RootFolder := A_S;
+    LMDShellFolder2.ChDir(B_Z);
+    LMDShellFolder2.RootFolder := B_Z;
+
     // Startabfrage, wenn Baum noch den Standardwert hat...
     if (Baum = 0) or (Baum = 1) then
     begin
@@ -5511,18 +5523,6 @@ begin
 
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
-
-    // Setze Cursor auf den ersten Eintrag der LMDShellList1
-    LMDShellList1.ClearSelection;
-    LMDShellList2.ClearSelection;
-    if LMDShellList1.Items.Count > 0 then
-      LMDShellList1.ItemIndex := 0;
-    LMDShellList1.SetFocus;
-
-    LMDShellFolder1.ChDir(A_S);
-    LMDShellFolder1.RootFolder := A_S;
-    LMDShellFolder2.ChDir(B_Z);
-    LMDShellFolder2.RootFolder := B_Z;
 
     QuellBtn.Click;
     ZielBtn.Click;
