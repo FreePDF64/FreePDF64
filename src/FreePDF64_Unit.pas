@@ -592,6 +592,7 @@ type
       wcActive, wcPrevious: TWinControl;
       FSortColumn, FSortColumn2: Integer;
       FSortAscending, FSortAscending2: Boolean;
+      FormLoaded: Boolean;
     public
       { Public-Deklarationen }
       procedure ExtAbfrage;
@@ -2059,7 +2060,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '07.03.2025';
+  Datum := '08.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2359,19 +2360,18 @@ end;
 procedure TFreePDF64_Form.Zielverzeichnisanzeigen1Click(Sender: TObject);
 begin
   Zielverzeichnisanzeigen1.Checked := not Zielverzeichnisanzeigen1.Checked;
-  LMDShellList2.Visible := Zielverzeichnisanzeigen1.Checked;
-  PanelR.Visible := Zielverzeichnisanzeigen1.Checked;
-  Splitter2.Visible := Zielverzeichnisanzeigen1.Checked;
-  Splitter4.Visible := Zielverzeichnisanzeigen1.Checked;
+  LMDShellList2.Visible            := Zielverzeichnisanzeigen1.Checked;
+  PanelR.Visible                   := Zielverzeichnisanzeigen1.Checked;
+  Splitter2.Visible                := Zielverzeichnisanzeigen1.Checked;
+  Splitter4.Visible                := Zielverzeichnisanzeigen1.Checked;
 
   if Zielverzeichnisanzeigen1.Checked = False then
   begin
-    FolderBtn.Visible := False;
+    FolderBtn.Visible    := False;
     ShowFolders1.Visible := False;
-  end
-  else
+  end else
   begin
-    FolderBtn.Visible := True;
+    FolderBtn.Visible    := True;
     ShowFolders1.Visible := True;
   end;
 end;
@@ -2600,21 +2600,16 @@ end;
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
 procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
 begin
-  // Ist die FreePDF64_Form nun sichtbar?
-//  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
- if Self.Visible then
- begin
-    if Systray_Taskleiste.Checked then
-    begin
-      FreePDF64_Form.Visible := False;
-      TrayIcon1.Visible      := True;
-      Timer2.Enabled         := False;
-    end else
-    begin
-      FreePDF64_Form.WindowState := wsMinimized;
-      Timer2.Enabled             := False;
-    end;
- end;
+  if Systray_Taskleiste.Checked then
+  begin
+    FreePDF64_Form.Visible := False;
+    TrayIcon1.Visible      := True;
+    Timer2.Enabled         := False;
+  end else
+  begin
+    FreePDF64_Form.WindowState := wsMinimized;
+    Timer2.Enabled             := False;
+  end;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -3609,10 +3604,10 @@ begin
     // Bildformate anzeigen
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
       if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-        (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+         (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
       begin
         LMDShellList2.Visible := False;
         Image1.Visible := True;
@@ -3621,10 +3616,10 @@ begin
       end;
   if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
     if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
-      (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
-      (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
-      (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
-      (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.BMP')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.PNG')) or
+       (Uppercase(ExtractFileExt(Auswahl)) = ('.TIF')) then
     begin
       LMDShellList1.Visible := False;
       Image2.Visible := True;
@@ -4350,11 +4345,12 @@ begin
   Screen.OnActiveControlChange := ActiveControlChanged;
 
   // Initialisieren...
-  PDFPanelH := PDFPanel.Height;
-  AutospalteJN := False;
-  ShowVomTray := False;
+  PDFPanelH          := PDFPanel.Height;
+  AutospalteJN       := False;
+  ShowVomTray        := False;
   Suche_ItemAnzeigen := False;
-  Baum := 0;
+  Baum               := 0;
+  FormLoaded         := False;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
   if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
@@ -4408,8 +4404,7 @@ begin
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
-        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button',
-          AutoSizeBtn.Checked);
+        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
         if AutoSizeBtn.Checked then
           AutoSize.Enabled := True
         else
@@ -4522,11 +4517,6 @@ begin
   Btn_Delete.Left := 7;
   Btn_Delete.Align := alClient;
   Btn_Delete.Width := Laenge;
-
-  if InDenTray.Checked then
-    Timer2.Enabled := True
-  else
-    Timer2.Enabled := False;
 end;
 
 procedure TFreePDF64_Form.QuellBtnClick(Sender: TObject);
@@ -4608,8 +4598,7 @@ var
   Laenge: Integer;
 begin
   // Ist die FreePDF64_Form nun sichtbar?
-  //  if Assigned(FreePDF64_Form) and FreePDF64_Form.Showing then
-  if Self.Visible then
+  if FreePDF64_Form.Visible then
   begin
     if ResizeEqual.Checked then
       // Splitter soll sich in der Mitte befinden.
@@ -4886,14 +4875,16 @@ begin
     else
       AutospalteJN := False;
 
-    if Systray_Taskleiste.Checked then
+    if FreePDF64_Form.Visible then
     begin
-     FreePDF64_Form.Visible := False;
-      TrayIcon1.Visible := True;
-    end else
-     FreePDF64_Form.WindowState := wsMinimized;
-  end
-  else
+      if Systray_Taskleiste.Checked then
+      begin
+       FreePDF64_Form.Visible := False;
+        TrayIcon1.Visible     := True;
+      end else
+       FreePDF64_Form.WindowState := wsMinimized;
+    end;
+  end else
     inherited;
 end;
 
@@ -5237,8 +5228,7 @@ begin
       end;
 
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash
-          (LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
       // Suche-SearchField lesen
       for i := 0 to 254 do
@@ -5300,8 +5290,7 @@ begin
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -5340,168 +5329,156 @@ begin
     Text_FormatBtn := ' TIFF zu PDF ';
   FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn;
 
-  if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
-    s2 := LMDShellFolder1.ActiveFolder.DisplayName
-  else
-    s2 := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s2) +
-                        '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
-                        ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
-
-  if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
-    s2 := LMDShellFolder2.ActiveFolder.DisplayName
-  else
-    s2 := LMDShellFolder2.ActiveFolder.PathName;
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s2) +
-                       '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
-                       ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
-
-  if LMDShellList1.GridLines then
-    Gitternetzlinien1.Checked := True
-  else
-    Gitternetzlinien1.Checked := False;
-
-  if AutoSpalte.Checked then
+  if not FormLoaded then
   begin
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-    FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
-    FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
-  end;
+    if StartsWithColons(LMDShellFolder1.ActiveFolder.PathName) then
+      s2 := LMDShellFolder1.ActiveFolder.DisplayName
+    else
+      s2 := LMDShellFolder1.ActiveFolder.PathName;
+    Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s2) +
+                          '*.*', FreePDF64_Form.Canvas, Quelllabel.Width - (FavSpL.Width + FavLinks.Width +
+                          ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
-  tmpt := LMDShellList1.Options;
-  tmpt2 := LMDShellTree1.Options;
-  if VersteckteDateienanzeigen1.Checked then
-  begin
-    Include(tmpt, loShowHidden);
-    Include(tmpt2, toShowHidden);
-  end else
-  begin
-    Exclude(tmpt, loShowHidden);
-    Exclude(tmpt2, toShowHidden);
-  end;
-  LMDShellList1.Options := tmpt;
-  LMDShellList2.Options := tmpt;
-  LMDShellTree1.Options := tmpt2;
-  LMDShellTree2.Options := tmpt2;
+    if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
+      s2 := LMDShellFolder2.ActiveFolder.DisplayName
+    else
+      s2 := LMDShellFolder2.ActiveFolder.PathName;
+    Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s2) +
+                         '*.*', FreePDF64_Form.Canvas, Ziellabel.Width - (FavSpR.Width + FavRechts.Width +
+                         ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
-  if Ziel = '' then
-  begin
-    Ziel := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
-    LMDShellFolder2.RootFolder := Ziel;
-  end;
+    if LMDShellList1.GridLines then
+      Gitternetzlinien1.Checked := True
+    else
+      Gitternetzlinien1.Checked := False;
 
-  FreePDF64_Notify.LMDShellNotify.Active := Notify_Active;
-
-  DokuInfo_Form.Clear.Click;
-  DokuInfo_Form.MetadatenCB.Checked := False;
-
-  // Lösche den ersten RootFolder-Eintrag links und rechts
-  for I := 0 to ComboBoxL.Items.Count - 1 do
-    if ComboBoxL.Items.Strings[I] = LMDShellFolder1.RootFolder then
-      ComboBoxL.Items.Delete(I);
-  for I := 0 to ComboBoxR.Items.Count - 1 do
-    if ComboBoxR.Items.Strings[I] = LMDShellFolder2.RootFolder then
-      ComboBoxR.Items.Delete(I);
-
-  SB_Left;
-  SB_Right;
-
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
-                               ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
-
-  // Abfrage auf FreePDF64-Registry-Eintrag...
-  begin
-    regKey := TRegistry.Create; // (KEY_READ OR KEY_WOW64_64KEY);
-    try
-      regKey.Rootkey := HKEY_CURRENT_USER;
-      if regKey.OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Run', False)
-      then
-        try
-          // Prüfen, ob Wert "FreePDF64" vorhanden
-          if regKey.ValueExists('FreePDF64') then
-            Autostart.Checked := True
-          else
-            Autostart.Checked := False;
-        finally
-          regKey.CloseKey();
-        end;
-    finally
-      regKey.Free;
-    end;
-  end;
-
-  // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
-  s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
-  s := s1;
-  for I := 1 to Length(s) do
-    if s[I] = '\' then
-      s[I] := '/';
-  s1 := s;
-  with TStringList.Create do
-    try
-      LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
-      Delete(6);
-      Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
-      SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps');
-    finally
-      Free;
-    end;
-
-  // Hinweistext auf Log-Button
-  LogBt.Hint := ('Logdatei:') + #13 + ('- Linksklick: Ansehen im externen Editor') + #13 +
-                ('- Rechtsklick: Ansehen im unteren Programmfenster');
-
-  // Überwachung auf...
-  FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
-  if FreePDF64_Notify.LMDShellNotify.Active then
-  begin
-    MonitorBtn.ImageIndex := 57;
-    MonitorBtn.Caption    := '  AN';
-  end
-  else
-  begin
-    MonitorBtn.ImageIndex := 58;
-    MonitorBtn.Caption    := '  AUS';
-  end;
-
-  // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
-  if FSortColumn >= 0 then
-    LMDShellList1.SortColumn(FSortColumn);
-  if FSortColumn2 >= 0 then
-    LMDShellList2.SortColumn(FSortColumn2);
-
-  if FSortAscending then
-    LMDShellList1.SortDirection := sdAscending
-  else
-    LMDShellList1.SortDirection := sdDescending;
-  if FSortAscending2 then
-    LMDShellList2.SortDirection := sdAscending
-  else
-    LMDShellList2.SortDirection := sdDescending;
-
-  // Wenn TrayIcon nicht sichtbar ist...
-  if FreePDF64_Form.WindowState = wsMinimized then
-    // Wenn Splashscreen = True, dann Splashscreen anzeigen
-    if Splash1.Checked then
+    if AutoSpalte.Checked then
     begin
-      Splashscreen_Form.Position := poScreenCenter;
-      Splashscreen_Form.ShowModal;
+      LMDShellList1.Column[0].AutoSize := True;
+      LMDShellList2.Column[0].AutoSize := True;
+      FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
+      FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
     end;
 
-  if FreePDF64_Form.Visible then
-  begin
-    // Setze Cursor auf den ersten Eintrag der LMDShellList1
-    LMDShellList1.ClearSelection;
-    LMDShellList2.ClearSelection;
-    if LMDShellList1.Items.Count > 0 then
-      LMDShellList1.ItemIndex := 0;
-    LMDShellList1.SetFocus;
+    tmpt  := LMDShellList1.Options;
+    tmpt2 := LMDShellTree1.Options;
+    if VersteckteDateienanzeigen1.Checked then
+    begin
+      Include(tmpt,  loShowHidden);
+      Include(tmpt2, toShowHidden);
+    end else
+    begin
+      Exclude(tmpt,  loShowHidden);
+      Exclude(tmpt2, toShowHidden);
+    end;
+    LMDShellList1.Options := tmpt;
+    LMDShellList2.Options := tmpt;
+    LMDShellTree1.Options := tmpt2;
+    LMDShellTree2.Options := tmpt2;
 
-    LMDShellFolder1.ChDir(A_S);
-    LMDShellFolder1.RootFolder := A_S;
-    LMDShellFolder2.ChDir(B_Z);
-    LMDShellFolder2.RootFolder := B_Z;
+    if Ziel = '' then
+    begin
+      Ziel := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
+      LMDShellFolder2.RootFolder := Ziel;
+    end;
+
+    FreePDF64_Notify.LMDShellNotify.Active := Notify_Active;
+
+    DokuInfo_Form.Clear.Click;
+    DokuInfo_Form.MetadatenCB.Checked := False;
+
+    // Lösche den ersten RootFolder-Eintrag links und rechts
+    for I := 0 to ComboBoxL.Items.Count - 1 do
+      if ComboBoxL.Items.Strings[I] = LMDShellFolder1.RootFolder then
+        ComboBoxL.Items.Delete(I);
+    for I := 0 to ComboBoxR.Items.Count - 1 do
+      if ComboBoxR.Items.Strings[I] = LMDShellFolder2.RootFolder then
+        ComboBoxR.Items.Delete(I);
+
+    SB_Left;
+    SB_Right;
+
+    StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
+                                 ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
+
+    // Abfrage auf FreePDF64-Registry-Eintrag...
+    begin
+      regKey := TRegistry.Create; // (KEY_READ OR KEY_WOW64_64KEY);
+      try
+        regKey.Rootkey := HKEY_CURRENT_USER;
+        if regKey.OpenKey('SOFTWARE\Microsoft\Windows\CurrentVersion\Run', False)
+        then
+          try
+            // Prüfen, ob Wert "FreePDF64" vorhanden
+            if regKey.ValueExists('FreePDF64') then
+              Autostart.Checked := True
+            else
+              Autostart.Checked := False;
+          finally
+            regKey.CloseKey();
+          end;
+      finally
+        regKey.Free;
+      end;
+    end;
+
+    // Definitions-Datei "PDFA.ps" mit dem richtigen Pfad anpassen!
+    s1 := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName));
+    s := s1;
+    for I := 1 to Length(s) do
+      if s[I] = '\' then
+        s[I] := '/';
+    s1 := s;
+    with TStringList.Create do
+      try
+        LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
+        Delete(6);
+        Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
+        SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps');
+      finally
+        Free;
+      end;
+
+    // Hinweistext auf Log-Button
+    LogBt.Hint := ('Logdatei:') + #13 + ('- Linksklick: Ansehen im externen Editor') + #13 +
+                  ('- Rechtsklick: Ansehen im unteren Programmfenster');
+
+    // Überwachung auf...
+    FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
+    if FreePDF64_Notify.LMDShellNotify.Active then
+    begin
+      MonitorBtn.ImageIndex := 57;
+      MonitorBtn.Caption    := '  AN';
+    end
+    else
+    begin
+      MonitorBtn.ImageIndex := 58;
+      MonitorBtn.Caption    := '  AUS';
+    end;
+
+    // Sortierung der Spalten nach gespeicherten Variable 'FSortColumn..., FSortAscending...'
+    if FSortColumn >= 0 then
+      LMDShellList1.SortColumn(FSortColumn);
+    if FSortColumn2 >= 0 then
+      LMDShellList2.SortColumn(FSortColumn2);
+
+    if FSortAscending then
+      LMDShellList1.SortDirection := sdAscending
+    else
+      LMDShellList1.SortDirection := sdDescending;
+    if FSortAscending2 then
+      LMDShellList2.SortDirection := sdAscending
+    else
+      LMDShellList2.SortDirection := sdDescending;
+
+    // Wenn TrayIcon nicht sichtbar ist...
+    if FreePDF64_Form.WindowState = wsMinimized then
+      // Wenn Splashscreen = True, dann Splashscreen anzeigen
+      if Splash1.Checked then
+      begin
+        Splashscreen_Form.Position := poScreenCenter;
+        Splashscreen_Form.ShowModal;
+      end;
 
     // Startabfrage, wenn Baum noch den Standardwert hat...
     if (Baum = 0) or (Baum = 1) then
@@ -5524,8 +5501,28 @@ begin
     TClickSplitter(Splitter2).OnDblClick := SplDblClick;
     TClickSplitter(Splitter3).OnDblClick := SplDblClick3;
 
+    // Setze Cursor auf den ersten Eintrag der LMDShellList1
+    LMDShellList1.ClearSelection;
+    LMDShellList2.ClearSelection;
+    if LMDShellList1.Items.Count > 0 then
+      LMDShellList1.ItemIndex := 0;
+    LMDShellList1.SetFocus;
+
+    LMDShellFolder1.ChDir(A_S);
+    LMDShellFolder1.RootFolder := A_S;
+    LMDShellFolder2.ChDir(B_Z);
+    LMDShellFolder2.RootFolder := B_Z;
+
     QuellBtn.Click;
     ZielBtn.Click;
+
+    // Form ist vollständig geladen
+    FormLoaded := True;
+
+    if InDenTray.Checked then
+      Timer2.Enabled := True
+    else
+      Timer2.Enabled := False;
   end;
   // Ende von -> Ist die FreePDF64_Form nun sichtbar?
 end;
