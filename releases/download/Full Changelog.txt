@@ -1,7 +1,8 @@
-08.03.2025 V6.3.1
+10.03.2025 V6.3.1
 Fix -> Baumansichten optimiert.
 Fix -> Farbgestaltung markierte Einträge optimiert.
 Fix -> Update ExifTool auf neueste Version.
+Fix -> QPDF-Update auf Version 12.0.0.
 24.02.2025 V6.3.0
 Fix/Update -> Die Suche nochmals grundlegend optimiert und neue Funktionen hinzugefügt.
 Fix -> Update ExifTool auf neueste Version.
