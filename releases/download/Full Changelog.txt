@@ -1,4 +1,5 @@
 10.03.2025 V6.3.1
+Update -> FreePDF64-HowTo.pdf erweitert.
 Fix -> Baumansichten optimiert.
 Fix -> Farbgestaltung markierte Einträge optimiert.
 Fix -> Update ExifTool auf neueste Version.
