@@ -3,7 +3,7 @@
 Download der **allerneuesten** Version immer unter: 
 - https://github.com/FreePDF64/FreePDF64/tree/main/releases/download
 
-Anleitung:
+Anleitung/HowTo:
 - https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf
   
 Neuestes Release/Changelog immer unter:
