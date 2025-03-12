@@ -356,6 +356,7 @@ type
     MemoBtn: TToolButton;
     SuchenHistorylschen1: TMenuItem;
     Systray_Taskleiste: TMenuItem;
+    PaneloverPrgB: TPanel;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2060,7 +2061,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '10.03.2025';
+  Datum := '12.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -2803,12 +2804,16 @@ begin
     if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
     begin
       Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
+      PanelOverPrgB.Visible := True;
+      PanelOverPrgB.Caption := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption;
       Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
                       IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption + '"';
     end
     else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
     begin
       Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
+      PanelOverPrgB.Visible := True;
+      PanelOverPrgB.Caption := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption;
       Befehlszeile := ExifTool + ' -L ' + GE +
         ' -g1 -charset filename=cp1252 -a -All:All -e "' +
         IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
@@ -6292,8 +6297,9 @@ begin
   // mbRight: Rechte Maustaste
   if Button = mbRight then
   begin
-    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt');
+    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
+    PanelOverPrgB.Visible := True;
+    PanelOverPrgB.Caption := ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt';
     // zur letzen Zeile:
     Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
     if Memo1.Lines.Count > 0 then
@@ -6309,12 +6315,12 @@ begin
       PDFPanel.Height := I;
       MemoBtn.Visible := True;
     end;
-  end
-  else
+  end else
   begin
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
     begin
+      PanelOverPrgB.Visible := False;
       Memo1.Clear;
       PDFPanel.Height := PDFPanelH;
       MemoBtn.Visible := False;
@@ -6513,6 +6519,7 @@ begin
   // Wenn das Panel schon auf ist, wieder schließen...
   if PDFPanel.Height > PDFPanelH then
   begin
+    PanelOverPrgB.Visible := False;
     Memo1.Clear;
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;

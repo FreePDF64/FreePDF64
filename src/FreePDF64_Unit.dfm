@@ -917,6 +917,30 @@ object FreePDF64_Form: TFreePDF64_Form
         Visible = False
         OnClick = AbbrechenPnClick
       end
+      object PaneloverPrgB: TPanel
+        Left = 421
+        Top = 1
+        Width = 419
+        Height = 42
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Align = alClient
+        Caption = 'PaneloverPrgB'
+        Font.Charset = ANSI_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -15
+        Font.Name = 'Segoe UI'
+        Font.Style = []
+        ParentFont = False
+        TabOrder = 3
+        Visible = False
+        ExplicitLeft = 600
+        ExplicitTop = 20
+        ExplicitWidth = 231
+        ExplicitHeight = 51
+      end
     end
   end
   object PanelR: TPanel
