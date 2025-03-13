@@ -12,9 +12,9 @@ Neuestes Release/Changelog immer unter:
  
 Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitHub!
   
-#### Die Freeware FreePDF64 kann PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, Passwortschutz entfernen, verschlüsseln (128-Bit RC4/AES oder 256-Bit AES), PDF-Dateien mit Wasserzeichen oder Stempel versehen, uvm.
+#### Die Freeware FreePDF64 kann PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, komprimieren, Bilder extrahieren, Passwortschutz entfernen, verschlüsseln (128-Bit RC4/AES oder 256-Bit AES), PDF-Dateien mit Wasserzeichen oder Stempel versehen, umfangreiche Suchfunktion uvm.
 
-##### Das beste Goodie ist: Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung inkl. direkter Anzeige danach (PDF-Datei)! Ermöglicht wird dies durch die ständige Überwachung eines ausgewählten Verzeichnisses auf neue eingehende Dateien.
+#### Das beste Goodie ist: Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung inkl. direkter Anzeige danach (PDF-Datei)! Ermöglicht wird dies durch die ständige Überwachung eines ausgewählten Verzeichnisses auf neue eingehende Dateien.
 - Einfachste Installation des benötigten FreePDF64-Druckers (siehe beiliegende Anleitung unter: Hilfe - FreePDF64-HowTo)
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
