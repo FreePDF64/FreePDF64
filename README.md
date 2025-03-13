@@ -20,7 +20,7 @@ Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitH
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
 - Bearbeite vorhandene PDF-Dateien mit den umfangreichen Funktionen von FreePDF64!
-- Drucke aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
+- Drucke aus jeder Windows-Anwendung heraus auf den FreePDF64-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
 
 ##### Funktionen:
 1. Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien
