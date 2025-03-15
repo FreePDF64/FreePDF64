@@ -936,10 +936,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 3
         Visible = False
-        ExplicitLeft = 600
-        ExplicitTop = 20
-        ExplicitWidth = 231
-        ExplicitHeight = 51
       end
     end
   end

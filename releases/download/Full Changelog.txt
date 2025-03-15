@@ -1,3 +1,6 @@
+15.03.2024 V6.3.3
+Neu -> Auswahl von PDF/X-4a bei der Erstellung. PDF/X-4a soll dem Anspruch an einen möglichst medienneutralen Austausch gerecht werden.
+Fix -> Ghostscript-Update auf Version 10.05.0.
 12.03.2025 V6.3.2
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Update ExifTool auf neueste Version.

@@ -1814,7 +1814,7 @@ begin
     '04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)'
     + #13 + '05: PDF-Passwortschutz entfernen' + #13 +
     '06: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung'
-    + #13 + '07: Erstellen von PDF/X-3: Ein Dateiformat für den Austausch digitaler Druckvorlagen'
+    + #13 + '07: Erstellen von PDF/X-3 sowie PDF/X-4a: Ein Dateiformat für den Austausch digitaler Druckvorlagen'
     + #13 + '08: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung'
     + #13 + '09: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei' + #13
     + '10: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)' + #13 +
@@ -2061,7 +2061,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '12.03.2025';
+  Datum := '13.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -4936,7 +4936,7 @@ begin
     Close;
   end;
 
-  // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/Ab und PDF/X
+  // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/A und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
   PDFA_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
   PDFX_1   := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
@@ -6664,9 +6664,15 @@ begin
 
     // PDF/X-3-Level
     if Einstellungen_Form.PDFX.Checked = True then
-      AP1_4 := '-dPDFX -sColorConversionStrategy=CMYK '
+      AP1_4 := '-dPDFX=3 -sColorConversionStrategy=CMYK '
     else
       Einstellungen_Form.PDFX.Checked := False;
+
+    // PDF/X-4a-Level
+    if Einstellungen_Form.PDFX4.Checked = True then
+      AP1_4 := '-dPDFX=4 -sColorConversionStrategy=CMYK '
+    else
+      Einstellungen_Form.PDFX4.Checked := False;
 
     // Schnelle Webanzeige
     if Einstellungen_Form.FastCB.Checked then
@@ -6722,7 +6728,7 @@ begin
     // AP1_2: sind die dpi
     // AP1_3: sind die 'distiller parameters'
     // AP1_4: Specify the -dPDFA option: PDF/A-1, -dPDFA=2 for PDF/A-2 or -dPDFA=3 for PDF/A-3
-    // or -dPDFX for PDF/X-3
+    // or -dPDFX=3 for PDF/X-3 or -dPDFX=4 for PDF/X-4a
     // -------------------------------------------------------------------------
     // Ghostscript-Parameter zum Zusammenfügen der Dateien.
 
@@ -6739,10 +6745,10 @@ begin
 
     if Einstellungen_Form.PDFA_CB.Checked then
       AX := ' "' + PDFA_1 + '" ';
-    if Einstellungen_Form.PDFX.Checked then
+    if Einstellungen_Form.PDFX.Checked or Einstellungen_Form.PDFX4.Checked then
       AX := ' "' + PDFX_1 + '" ';
-    if (Einstellungen_Form.PDFA_CB.Checked = False) and
-      (Einstellungen_Form.PDFX.Checked = False) then
+    if (Einstellungen_Form.PDFA_CB.Checked = False) and (Einstellungen_Form.PDFX.Checked = False) and
+       (Einstellungen_Form.PDFX4.Checked = False) then
       AX := ' ';
 
     // Wenn Erstellung Formatfolder angehakt...
@@ -7303,9 +7309,15 @@ begin
 
     // PDF/X-3-Level
     if Einstellungen_Form.PDFX.Checked = True then
-      AP1_4 := '-dPDFX -sColorConversionStrategy=CMYK '
+      AP1_4 := '-dPDFX=3 -sColorConversionStrategy=CMYK '
     else
       Einstellungen_Form.PDFX.Checked := False;
+
+    // PDF/X-4a-Level
+    if Einstellungen_Form.PDFX4.Checked = True then
+      AP1_4 := '-dPDFX=4 -sColorConversionStrategy=CMYK '
+    else
+      Einstellungen_Form.PDFX4.Checked := False;
 
     // Schnelle Webanzeige
     if Einstellungen_Form.FastCB.Checked then
@@ -7430,10 +7442,10 @@ begin
 
     if Einstellungen_Form.PDFA_CB.Checked then
       AX := ' "' + PDFA_1 + '" ';
-    if Einstellungen_Form.PDFX.Checked then
+    if Einstellungen_Form.PDFX.Checked or Einstellungen_Form.PDFX4.Checked then
       AX := ' "' + PDFX_1 + '" ';
-    if (Einstellungen_Form.PDFA_CB.Checked = False) and
-      (Einstellungen_Form.PDFX.Checked = False) then
+    if (Einstellungen_Form.PDFA_CB.Checked = False) and (Einstellungen_Form.PDFX.Checked = False) and
+       (Einstellungen_Form.PDFX4.Checked = False) then
       AX := ' ';
 
     // ----> START
@@ -7443,8 +7455,8 @@ begin
       for I := 0 to LMDShellList1.SelCount - 1 do
       begin
         INC(Counter);
-        if (Einstellungen_Form.PDFA_CB.Checked = False) and
-          (Einstellungen_Form.PDFX.Checked = False) then
+        if (Einstellungen_Form.PDFA_CB.Checked = False) and (Einstellungen_Form.PDFX.Checked = False) and
+           (Einstellungen_Form.PDFX4.Checked = False) then
           AP1_4 := '';
         ProgressBar1.Position := 0;
         // AP3: Welche Datei(en) sollen in PDF umgewandelt werden?
@@ -7520,7 +7532,7 @@ begin
           // AP1_2:         sind die dpi
           // AP1_3:         sind die 'distiller parameters'
           // AP1_4:         Specify the -dPDFA option: PDF/A-1b, -dPDFA=2 for PDF/A-2b or -dPDFA=3 for PDF/A-3b
-          // or -dPDFX for PDF/X-3
+          // or -dPDFX=3 for PDF/X-3 or -dPDFX=4 for PDF/X-4a
           // AP1_5:         Schnelle Webanzeige
           // AP5:           sind die PDFmarks
           // -----------------------------------------------------------------------------
@@ -7611,14 +7623,12 @@ begin
               AP3_1[k] := '/';
           end;
 
-          if (Einstellungen_Form.PDFA_CB.Checked or
-            Einstellungen_Form.PDFX.Checked) then
-            JV := ' -sOutputFile="' + Ziel + '" ' + AX + ' "' + ViewJPEG +
-              '" -c "(' + AP3_1 +
-              ') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"'
+          if (Einstellungen_Form.PDFA_CB.Checked or Einstellungen_Form.PDFX.Checked or Einstellungen_Form.PDFX4.Checked) then
+            JV := ' -sOutputFile="' + Ziel + '" ' + AX + ' "' + ViewJPEG + '" -c "(' + AP3_1 +
+                  ') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"'
           else
-            JV := ' -sOutputFile="' + Ziel + '" "' + ViewJPEG + '" -c "(' +
-              AP3_1 + ') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"';
+            JV := ' -sOutputFile="' + Ziel + '" "' + ViewJPEG + '" -c "(' +  AP3_1 +
+                  ') <</PageSize 2 index viewJPEGgetsize 2 array astore>> setpagedevice viewJPEG"';
 
           // Erstellung BMP/PNG/TIFF to PDF
           if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
