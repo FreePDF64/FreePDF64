@@ -230,7 +230,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PropertiesBtn: TToolButton
         Left = 314
         Top = 0
-        Hint = 'Eigenschaften anzeigen [auch LEERTASTE]'
+        Hint = 'Eigenschaften anzeigen [LEERTASTE]'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -271,7 +271,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object VerbindenBt: TToolButton
         Left = 395
         Top = 0
-        Hint = 'Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei'
+        Hint = 'PS/PDF zusammenf'#252'gen'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -284,12 +284,12 @@ object FreePDF64_Form: TFreePDF64_Form
       object WZSTTB: TToolButton
         Left = 433
         Top = 0
-        Hint = 'Wasserzeichen/Stempel einer PDF-Datei hinzuf'#252'gen'
+        Hint = 'PDF Wasserzeichen/Stempel einf'#252'gen'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
-        Caption = 'Wasserzeichen/Stempel'
+        Caption = 'PDF Wasserzeichen/Stempel'
         ImageIndex = 82
         ImageName = 'Item83'
         OnClick = WZSTTBClick
@@ -297,7 +297,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object AnlagenBtn: TToolButton
         Left = 471
         Top = 0
-        Hint = 'Anlage der markierten PDF-Datei hinzuf'#252'gen'
+        Hint = 'PDF Anlage hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
         ImageIndex = 70
         ImageName = 'Item71'
@@ -307,10 +307,9 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 509
         Top = 0
         Hint = 
-          'Anlage aus der markierten PDF-Datei extrahieren/entfernen:'#13#10'1. E' +
-          's werden alle Anlagen im unteren Fenster angezeigt'#13#10'2. Nun gibt ' +
-          'man die Nummer der Anlage an, welche extrahiert/entfernt werden ' +
-          'soll'
+          'PDF Anlage extrahieren/entfernen:'#13#10'1. Es werden alle Anlagen im ' +
+          'unteren Fenster angezeigt'#13#10'2. Nummer der Anlage angeben, welche ' +
+          'extrahiert/entfernt werden soll'
         Caption = 'PDFRemove'
         ImageIndex = 80
         ImageName = 'Item81'
@@ -319,9 +318,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFAttachment: TToolButton
         Left = 547
         Top = 0
-        Hint = 
-          'Anlage(n) der markierten PDF-Datei anzeigen und ins Zielverzeich' +
-          'nis extrahieren'
+        Hint = 'PDF Anlage(n) anzeigen und extrahieren'
         Caption = 'PDFAttachment'
         ImageIndex = 43
         ImageName = 'Item44'
@@ -339,7 +336,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object ExtractBtn: TToolButton
         Left = 590
         Top = 0
-        Hint = 'Extrahiere Bilder aus der markierten PDF-Datei'
+        Hint = 'PDF zu Bilder'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -352,8 +349,8 @@ object FreePDF64_Form: TFreePDF64_Form
       object HTMLBtn: TToolButton
         Left = 628
         Top = 0
-        Hint = 'Konvertieren der markierten PDF-Datei von PDF zu HTML'
-        Caption = 'Konvertieren von PDF zu HTML'
+        Hint = 'PDF zu HTML'
+        Caption = 'PDF zu HTML'
         ImageIndex = 46
         ImageName = 'Item47'
         OnClick = HTMLBtnClick
@@ -361,8 +358,8 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFdecrypt: TToolButton
         Left = 666
         Top = 0
-        Hint = 'PDF-Passwortschutz der markierten PDF-Datei entfernen'
-        Caption = 'PDFdecrypt'
+        Hint = 'PDF Passwortschutz entfernen'
+        Caption = 'PDF entschl'#252'sseln'
         ImageIndex = 104
         ImageName = '9051666_warning_danger_attention_exclamation_error_icon'
         OnClick = PDFdecryptClick
@@ -370,7 +367,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDF_Kompress: TToolButton
         Left = 704
         Top = 0
-        Hint = 'Komprimierung einer markierten PDF-Datei mittels QPDF'
+        Hint = 'PDF komprimieren'
         Caption = 'PDF_Kompress'
         ImageIndex = 102
         ImageName = '4835103_feedback_like_ok_thumb_thumb up_icon'
@@ -379,9 +376,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PDFFontsBtn: TToolButton
         Left = 742
         Top = 0
-        Hint = 
-          'Listet die in der markierten PDF-Datei verwendeten Schriftarten ' +
-          'auf'
+        Hint = 'PDF Schriftarten auflisten'
         Caption = 'PDFFonts'
         ImageIndex = 6
         ImageName = 'Item7'
@@ -413,9 +408,9 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 823
         Top = 0
         Hint = 
-          'Umfangreiche Datei-Informationen (Metadaten) anzeigen:'#13#10'Rechtskl' +
-          'ick im unteren Programmfenster zeigt die Metadaten '#13#10'im externen' +
-          ' Editor an'
+          'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'Re' +
+          'chtsklick im unteren Programmfenster zeigt die Metadaten '#13#10'im ex' +
+          'ternen Editor an'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -457,7 +452,9 @@ object FreePDF64_Form: TFreePDF64_Form
       Width = 200
       Height = 45
       Cursor = crHandPoint
-      Hint = #214'ffnet das Einstellungsfenster'
+      Hint = 
+        #214'ffnet das Einstellungsfenster f'#252'r'#13#10#220'berwachung und manuelle Ers' +
+        'tellung'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -2106,57 +2103,57 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = '-'
       end
       object Merge: TMenuItem
-        Caption = 'Verbinden...'
+        Caption = 'PS/PDF zusammenf'#252'gen'
         ShortCut = 32854
         OnClick = MergeClick
       end
       object Wasserzeichen1: TMenuItem
-        Caption = 'Wasserzeichen/Stempel'
+        Caption = 'PDF Wasserzeichen/Stempel einf'#252'gen'
         ShortCut = 32855
         OnClick = Wasserzeichen1Click
       end
       object AnlageeinerPDFDateihinzufgen1: TMenuItem
-        Caption = 'Anlage einer PDF-Datei hinzuf'#252'gen'
+        Caption = 'PDF Anlage hinzuf'#252'gen'
         ShortCut = 16452
         OnClick = AnlagenBtnClick
       end
       object Anlageentfernen1: TMenuItem
-        Caption = 'Anlage aus einer PDF-Datei extr./entf.'
+        Caption = 'PDF Anlage extrahieren/entfernen'
         ShortCut = 16466
         OnClick = PDFRemoveClick
       end
       object PDFAnlagenanzeigenextrahieren1: TMenuItem
-        Caption = 'Anlage(n) anzeigen/extrahieren'
+        Caption = 'PDF Anlage(n) anzeigen und extrahieren'
         ShortCut = 16472
         OnClick = PDFAttachmentClick
       end
       object ExtrahiereBilder1: TMenuItem
-        Caption = 'Extrahiere Bilder'
+        Caption = 'PDF zu Bilder'
         ShortCut = 32834
         OnClick = ExtractBtnClick
       end
       object KonvertierezuHTML1: TMenuItem
-        Caption = 'Konvertiere zu HTML'
+        Caption = 'PDF zu HTML'
         ShortCut = 16456
         OnClick = HTMLBtnClick
       end
       object Passwortschutzentfernen1: TMenuItem
-        Caption = 'Passwortschutz entfernen'
+        Caption = 'PDF Passwortschutz entfernen'
         ShortCut = 32848
         OnClick = PDFdecryptClick
       end
-      object PDFInformationenanzeigen1: TMenuItem
-        Caption = 'Datei-Informationen anzeigen'
-        ShortCut = 120
-        OnClick = PDFInfoBtnClick
-      end
       object VerwendeteSchriftartenauflisten1: TMenuItem
-        Caption = 'Verwendete Schriftarten auflisten'
+        Caption = 'PDF Schriftarten auflisten'
         OnClick = PDFFontsBtnClick
       end
       object PDFkomprimieren1: TMenuItem
         Caption = 'PDF komprimieren'
         OnClick = PDF_KompressClick
+      end
+      object PDFInformationenanzeigen1: TMenuItem
+        Caption = 'Datei/Ordnerinformationen anzeigen'
+        ShortCut = 120
+        OnClick = PDFInfoBtnClick
       end
       object N10: TMenuItem
         Caption = '-'
@@ -17515,8 +17512,8 @@ object FreePDF64_Form: TFreePDF64_Form
     Enabled = False
     Interval = 3000
     OnTimer = Timer2Timer
-    Left = 517
-    Top = 241
+    Left = 581
+    Top = 365
   end
   object LMDOpenDialog1: TLMDOpenDialog
     Filter = '*.pdf |*.pdf'
