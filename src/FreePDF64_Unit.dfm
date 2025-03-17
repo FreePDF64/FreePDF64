@@ -336,7 +336,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object ExtractBtn: TToolButton
         Left = 590
         Top = 0
-        Hint = 'PDF zu Bilder'
+        Hint = 'PDF Bilder extrahieren'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -2128,7 +2128,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFAttachmentClick
       end
       object ExtrahiereBilder1: TMenuItem
-        Caption = 'PDF zu Bilder'
+        Caption = 'PDF Bilder extrahieren'
         ShortCut = 32834
         OnClick = ExtractBtnClick
       end
@@ -2530,7 +2530,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = Einstellungenndern2Click
     end
     object Verbinden1: TMenuItem
-      Caption = 'Verbinden'
+      Caption = 'PS/PDF zusammenf'#252'gen'
       ImageIndex = 42
       ImageName = 'Item43'
       OnClick = Verbinden1Click
