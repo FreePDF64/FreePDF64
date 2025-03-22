@@ -556,10 +556,12 @@ object FreePDF64_Form: TFreePDF64_Form
       Width = 150
       Height = 33
       Hint = 
-        '- Markierte PS/PDF-Datei entweder mit dem PDF-Anzeiger oder mit ' +
-        'Ghostscript anzeigen'#13#10'- Bilder werden im gegen'#252'berliegenden Fens' +
-        'ter angezeigt. Fenster schlie'#223'en mit F3'#13#10'- Alle anderen Dateien ' +
-        'werden "versucht" im unteren Programmfenster anzuzeigen!'
+        '- PDF-Dateien  werden im gegen'#252'berliegenden Fenster angezeigt. F' +
+        'enster schlie'#223'en mit F3'#13#10'- PS-Dateien entweder angezeigt mit dem' +
+        ' PDF-Anzeiger oder mit Ghostscript'#13#10'- Bilder werden im gegen'#252'ber' +
+        'liegenden Fenster angezeigt. Fenster schlie'#223'en mit F3'#13#10'- Alle an' +
+        'deren Dateien werden "versucht" im unteren Programmfenster anzuz' +
+        'eigen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1066,7 +1068,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Image1Click
         OnContextPopup = Image1ContextPopup
         ExplicitTop = 29
-        ExplicitWidth = 364
+        ExplicitWidth = 280
         ExplicitHeight = 479
       end
       object LMDShellList2: TLMDShellList
@@ -1409,6 +1411,23 @@ object FreePDF64_Form: TFreePDF64_Form
           OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
         end
+      end
+      object WebBrowser2: TWebBrowser
+        Left = 359
+        Top = 0
+        Width = 5
+        Height = 3
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        TabOrder = 5
+        ControlData = {
+          4C0000006A000000400000000000000000000000000000000000000000000000
+          000000004C000000000000000000000001000000E0D057007335CF11AE690800
+          2B2E126208000000000000004C0000000114020000000000C000000000000046
+          8000000000000000000000000000000000000000000000000000000000000000
+          00000000000000000100000000000000000000000000000000000000}
       end
     end
   end
@@ -1863,6 +1882,23 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
       end
+    end
+    object WebBrowser1: TWebBrowser
+      Left = 452
+      Top = 0
+      Width = 1
+      Height = 1
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      TabOrder = 4
+      ControlData = {
+        4C00000015000000150000000000000000000000000000000000000000000000
+        000000004C000000000000000000000001000000E0D057007335CF11AE690800
+        2B2E126208000000000000004C0000000114020000000000C000000000000046
+        8000000000000000000000000000000000000000000000000000000000000000
+        00000000000000000100000000000000000000000000000000000000}
     end
   end
   object ActionList1: TActionList

@@ -89,7 +89,7 @@ uses
   ComObj, MMSystem, JPEG, GDIPAPI, GDIPOBJ,
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
   Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar,
-  LMDVersionInfo;
+  LMDVersionInfo, Vcl.OleCtrls, SHDocVw;
 
 const
   WM_TASKBAREVENT = WM_USER + 1; // Taskbar message
@@ -357,6 +357,8 @@ type
     SuchenHistorylschen1: TMenuItem;
     Systray_Taskleiste: TMenuItem;
     PaneloverPrgB: TPanel;
+    WebBrowser1: TWebBrowser;
+    WebBrowser2: TWebBrowser;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2006,7 +2008,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '17.03.2025';
+  Datum := '22.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' + LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
                    #13 + #13 + 'Mit Klick auf [ Ja ] geht es weiter zur FreePDF64-Releaseseite!', mtInformation, [mbYes, mbNo]) = mrYes then
@@ -3425,6 +3427,20 @@ var
   I: Integer;
   Param, XPDFReader: String;
 begin
+  if WebBrowser1.Align = alClient then
+  begin
+    WebBrowser1.Navigate('about:blank');
+    WebBrowser1.Align := alNone;
+    Exit;
+  end;
+
+  if WebBrowser2.Align = alClient then
+  begin
+    WebBrowser2.Navigate('about:blank');
+    WebBrowser2.Align := alNone;
+    Exit;
+  end;
+
   if Einstellungen_Form.Edit3.Text = '' then
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
   XPDFReader := Einstellungen_Form.Edit3.Text;
@@ -3480,12 +3496,36 @@ begin
       Exit;
     end;
 
-  if FileExists(XPDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF'))
-  then
+  if FileExists(XPDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF')) then
   begin
-    // XPDFReader aufrufen...
-    ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
-    KillTask(XPDFReader);
+    if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
+    begin
+      try
+        WebBrowser2.Navigate('about:blank');
+        WebBrowser2.Align := alClient;
+        WebBrowser2.Navigate(Auswahl);
+      except
+        WebBrowser2.Free;
+        // XPDFReader aufrufen...
+        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        KillTask(XPDFReader);
+      raise;
+      end;
+    end else
+    if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
+    begin
+      try
+        WebBrowser1.Navigate('about:blank');
+        WebBrowser1.Align := alClient;
+        WebBrowser1.Navigate(Auswahl);
+      except
+        WebBrowser1.Free;
+        // XPDFReader aufrufen...
+        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        KillTask(XPDFReader);
+      raise;
+      end;
+    end
   end
   else if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
   // Ghostscript aufrufen...
@@ -5794,6 +5834,13 @@ begin
   FavClose;
   Memo1.Clear;
 
+  if WebBrowser2.Align = alClient then
+  begin
+    WebBrowser2.Navigate('about:blank');
+    WebBrowser2.Align := alNone;
+    Exit;
+  end;
+
   if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
   begin
     for i := 0 to LMDShellList1.Items.Count - 1 do
@@ -5867,6 +5914,13 @@ var
 begin
   FavClose;
   Memo1.Clear;
+
+  if WebBrowser1.Align = alClient then
+  begin
+    WebBrowser1.Navigate('about:blank');
+    WebBrowser1.Align := alNone;
+    Exit;
+  end;
 
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
   begin
