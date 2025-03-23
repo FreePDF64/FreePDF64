@@ -3,7 +3,7 @@ object FreePDF64_Form: TFreePDF64_Form
   Top = 0
   Caption = 'FreePDF64 - Die PDF-Toolsammlung'
   ClientHeight = 751
-  ClientWidth = 1471
+  ClientWidth = 1497
   Color = clBtnFace
   Constraints.MinHeight = 450
   Constraints.MinWidth = 375
@@ -38,7 +38,7 @@ object FreePDF64_Form: TFreePDF64_Form
     ExplicitHeight = 454
   end
   object Splitter2: TSplitter
-    Left = 815
+    Left = 841
     Top = 47
     Width = 6
     Height = 510
@@ -54,7 +54,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object Splitter3: TSplitter
     Left = 0
     Top = 592
-    Width = 1471
+    Width = 1497
     Height = 6
     Cursor = crVSplit
     Hint = 'Doppelklick f'#252'r gespeicherte Position'
@@ -69,7 +69,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object TopPanel: TPanel
     Left = 0
     Top = 0
-    Width = 1471
+    Width = 1497
     Height = 47
     Margins.Left = 4
     Margins.Top = 4
@@ -80,7 +80,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 1142
+      Width = 1168
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -447,7 +447,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object ConfigBtn: TButton
-      Left = 1270
+      Left = 1296
       Top = 1
       Width = 200
       Height = 45
@@ -479,7 +479,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = ConfigBtnClick
     end
     object MonitorBtn: TBitBtn
-      Left = 1185
+      Left = 1211
       Top = 1
       Width = 85
       Height = 45
@@ -507,7 +507,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseEnter = MonitorBtnMouseEnter
     end
     object StatusBitBtn: TBitBtn
-      Left = 1143
+      Left = 1169
       Top = 1
       Width = 42
       Height = 45
@@ -537,7 +537,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object PanelBottom: TPanel
     Left = 0
     Top = 557
-    Width = 1471
+    Width = 1497
     Height = 35
     Margins.Left = 4
     Margins.Top = 4
@@ -747,7 +747,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object PDFPanel: TPanel
     Left = 0
     Top = 598
-    Width = 1471
+    Width = 1497
     Height = 153
     Margins.Left = 4
     Margins.Top = 4
@@ -759,7 +759,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object StatusBar1: TStatusBar
       Left = 0
       Top = 130
-      Width = 1471
+      Width = 1497
       Height = 23
       Margins.Left = 4
       Margins.Top = 4
@@ -775,7 +775,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object Memo1: TMemo
       Left = 0
       Top = 44
-      Width = 1471
+      Width = 1497
       Height = 86
       Margins.Left = 4
       Margins.Top = 4
@@ -804,7 +804,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object BottomPanel: TPanel
       Left = 0
       Top = 0
-      Width = 1471
+      Width = 1497
       Height = 44
       Margins.Left = 4
       Margins.Top = 4
@@ -843,7 +843,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 43
       end
       object PDF_Erstellung: TButton
-        Left = 1070
+        Left = 1096
         Top = 1
         Width = 400
         Height = 42
@@ -877,7 +877,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object ProgressBar1: TProgressBar
         Left = 421
         Top = 1
-        Width = 419
+        Width = 445
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -889,7 +889,7 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 1
       end
       object AbbrechenPn: TPanel
-        Left = 840
+        Left = 866
         Top = 1
         Width = 230
         Height = 42
@@ -919,7 +919,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PaneloverPrgB: TPanel
         Left = 421
         Top = 1
-        Width = 419
+        Width = 445
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -939,7 +939,7 @@ object FreePDF64_Form: TFreePDF64_Form
     end
   end
   object PanelR: TPanel
-    Left = 821
+    Left = 847
     Top = 47
     Width = 650
     Height = 510
@@ -1524,7 +1524,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object PanelL: TPanel
     Left = 283
     Top = 47
-    Width = 532
+    Width = 558
     Height = 510
     Margins.Left = 4
     Margins.Top = 4
@@ -1535,12 +1535,12 @@ object FreePDF64_Form: TFreePDF64_Form
     TabOrder = 5
     OnResize = PanelLResize
     DesignSize = (
-      532
+      558
       510)
     object Image2: TImage
       Left = 1
       Top = 31
-      Width = 530
+      Width = 556
       Height = 454
       Hint = 
         '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
@@ -1555,14 +1555,15 @@ object FreePDF64_Form: TFreePDF64_Form
       Visible = False
       OnClick = Image2Click
       OnContextPopup = Image2ContextPopup
-      ExplicitTop = 29
-      ExplicitWidth = 535
+      ExplicitLeft = 4
+      ExplicitTop = 24
+      ExplicitWidth = 369
       ExplicitHeight = 479
     end
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 31
-      Width = 530
+      Width = 556
       Height = 454
       Margins.Left = 0
       Margins.Top = 0
@@ -1632,7 +1633,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1311
+      Left = 1379
       Top = 1025
       Width = 175
       Height = 40
@@ -1664,7 +1665,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object StatusBar_Left: TStatusBar
       Left = 1
       Top = 485
-      Width = 530
+      Width = 556
       Height = 24
       Margins.Left = 4
       Margins.Top = 4
@@ -1683,7 +1684,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object Panel1: TPanel
       Left = 1
       Top = 1
-      Width = 530
+      Width = 556
       Height = 30
       Margins.Left = 4
       Margins.Top = 4
@@ -1777,7 +1778,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 26
       end
       object FavSpL: TSpeedButton
-        Left = 456
+        Left = 482
         Top = 1
         Width = 25
         Height = 28
@@ -1805,7 +1806,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 27
       end
       object FavLinks: TSpeedButton
-        Left = 481
+        Left = 507
         Top = 1
         Width = 25
         Height = 28
@@ -1834,7 +1835,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 27
       end
       object ComboBoxL: TComboBox
-        Left = 506
+        Left = 532
         Top = 1
         Width = 23
         Height = 28
@@ -1861,7 +1862,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object Quelllabel: TPanel
         Left = 74
         Top = 1
-        Width = 382
+        Width = 408
         Height = 28
         Margins.Left = 4
         Margins.Top = 4
@@ -2228,11 +2229,6 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Baumansichten wechseln'
         OnClick = ShowFolders1Click
       end
-      object Zielverzeichnisanzeigen1: TMenuItem
-        Caption = 'Zielverzeichnis anzeigen'
-        Checked = True
-        OnClick = Zielverzeichnisanzeigen1Click
-      end
       object N2: TMenuItem
         Caption = '-'
       end
@@ -2510,8 +2506,8 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 133
   end
   object PrinterSetupDialog1: TPrinterSetupDialog
-    Left = 820
-    Top = 275
+    Left = 960
+    Top = 327
   end
   object LMDShellFolder2: TLMDShellFolder
     RootFolder = 'C:\'
