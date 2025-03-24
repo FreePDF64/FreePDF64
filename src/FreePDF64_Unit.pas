@@ -3671,7 +3671,6 @@ begin
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     begin
       try
-        WebBrowser2.Navigate('about:blank');
         WebBrowser2.Align := alClient;
         WebBrowser2.Navigate(Auswahl);
       except
@@ -3688,7 +3687,6 @@ begin
     then
     begin
       try
-        WebBrowser1.Navigate('about:blank');
         WebBrowser1.Align := alClient;
         WebBrowser1.Navigate(Auswahl);
       except
@@ -4381,6 +4379,10 @@ end;
 
 procedure TFreePDF64_Form.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
+  FreeAndNil(WebBrowser1);
+  FreeAndNil(WebBrowser2);
+
   Application.Terminate;
 end;
 
