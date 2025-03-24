@@ -1,4 +1,4 @@
-22.03.2024 V6.3.4
+24.03.2024 V6.3.4
 Neu -> PDF-Dateien werden mit F3 direkt in FreePDF64 angezeigt.
 17.03.2024 V6.3.3
 Fix -> Hinweise zu den Symbolen vereinfacht.

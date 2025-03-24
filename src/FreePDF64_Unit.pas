@@ -590,6 +590,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ZiellabelClick(Sender: TObject);
     procedure QuelllabelClick(Sender: TObject);
+    procedure WMQueryEndSession(var Msg: TMessage);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2111,7 +2112,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '22.03.2025';
+  Datum := '24.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4379,11 +4380,18 @@ end;
 
 procedure TFreePDF64_Form.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
+  Application.Terminate;
+end;
+
+procedure TFreePDF64_Form.WMQueryEndSession(var Msg: TMessage);
+begin
+  // Code, um Ressourcen freizugeben
+
   // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
   FreeAndNil(WebBrowser1);
   FreeAndNil(WebBrowser2);
 
-  Application.Terminate;
+  Msg.Result := 1; // Erlaubt das Herunterfahren
 end;
 
 procedure TFreePDF64_Form.FormCloseQuery(Sender: TObject;
