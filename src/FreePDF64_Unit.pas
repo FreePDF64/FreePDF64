@@ -590,7 +590,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ZiellabelClick(Sender: TObject);
     procedure QuelllabelClick(Sender: TObject);
-    procedure WMQueryEndSession(var Msg: TMessage);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -604,10 +603,12 @@ type
       procedure FavClose;
       procedure PlaySoundFile(FileName: string);
       procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
-      procedure WMSettingChange(var Message: TMessage);
-        message WM_SETTINGCHANGE;
+      procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
       procedure ActiveControlChanged(Sender: TObject);
-    published
+    protected
+      procedure WMQueryEndSession(var Msg: TMessage); message WM_QUERYENDSESSION;
+      procedure WMEndSession(var Msg: TMessage); message WM_ENDSESSION;
+      published
       { Doppelclick auf Splitter }
       property OnDblClick;
   end;
@@ -4386,12 +4387,19 @@ end;
 procedure TFreePDF64_Form.WMQueryEndSession(var Msg: TMessage);
 begin
   // Code, um Ressourcen freizugeben
-
-  // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
-  FreeAndNil(WebBrowser1);
-  FreeAndNil(WebBrowser2);
-
   Msg.Result := 1; // Erlaubt das Herunterfahren
+end;
+
+procedure TFreePDF64_Form.WMEndSession(var Msg: TMessage);
+begin
+  if Msg.WParam = 1 then
+  begin
+    // Aufräumarbeiten durchführen
+    // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
+    FreeAndNil(WebBrowser1);
+    FreeAndNil(WebBrowser2);
+    // Beispiel: Ressourcen freigeben, Dateien speichern, usw.
+  end;
 end;
 
 procedure TFreePDF64_Form.FormCloseQuery(Sender: TObject;
