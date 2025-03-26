@@ -605,10 +605,9 @@ type
       procedure PlaySoundFile(FileName: string);
       procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
       procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
+      procedure WMQueryEndSession(var Msg: TWMQueryEndSession); message WM_QUERYENDSESSION;
       procedure ActiveControlChanged(Sender: TObject);
     protected
-      procedure WMQueryEndSession(var Msg: TMessage); message WM_QUERYENDSESSION;
-      procedure WMEndSession(var Msg: TMessage); message WM_ENDSESSION;
       published
       { Doppelclick auf Splitter }
       property OnDblClick;
@@ -4383,38 +4382,20 @@ begin
   Application.Terminate;
 end;
 
-function IsDLLLoaded(const DLLName: string): Boolean;
+procedure TFreePDF64_Form.WMQueryEndSession(var Msg: TWMQueryEndSession);
 begin
-  Result := GetModuleHandle(PChar(DLLName)) <> 0;
-end;
-
-procedure UnloadDLL(const DLLName: string);
-var
-  ModuleHandle: HMODULE;
-begin
-  ModuleHandle := GetModuleHandle(PChar(DLLName));
-  if ModuleHandle <> 0 then
-    FreeLibrary(ModuleHandle); // Entlädt die DLL aus dem Speicher
-end;
-
-procedure TFreePDF64_Form.WMQueryEndSession(var Msg: TMessage);
-begin
-  // Code, um Ressourcen freizugeben
-  Msg.Result := 1; // Erlaubt das Herunterfahren
-end;
-
-procedure TFreePDF64_Form.WMEndSession(var Msg: TMessage);
-begin
-  if Msg.WParam = 1 then
-  begin
-    // Aufräumarbeiten durchführen
-    // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
-    FreeAndNil(WebBrowser1);
-    FreeAndNil(WebBrowser2);
-    // DLL entladen
-    if IsDLLLoaded('AcroPDFImpl64.dll') then
-      UnloadDLL('AcroPDFImpl64.dll');
-    // Beispiel: Ressourcen freigeben, Dateien speichern, usw.
+  try
+    Application.ProcessMessages;
+    FreeAndNIL(WebBrowser1);
+    FreeAndNIL(WebBrowser2);
+    // Code, um Ressourcen freizugeben
+    Msg.Result := 1; // Erlaubt das Herunterfahren
+  except
+    on E: Exception do
+    begin
+      ShowMessage('Fehler beim Beenden von FreePDF64!' + E.Message);
+      Msg.Result := 0; // Shutdown verhindern
+    end;
   end;
 end;
 
