@@ -1421,6 +1421,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Top = 4
         Margins.Right = 4
         Margins.Bottom = 4
+        TabStop = False
         TabOrder = 5
         ControlData = {
           4C0000006A000000400000000000000000000000000000000000000000000000
@@ -1893,6 +1894,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
+      TabStop = False
       TabOrder = 4
       ControlData = {
         4C00000015000000150000000000000000000000000000000000000000000000

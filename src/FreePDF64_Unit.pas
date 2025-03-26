@@ -590,6 +590,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ZiellabelClick(Sender: TObject);
     procedure QuelllabelClick(Sender: TObject);
+    procedure ToolButton6Click(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -1965,6 +1966,8 @@ begin
     CopyTo.Click;
   if (ssShift in Shift) and (Key = VK_F6) then
     MoveTo.Click;
+  if (ssShift in Shift) and (Key = VK_F3) then
+    Btn_View.Click;
 end;
 
 procedure TFreePDF64_Form.FormKeyUp(Sender: TObject; var Key: Word;
@@ -2113,7 +2116,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '24.03.2025';
+  Datum := '26.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -2654,6 +2657,11 @@ begin
     FreePDF64_Form.WindowState := wsMinimized;
     Timer2.Enabled := False;
   end;
+end;
+
+procedure TFreePDF64_Form.ToolButton6Click(Sender: TObject);
+begin
+  LMDShellList1.SetFocus;
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -3612,8 +3620,7 @@ begin
   end;
 
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
   XPDFReader := Einstellungen_Form.Edit3.Text;
   PDFReader := XPDFReader;
 
@@ -3667,8 +3674,7 @@ begin
       Exit;
     end;
 
-  if FileExists(XPDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF'))
-  then
+  if FileExists(XPDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF')) then
   begin
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     begin
@@ -3678,15 +3684,12 @@ begin
       except
         WebBrowser2.Free;
         // XPDFReader aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(XPDFReader),
-          PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
         KillTask(XPDFReader);
         raise;
       end;
-    end
-    else
-      if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True
-    then
+    end else
+    if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
     begin
       try
         WebBrowser1.Align := alClient;
@@ -3694,15 +3697,13 @@ begin
       except
         WebBrowser1.Free;
         // XPDFReader aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(XPDFReader),
-          PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
         KillTask(XPDFReader);
         raise;
       end;
     end
   end
-  else if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or
-    (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
+  else if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
   // Ghostscript aufrufen...
   begin
     Ghostscript := Einstellungen_Form.Edit1.Text;
@@ -3717,8 +3718,7 @@ begin
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
-  end
-  else
+  end else
   // Alles andere im unteren Progammfenster anzeigen
   begin
     Memo1.Lines.LoadFromFile(Auswahl);
@@ -3734,8 +3734,7 @@ begin
         I := FreePDF64_Form.Height - 350;
       PDFPanel.Height := I;
       MemoBtn.Visible := True;
-    end
-    else
+    end else
     begin
       // Wenn das Panel schon auf ist, wieder schließen...
       if PDFPanel.Height > PDFPanelH then
@@ -4384,6 +4383,20 @@ begin
   Application.Terminate;
 end;
 
+function IsDLLLoaded(const DLLName: string): Boolean;
+begin
+  Result := GetModuleHandle(PChar(DLLName)) <> 0;
+end;
+
+procedure UnloadDLL(const DLLName: string);
+var
+  ModuleHandle: HMODULE;
+begin
+  ModuleHandle := GetModuleHandle(PChar(DLLName));
+  if ModuleHandle <> 0 then
+    FreeLibrary(ModuleHandle); // Entlädt die DLL aus dem Speicher
+end;
+
 procedure TFreePDF64_Form.WMQueryEndSession(var Msg: TMessage);
 begin
   // Code, um Ressourcen freizugeben
@@ -4398,6 +4411,9 @@ begin
     // Entfernt die WebBrowser-Komponente und setzt die Referenz auf NIL
     FreeAndNil(WebBrowser1);
     FreeAndNil(WebBrowser2);
+    // DLL entladen
+    if IsDLLLoaded('AcroPDFImpl64.dll') then
+      UnloadDLL('AcroPDFImpl64.dll');
     // Beispiel: Ressourcen freigeben, Dateien speichern, usw.
   end;
 end;
@@ -6122,23 +6138,19 @@ begin
   FavClose;
   Memo1.Clear;
 
-  if WebBrowser2.Align = alClient then
-  begin
-    WebBrowser2.Navigate('about:blank');
-    WebBrowser2.Align := alNone;
-    Exit;
-  end;
-
   if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
   begin
     for I := 0 to LMDShellList1.Items.Count - 1 do
       LMDShellList1.Items[I].Selected := LMDShellList1.Items[I].Selected or
         LMDShellList1.Items[I].Focused;
     Exit;
-  end
+  end else
+  if Image1.Visible then
+    Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.PathName)
   else
-    if Image1.Visible then
-    Image1.Picture.LoadFromFile(LMDShellList1.SelectedItem.PathName);
+  if not DirectoryExists(LMDShellList1.SelectedItem.PathName) then
+    if (WebBrowser2.Align = alClient) then
+      WebBrowser2.Navigate(LMDShellList1.SelectedItem.PathName);
 end;
 
 // Starte die Erstellung mit Doppelklick auf ein Listenelement, außer es ist ein Verzeichnis...
@@ -6183,8 +6195,7 @@ procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 begin
   if LMDShellList1.SelCount > 0 then
-    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) +
-      ' => Erstellung starten!')
+    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) + ' => Erstellung starten!')
   else
     PDF_Erstellung.Caption := ('Erstellung starten!');
   // Abfrage auf Hinweis bzgl. der Extension
@@ -6205,23 +6216,19 @@ begin
   FavClose;
   Memo1.Clear;
 
-  if WebBrowser1.Align = alClient then
-  begin
-    WebBrowser1.Navigate('about:blank');
-    WebBrowser1.Align := alNone;
-    Exit;
-  end;
-
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
   begin
     for I := 0 to LMDShellList2.Items.Count - 1 do
       LMDShellList2.Items[I].Selected := LMDShellList2.Items[I].Selected or
         LMDShellList2.Items[I].Focused;
     Exit;
-  end
+  end else
+  if Image2.Visible then
+    Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.PathName)
   else
-    if Image2.Visible then
-    Image2.Picture.LoadFromFile(LMDShellList2.SelectedItem.PathName);
+  if not DirectoryExists(LMDShellList2.SelectedItem.PathName) then
+    if (WebBrowser1.Align = alClient) then
+      WebBrowser1.Navigate(LMDShellList2.SelectedItem.PathName);
 end;
 
 procedure TFreePDF64_Form.LMDShellList1ColumnClick(Sender: TObject;
