@@ -409,8 +409,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 0
         Hint = 
           'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'Re' +
-          'chtsklick im unteren Programmfenster zeigt die Metadaten '#13#10'im ex' +
-          'ternen Editor an'
+          'chtsklick im unteren Anzeigefenster zeigt die Metadaten im'#13#10'exte' +
+          'rnen Editor an'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -439,7 +439,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object MemoBtn: TToolButton
         Left = 904
         Top = 0
-        Hint = 'Unteres Programmfenster schlie'#223'en [ESC]'
+        Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         ImageIndex = 76
         ImageName = 'Item77'
         Visible = False
@@ -560,8 +560,8 @@ object FreePDF64_Form: TFreePDF64_Form
         'enster schlie'#223'en mit F3'#13#10'- PS-Dateien entweder angezeigt mit dem' +
         ' PDF-Anzeiger oder mit Ghostscript'#13#10'- Bilder werden im gegen'#252'ber' +
         'liegenden Fenster angezeigt. Fenster schlie'#223'en mit F3'#13#10'- Alle an' +
-        'deren Dateien werden "versucht" im unteren Programmfenster anzuz' +
-        'eigen!'
+        'deren Dateien werden "versucht" im unteren Anzeigefenster anzuze' +
+        'igen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4

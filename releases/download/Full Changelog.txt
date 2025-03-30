@@ -1,5 +1,6 @@
-24.03.2024 V6.3.4
+30.03.2024 V6.3.4
 Neu -> PDF-Dateien werden mit F3 direkt in FreePDF64 angezeigt.
+Fix -> Update ImageMagick-Tool auf neueste Version.
 17.03.2024 V6.3.3
 Fix -> Hinweise zu den Symbolen vereinfacht.
 Neu -> Auswahl von PDF/X-4a bei der Erstellung. PDF/X-4a soll dem Anspruch an einen möglichst medienneutralen Austausch gerecht werden.
