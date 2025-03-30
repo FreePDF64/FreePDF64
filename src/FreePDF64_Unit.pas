@@ -1095,8 +1095,7 @@ begin
     Exit;
   end;
 
-  Wasserzeichen_Form.Caption := 'Wasserzeichen/Stempel: ' +
-    IntToStr(LMDShellList1.SelCount) + ' Datei(en) markiert';
+  Wasserzeichen_Form.Caption := 'Wasserzeichen/Stempel: ' + IntToStr(LMDShellList1.SelCount) + ' Datei(en) markiert';
 
   if Einstellungen_Form.Edit5.Text = '' then
     Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
@@ -7403,7 +7402,7 @@ begin
     DokuInfo_Form.BitBtn1.Click;
 
   // Ist keine Datei ausgewählt, dann diese Prozedur beenden...
-  if LMDShellList1.SelCount = 0 then
+  if (LMDShellList1.Focused and (LMDShellList1.SelCount = 0)) or LMDShellList2.Focused then
     Exit;
 
   Ziel := IncludeTrailingBackslash(Ziel);
@@ -8688,8 +8687,11 @@ begin
   // Variable Ziel wieder zurücksetzen
   Ziel := Ziel3;
 
-  // Nach der Erstellung den ersten Eintrag markieren
-  // LMDShellList1.ItemIndex := 0;
+  // Nach der Erstellung wieder aktiv ins LMDShellList1 gehen und letzten Eintrag markieren
+  //  LMDShellList1.ItemIndex := 0;
+  LMDShellList1.SetFocus;
+  keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0); // SPACE drücken
+
 
   // Seiten wieder zurückstellen
   Seiten_Form.VonSE.Value := 0;
