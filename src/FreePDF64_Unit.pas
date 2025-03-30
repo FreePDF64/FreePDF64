@@ -4702,6 +4702,16 @@ begin
       PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
   end;
 
+  // Fenster hat wieder die normale Größe
+  if WindowState = wsNormal then
+  begin
+    // Splitter soll sich in der Mitte befinden.
+    if Panel_Right.Visible then
+      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
+    else
+      PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+  end;
+
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := FreePDF64_Form.Width div 7;
   Btn_Rename.Left := 1;
@@ -4982,18 +4992,6 @@ begin
       else
         FreePDF64_Form.WindowState := wsMinimized;
     end;
-  end
-  else
-    inherited;
-
-  // Fenster hat wieder die normale Größe
-  if (Message.CmdType and $FFF0) = SC_RESTORE then
-  begin
-    // Splitter soll sich in der Mitte befinden.
-    if Panel_Right.Visible then
-      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
-    else
-      PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
   end
   else
     inherited;
