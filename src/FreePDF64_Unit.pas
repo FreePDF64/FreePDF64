@@ -1135,8 +1135,7 @@ begin
         begin
           Memo1.Lines.Clear;
           // AP3: Welche PDF-Datei(en) soll ein Wasserzeichen erhalten?
-          AP3 := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-            + LMDShellList1.SelectedItems[I].DisplayName;
+          AP3 := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[I].DisplayName;
 
           if Uppercase(ExtractFileExt(AP3)) <> ('.PDF') then
           begin
@@ -1323,8 +1322,7 @@ begin
 
   if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
   begin
-    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName)
-      + LMDShellList1.SelectedItems[0].DisplayName;
+    PDFDatei := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.SelectedItems[0].DisplayName;
     if Uppercase(ExtractFileExt(PDFDatei)) <> '.PDF' then
     begin
       MessageDlgCenter
@@ -3295,8 +3293,7 @@ begin
   if Button = mbRight then
   begin
     PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
-    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash
-      (FreePDF64_Notify.MonitoringFolder.Text);
+    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text);
     PopupMenu3.Items.Items[2].Caption := IncludeTrailingBackslash(MZiel);
   end;
 end;
@@ -5660,7 +5657,7 @@ end;
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
 var
   I, j: Integer;
-  s: String;
+  s, s1: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   if LMDShellFolder1.BackwardPathList.Count >= 2 then
@@ -5684,10 +5681,9 @@ begin
     s := LMDShellFolder1.ActiveFolder.DisplayName
   else
     s := LMDShellFolder1.ActiveFolder.PathName;
-  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) +
-    '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-    (FavSpL.Width + FavLinks.Width +
-    ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+
+  Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
+                          (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(s) = -1 then
     ComboBoxL.Items.Insert(0, s);
@@ -5700,12 +5696,18 @@ begin
     LMDShellList2.Column[0].AutoSize := True;
   end;
   Suche_ItemAnzeigen := False;
+
+  s1 := 'Quelle - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
+  if Quelllabel.Caption = s1 then
+    QuellLabel.Font.Color := clNavy
+  else
+    QuellLabel.Font.Color := clWindowText
 end;
 
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
 var
   I, j: Integer;
-  s: String;
+  s, s1: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   I := LMDShellFolder2.BackwardPathList.Count - 2;
@@ -5745,6 +5747,12 @@ begin
     LMDShellList2.Column[0].AutoSize := True;
   end;
   Suche_ItemAnzeigen := False;
+
+  s1 := 'Ziel - ' + FreePDF64_Notify.ZielEdit.Text + '*.*';
+  if Ziellabel.Caption = s1 then
+    ZielLabel.Font.Color := clNavy
+  else
+    ZielLabel.Font.Color := clWindowText
 end;
 
 // Abfrage auf richtige Extension zur Erstellungsauswahl!
