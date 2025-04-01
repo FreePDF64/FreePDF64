@@ -2114,7 +2114,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '30.03.2025';
+  Datum := '31.03.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -8685,11 +8685,12 @@ begin
   // Variable Ziel wieder zurücksetzen
   Ziel := Ziel3;
 
-  // Nach der Erstellung wieder aktiv ins LMDShellList1 gehen und letzten Eintrag markieren
-  //  LMDShellList1.ItemIndex := 0;
-  LMDShellList1.SetFocus;
-  keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0); // SPACE drücken
-
+  // Nach der Erstellung wieder aktiv ins LMDShellList1 gehen und letzten Eintrag markieren, wenn Form sichtbar ist
+  if FreePDF64_Form.Visible then
+  begin
+    LMDShellList1.SetFocus;
+    keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0); // SPACE drücken
+  end;
 
   // Seiten wieder zurückstellen
   Seiten_Form.VonSE.Value := 0;
