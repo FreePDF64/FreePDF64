@@ -5699,7 +5699,7 @@ begin
 
   s1 := 'Quelle - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
   if (Quelllabel.Caption = s1) and (MonitorBtn.ImageIndex = 57) then
-    QuellLabel.Font.Color := clNavy
+    QuellLabel.Font.Color := clRed
   else
     QuellLabel.Font.Color := clWindowText
 end;
@@ -5748,9 +5748,9 @@ begin
   end;
   Suche_ItemAnzeigen := False;
 
-  s1 := 'Ziel - ' + FreePDF64_Notify.ZielEdit.Text + '*.*';
+  s1 := 'Ziel - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
   if (Ziellabel.Caption = s1) and (MonitorBtn.ImageIndex = 57) then
-    ZielLabel.Font.Color := clNavy
+    ZielLabel.Font.Color := clRed
   else
     ZielLabel.Font.Color := clWindowText
 end;
