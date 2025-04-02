@@ -710,6 +710,28 @@ begin
   Status_Form.ShowModal;
 end;
 
+procedure QL;
+var
+  s: String;
+begin
+  s := 'Quelle - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
+  if (FreePDF64_Form.Quelllabel.Caption = s) and (FreePDF64_Form.MonitorBtn.ImageIndex = 57) then
+    FreePDF64_Form.QuellLabel.Font.Color := clRed
+  else
+    FreePDF64_Form.QuellLabel.Font.Color := clWindowText
+end;
+
+procedure ZL;
+var
+  s: String;
+begin
+  s := 'Ziel - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
+  if (FreePDF64_Form.Ziellabel.Caption = s) and (FreePDF64_Form.MonitorBtn.ImageIndex = 57) then
+    FreePDF64_Form.ZielLabel.Font.Color := clRed
+  else
+    FreePDF64_Form.ZielLabel.Font.Color := clWindowText
+end;
+
 procedure TFreePDF64_Form.StatusBitBtnClick(Sender: TObject);
 begin
   FavClose;
@@ -2112,7 +2134,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '31.03.2025';
+  Datum := '02.04.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -5657,7 +5679,7 @@ end;
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
 var
   I, j: Integer;
-  s, s1: String;
+  s: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   if LMDShellFolder1.BackwardPathList.Count >= 2 then
@@ -5683,7 +5705,8 @@ begin
     s := LMDShellFolder1.ActiveFolder.PathName;
 
   Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s) + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-                          (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+                        (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+
   // Keine doppelten Einträge zulassen...
   if ComboBoxL.Items.IndexOf(s) = -1 then
     ComboBoxL.Items.Insert(0, s);
@@ -5696,18 +5719,13 @@ begin
     LMDShellList2.Column[0].AutoSize := True;
   end;
   Suche_ItemAnzeigen := False;
-
-  s1 := 'Quelle - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
-  if (Quelllabel.Caption = s1) and (MonitorBtn.ImageIndex = 57) then
-    QuellLabel.Font.Color := clRed
-  else
-    QuellLabel.Font.Color := clWindowText
+  QL;
 end;
 
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
 var
   I, j: Integer;
-  s, s1: String;
+  s: String;
 begin
   // Merke Dir das Verzeichnis, von wo man ausgegangen ist...
   I := LMDShellFolder2.BackwardPathList.Count - 2;
@@ -5730,11 +5748,11 @@ begin
     s := LMDShellFolder2.ActiveFolder.DisplayName
   else
     s := LMDShellFolder2.ActiveFolder.PathName;
+
   Ziel := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
-  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) +
-    '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-    (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width +
-    ComboBoxR.Width));
+  Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s) + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
+                       (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
+
   // Keine doppelten Einträge zulassen...
   if ComboBoxR.Items.IndexOf(s) = -1 then
     ComboBoxR.Items.Insert(0, s);
@@ -5747,12 +5765,7 @@ begin
     LMDShellList2.Column[0].AutoSize := True;
   end;
   Suche_ItemAnzeigen := False;
-
-  s1 := 'Ziel - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
-  if (Ziellabel.Caption = s1) and (MonitorBtn.ImageIndex = 57) then
-    ZielLabel.Font.Color := clRed
-  else
-    ZielLabel.Font.Color := clWindowText
+  ZL;
 end;
 
 // Abfrage auf richtige Extension zur Erstellungsauswahl!
