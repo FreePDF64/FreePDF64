@@ -591,6 +591,7 @@ type
     procedure ZiellabelClick(Sender: TObject);
     procedure QuelllabelClick(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
+    procedure Logdateiansehen2Click(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -6453,11 +6454,9 @@ begin
   // mbLeft: Linke Maustaste
   if Button = mbLeft then
   begin
-    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt');
+    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
     PaneloverPrgB.Visible := True;
-    PaneloverPrgB.Caption := ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt';
+    PaneloverPrgB.Caption := ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt';
     // zur letzen Zeile:
     Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
     if Memo1.Lines.Count > 0 then
@@ -6521,6 +6520,16 @@ begin
     PDFPanel.Height := I;
     MemoBtn.Visible := True;
   end;
+end;
+
+// Aufuf vom PopUp-Menü
+procedure TFreePDF64_Form.Logdateiansehen2Click(Sender: TObject);
+begin
+  if Einstellungen_Form.Edit2.Text = '' then
+    Einstellungen_Form.Edit2.Text := 'notepad.exe';
+
+  ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text), PChar(' "' + ExtractFilePath(Application.ExeName) +
+              'FreePDF64Log.txt' + '"'), NIL, SW_SHOWNORMAL)
 end;
 
 procedure TFreePDF64_Form.LogdateiClick(Sender: TObject);
