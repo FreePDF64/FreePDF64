@@ -1,5 +1,6 @@
-02.04.2024 V6.3.4
+07.04.2024 V6.3.4
 Neu -> PDF-Dateien werden mit F3 direkt in FreePDF64 angezeigt.
+Fix -> QPDF-Update auf Version 12.1.0.
 Fix -> Update ExifTool auf neueste Version.
 Fix -> Update ImageMagick-Tool auf neueste Version.
 17.03.2024 V6.3.3
