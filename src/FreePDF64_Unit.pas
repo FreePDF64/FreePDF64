@@ -2135,7 +2135,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '02.04.2025';
+  Datum := '11.04.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -6138,9 +6138,13 @@ var
   I: Integer;
 begin
   FavClose;
+
+  if LMDShellList1.Items.Count = 0 then
+    Exit;
+
   Memo1.Clear;
 
-  if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
+    if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
   begin
     for I := 0 to LMDShellList1.Items.Count - 1 do
       LMDShellList1.Items[I].Selected := LMDShellList1.Items[I].Selected or
@@ -6216,6 +6220,10 @@ var
   I: Integer;
 begin
   FavClose;
+
+  if LMDShellList2.Items.Count = 0 then
+    Exit;
+
   Memo1.Clear;
 
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
