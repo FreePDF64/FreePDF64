@@ -13,7 +13,8 @@
 // - ExifTool
 // - QPDF
 // - PDFtk
-// - XpdfReader und die Xpdf-Tools
+// - Die Xpdf-Tools und optional den XpdfReader
+// - Optional SumatraPDF
 // - Ein postscriptfähigen Farbdruckertreiber (mit Mfilemon)
 //
 // Angefangen im:    Dezember 2021
@@ -1226,14 +1227,11 @@ begin
               if Einstellungen_Form.AnzeigenCB.Checked then
               begin
                 if Einstellungen_Form.Edit3.Text = '' then
-                  PDFReader := ExtractFilePath(Application.ExeName) +
-                    'xpdf\xpdfreader\xpdf.exe'
+                  PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
                 else
                   PDFReader := Einstellungen_Form.Edit3.Text;
-                ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                  PChar('"' + (IncludeTrailingBackslash
-                  (Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3)
-                  ) + '"'), NIL, SW_SHOWNORMAL);
+                ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + (IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) +
+                             WZST2 + ExtractFileName(AP3)) + '"'), NIL, SW_SHOWNORMAL);
               end;
             end;
             // Ende von FreePDF64Log.txt
@@ -1456,8 +1454,7 @@ begin
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) +
-        'xpdf\xpdfreader\xpdf.exe'
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
 
@@ -1690,8 +1687,7 @@ begin
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) +
-        'xpdf\xpdfreader\xpdf.exe'
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
 
@@ -1871,7 +1867,7 @@ end;
 procedure TFreePDF64_Form.Anleitung1Click(Sender: TObject);
 begin
   MessageDlgCenter
-    ('PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, verschlüsseln'
+    ('PDF-Dateien erzeugen, zusammenfügen, drucken, Seiten entnehmen, Bilder extrahieren, verschlüsseln'
     + #13 + '(128-Bit RC4/AES oder 256-Bit AES), mit Wasserzeichen oder Stempel versehen, uvm.'
     + #13 + #13 +
     'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF/DOCX-Erstellung:'
@@ -1888,7 +1884,7 @@ begin
     '06: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung'
     + #13 + '07: Erstellen von PDF/X-3 sowie PDF/X-4a: Ein Dateiformat für den Austausch digitaler Druckvorlagen'
     + #13 + '08: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung'
-    + #13 + '09: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei' + #13
+    + #13 + '09: Zusammenfügen von mehreren PS/PDF-Dateien zu einer PDF-Datei' + #13
     + '10: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)' + #13 +
     '11: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen'
     + #13 + '12: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen'
@@ -2135,7 +2131,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '11.04.2025';
+  Datum := '20.04.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3064,8 +3060,7 @@ begin
         // Pause von 1 sec. einbauen...
         Sleep(1000);
         if Einstellungen_Form.Edit3.Text = '' then
-          PDFReader := ExtractFilePath(Application.ExeName) +
-            'xpdf\xpdfreader\xpdf.exe'
+          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
         else
           PDFReader := Einstellungen_Form.Edit3.Text;
         ShellExecute(Application.Handle, 'open', PChar(PDFReader),
@@ -3125,8 +3120,7 @@ begin
           begin
             Sleep(1000);
             if Einstellungen_Form.Edit3.Text = '' then
-              PDFReader := ExtractFilePath(Application.ExeName) +
-                'xpdf\xpdfreader\xpdf.exe'
+              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
             else
               PDFReader := Einstellungen_Form.Edit3.Text;
             ShellExecute(Application.Handle, 'open', PChar(PDFReader),
@@ -3238,8 +3232,7 @@ begin
         // Pause von 1 sec. einbauen...
         Sleep(1000);
         if Einstellungen_Form.Edit3.Text = '' then
-          PDFReader := ExtractFilePath(Application.ExeName) +
-            'xpdf\xpdfreader\xpdf.exe'
+          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
         else
           PDFReader := Einstellungen_Form.Edit3.Text;
         ShellExecute(Application.Handle, 'open', PChar(PDFReader),
@@ -3617,7 +3610,7 @@ begin
   end;
 end;
 
-// PS/PDF-Dateien anschauen mit Ghostscript oder dem XPDFReader
+// PS/PDF-Dateien anschauen mit Ghostscript oder dem XPDFReader oder...
 procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
   I: Integer;
@@ -3640,7 +3633,7 @@ begin
   if Einstellungen_Form.Edit3.Text = '' then
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
   XPDFReader := Einstellungen_Form.Edit3.Text;
-  PDFReader := XPDFReader;
+  PDFReader  := XPDFReader;
 
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     Auswahl := LMDShellList1.SelectedItem.PathName
@@ -4489,7 +4482,6 @@ begin
         PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height',
           PDFPanel.Height);
         PDFPanelH := PDFPanel.Height;
-        PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
         LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines',
           LMDShellList1.GridLines);
         LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines',
@@ -4523,10 +4515,6 @@ begin
           AutoSize.Enabled := True
         else
           AutoSize.Enabled := False;
-        if not ValueExists('Files', 'PDF-Reader') then
-          PDFReader := ExtractFilePath(Application.ExeName) +
-            'xpdf\xpdfreader\xpdf.exe';
-        PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
 
         if not ValueExists('Start', 'Splashscreen') then
           WriteBool('Start', 'Splashscreen', True);
@@ -5054,7 +5042,7 @@ begin
 
   FAbbrechen := False;
   Info_Anzeigen := False;
-  // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
+  // Wenn Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   if ParamCount > 0 then
   begin
     Merge.Click;
@@ -5071,8 +5059,7 @@ begin
 
   // ============================================================================
   // Wenn die FreePDF64-Ini-Datei nicht vorgefunden wird...
-  if not FileExists(IncludeTrailingBackslash
-    (ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
+  if not FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
     // Ghostscript
     Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
@@ -5105,15 +5092,13 @@ begin
     XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
       'pdffonts.exe';
 
-    // XPDFReader
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+    // PDF-Anzeiger
+//    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.5.2-64.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
-    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) +
-      'Quellverzeichnis';
-    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) +
-      'Zielverzeichnis';
+    LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) + 'Quellverzeichnis';
+    LMDShellFolder2.RootFolder := ExtractFilePath(Application.ExeName) + 'Zielverzeichnis';
     // Notify-Einstellungen...
     FreePDF64_Notify.MonitoringFolder.Text :=
       IncludeTrailingBackslash(LMDShellFolder1.RootFolder);
@@ -5209,10 +5194,9 @@ begin
     'pdfdetach.exe';
   XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
     'pdffonts.exe';
-  // XPDFReader
-  if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\xpdfreader\xpdf.exe';
+  // PDF-Anzeiger
+  Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.5.2-64.exe';
+  PDFReader := Einstellungen_Form.Edit3.Text;
 
   Memo1.Height := 64;
 
@@ -5308,6 +5292,11 @@ begin
         Counter := 0
       else
         Counter := ReadInteger('Start', 'Counter', Counter);
+
+      if not ValueExists('Files', 'PDF-Reader') or (Einstellungen_Form.Edit3.Text = '') then
+        PDFReader := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.5.2-64.exe'
+      else
+        PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
 
       Vol1 := Einstellungen_Form.SoundSpin.Value;
       if (Vol1 < 0) or (Vol1 > 65535) then
@@ -6747,7 +6736,7 @@ begin
   Memo1.Clear;
   s := '.pdf';
   j := 0;
-  // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
+  // Wenn Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   while j < ParamCount do
   begin
     INC(j);
@@ -6786,7 +6775,7 @@ begin
     Auswahl_Form.Position := poMainFormCenter;
   Popup_Aufruf := False;
 
-  // Wenn KEIN Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
+  // Wenn KEIN Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   if ParamCount = 0 then
   begin
     // Form soll mittig angezeigt werden.
@@ -6933,7 +6922,7 @@ begin
     // -------------------------------------------------------------------------
     // Ghostscript-Parameter zum Zusammenfügen der Dateien.
 
-    // In 'files' sind die ausgewählten Dateien aus dem Verbinden-Fenster
+    // In 'files' sind die ausgewählten Dateien aus dem Zusammenfügen-Fenster
     Files := '';
     if Auswahl_Form.FileList.Items.Count > 0 then
     begin
@@ -7145,8 +7134,7 @@ begin
         Rewrite(F)
       end;
 
-      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
-        ' ===========> VERBINDEN: ' + Memo1.Lines.Text));
+      Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' =======> ZUSAMMENFÜGEN: ' + Memo1.Lines.Text));
       for I := 0 to Auswahl_Form.FileList.Items.Count - 1 do
         Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
           ' -            Dateiname: ' + PChar(Auswahl_Form.FileList.Items[I]
@@ -7166,14 +7154,13 @@ begin
   if Formatverz.Checked or Formatverz_Date.Checked then
     s := IncludeTrailingBackslash(Ziel) + s;
 
-  // Verbinden-PDF-Datei mit dem PDF-Anzeiger anzeigen
-  // Wenn Aufruf von FreePDF64-Verbinden via Kontextmenü dann...
+  // Zusammenfügen-PDF-Datei mit dem PDF-Anzeiger anzeigen
+  // Wenn Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   if ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) and // PDF
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) +
-        'xpdf\xpdfreader\xpdf.exe'
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
     ShellExecute(Application.Handle, 'open', PChar(PDFReader),
@@ -7366,8 +7353,7 @@ begin
   else
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) +
-        'xpdf\xpdfreader\xpdf.exe'
+      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
     ShellExecute(Application.Handle, 'open', PChar(PDFReader),
@@ -8649,8 +8635,7 @@ begin
             Sleep(1000);
 
             if Einstellungen_Form.Edit3.Text = '' then
-              PDFReader := ExtractFilePath(Application.ExeName) +
-                'xpdf\xpdfreader\xpdf.exe'
+              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
             else
               PDFReader := Einstellungen_Form.Edit3.Text;
 

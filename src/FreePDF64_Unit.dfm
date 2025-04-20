@@ -557,11 +557,11 @@ object FreePDF64_Form: TFreePDF64_Form
       Height = 33
       Hint = 
         '- PDF-Dateien  werden im gegen'#252'berliegenden Fenster angezeigt. F' +
-        'enster schlie'#223'en mit F3'#13#10'- PS-Dateien entweder angezeigt mit dem' +
-        ' PDF-Anzeiger oder mit Ghostscript'#13#10'- Bilder werden im gegen'#252'ber' +
-        'liegenden Fenster angezeigt. Fenster schlie'#223'en mit F3'#13#10'- Alle an' +
-        'deren Dateien werden "versucht" im unteren Anzeigefenster anzuze' +
-        'igen!'
+        'enster schlie'#223'en mit F3'#13#10'- PS-Dateien werden entweder mit dem PD' +
+        'F-Anzeiger angezeigt oder mit Ghostscript'#13#10'- Bilder werden im ge' +
+        'gen'#252'berliegenden Fenster angezeigt. Fenster schlie'#223'en mit F3'#13#10'- ' +
+        'Alle anderen Dateien werden "versucht" im unteren Anzeigefenster' +
+        ' anzuzeigen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
