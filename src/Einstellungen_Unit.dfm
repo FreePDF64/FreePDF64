@@ -561,6 +561,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Font.Style = []
     ParentFont = False
     TabOrder = 14
+    OnExit = Edit3Exit
   end
   object Button3: TButton
     Left = 911
@@ -948,7 +949,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Top = 95
     Width = 31
     Height = 28
-    Hint = 'Pfad zu den XPDF-Tools'
+    Hint = 'Pfad zu den Xpdf-Tools'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4

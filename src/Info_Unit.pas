@@ -96,7 +96,7 @@ begin
   Edit1.Text := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
   Edit2.Text := Application.ExeName;
 
-  Datum := '20.04.2025';
+  Datum := '21.04.2025';
   Delete(Datum, 11, 9);  // Entfernt die letzten 9 Zeichen
   InfoL.Caption := FreePDF64_Form.LMDVersionInfo1.ProductName + ' Version '
                    + FreePDF64_Form.LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' + #13 + #13

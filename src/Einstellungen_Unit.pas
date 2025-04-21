@@ -114,6 +114,7 @@ type
     procedure ExifToolGEClick(Sender: TObject);
     procedure FontCBClick(Sender: TObject);
     procedure PDFX4Click(Sender: TObject);
+    procedure Edit3Exit(Sender: TObject);
     private
       { Private-Deklarationen }
     public
@@ -640,6 +641,13 @@ begin
   Dateianlage_Form.ShowModal;
 end;
 
+procedure TEinstellungen_Form.Edit3Exit(Sender: TObject);
+begin
+  if Einstellungen_Form.Edit3.Text = '' then
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.5.2-64.exe';
+  PDFReader := Einstellungen_Form.Edit3.Text;
+end;
+
 procedure TEinstellungen_Form.EncryptBtClick(Sender: TObject);
 begin
   // Form soll mittig angezeigt werden
@@ -995,8 +1003,7 @@ end;
 
 procedure TEinstellungen_Form.Label7Click(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open',
-    PChar('https://www.xpdfreader.com/about.html'), NIL, NIL, SW_NORMAL);
+  ShellExecute(Application.Handle, 'open', PChar('https://www.xpdfreader.com/index.html'), NIL, NIL, SW_NORMAL);
 end;
 
 procedure TEinstellungen_Form.PDFAnzeigerClick(Sender: TObject);

@@ -13,7 +13,7 @@
 // - ExifTool
 // - QPDF
 // - PDFtk
-// - Die Xpdf-Tools und optional den XpdfReader
+// - Die Xpdf-Tools
 // - Optional SumatraPDF
 // - Ein postscriptfähigen Farbdruckertreiber (mit Mfilemon)
 //
@@ -1227,7 +1227,7 @@ begin
               if Einstellungen_Form.AnzeigenCB.Checked then
               begin
                 if Einstellungen_Form.Edit3.Text = '' then
-                  PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+                  ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
                 else
                   PDFReader := Einstellungen_Form.Edit3.Text;
                 ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + (IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) +
@@ -1454,7 +1454,7 @@ begin
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
 
@@ -1687,19 +1687,17 @@ begin
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
 
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-      PChar('"' + Zieldatei + '"'), NIL, SW_SHOWNORMAL);
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zieldatei + '"'), NIL, SW_SHOWNORMAL);
   end;
 
   if Uppercase(ExtractFileExt(PDFDatei)) <> '.PDF' then
   begin
-    MessageDlgCenter
-      ('PDF Anlage(n) anzeigen und extrahieren: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
-      mtInformation, [mbOk]);
+    MessageDlgCenter('PDF Anlage(n) anzeigen und extrahieren: Bitte EINE PDF-Datei aus dem Quell- oder Zielverzeichnis auswählen!',
+                     mtInformation, [mbOk]);
     Exit;
   end;
 end;
@@ -2131,7 +2129,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '20.04.2025';
+  Datum := '21.04.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3060,11 +3058,10 @@ begin
         // Pause von 1 sec. einbauen...
         Sleep(1000);
         if Einstellungen_Form.Edit3.Text = '' then
-          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+          ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
         else
           PDFReader := Einstellungen_Form.Edit3.Text;
-        ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-          PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
       end;
     end;
   end
@@ -3120,11 +3117,10 @@ begin
           begin
             Sleep(1000);
             if Einstellungen_Form.Edit3.Text = '' then
-              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+              ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
             else
               PDFReader := Einstellungen_Form.Edit3.Text;
-            ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-              PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
+            ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
           end;
         end;
       end
@@ -3232,11 +3228,10 @@ begin
         // Pause von 1 sec. einbauen...
         Sleep(1000);
         if Einstellungen_Form.Edit3.Text = '' then
-          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+          ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
         else
           PDFReader := Einstellungen_Form.Edit3.Text;
-        ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-          PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + EndPDF + '"'), NIL, SW_SHOWNORMAL);
       end;
     end;
   end;
@@ -3610,11 +3605,11 @@ begin
   end;
 end;
 
-// PS/PDF-Dateien anschauen mit Ghostscript oder dem XPDFReader oder...
+// PS/PDF-Dateien anschauen mit Ghostscript oder...
 procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
   I: Integer;
-  Param, XPDFReader: String;
+  Param: String;
 begin
   if WebBrowser1.Align = alClient then
   begin
@@ -3631,9 +3626,9 @@ begin
   end;
 
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
-  XPDFReader := Einstellungen_Form.Edit3.Text;
-  PDFReader  := XPDFReader;
+    ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
+  else
+    PDFReader := Einstellungen_Form.Edit3.Text;
 
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     Auswahl := LMDShellList1.SelectedItem.PathName
@@ -3685,7 +3680,7 @@ begin
       Exit;
     end;
 
-  if FileExists(XPDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF')) then
+  if FileExists(PDFReader) and (Uppercase(ExtractFileExt(Auswahl)) = ('.PDF')) then
   begin
     if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     begin
@@ -3694,9 +3689,9 @@ begin
         WebBrowser2.Navigate(Auswahl);
       except
         WebBrowser2.Free;
-        // XPDFReader aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
-        KillTask(XPDFReader);
+        // PDFReader aufrufen...
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        KillTask(PDFReader);
         raise;
       end;
     end else
@@ -3707,9 +3702,9 @@ begin
         WebBrowser1.Navigate(Auswahl);
       except
         WebBrowser1.Free;
-        // XPDFReader aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(XPDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
-        KillTask(XPDFReader);
+        // PDFReader aufrufen...
+        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
+        KillTask(PDFReader);
         raise;
       end;
     end
@@ -5093,7 +5088,6 @@ begin
       'pdffonts.exe';
 
     // PDF-Anzeiger
-//    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe';
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.5.2-64.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
@@ -7160,19 +7154,17 @@ begin
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-      PChar('"' + IncludeTrailingBackslash(Ziel) + ExtractFileName(s) + '"'),
-      NIL, SW_SHOWNORMAL);
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + IncludeTrailingBackslash(Ziel) + ExtractFileName(s) + '"'),
+                 NIL, SW_SHOWNORMAL);
   end;
 
   ProgressBar1.Position := 100;
 
   if Einstellungen_Form.SystemklangCB.Checked then
-    PlaySoundFile(ExtractFilePath(Application.ExeName) +
-      'sounds\confirmation.wav');
+    PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
 
   ProgressBar1.Position := 0;
   Einstellungen_Form.Close;
@@ -7353,11 +7345,10 @@ begin
   else
   begin
     if Einstellungen_Form.Edit3.Text = '' then
-      PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
     else
       PDFReader := Einstellungen_Form.Edit3.Text;
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-      PChar('"' + s + '"'), NIL, SW_SHOWNORMAL);
+    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + s + '"'), NIL, SW_SHOWNORMAL);
   end;
 end;
 
@@ -8635,7 +8626,7 @@ begin
             Sleep(1000);
 
             if Einstellungen_Form.Edit3.Text = '' then
-              PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
+              ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
             else
               PDFReader := Einstellungen_Form.Edit3.Text;
 

@@ -285,8 +285,10 @@ begin
       end else
       begin
         if Einstellungen_Form.Edit3.Text = '' then
-          PDFReader := ExtractFilePath(Application.ExeName) + 'xpdf\xpdfreader\xpdf.exe'
-        else
+        begin
+          ShowMessage('Bitte einen PDF-Anzeiger in den Einstellungen hinterlegen!');
+          Exit;
+        end else
           PDFReader := Einstellungen_Form.Edit3.Text;
         Application.ProcessMessages;
         // PDF-Anzeiger aufrufen...
