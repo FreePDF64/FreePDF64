@@ -3,8 +3,8 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
   Top = 0
   BorderIcons = [biSystemMenu]
   Caption = 'Hilfe zu den Einstellungen'
-  ClientHeight = 813
-  ClientWidth = 1052
+  ClientHeight = 815
+  ClientWidth = 1062
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
   object Memo1: TMemo
     Left = 0
     Top = 0
-    Width = 1052
-    Height = 813
+    Width = 1062
+    Height = 815
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -228,7 +228,7 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
     TabOrder = 0
     WantReturns = False
     OnKeyDown = Memo1KeyDown
-    ExplicitWidth = 622
-    ExplicitHeight = 429
+    ExplicitWidth = 1052
+    ExplicitHeight = 813
   end
 end

@@ -31,7 +31,7 @@ implementation
 procedure TEinstellungen_Hilfe_Form.FormShow(Sender: TObject);
 begin
   Einstellungen_Hilfe_Form.Height := 860;
-  Einstellungen_Hilfe_Form.Width  := 1070;
+  Einstellungen_Hilfe_Form.Width  := 1080;
 end;
 
 procedure TEinstellungen_Hilfe_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
