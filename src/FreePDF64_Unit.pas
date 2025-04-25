@@ -593,6 +593,7 @@ type
     procedure QuelllabelClick(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
     procedure Logdateiansehen2Click(Sender: TObject);
+    procedure PaneloverPrgBClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2129,7 +2130,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '21.04.2025';
+  Datum := '25.04.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -6463,9 +6464,8 @@ begin
       PDFPanel.Height := I;
       MemoBtn.Visible := True;
     end;
-  end
-  else
-    if Button = mbRight then
+  end else
+  if Button = mbRight then
   begin
     // Wenn das Panel schon auf ist, wieder schließen...
     if PDFPanel.Height > PDFPanelH then
@@ -6478,10 +6478,8 @@ begin
     if Einstellungen_Form.Edit2.Text = '' then
       Einstellungen_Form.Edit2.Text := 'notepad.exe';
 
-    ShellExecute(Application.Handle, 'open',
-      PChar(Einstellungen_Form.Edit2.Text),
-      PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' +
-      '"'), NIL, SW_SHOWNORMAL)
+    ShellExecute(Application.Handle, 'open', PChar(Einstellungen_Form.Edit2.Text),
+                 PChar(' "' + ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt' + '"'), NIL, SW_SHOWNORMAL)
   end;
 end;
 
@@ -7286,6 +7284,11 @@ begin
     LMDShellList1.Column[0].AutoSize := True;
     LMDShellList2.Column[0].AutoSize := True;
   end;
+end;
+
+procedure TFreePDF64_Form.PaneloverPrgBClick(Sender: TObject);
+begin
+  PaneloverPrgB.Caption := '';
 end;
 
 procedure TFreePDF64_Form.PanelRResize(Sender: TObject);
