@@ -2869,28 +2869,23 @@ begin
       PaneloverPrgB.Caption := IncludeTrailingBackslash
         (LMDShellFolder1.ActiveFolder.PathName) +
         LMDShellList1.Selected.Caption;
-      Befehlszeile := ExifTool + ' -L ' + GE +
-        ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-        IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-        LMDShellList1.Selected.Caption + '"';
+      Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+                      IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
+                      LMDShellList1.Selected.Caption + '"';
     end
     else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
     begin
       Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
       PaneloverPrgB.Visible := True;
-      PaneloverPrgB.Caption := IncludeTrailingBackslash
-        (LMDShellFolder2.ActiveFolder.PathName) +
-        LMDShellList2.Selected.Caption;
-      Befehlszeile := ExifTool + ' -L ' + GE +
-        ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-        IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-        LMDShellList2.Selected.Caption + '"';
-    end
-    else
+      PaneloverPrgB.Caption := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                               LMDShellList2.Selected.Caption;
+      Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+                      IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
+                      LMDShellList2.Selected.Caption + '"';
+    end else
     begin
-      MessageDlgCenter
-        ('Datei/Ordnerinformationen anzeigen: Bitte EINE Datei/Ordner aus dem Quell- oder Zielverzeichnis auswählen!',
-        mtInformation, [mbOk]);
+      MessageDlgCenter('Datei/Ordnerinformationen anzeigen: Bitte EINE Datei/Ordner aus dem Quell- oder Zielverzeichnis auswählen!',
+                       mtInformation, [mbOk]);
       Exit;
     end;
 
@@ -6442,6 +6437,7 @@ var
   I: Integer;
 begin
   FavClose;
+  Memo1.Clear;
 
   // mbLeft: Linke Maustaste
   if Button = mbLeft then
@@ -6453,7 +6449,7 @@ begin
     Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
     if Memo1.Lines.Count > 0 then
     begin
-      I := TextHoehe(Memo1.Font, Memo1.Text);
+      I := 20; // 20 -> TextHoehe(Memo1.Font, Memo1.Text);
       I := (I * Memo1.Lines.Count) + MHA;
       if I < Memo1.Parent.Height then
         Exit;
