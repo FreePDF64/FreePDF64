@@ -100,8 +100,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 0
         Top = 0
         Hint = 
-          'Schnelles Autosize beider Name-Spalten (nicht anwendbar bei maxi' +
-          'miertem Fenster)'
+          'Experimentell:'#13#10'Schnelles Autosize beider Name-Spalten (nicht an' +
+          'wendbar bei maximiertem Fenster)'
         Caption = 'AutoSize'
         ImageIndex = 63
         ImageName = 'Item64'
