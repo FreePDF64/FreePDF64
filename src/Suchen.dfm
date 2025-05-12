@@ -804,7 +804,7 @@ object Suche_Form: TSuche_Form
       Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
-      Caption = 'Gehe zu'
+      Caption = 'F10 Gehe zu'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
       Font.Height = -15
@@ -1042,6 +1042,12 @@ object Suche_Form: TSuche_Form
       ShortCut = 119
       Visible = False
       OnClick = Lschen1Click
+    end
+    object Gehezu1: TMenuItem
+      Caption = 'Gehe zu'
+      ShortCut = 121
+      Visible = False
+      OnClick = ListBox1DblClick
     end
     object Markieren1: TMenuItem
       Caption = 'Markieren'

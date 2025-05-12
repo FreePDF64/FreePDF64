@@ -80,6 +80,7 @@ type
     SucheEdit: TEdit;
     Timer2: TTimer;
     AnzeigenPanel: TPanel;
+    Gehezu1: TMenuItem;
     procedure ButtonHochClick(Sender: TObject);
     procedure BrowseClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
