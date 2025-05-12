@@ -1118,7 +1118,6 @@ begin
 end;
 
 // Suchefenster-Inhalt speichern in neue Textdatei...
-
 procedure TSuche_Form.SuchergebnisBtnClick(Sender: TObject);
 var
   f: TextFile;
@@ -1998,7 +1997,6 @@ begin
   StopSuche := False;
   StartSearchButton.Enabled := False;
   StopSearchButton.Caption := 'Suche abbrechen';
-  FileField.SetFocus;
 
   if (SFHResize < SFHStart) and (Suche_Form.Height = Suche_Form.Height - Suchpanel.Height) then
   begin
@@ -2144,8 +2142,15 @@ begin
     SortBtn.Enabled         := False;
   end;
 
-  if ListBox1.Count > 0 then
+  // Nach Ende der Suche - wo ist der Fokus?
+  if ListBox1.Count = 0 then
+    FileField.SetFocus
+  else
+  begin
     ListBox1.Selected[0] := True;
+    ListBox1.SetFocus;
+  end;
+
   if ListBox1.SelCount > 0 then
     StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
 end;
@@ -2161,7 +2166,6 @@ begin
   begin
     StopSuche := True;
     StopSearchButton.Caption := 'Abbrechen';
-//    FileField.SetFocus;
   end;
 end;
 

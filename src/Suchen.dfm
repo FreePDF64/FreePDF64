@@ -1011,8 +1011,8 @@ object Suche_Form: TSuche_Form
     Top = 268
   end
   object MainMenu1: TMainMenu
-    Left = 645
-    Top = 282
+    Left = 838
+    Top = 421
     object DateiInfo1: TMenuItem
       Caption = 'Datei-Info'
       ShortCut = 120
