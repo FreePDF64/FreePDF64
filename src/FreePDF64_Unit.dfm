@@ -1340,7 +1340,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Top = 1
           Width = 25
           Height = 28
-          Hint = 'Ins gespeicherte Zielverzeichnis wechseln'
+          Hint = 'Schneller Sprung ins gespeicherte Zielverzeichnis'
           Margins.Left = 4
           Margins.Top = 4
           Margins.Right = 4
@@ -1754,7 +1754,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 1
         Width = 25
         Height = 28
-        Hint = 'Ins gespeicherte Quellverzeichnis wechseln'
+        Hint = 'Schneller Sprung ins gespeicherte Quellverzeichnis'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4

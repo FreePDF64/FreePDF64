@@ -4715,14 +4715,14 @@ end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
 begin
-  QuellBtn.Hint := 'Ins gespeicherte Quellverzeichnis wechseln:' + #10#13 +
+  QuellBtn.Hint := 'Schneller Sprung ins gespeicherte Quellverzeichnis:' + #10#13 +
     MinimizeName(IncludeTrailingBackslash(A_S), FreePDF64_Form.Canvas,
     Quelllabel.Width - 250);
 end;
 
 procedure TFreePDF64_Form.ZielBtnMouseEnter(Sender: TObject);
 begin
-  ZielBtn.Hint := 'Ins gespeicherte Zielverzeichnis wechseln:' + #10#13 +
+  ZielBtn.Hint := 'Schneller Sprung ins gespeicherte Zielverzeichnis:' + #10#13 +
     MinimizeName(IncludeTrailingBackslash(B_Z), FreePDF64_Form.Canvas,
     Ziellabel.Width - 250);
 end;
