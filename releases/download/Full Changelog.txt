@@ -1,3 +1,5 @@
+19.05.2025 V6.4.2
+Fix -> Codeoptimierungen (Kosmetische Bereinigungen) durchgeführt.
 12.05.2025 V6.4.1
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Ghostscript-Update auf Version 10.05.1.

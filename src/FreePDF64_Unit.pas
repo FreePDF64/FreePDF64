@@ -2029,11 +2029,9 @@ begin
       FindClose(SR);
     end;
     Result := I;
-  end
-  else
+  end else
   begin
-    if FindFirst(Path + '*.*', faAnyFile and faHidden and not faDirectory, SR) = 0
-    then
+    if FindFirst(Path + '*.*', faAnyFile and not faDirectory, SR) = 0 then
     begin
       repeat
         INC(I);
@@ -2042,23 +2040,27 @@ begin
     end;
     Result := I;
   end;
+
 end;
 
 // Verzeichnisgröße auslesen mit/ohne Unterverzeichnisse
 function GetDirSize(dir: string; subdir: Boolean): Int64;
 var
   rec: TSearchRec;
-  found: Integer;
+  found, faHidden: Integer;
 begin
+  faHidden := 2;
   Result := 0;
   if dir[Length(dir)] <> '\' then
     dir := dir + '\';
-  found := FindFirst(dir + '*.*', faAnyFile, rec);
+  if not FreePDF64_Form.VersteckteDateienanzeigen1.Checked then
+    found := FindFirst(dir + '*.*', faSysfile, rec)
+  else
+    found := FindFirst(dir + '*.*', faAnyFile, rec);
   while found = 0 do
   begin
     INC(Result, rec.Size);
-    if (rec.Attr and faDirectory > 0) and (rec.Name <> '.') and
-      (rec.Name <> '..') and (subdir = True) then
+    if (rec.Attr and faDirectory > 0) and (rec.Name <> '.') and (rec.Name <> '..') and (subdir = True) then
       INC(Result, GetDirSize(dir + rec.Name, True));
     found := FindNext(rec);
   end;
@@ -2087,16 +2089,10 @@ end;
 procedure SB_Left;
 begin
   FreePDF64_Form.StatusBar_Left.SimpleText := 'Datei(en)/Verzeichnis(se): ' +
-    IntToStr(ListFileDir(IncludeTrailingBackslash
-    (FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(FreePDF64_Form.LMDShellList1.Items.Count -
-    ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.
-    ActiveFolder.PathName))) + ' - ' +
-    IntToStr(ListFileDir(IncludeTrailingBackslash
-    (FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + ' Datei(en)' +
-    ' in ' + FormatByteString
-    (GetDirSize(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.
-    ActiveFolder.PathName), False));
+    IntToStr(ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + '/' +
+    IntToStr(FreePDF64_Form.LMDShellList1.Items.Count - ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1. ActiveFolder.PathName))) +
+    ' - ' + IntToStr(ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + ' Datei(en)' +
+    ' in ' + FormatByteString(GetDirSize(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName), False));
 end;
 
 procedure SB_Right;
@@ -2150,7 +2146,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '12.05.2025';
+  Datum := '19.05.2025';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
