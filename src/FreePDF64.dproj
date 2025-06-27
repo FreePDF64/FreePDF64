@@ -91,7 +91,7 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>6</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=6.4.2.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=6.4.2;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=6.4.3.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=6.4.3;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
         <Icon_MainIcon>FreePDF64.ico</Icon_MainIcon>
         <VerInfo_MinorVer>4</VerInfo_MinorVer>
         <BRCC_CodePage>0</BRCC_CodePage>
@@ -99,7 +99,7 @@
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
         <DCC_Inlining>off</DCC_Inlining>
-        <VerInfo_Release>2</VerInfo_Release>
+        <VerInfo_Release>3</VerInfo_Release>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

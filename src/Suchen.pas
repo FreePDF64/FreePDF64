@@ -225,7 +225,6 @@ begin
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or
     WS_EX_APPWINDOW);
 
-  ListBox1.ItemHeight := 22; // Setzt die Höhe jedes Elements
   Suche_ItemAnzeigen  := False;
 
   // Die Buttons werden dargestellt und ausgerichtet!

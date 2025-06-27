@@ -1,3 +1,6 @@
+27.06.2025 V6.4.3
+Fix -> Im Suche-Fenster die fehlerhafte Anzeige bei hoher Monitorauflösung korrigiert.
+Fix -> Update ExifTool auf neueste Version.
 19.05.2025 V6.4.2
 Fix -> Codeoptimierungen (Kosmetische Bereinigungen) durchgeführt.
 12.05.2025 V6.4.1
@@ -48,7 +51,7 @@ Fix -> Update ExifTool auf neueste Version.
 Fix -> Codeoptimierungen durchgeführt (u.a. Geschwindigkeit der Suche-Routinen erhöht).
 31.01.2025 V6.1.8
 Neu -> Umschalten zwischen deutscher/englischer Ausgabe der Datei-Informationen (Metadaten).
-Neu -> Im Suche_Fenster lassen sich nun auch die Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigen.
+Neu -> Im Suche-Fenster lassen sich nun auch die Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigen.
 27.01.2025 V6.1.7
 Neu -> Es werden nun Datei-Informationen (Metadaten) zu jeglicher Art von Datei angezeigt, nicht nur zu PDF-Dateien... - siehe Symbolleiste oder Taste F9.
 21.01.2025 V6.1.6
