@@ -1,3 +1,6 @@
+13.09.2025 V6.4.4
+Fix -> Ghostscript-Update auf Version 10.06.0.
+Fix -> Update ExifTool auf neueste Version.
 27.06.2025 V6.4.3
 Fix -> Im Suche-Fenster die fehlerhafte Anzeige bei hoher Monitorauflösung korrigiert.
 Fix -> Update ExifTool auf neueste Version.
