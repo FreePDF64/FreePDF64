@@ -1,3 +1,10 @@
+28.03.2026 V6.5.0
+Fix -> Update auf neueste Version des Setup-Installer. Vermindert wurde das Risiko von Fehlalarmen durch verschiedene Antimalware-Anwendungen, wenn man die FreePDF64-Setup.exe downloaden wollte von GitHub.
+Fix -> Ghostscript-Update auf Version 10.07.0.
+Fix -> Update ExifTool auf neueste Version.
+Fix -> SumatraPDF auf neueste Version.
+Fix -> QPDF-Update auf Version 12.3.2.
+Fix -> Update der Xpdf-Tools auf Version 4.0.6.
 13.09.2025 V6.4.4
 Fix -> Ghostscript-Update auf Version 10.06.0.
 Fix -> Update ExifTool auf neueste Version.
