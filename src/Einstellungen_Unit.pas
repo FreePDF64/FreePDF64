@@ -644,7 +644,7 @@ end;
 procedure TEinstellungen_Form.Edit3Exit(Sender: TObject);
 begin
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.6-64.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.6.1-64.exe';
   PDFReader := Einstellungen_Form.Edit3.Text;
 end;
 

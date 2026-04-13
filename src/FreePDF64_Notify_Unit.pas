@@ -225,15 +225,15 @@ begin
   s := StringReplace(s, '\', '\\', [rfReplaceAll]);
   with TStringList.Create do
   try
-    LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition_files\mfilemon.reg');
+    LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition files\mfilemon.reg');
     Delete(3);
     // Zum Beispiel "OutputPath"="C:\\FreePDF64\\Quellverzeichnis"
     Insert(3, '"OutputPath"="' + s + '"');
-    SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition_files\mfilemon.reg');
+    SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition files\mfilemon.reg');
   finally
     Free;
   end;
-  Reg := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName) + 'Definition_files');
+  Reg := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName) + 'Definition files');
   Reg := Reg + 'mfilemon.reg';
 
   Registry := TRegistry.Create(KEY_READ);

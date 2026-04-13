@@ -1,6 +1,4 @@
-30.03.2026 V6.5.1
-Fix -> Fehler bei Erstellung eines Definitionsverzeichnisses für die PDF/A-Erstellung behoben.
-28.03.2026 V6.5.0
+13.04.2026 V6.5.0
 Fix -> Update auf neueste Version des Setup-Installer. Vermindert wurde das Risiko von Fehlalarmen durch verschiedene Antimalware-Anwendungen, wenn man die FreePDF64-Setup.exe downloaden wollte von GitHub.
 Fix -> Ghostscript-Update auf Version 10.07.0.
 Fix -> Update ExifTool auf neueste Version.

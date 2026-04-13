@@ -2146,7 +2146,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '30.03.2026';
+  Datum := '13.04.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4874,12 +4874,12 @@ begin
         try
           LoadFromFile(IncludeTrailingBackslash
             (ExtractFilePath(Application.ExeName)) +
-            'Definition_files\mfilemon.reg');
+            'Definition files\mfilemon.reg');
           Delete(3);
           // "OutputPath"="C:\\FreePDF64\\Quellverzeichnis"
           Insert(3, '"OutputPath"="' + s1 + 'Quellverzeichnis' + '"');
           SaveToFile(ExtractFilePath(Application.ExeName) +
-            'Definition_files\mfilemon.reg');
+            'Definition files\mfilemon.reg');
         finally
           Free;
         end;
@@ -4906,7 +4906,7 @@ begin
   end;
 
   Reg := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName) +
-    'Definition_files');
+    'Definition files');
   Reg := Reg + 'mfilemon.reg';
   if FileExists(Reg) then
   begin
@@ -4942,7 +4942,7 @@ begin
     PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
   MessageDlgCenter('Die Datei "mfilemon.reg" wurde im Verzeichnis "' +
     IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
-    'Definition_files\" ' + 'nicht gefunden.' + #13 +
+    'Definition files\" ' + 'nicht gefunden.' + #13 +
     'Sie wird für die Installation des FreePDF64-Druckers benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
     mtError, [mbOk]);
 end;
@@ -5080,8 +5080,8 @@ begin
 
   // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/A und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFA.ps';
-  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFX.ps';
+  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
+  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -5123,7 +5123,7 @@ begin
 
     // PDF-Anzeiger
     Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-      'SumatraPDF\SumatraPDF\SumatraPDF-3.6-64.exe';
+      'SumatraPDF\SumatraPDF-3.6.1-64.exe';
     PDFReader := Einstellungen_Form.Edit3.Text;
 
     LMDShellFolder1.RootFolder := ExtractFilePath(Application.ExeName) +
@@ -5227,7 +5227,7 @@ begin
     'pdffonts.exe';
   // PDF-Anzeiger
   Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) +
-    'SumatraPDF\SumatraPDF-3.6-64.exe';
+    'SumatraPDF\SumatraPDF-3.6.1-64.exe';
   PDFReader := Einstellungen_Form.Edit3.Text;
 
   Memo1.Height := 64;
@@ -5328,7 +5328,7 @@ begin
       if not ValueExists('Files', 'PDF-Reader') or
         (Einstellungen_Form.Edit3.Text = '') then
         PDFReader := ExtractFilePath(Application.ExeName) +
-          'SumatraPDF\SumatraPDF-3.6-64.exe'
+          'SumatraPDF\SumatraPDF-3.6.1-64.exe'
       else
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
 
@@ -5594,11 +5594,11 @@ begin
     with TStringList.Create do
       try
         LoadFromFile(IncludeTrailingBackslash
-          (ExtractFilePath(Application.ExeName)) + 'Definition_files\PDFA.ps');
+          (ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
         Delete(6);
-        Insert(6, '/ICCProfile (' + s1 + 'Definition_files/default_rgb.icc)');
+        Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
         SaveToFile(ExtractFilePath(Application.ExeName) +
-          'Definition_files\PDFA.ps');
+          'Definition files\PDFA.ps');
       finally
         Free;
       end;
