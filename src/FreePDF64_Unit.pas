@@ -4874,12 +4874,12 @@ begin
         try
           LoadFromFile(IncludeTrailingBackslash
             (ExtractFilePath(Application.ExeName)) +
-            'Definition files\mfilemon.reg');
+            'Definition_files\mfilemon.reg');
           Delete(3);
           // "OutputPath"="C:\\FreePDF64\\Quellverzeichnis"
           Insert(3, '"OutputPath"="' + s1 + 'Quellverzeichnis' + '"');
           SaveToFile(ExtractFilePath(Application.ExeName) +
-            'Definition files\mfilemon.reg');
+            'Definition_files\mfilemon.reg');
         finally
           Free;
         end;
@@ -4906,7 +4906,7 @@ begin
   end;
 
   Reg := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName) +
-    'Definition files');
+    'Definition_files');
   Reg := Reg + 'mfilemon.reg';
   if FileExists(Reg) then
   begin
@@ -4942,7 +4942,7 @@ begin
     PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
   MessageDlgCenter('Die Datei "mfilemon.reg" wurde im Verzeichnis "' +
     IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
-    'Definition files\" ' + 'nicht gefunden.' + #13 +
+    'Definition_files\" ' + 'nicht gefunden.' + #13 +
     'Sie wird für die Installation des FreePDF64-Druckers benötigt! Weitere Infos unter Hilfe - FreePDF64-HowTo',
     mtError, [mbOk]);
 end;
@@ -5078,10 +5078,10 @@ begin
     Close;
   end;
 
-  // Pfad zu den Definition files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/A und PDF/X
+  // Pfad zu den Definition_files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/A und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFA.ps';
-  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition files\PDFX.ps';
+  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFA.ps';
+  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -5594,11 +5594,11 @@ begin
     with TStringList.Create do
       try
         LoadFromFile(IncludeTrailingBackslash
-          (ExtractFilePath(Application.ExeName)) + 'Definition files\PDFA.ps');
+          (ExtractFilePath(Application.ExeName)) + 'Definition_files\PDFA.ps');
         Delete(6);
-        Insert(6, '/ICCProfile (' + s1 + 'Definition files/default_rgb.icc)');
+        Insert(6, '/ICCProfile (' + s1 + 'Definition_files/default_rgb.icc)');
         SaveToFile(ExtractFilePath(Application.ExeName) +
-          'Definition files\PDFA.ps');
+          'Definition_files\PDFA.ps');
       finally
         Free;
       end;
