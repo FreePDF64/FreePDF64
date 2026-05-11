@@ -280,6 +280,30 @@ object FreePDF64_Notify: TFreePDF64_Notify
     TabOrder = 3
     OnClick = Ziel_FestCBClick
   end
+  object BenachrichtigungCB: TCheckBox
+    Left = 390
+    Top = 120
+    Width = 67
+    Height = 26
+    Hint = 'Benachrichtigung nach dem Erstellen?'
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Hint?'
+    Checked = True
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
+    State = cbChecked
+    TabOrder = 9
+    OnClick = Ziel_FestCBClick
+  end
   object LMDShellNotify: TLMDShellNotify
     Active = False
     NotifyEvents = [snDiskEvent]
@@ -289,8 +313,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
     MaxNotifications = 0
     OnFileCreate = LMDShellNotifyFileCreate
     OnShellChangeNotify = LMDShellNotifyShellChangeNotify
-    Left = 401
-    Top = 144
+    Left = 33
+    Top = 212
   end
   object LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog
     OwnerHandle = pwApplication
@@ -306,5 +330,9 @@ object FreePDF64_Notify: TFreePDF64_Notify
   object LMDShellLink1: TLMDShellLink
     Left = 275
     Top = 10
+  end
+  object NotificationCenter1: TNotificationCenter
+    Left = 178
+    Top = 169
   end
 end

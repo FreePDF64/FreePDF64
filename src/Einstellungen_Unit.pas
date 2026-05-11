@@ -617,6 +617,8 @@ begin
         ReadBool('Monitoring', 'Fixed', b);
       FreePDF64_Notify.ZielEdit.Text := ReadString('Monitoring',
         'Fixed Folder', s);
+      FreePDF64_Notify.BenachrichtigungCB.Checked :=
+        ReadBool('Monitoring', 'Note', b);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;

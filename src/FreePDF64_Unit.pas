@@ -2029,7 +2029,8 @@ begin
       FindClose(SR);
     end;
     Result := I;
-  end else
+  end
+  else
   begin
     if FindFirst(Path + '*.*', faAnyFile and not faDirectory, SR) = 0 then
     begin
@@ -2060,7 +2061,8 @@ begin
   while found = 0 do
   begin
     INC(Result, rec.Size);
-    if (rec.Attr and faDirectory > 0) and (rec.Name <> '.') and (rec.Name <> '..') and (subdir = True) then
+    if (rec.Attr and faDirectory > 0) and (rec.Name <> '.') and
+      (rec.Name <> '..') and (subdir = True) then
       INC(Result, GetDirSize(dir + rec.Name, True));
     found := FindNext(rec);
   end;
@@ -2089,10 +2091,17 @@ end;
 procedure SB_Left;
 begin
   FreePDF64_Form.StatusBar_Left.SimpleText := 'Datei(en)/Verzeichnis(se): ' +
-    IntToStr(ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + '/' +
-    IntToStr(FreePDF64_Form.LMDShellList1.Items.Count - ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1. ActiveFolder.PathName))) +
-    ' - ' + IntToStr(ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + ' Datei(en)' +
-    ' in ' + FormatByteString(GetDirSize(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName), False));
+    IntToStr(ListFileDir(IncludeTrailingBackslash
+    (FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName))) + '/' +
+    IntToStr(FreePDF64_Form.LMDShellList1.Items.Count -
+    ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.
+    ActiveFolder.PathName))) +
+    ' - ' + IntToStr
+    (ListFileDir(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.
+    ActiveFolder.PathName))) + ' Datei(en)' +
+    ' in ' + FormatByteString
+    (GetDirSize(IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder1.
+    ActiveFolder.PathName), False));
 end;
 
 procedure SB_Right;
@@ -2117,7 +2126,7 @@ var
 begin
   VersteckteDateienanzeigen1.Checked := not VersteckteDateienanzeigen1.Checked;
 
-  tmpt  := LMDShellList1.Options;
+  tmpt := LMDShellList1.Options;
   tmpt2 := LMDShellTree1.Options;
   if VersteckteDateienanzeigen1.Checked then
   begin
@@ -2146,7 +2155,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '13.04.2026';
+  Datum := '11.05.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4711,7 +4720,8 @@ end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
 begin
-  QuellBtn.Hint := 'Schneller Sprung ins gespeicherte Quellverzeichnis:' + #10#13 +
+  QuellBtn.Hint := 'Schneller Sprung ins gespeicherte Quellverzeichnis:' +
+    #10#13 +
     MinimizeName(IncludeTrailingBackslash(A_S), FreePDF64_Form.Canvas,
     Quelllabel.Width - 250);
 end;
@@ -5284,6 +5294,8 @@ begin
         FreePDF64_Notify.SpinEditSec.Value);
       FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed',
         FreePDF64_Notify.Ziel_FestCB.Checked);
+      FreePDF64_Notify.BenachrichtigungCB.Checked := ReadBool('Monitoring', 'Note',
+        FreePDF64_Notify.BenachrichtigungCB.Checked);
       z1 := ReadString('Monitoring', 'Fixed Folder',
         FreePDF64_Notify.ZielEdit.Text);
       Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File',

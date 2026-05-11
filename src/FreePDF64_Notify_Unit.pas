@@ -10,7 +10,7 @@ uses
   Forms, StdCtrls, Buttons, Controls, Classes, ShlObj, Windows,
   LMDShNtf, LMDCustomComponent, Dialogs, LMDShBase, ShellAPI, LMDShBrwDlg,
   LMDShDlg, LMDBrowseDlg, Vcl.Samples.Spin, IniFiles, Printers, Registry,
-  Vcl.ExtCtrls, LMDShLink, Graphics;
+  Vcl.ExtCtrls, LMDShLink, Graphics, System.Notification;
 
 type
   TFreePDF64_Notify = class(TForm)
@@ -31,6 +31,8 @@ type
     LMDShellRestartDialog1: TLMDShellRestartDialog;
     SendToBtn: TSpeedButton;
     LMDShellLink1: TLMDShellLink;
+    NotificationCenter1: TNotificationCenter;
+    BenachrichtigungCB: TCheckBox;
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -66,6 +68,7 @@ uses
 // Abfrage und Handlung, wenn ausgewählte Datei im ausgewählten Verzeichnis erkannt wurde...
 procedure TFreePDF64_Notify.Abfrage(const EventName: string; aPIDL1, aPIDL2: PItemIDList);
 var
+  N: TNotification;
   s: String;
   i, t: Integer;
 begin
@@ -106,7 +109,21 @@ begin
           Ziel := IncludeTrailingBackslash(ZielEdit.Text);
         FreePDF64_Form.PDF_Erstellung.Click;
 
+        // Windows-Benachrichtigung anzeigen lassen, das Druck stattgefunden hat
+        N := NotificationCenter1.CreateNotification;
+        try
+          N.Title := 'Druckerstatus';
+          N.AlertBody := 'FreePDF64-Drucker: Datei wurde gedruckt!';
+          N.EnableSound := True; // optional
+          // Notification anzeigen
+          if BenachrichtigungCB.Checked then
+            NotificationCenter1.PresentNotification(N);
+        finally
+          N.Free;
+        end;
+
         Sleep(t);
+
         // Datei nach der Erstellung in den Papierkorb löschen
         try
 //          if not DeleteFile(IncludeTrailingBackslash(MonitoringFolder.Text) + FreePDF64_Form.LMDShellList1.Selected.Caption) then
@@ -176,6 +193,7 @@ begin
       WriteInteger('Monitoring', 'Time', SpinEditSec.Value);
       WriteBool   ('Monitoring', 'Fixed', Ziel_FestCB.Checked);
       WriteString ('Monitoring', 'Fixed Folder', ZielEdit.Text);
+      WriteBool   ('Monitoring', 'Note', BenachrichtigungCB.Checked);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -287,11 +305,12 @@ begin
     // Speichere beim Beenden des Programmes wichtige Daten in die 'FreePDF64.Ini'
     with IniDat do
     begin
-      MonitoringFolder.Text := ReadString('Monitoring', 'Folder', MonitoringFolder.Text);
-      LMDShellNotify.Active := ReadBool('Monitoring', 'Start', LMDShellNotify.Active);
-      SpinEditSec.Value     := ReadInteger('Monitoring', 'Time', SpinEditSec.Value);
-      Ziel_FestCB.Checked   := ReadBool('Monitoring', 'Fixed', Ziel_FestCB.Checked);
-      s                     := ReadString('Monitoring', 'Fixed Folder', ZielEdit.Text);
+      MonitoringFolder.Text      := ReadString('Monitoring', 'Folder', MonitoringFolder.Text);
+      LMDShellNotify.Active      := ReadBool('Monitoring', 'Start', LMDShellNotify.Active);
+      SpinEditSec.Value          := ReadInteger('Monitoring', 'Time', SpinEditSec.Value);
+      Ziel_FestCB.Checked        := ReadBool('Monitoring', 'Fixed', Ziel_FestCB.Checked);
+      BenachrichtigungCB.Checked := ReadBool('Monitoring', 'Note', BenachrichtigungCB.Checked);
+      s                          := ReadString('Monitoring', 'Fixed Folder', ZielEdit.Text);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
