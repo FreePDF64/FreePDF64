@@ -55,6 +55,8 @@ type
     Label22: TLabel;
     Label23: TLabel;
     Edit23: TEdit;
+    HintEdit: TEdit;
+    Label24: TLabel;
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure FormShow(Sender: TObject);
   private
@@ -293,6 +295,16 @@ end else
   begin
     Edit22.Text := 'Nein';
     Edit22.Color := clRed;
+  end;
+  // Windows-Benachrichtigung
+  if FreePDF64_Notify.BenachrichtigungCB.Checked then
+  begin
+    HintEdit.Text := 'Ja';
+    HintEdit.Color := clLime;
+  end else
+  begin
+    HintEdit.Text := 'Nein';
+    HintEdit.Color := clRed;
   end;
  // Ins Unterverzeichnis beim Erstellen
   if FreePDF64_Form.Formatverz.Checked then

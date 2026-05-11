@@ -408,6 +408,23 @@ object Status_Form: TStatus_Form
     Font.Style = [fsBold]
     ParentFont = False
   end
+  object Label24: TLabel
+    Left = 363
+    Top = 112
+    Width = 161
+    Height = 17
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Benachrichtigung: Ja/Nein:'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Segoe UI Semibold'
+    Font.Style = [fsBold]
+    ParentFont = False
+  end
   object Edit2: TEdit
     Left = 237
     Top = 62
@@ -892,7 +909,7 @@ object Status_Form: TStatus_Form
   object Edit22: TEdit
     Left = 237
     Top = 112
-    Width = 410
+    Width = 115
     Height = 17
     Margins.Left = 4
     Margins.Top = 4
@@ -931,6 +948,28 @@ object Status_Form: TStatus_Form
     ParentFont = False
     ReadOnly = True
     TabOrder = 23
+    Text = 'Edit1'
+  end
+  object HintEdit: TEdit
+    Left = 532
+    Top = 112
+    Width = 115
+    Height = 17
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    TabStop = False
+    BorderStyle = bsNone
+    Color = clBtnFace
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -13
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+    ReadOnly = True
+    TabOrder = 24
     Text = 'Edit1'
   end
 end
