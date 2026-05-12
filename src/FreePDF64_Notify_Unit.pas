@@ -33,6 +33,7 @@ type
     LMDShellLink1: TLMDShellLink;
     NotificationCenter1: TNotificationCenter;
     BenachrichtigungCB: TCheckBox;
+    Label1: TLabel;
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);

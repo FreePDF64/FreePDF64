@@ -4,8 +4,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = #220'berwachung'
-  ClientHeight = 294
-  ClientWidth = 458
+  ClientHeight = 308
+  ClientWidth = 452
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -18,8 +18,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
   OnShow = FormShow
   PixelsPerInch = 120
   DesignSize = (
-    458
-    294)
+    452
+    308)
   TextHeight = 16
   object lbObserved: TLabel
     Left = 20
@@ -41,7 +41,7 @@ object FreePDF64_Notify: TFreePDF64_Notify
   end
   object Wartezeit: TLabel
     Left = 20
-    Top = 143
+    Top = 170
     Width = 307
     Height = 20
     Margins.Left = 4
@@ -75,8 +75,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ParentFont = False
   end
   object SendToBtn: TSpeedButton
-    Left = 390
-    Top = 243
+    Left = 392
+    Top = 254
     Width = 31
     Height = 33
     Margins.Left = 4
@@ -92,10 +92,27 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ShowHint = True
     OnClick = SendToBtnClick
   end
+  object Label1: TLabel
+    Left = 43
+    Top = 138
+    Width = 318
+    Height = 20
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Windows-Benachrichtigung nach dem Erstellen?'
+    Font.Charset = ANSI_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -15
+    Font.Name = 'Segoe UI'
+    Font.Style = []
+    ParentFont = False
+  end
   object MonitoringFolder: TEdit
     Left = 20
     Top = 35
-    Width = 357
+    Width = 351
     Height = 28
     Margins.Left = 4
     Margins.Top = 4
@@ -110,12 +127,13 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ParentFont = False
     ReadOnly = True
     TabOrder = 0
+    ExplicitWidth = 357
   end
   object btnStart: TButton
-    Left = 37
-    Top = 184
+    Left = 35
+    Top = 206
     Width = 181
-    Height = 45
+    Height = 40
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -133,10 +151,10 @@ object FreePDF64_Notify: TFreePDF64_Notify
     OnClick = btnStartClick
   end
   object btnStop: TButton
-    Left = 239
-    Top = 184
+    Left = 242
+    Top = 206
     Width = 181
-    Height = 45
+    Height = 40
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -155,7 +173,7 @@ object FreePDF64_Notify: TFreePDF64_Notify
   end
   object OkBitBtn: TBitBtn
     Left = 84
-    Top = 243
+    Top = 256
     Width = 132
     Height = 43
     Margins.Left = 4
@@ -175,8 +193,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
     OnClick = OkBitBtnClick
   end
   object MonitoringBtn: TButton
-    Left = 390
-    Top = 33
+    Left = 378
+    Top = 34
     Width = 31
     Height = 31
     Hint = #220'berwachungsverzeichnis ausw'#228'hlen'
@@ -198,7 +216,7 @@ object FreePDF64_Notify: TFreePDF64_Notify
   end
   object SpinEditSec: TSpinEdit
     Left = 326
-    Top = 139
+    Top = 166
     Width = 52
     Height = 31
     Hint = 'Wartezeit bis zur Erstellung in Sekunden'
@@ -221,7 +239,7 @@ object FreePDF64_Notify: TFreePDF64_Notify
   end
   object CancelBitBtn1: TBitBtn
     Left = 242
-    Top = 243
+    Top = 256
     Width = 132
     Height = 43
     Margins.Left = 4
@@ -241,8 +259,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
   end
   object ZielEdit: TEdit
     Left = 20
-    Top = 98
-    Width = 357
+    Top = 96
+    Width = 351
     Height = 28
     Margins.Left = 4
     Margins.Top = 4
@@ -257,10 +275,11 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ParentFont = False
     ReadOnly = True
     TabOrder = 2
+    ExplicitWidth = 355
   end
   object Ziel_FestCB: TCheckBox
-    Left = 390
-    Top = 98
+    Left = 378
+    Top = 97
     Width = 56
     Height = 26
     Hint = 'Aktuelles Zielverzeichnis als "Fest" (unver'#228'nderbar) einstellen'
@@ -281,16 +300,14 @@ object FreePDF64_Notify: TFreePDF64_Notify
     OnClick = Ziel_FestCBClick
   end
   object BenachrichtigungCB: TCheckBox
-    Left = 390
-    Top = 120
-    Width = 67
+    Left = 20
+    Top = 136
+    Width = 21
     Height = 26
-    Hint = 'Benachrichtigung nach dem Erstellen?'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
-    Caption = 'Hint?'
     Checked = True
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
@@ -299,7 +316,7 @@ object FreePDF64_Notify: TFreePDF64_Notify
     Font.Style = []
     ParentFont = False
     ParentShowHint = False
-    ShowHint = True
+    ShowHint = False
     State = cbChecked
     TabOrder = 9
     OnClick = Ziel_FestCBClick
@@ -313,26 +330,26 @@ object FreePDF64_Notify: TFreePDF64_Notify
     MaxNotifications = 0
     OnFileCreate = LMDShellNotifyFileCreate
     OnShellChangeNotify = LMDShellNotifyShellChangeNotify
-    Left = 33
-    Top = 212
+    Left = 369
+    Top = 137
   end
   object LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog
     OwnerHandle = pwApplication
     RootFolder = 'sfMyComputer'
     Options = [boExpandDomains, boEnableOk, boNewGUI]
-    Left = 46
-    Top = 84
+    Left = 26
+    Top = 241
   end
   object LMDShellRestartDialog1: TLMDShellRestartDialog
-    Left = 79
-    Top = 159
+    Left = 47
+    Top = 195
   end
   object LMDShellLink1: TLMDShellLink
     Left = 275
     Top = 10
   end
   object NotificationCenter1: TNotificationCenter
-    Left = 178
-    Top = 169
+    Left = 227
+    Top = 11
   end
 end

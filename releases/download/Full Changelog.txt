@@ -1,4 +1,4 @@
-11.05.2026 V6.5.1
+12.05.2026 V6.5.1
 Neu -> Beim automatischen Erstellen erscheint auf Wunsch ein Windows-Benachrichtigungsfenster. Aktivierung erfolgt in den Überwachungseinstellungen.
 Fix -> Update ExifTool auf neueste Version.
 13.04.2026 V6.5.0
