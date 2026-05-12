@@ -17448,7 +17448,7 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object TrayIcon1: TTrayIcon
     AnimateInterval = 300
-    Hint = 'FreePDF64'#13#10'- Klick f'#252'r Wiederherstellen'
+    Hint = 'FreePDF64'#13#10'- LMB f'#252'r Wiederherstellen'#13#10'- RMB f'#252'r Auswahlmen'#252
     Icon.Data = {
       0000010001002020000001001800A80C00001600000028000000200000004000
       00000100180000000000800C000000000000000000000000000000000000FFFF
