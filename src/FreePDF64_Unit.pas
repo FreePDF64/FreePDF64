@@ -6505,13 +6505,12 @@ begin
   // mbLeft: Linke Maustaste
   if Button = mbLeft then
   begin
-    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt');
+    Memo1.Lines.LoadFromFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt');
     PaneloverPrgB.Visible := True;
-    PaneloverPrgB.Caption := ExtractFilePath(Application.ExeName) +
-      'FreePDF64Log.txt';
+    PaneloverPrgB.Caption := ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt';
     // zur letzen Zeile:
     Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
+
     if Memo1.Lines.Count > 0 then
     begin
       I := 20; // 20 -> TextHoehe(Memo1.Font, Memo1.Text);
@@ -6522,11 +6521,12 @@ begin
         Exit;
       if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
-      PDFPanel.Height := I;
+      PDFPanel.Height := I + 225;
+      PanelBottom.Visible := False;
       MemoBtn.Visible := True;
     end;
-  end
-  else
+
+  end else
     if Button = mbRight then
   begin
     // Wenn das Panel schon auf ist, wieder schließen...
@@ -6770,6 +6770,7 @@ begin
     Memo1.Clear;
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;
+    PanelBottom.Visible := True;
   end;
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
