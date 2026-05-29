@@ -2884,33 +2884,25 @@ begin
       mtError, [mbOk]);
     Exit;
   end;
+
   if Self.Visible then
   begin
     if LMDShellList1.Focused and (LMDShellList1.SelCount = 1) then
     begin
       Work := ExtractFilePath(LMDShellFolder1.ActiveFolder.PathName);
       PaneloverPrgB.Visible := True;
-      PaneloverPrgB.Caption := IncludeTrailingBackslash
-        (LMDShellFolder1.ActiveFolder.PathName) +
-        LMDShellList1.Selected.Caption;
-      Befehlszeile := ExifTool + ' -L ' + GE +
-        ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-        IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) +
-        LMDShellList1.Selected.Caption + '"';
-    end
-    else if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
+      PaneloverPrgB.Caption := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption;
+      Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+                                 IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + LMDShellList1.Selected.Caption + '"';
+    end else
+    if LMDShellList2.Focused and (LMDShellList2.SelCount = 1) then
     begin
       Work := ExtractFilePath(LMDShellFolder2.ActiveFolder.PathName);
       PaneloverPrgB.Visible := True;
-      PaneloverPrgB.Caption := IncludeTrailingBackslash
-        (LMDShellFolder2.ActiveFolder.PathName) +
-        LMDShellList2.Selected.Caption;
-      Befehlszeile := ExifTool + ' -L ' + GE +
-        ' -g1 -charset filename=cp1252 -a -All:All -e "' +
-        IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) +
-        LMDShellList2.Selected.Caption + '"';
-    end
-    else
+      PaneloverPrgB.Caption := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption;
+      Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' +
+                                 IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + LMDShellList2.Selected.Caption + '"';
+    end else
     begin
       MessageDlgCenter
         ('Datei/Ordnerinformationen anzeigen: Bitte EINE Datei/Ordner aus dem Quell- oder Zielverzeichnis auswählen!',
@@ -2932,7 +2924,12 @@ begin
         Exit;
       if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
-      PDFPanel.Height := I;
+
+      PDFPanel.Height := I + 225;
+      PDF_Erstellung.Visible := False;
+      FormatBtn.Visible := False;
+      PanelBottom.Visible := False;
+
     end;
     MemoBtn.Visible := True;
     Info_Anzeigen := False;
