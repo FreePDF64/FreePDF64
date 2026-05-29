@@ -1,3 +1,9 @@
+29.05.2025 V6.5.3
+Fix -> Update ExifTool auf neueste Version.
+Fix -> Update ImageMagick-Tool auf neueste Version.
+26.05.2025 V6.5.2
+Fix -> Ghostscript-Update auf Version 10.07.1.
+Fix -> Update ImageMagick-Tool auf neueste Version.
 12.05.2026 V6.5.1
 Neu -> Beim automatischen Erstellen erscheint auf Wunsch ein Windows-Benachrichtigungsfenster. Aktivierung erfolgt in den Überwachungseinstellungen.
 Fix -> Update ExifTool auf neueste Version.

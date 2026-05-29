@@ -152,9 +152,9 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=71
-CursorY=8650
-TopLine=8629
+CursorX=15
+CursorY=2158
+TopLine=2132
 LeftCol=1
 Elisions=
 Bookmarks={0,2015,17}{1,5244,1}{2,6244,1}{3,8793,1}
@@ -174,8 +174,8 @@ EditViewName=Borland.FormDesignerView
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=15
-CursorY=99
+CursorX=29
+CursorY=100
 TopLine=80
 LeftCol=1
 Elisions=
@@ -477,11 +477,6 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=152
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Caption,Action
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,LiveBindings=0,Menu=0
 
 [frmDesignPreview]
 PercentageSizes=1
