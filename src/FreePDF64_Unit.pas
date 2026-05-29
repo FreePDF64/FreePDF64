@@ -593,7 +593,6 @@ type
     procedure QuelllabelClick(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
     procedure Logdateiansehen2Click(Sender: TObject);
-    procedure PaneloverPrgBClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -6334,12 +6333,7 @@ begin
       Suche_Form.WindowState := wsNormal;
 
     // Wenn das Panel schon auf ist, wieder schließen...
-    if PDFPanel.Height > PDFPanelH then
-    begin
-      Memo1.Clear;
-      PDFPanel.Height := PDFPanelH;
-      MemoBtn.Visible := False;
-    end;
+    MemoBtn.Click;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList1.IsEditing = False) then
@@ -6376,12 +6370,7 @@ begin
       Suche_Form.WindowState := wsNormal;
 
     // Wenn das Panel schon auf ist, wieder schließen...
-    if PDFPanel.Height > PDFPanelH then
-    begin
-      Memo1.Clear;
-      PDFPanel.Height := PDFPanelH;
-      MemoBtn.Visible := False;
-    end;
+    MemoBtn.Click;
   end;
 
   if (Key = VK_DELETE) and (LMDShellList2.IsEditing = False) then
@@ -6522,6 +6511,8 @@ begin
       if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
       PDFPanel.Height := I + 225;
+      PDF_Erstellung.Visible := False;
+      FormatBtn.Visible := False;
       PanelBottom.Visible := False;
       MemoBtn.Visible := True;
     end;
@@ -6727,12 +6718,7 @@ begin
       Suche_Form.WindowState := wsNormal;
 
     // Wenn das Panel schon auf ist, wieder schließen...
-    if PDFPanel.Height > PDFPanelH then
-    begin
-      Memo1.Clear;
-      PDFPanel.Height := PDFPanelH;
-      MemoBtn.Visible := False;
-    end;
+    MemoBtn.Click;
   end;
 end;
 
@@ -6770,6 +6756,8 @@ begin
     Memo1.Clear;
     PDFPanel.Height := PDFPanelH;
     MemoBtn.Visible := False;
+    PDF_Erstellung.Visible := True;
+    FormatBtn.Visible := True;
     PanelBottom.Visible := True;
   end;
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
@@ -7353,11 +7341,6 @@ begin
     LMDShellList1.Column[0].AutoSize := True;
     LMDShellList2.Column[0].AutoSize := True;
   end;
-end;
-
-procedure TFreePDF64_Form.PaneloverPrgBClick(Sender: TObject);
-begin
-  PaneloverPrgB.Caption := '';
 end;
 
 procedure TFreePDF64_Form.PanelRResize(Sender: TObject);

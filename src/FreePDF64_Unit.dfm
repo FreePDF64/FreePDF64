@@ -935,7 +935,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 3
         Visible = False
-        OnClick = PaneloverPrgBClick
       end
     end
   end
