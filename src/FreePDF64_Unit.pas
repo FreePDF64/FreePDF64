@@ -8587,18 +8587,17 @@ begin
                     ' -           Dateigröße: ' +
                     FormatByteString(MyFileSize(Ziel))));
 
-                  Komprimierung :=
-                    (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_' +
-                    ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
-                  Komprimierung := 100 - Komprimierung;
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
-                    ' -            Zieldatei: ' + ExtractFilePath(Ziel) +
-                    'Komprimiert_' + ExtractFileName(Ziel)));
-                  Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
-                    ' -           Dateigröße: ' +
-                    FormatByteString(MyFileSize(ExtractFilePath(Ziel) +
-                    'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
-                    IntToStr(Komprimierung) + '% komprimiert vom Original)');
+                  if (Einstellungen_Form.PDF_Shrink.Checked = True) then
+                  begin
+                    Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_' + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
+                    Komprimierung := 100 - Komprimierung;
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) +
+                                     'Komprimiert_' + ExtractFileName(Ziel)));
+                    Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' +
+                                     FormatByteString(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
+                                     IntToStr(Komprimierung) + '% komprimiert vom Original)');
+                  end;
+
                 end
                 else
                   // PS/DOCX/TXT/TIFF
