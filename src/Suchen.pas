@@ -1041,8 +1041,8 @@ begin
   // DOS-Ausgabe nach Memo1
   GetDosOutput(FreePDF64_Form.Memo1, Befehlszeile, Work);
   // Zur ersten Memo-Zeile gehen...
-  FreePDF64_Form.Memo1.Perform(EM_LineScroll, 0,
-    -FreePDF64_Form.Memo1.Lines.Count - 1);
+  FreePDF64_Form.Memo1.Perform(EM_LineScroll, 0, -FreePDF64_Form.Memo1.Lines.Count - 1);
+
   if FreePDF64_Form.Memo1.Lines.Count > 0 then
   begin
     i := TextHoehe(FreePDF64_Form.Memo1.Font, FreePDF64_Form.Memo1.Text);
@@ -1053,7 +1053,13 @@ begin
       Exit;
     if i >= (FreePDF64_Form.Height - 350) then
       i := FreePDF64_Form.Height - 350;
-    FreePDF64_Form.PDFPanel.Height := i;
+//    FreePDF64_Form.PDFPanel.Height := i;
+
+      FreePDF64_Form.PDFPanel.Height := i + 225;
+      FreePDF64_Form.PDF_Erstellung.Visible := False;
+      FreePDF64_Form.FormatBtn.Visible := False;
+      FreePDF64_Form.PanelBottom.Visible := False;
+
   end;
   FreePDF64_Form.MemoBtn.Visible := True;
   Info_Anzeigen := False;
