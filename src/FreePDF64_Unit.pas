@@ -3768,6 +3768,7 @@ begin
     Memo1.Lines.LoadFromFile(Auswahl);
     if Memo1.Lines.Count > 0 then
     begin
+      PaneloverPrgB.Visible := True;
       I := TextHoehe(Memo1.Font, Memo1.Text);
       I := (I * Memo1.Lines.Count) + MHA;
 
@@ -3779,6 +3780,7 @@ begin
         I := FreePDF64_Form.Height - 350;
 //      PDFPanel.Height := I;
 
+      PaneloverPrgB.Caption := Auswahl;
       PDFPanel.Height := I + 225;
       PDF_Erstellung.Visible := False;
       FormatBtn.Visible := False;
