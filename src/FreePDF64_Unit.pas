@@ -3765,7 +3765,8 @@ begin
   else
   // Alles andere im unteren Progammfenster anzeigen
   begin
-    Memo1.Lines.LoadFromFile(Auswahl);
+//    Memo1.Lines.LoadFromFile(Auswahl);
+    Memo1.Lines.LoadFromFile(Auswahl, TEncoding.UTF8);
     if Memo1.Lines.Count > 0 then
     begin
       PaneloverPrgB.Visible := True;
