@@ -3641,6 +3641,7 @@ procedure TFreePDF64_Form.Btn_ViewClick(Sender: TObject);
 var
   I: Integer;
   Param: String;
+  S: TStringList;
 begin
   if WebBrowser1.Align = alClient then
   begin
@@ -3761,12 +3762,26 @@ begin
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
-  end
-  else
+  end else
   // Alles andere im unteren Progammfenster anzeigen
   begin
-//    Memo1.Lines.LoadFromFile(Auswahl);
-    Memo1.Lines.LoadFromFile(Auswahl, TEncoding.UTF8);
+    S := TStringList.Create;
+    try
+      try
+        // Erster Versuch: UTF‑8
+        S.LoadFromFile(Auswahl, TEncoding.UTF8);
+      except
+        on E: Exception do
+        begin
+          // Wenn UTF‑8 fehlschlägt → ANSI verwenden
+          S.LoadFromFile(Auswahl, TEncoding.ANSI);
+        end;
+      end;
+      Memo1.Lines.Assign(S);
+    finally
+      S.Free;
+    end;
+
     if Memo1.Lines.Count > 0 then
     begin
       PaneloverPrgB.Visible := True;
