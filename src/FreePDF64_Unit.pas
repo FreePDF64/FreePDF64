@@ -2154,7 +2154,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '31.05.2026';
+  Datum := '01.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3770,16 +3770,22 @@ begin
     begin
       I := TextHoehe(Memo1.Font, Memo1.Text);
       I := (I * Memo1.Lines.Count) + MHA;
-      if I < Memo1.Parent.Height then
-        Exit;
-      if FreePDF64_Form.Height < 400 then
-        Exit;
-      if I >= (FreePDF64_Form.Height - 350) then
+
+//      if I < Memo1.Parent.Height then
+//        Exit;
+//      if FreePDF64_Form.Height < 400 then
+//        Exit;
+//      if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
-      PDFPanel.Height := I;
+//      PDFPanel.Height := I;
+
+      PDFPanel.Height := I + 225;
+      PDF_Erstellung.Visible := False;
+      FormatBtn.Visible := False;
+      PanelBottom.Visible := False;
+
       MemoBtn.Visible := True;
-    end
-    else
+    end else
     begin
       // Wenn das Panel schon auf ist, wieder schließen...
       if PDFPanel.Height > PDFPanelH then
