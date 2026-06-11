@@ -154,7 +154,6 @@
             <Form>Wasserzeichen_Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="EineInstanz_Unit.pas"/>
         <DCCReference Include="Zusatz_Unit.pas">
             <Form>Zusatz_Form</Form>
         </DCCReference>

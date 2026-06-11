@@ -1,8 +1,10 @@
-program FreePDF64;
+﻿program FreePDF64;
 
 {$R *.dres}
 
 uses
+  Winapi.Windows,
+  System.SysUtils,
   Vcl.Forms,
   FreePDF64_Unit in 'FreePDF64_Unit.pas' {FreePDF64_Form},
   Vcl.Themes,
@@ -19,7 +21,6 @@ uses
   Favoriten2_Unit in 'Favoriten2_Unit.pas' {Favoriten2_Form},
   Filter_Unit in 'Filter_Unit.pas' {Filter_Form},
   Wasserzeichen_Unit in 'Wasserzeichen_Unit.pas' {Wasserzeichen_Form},
-  EineInstanz_Unit in 'EineInstanz_Unit.pas',
   Zusatz_Unit in 'Zusatz_Unit.pas' {Zusatz_Form},
   Splashscreen_Unit in 'Splashscreen_Unit.pas' {Splashscreen_Form},
   Dateianlage_Unit in 'Dateianlage_Unit.pas' {Dateianlage_Form},
@@ -29,7 +30,22 @@ uses
 
 {$R *.RES}
 
+var
+  hMutex: THandle;
+  MutexName: string;
 begin
+  MutexName := 'Mutex_' + ExtractFileName(ParamStr(0));
+  hMutex := CreateMutex(nil, True, PChar(MutexName));
+
+  if (hMutex = 0) or (GetLastError = ERROR_ALREADY_EXISTS) then
+  begin
+    MessageBox(0,
+      'FreePDF64 läuft bereits!',
+      'Hinweis',
+      MB_ICONINFORMATION or MB_OK);
+    Halt;
+  end;
+  
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'FreePDF64';
@@ -54,5 +70,7 @@ begin
   Application.CreateForm(TAuswahl_Form, Auswahl_Form);
   Application.CreateForm(TSuche_Form, Suche_Form);
   Application.Run;
+  
+  CloseHandle(hMutex);
 end.
 

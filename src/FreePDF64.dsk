@@ -1,10 +1,10 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
-File_1=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
-File_2=TSourceModule,'D:\Temp\Suchen_.pas',0,1,1602,25,1623,0,0,,
-File_3=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_2.ico',0,1,1,1,1,0,0,,
-File_4=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_1.ico',0,1,1,1,1,0,0,,
-File_5=TSourceModule,'D:\Delphi\FreePDF64\EineInstanz_Unit.pas',0,1,1,1,1,0,0,,
+File_0=TSourceModule,'D:\Delphi\FreePDF64\EineInstanz_Unit.pas',0,1,1,22,1,0,0,,
+File_1=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
+File_2=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
+File_3=TSourceModule,'D:\Temp\Suchen_.pas',0,1,1602,25,1623,0,0,,
+File_4=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_2.ico',0,1,1,1,1,0,0,,
+File_5=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_1.ico',0,1,1,1,1,0,0,,
 File_6=TSourceModule,'D:\Delphi\FreePDF64\LMDShConsts.pas',0,1,1,1,1,0,0,,
 File_7=TSourceModule,'D:\Compiler\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas',0,1,1,1,1,0,0,,
 File_8=TSourceModule,'D:\Compiler\Delphi\FreePDF64\Splashscreen_Unit.pas',0,1,1,1,1,0,0,,
@@ -15,26 +15,30 @@ File_12=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten2_Unit.pas',0,1,1,1,1,0
 File_13=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Info_Unit.pas
-Module2=D:\Delphi\FreePDF64\Suchen.pas
-Module3=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-Module4=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
-Module5=D:\Delphi\FreePDF64\DokuInfo_Unit.pas
-Module6=D:\Delphi\FreePDF64\Auswahl_Unit.pas
-Module7=D:\Delphi\FreePDF64\Status_Unit.pas
-Module8=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
-Module9=D:\Delphi\FreePDF64\Splashscreen_Unit.pas
-Module10=D:\Delphi\FreePDF64\Zusatz_Unit.pas
-Module11=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
-Module12=D:\Delphi\FreePDF64\Seiten_Unit.pas
-Module13=D:\Delphi\FreePDF64\Filter_Unit.pas
-Module14=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
-Module15=D:\Delphi\FreePDF64\Favoriten_Unit.pas
-Module16=D:\Delphi\FreePDF64\Encrypt_Unit.pas
-Module17=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
-Count=18
+Module0=D:\Delphi\FreePDF64\FreePDF64.dproj
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module3=D:\Delphi\FreePDF64\Suchen.pas
+Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module5=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
+Module6=D:\Delphi\FreePDF64\DokuInfo_Unit.pas
+Module7=D:\Delphi\FreePDF64\Auswahl_Unit.pas
+Module8=D:\Delphi\FreePDF64\Status_Unit.pas
+Module9=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
+Module10=D:\Delphi\FreePDF64\Splashscreen_Unit.pas
+Module11=D:\Delphi\FreePDF64\Zusatz_Unit.pas
+Module12=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
+Module13=D:\Delphi\FreePDF64\Seiten_Unit.pas
+Module14=D:\Delphi\FreePDF64\Filter_Unit.pas
+Module15=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
+Module16=D:\Delphi\FreePDF64\Favoriten_Unit.pas
+Module17=D:\Delphi\FreePDF64\Encrypt_Unit.pas
+Module18=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
+Count=19
 EditWindowCount=1
+
+[D:\Delphi\FreePDF64\FreePDF64.dproj]
+ModuleType=TBaseProject
 
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
@@ -91,8 +95,8 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=19
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+ViewCount=20
+CurrentEditView=D:\Delphi\FreePDF64\FreePDF64.dpr
 View0=0
 View1=1
 View2=2
@@ -112,6 +116,7 @@ View15=15
 View16=16
 View17=17
 View18=18
+View19=19
 PercentageSizes=1
 Create=1
 Visible=1
@@ -152,15 +157,26 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=1
-CursorY=3791
-TopLine=3762
+CursorX=102
+CursorY=2160
+TopLine=2151
 LeftCol=1
 Elisions=
 Bookmarks={0,3785,1}{1,6789,1}{2,6750,1}{3,8804,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View2]
+CustomEditViewType=TEditView
+Module=D:\Delphi\FreePDF64\FreePDF64.dpr
+CursorX=18
+CursorY=43
+TopLine=28
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Delphi\FreePDF64\FreePDF64.dpr
+
+[View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
 CursorX=48
@@ -171,10 +187,10 @@ Elisions=
 Bookmarks={0,997,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
-[View3]
+[View4]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=3
+CursorX=14
 CursorY=99
 TopLine=80
 LeftCol=1
@@ -182,7 +198,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Info_Unit.pas
 
-[View4]
+[View5]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 CursorX=1
@@ -193,7 +209,7 @@ Elisions=
 Bookmarks={0,651,1}{1,138,1}
 EditViewName=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 
-[View5]
+[View6]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 CursorX=41
@@ -204,7 +220,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 
-[View6]
+[View7]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Splashscreen_Unit.pas
 CursorX=1
@@ -215,7 +231,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View7]
+[View8]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 CursorX=3
@@ -226,7 +242,7 @@ Elisions=
 Bookmarks={0,115,5}
 EditViewName=Borland.FormDesignerView
 
-[View8]
+[View9]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 CursorX=1
@@ -237,7 +253,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View9]
+[View10]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 CursorX=1
@@ -248,7 +264,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 
-[View10]
+[View11]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\DokuInfo_Unit.pas
 CursorX=1
@@ -259,7 +275,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View11]
+[View12]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Encrypt_Unit.pas
 CursorX=1
@@ -270,7 +286,7 @@ Elisions=
 Bookmarks={0,303,10}
 EditViewName=D:\Delphi\FreePDF64\Encrypt_Unit.pas
 
-[View12]
+[View13]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Status_Unit.pas
 CursorX=13
@@ -281,7 +297,7 @@ Elisions=
 Bookmarks={0,309,13}
 EditViewName=Borland.FormDesignerView
 
-[View13]
+[View14]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Favoriten_Unit.pas
 CursorX=1
@@ -292,7 +308,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Favoriten_Unit.pas
 
-[View14]
+[View15]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
 CursorX=1
@@ -303,7 +319,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
 
-[View15]
+[View16]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Filter_Unit.pas
 CursorX=1
@@ -314,7 +330,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Filter_Unit.pas
 
-[View16]
+[View17]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Seiten_Unit.pas
 CursorX=1
@@ -325,7 +341,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Seiten_Unit.pas
 
-[View17]
+[View18]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
 CursorX=1
@@ -336,7 +352,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
 
-[View18]
+[View19]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Zusatz_Unit.pas
 CursorX=1
@@ -487,11 +503,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=6464
+Height=8543
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=6464
+ClientHeight=8543
 TBDockHeight=5957
 LRDockWidth=2512
 Dockable=1
@@ -503,8 +519,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-10
-Top=-154
+Left=-8
+Top=-8
 Width=1848
 Height=3138
 MaxLeft=-1
@@ -560,8 +576,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-2039
-Top=336
+Left=0
+Top=0
 Width=273
 Height=362
 MaxLeft=-1
@@ -572,8 +588,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=21
-Description=56
+Name=77
+Description=214
 filter=1
 
 [DebugLogView]
@@ -684,11 +700,11 @@ State=0
 Left=0
 Top=0
 Width=2340
-Height=978
+Height=1210
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2340
-ClientHeight=978
+ClientHeight=1210
 TBDockHeight=2319
 LRDockWidth=2824
 Dockable=1
@@ -749,11 +765,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=6464
+Height=8543
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=6464
+ClientHeight=8543
 TBDockHeight=4884
 LRDockWidth=7148
 Dockable=1
@@ -765,8 +781,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=505
-Top=1083
+Left=0
+Top=0
 Width=2855
 Height=3210
 MaxLeft=-1
@@ -832,11 +848,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=6464
+Height=8543
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=6464
+ClientHeight=8543
 TBDockHeight=4884
 LRDockWidth=5309
 Dockable=1
@@ -896,8 +912,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=1270
-Top=36
+Left=8
+Top=8
 Width=3824
 Height=1420
 MaxLeft=-1

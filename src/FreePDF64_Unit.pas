@@ -638,7 +638,7 @@ implementation
 uses
   Einstellungen_Unit, Encrypt_Unit, DokuInfo_Unit,
   Seiten_Unit, Favoriten_Unit, Favoriten2_Unit, Auswahl_Unit,
-  Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit, EineInstanz_Unit,
+  Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit,
   Filter_Unit, Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
   Dateianlage_Unit, Status_Unit, Suchen;
 
@@ -2154,7 +2154,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '01.06.2026';
+  Datum := '11.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
