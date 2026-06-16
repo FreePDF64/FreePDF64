@@ -17587,4 +17587,10 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 967
     Top = 259
   end
+  object Timer3: TTimer
+    Interval = 2000
+    OnTimer = Timer3Timer
+    Left = 735
+    Top = 299
+  end
 end

@@ -1,5 +1,5 @@
-11.06.2025 V6.5.3
-Fix -> Codeoptimierungen durchgeführt.
+16.06.2025 V6.5.3
+Fix -> Codeoptimierungen durchgeführt, speziell zur Startbeschleunigung.
 Fix -> Update ExifTool auf neueste Version.
 Fix -> Update ImageMagick-Tool auf neueste Version.
 26.05.2025 V6.5.2

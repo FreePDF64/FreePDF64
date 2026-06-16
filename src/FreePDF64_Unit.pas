@@ -359,6 +359,7 @@ type
     PaneloverPrgB: TPanel;
     WebBrowser1: TWebBrowser;
     WebBrowser2: TWebBrowser;
+    Timer3: TTimer;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -593,6 +594,8 @@ type
     procedure QuelllabelClick(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
     procedure Logdateiansehen2Click(Sender: TObject);
+    procedure DetectKnownNetworkDrives;
+    procedure Timer3Timer(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -632,6 +635,7 @@ var
     ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
   Baum: Byte;
   Hochkommata: String[1];
+  KnownNetworkDrives: array['A'..'Z'] of string;
 
 implementation
 
@@ -2154,7 +2158,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '11.06.2026';
+  Datum := '16.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4490,6 +4494,78 @@ begin
   end;
 end;
 
+// Laufwerk systemweit ausblenden (temporär entfernen)
+procedure RemoveDriveLetter(Drive: Char);
+begin
+  DefineDosDevice(DDD_REMOVE_DEFINITION, PChar(Drive + ':'), nil);
+end;
+
+// Getrennte Netzlaufwerke erkennen (ohne Timeout!)
+function IsDisconnectedNetworkDrive(Drive: Char): Boolean;
+begin
+  Result :=
+    (GetDriveType(PChar(Drive + ':\')) = DRIVE_REMOTE) and
+    (not DirectoryExists(Drive + ':\'));
+end;
+
+// Automatisches Entfernen aller getrennten Netzlaufwerke
+procedure RemoveAllDisconnectedNetworkDrives;
+var
+  d: Char;
+begin
+  for d := 'A' to 'Z' do
+    if IsDisconnectedNetworkDrive(d) then
+      RemoveDriveLetter(d);
+end;
+
+// Bekannte Netzlaufwerke
+procedure TFreePDF64_Form.DetectKnownNetworkDrives;
+var
+  d: Char;
+  RemoteName: array[0..MAX_PATH] of Char;
+  Size: DWORD;
+begin
+  for d := 'A' to 'Z' do
+  begin
+    Size := MAX_PATH;
+    if WNetGetConnection(PChar(d + ':'), RemoteName, Size) = NO_ERROR then
+      KnownNetworkDrives[d] := RemoteName
+    else
+      KnownNetworkDrives[d] := '';
+  end;
+end;
+
+// Laufwerk wieder einblenden
+procedure RestoreDriveLetter(Drive: Char);
+begin
+  DefineDosDevice(0, PChar(Drive + ':'), PChar(KnownNetworkDrives[Drive]));
+end;
+
+// Wieder online Erkennung (blockiert nicht!)
+function IsNetworkDriveOnlineAgain(Drive: Char): Boolean;
+begin
+  Result :=
+    (KnownNetworkDrives[Drive] <> '') and
+    DirectoryExists(Drive + ':\');
+end;
+
+// Timer-Erweiterung: offline entfernen + online wiederherstellen
+procedure TFreePDF64_Form.Timer3Timer(Sender: TObject);
+var
+  d: Char;
+begin
+  for d := 'A' to 'Z' do
+  begin
+    // Offline → entfernen
+//    if IsDisconnectedNetworkDrive(d) then
+//      RemoveDriveLetter(d);
+
+    // Wieder online → wiederherstellen
+    if IsNetworkDriveOnlineAgain(d) then
+      RestoreDriveLetter(d);
+  end;
+end;
+
 procedure TFreePDF64_Form.FormCreate(Sender: TObject);
 var
   I, ie1, i1, j1, Laenge: Integer;
@@ -4497,7 +4573,11 @@ var
   IniFile, ies, k1, s: string;
   iec: Array [0 .. 255] of String;
   Log: Boolean;
+  d: Char;
 begin
+  // Offline-Netzlaufwerke systemweit entfernen
+  RemoveAllDisconnectedNetworkDrives;
+
   Application.HintHidePause := 5000;
 
   UseLatestCommonDialogs := False;
@@ -5087,7 +5167,16 @@ var
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
   Notify_Active: Boolean;
+  d: Char;
 begin
+  DetectKnownNetworkDrives;
+
+  // Offline Drives beim Start entfernen
+  for d := 'A' to 'Z' do
+    if IsDisconnectedNetworkDrive(d) then
+      RemoveDriveLetter(d);
+
+
   if ShowVomTray = True then
   begin
     ShowVomTray := False;
