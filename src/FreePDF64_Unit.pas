@@ -4557,8 +4557,8 @@ begin
   for d := 'A' to 'Z' do
   begin
     // Offline → entfernen
-//    if IsDisconnectedNetworkDrive(d) then
-//      RemoveDriveLetter(d);
+    if IsDisconnectedNetworkDrive(d) then
+      RemoveDriveLetter(d);
 
     // Wieder online → wiederherstellen
     if IsNetworkDriveOnlineAgain(d) then
