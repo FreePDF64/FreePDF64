@@ -152,12 +152,12 @@ OTAEditViewType=WelcomePage.MainPage
 [View1]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=101
-CursorY=4589
-TopLine=4553
+CursorX=3
+CursorY=4581
+TopLine=4539
 LeftCol=1
 Elisions=
-Bookmarks={0,3789,1}{1,6878,1}{2,6839,1}{3,8893,1}
+Bookmarks={0,3789,1}{1,6879,1}{2,6840,1}{3,8894,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View2]
@@ -480,7 +480,7 @@ SplitPos=152
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Name,OnTimer
+SelectedItem=Name,
 ExpandedItems=LiveBindings-Designer=0
 
 [frmDesignPreview]

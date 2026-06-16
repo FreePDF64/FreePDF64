@@ -4577,6 +4577,7 @@ var
 begin
   // Offline-Netzlaufwerke systemweit entfernen
   RemoveAllDisconnectedNetworkDrives;
+  Timer3.Enabled := True;
 
   Application.HintHidePause := 5000;
 
