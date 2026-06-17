@@ -2158,7 +2158,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '16.06.2026';
+  Datum := '17.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4577,7 +4577,6 @@ var
 begin
   // Offline-Netzlaufwerke systemweit entfernen
   RemoveAllDisconnectedNetworkDrives;
-  Timer3.Enabled := True;
 
   Application.HintHidePause := 5000;
 
@@ -5170,6 +5169,9 @@ var
   Notify_Active: Boolean;
   d: Char;
 begin
+  // Offline-Netzlaufwerke systemweit entfernen
+  RemoveAllDisconnectedNetworkDrives;
+  Timer3.Enabled := True;
   DetectKnownNetworkDrives;
 
   // Offline Drives beim Start entfernen
