@@ -4577,6 +4577,7 @@ var
 begin
   // Offline-Netzlaufwerke systemweit entfernen
   RemoveAllDisconnectedNetworkDrives;
+  Timer3.Enabled := True;
 
   Application.HintHidePause := 5000;
 
@@ -5169,10 +5170,10 @@ var
   Notify_Active: Boolean;
   d: Char;
 begin
+  // UNC-Pfade speichern
+  DetectKnownNetworkDrives;
   // Offline-Netzlaufwerke systemweit entfernen
   RemoveAllDisconnectedNetworkDrives;
-  Timer3.Enabled := True;
-  DetectKnownNetworkDrives;
 
   // Offline Drives beim Start entfernen
   for d := 'A' to 'Z' do
