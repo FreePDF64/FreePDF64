@@ -91,7 +91,7 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=19
+ViewCount=18
 CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 View0=0
 View1=1
@@ -111,7 +111,6 @@ View14=14
 View15=15
 View16=16
 View17=17
-View18=18
 PercentageSizes=1
 Create=1
 Visible=1
@@ -146,21 +145,17 @@ BottomMiddlePanelClients=DockSite0,GraphDrawingModel
 BottomMiddelPanelData=0000080001020200000009000000446F636B536974653010000000477261706844726177696E67566965779F1D00000000000002F206000000000000FFFFFFFF
 
 [View0]
-CustomEditViewType=TOTACustomEditView
-OTAEditViewType=WelcomePage.MainPage
-
-[View1]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=2
-CursorY=5173
-TopLine=5134
+CursorX=15
+CursorY=2161
+TopLine=2140
 LeftCol=1
 Elisions=
-Bookmarks={0,3789,1}{1,6882,1}{2,6843,1}{3,8897,1}
+Bookmarks={0,3789,1}{1,6906,1}{2,6867,1}{3,8921,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
-[View2]
+[View1]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
 CursorX=48
@@ -171,7 +166,7 @@ Elisions=
 Bookmarks={0,997,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
-[View3]
+[View2]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
 CursorX=15
@@ -182,7 +177,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Info_Unit.pas
 
-[View4]
+[View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 CursorX=1
@@ -193,7 +188,7 @@ Elisions=
 Bookmarks={0,651,1}{1,138,1}
 EditViewName=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 
-[View5]
+[View4]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 CursorX=41
@@ -204,7 +199,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 
-[View6]
+[View5]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Splashscreen_Unit.pas
 CursorX=1
@@ -215,7 +210,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View7]
+[View6]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 CursorX=3
@@ -226,7 +221,7 @@ Elisions=
 Bookmarks={0,115,5}
 EditViewName=Borland.FormDesignerView
 
-[View8]
+[View7]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 CursorX=1
@@ -237,7 +232,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View9]
+[View8]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 CursorX=1
@@ -248,7 +243,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 
-[View10]
+[View9]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\DokuInfo_Unit.pas
 CursorX=1
@@ -259,7 +254,7 @@ Elisions=
 Bookmarks=
 EditViewName=Borland.FormDesignerView
 
-[View11]
+[View10]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Encrypt_Unit.pas
 CursorX=1
@@ -270,7 +265,7 @@ Elisions=
 Bookmarks={0,303,10}
 EditViewName=D:\Delphi\FreePDF64\Encrypt_Unit.pas
 
-[View12]
+[View11]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Status_Unit.pas
 CursorX=13
@@ -281,7 +276,7 @@ Elisions=
 Bookmarks={0,309,13}
 EditViewName=Borland.FormDesignerView
 
-[View13]
+[View12]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Favoriten_Unit.pas
 CursorX=1
@@ -292,7 +287,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Favoriten_Unit.pas
 
-[View14]
+[View13]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
 CursorX=1
@@ -303,7 +298,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Favoriten2_Unit.pas
 
-[View15]
+[View14]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Filter_Unit.pas
 CursorX=1
@@ -314,7 +309,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Filter_Unit.pas
 
-[View16]
+[View15]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Seiten_Unit.pas
 CursorX=1
@@ -325,7 +320,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Seiten_Unit.pas
 
-[View17]
+[View16]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
 CursorX=1
@@ -336,7 +331,7 @@ Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Wasserzeichen_Unit.pas
 
-[View18]
+[View17]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Zusatz_Unit.pas
 CursorX=1
@@ -472,11 +467,16 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
 ClientHeight=4246
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=152
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=DisabledOpacity,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,LiveBindings-Designer=0,Images=0,ImageCollection=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -487,11 +487,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=8543
+Height=6464
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=8543
+ClientHeight=6464
 TBDockHeight=5957
 LRDockWidth=2512
 Dockable=1
@@ -503,8 +503,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=-8
-Top=-8
+Left=-10
+Top=-154
 Width=1848
 Height=3138
 MaxLeft=-1
@@ -560,8 +560,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=-2039
+Top=336
 Width=273
 Height=362
 MaxLeft=-1
@@ -572,8 +572,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=77
-Description=214
+Name=50
+Description=137
 filter=1
 
 [DebugLogView]
@@ -684,11 +684,11 @@ State=0
 Left=0
 Top=0
 Width=2340
-Height=1210
+Height=978
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2340
-ClientHeight=1210
+ClientHeight=978
 TBDockHeight=2319
 LRDockWidth=2824
 Dockable=1
@@ -749,11 +749,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=8543
+Height=6464
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=8543
+ClientHeight=6464
 TBDockHeight=4884
 LRDockWidth=7148
 Dockable=1
@@ -765,8 +765,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=505
+Top=1083
 Width=2855
 Height=3210
 MaxLeft=-1
@@ -832,11 +832,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=8543
+Height=6464
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=8543
+ClientHeight=6464
 TBDockHeight=4884
 LRDockWidth=5309
 Dockable=1
@@ -896,8 +896,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=8
-Top=8
+Left=1270
+Top=36
 Width=3824
 Height=1420
 MaxLeft=-1
@@ -928,7 +928,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
 ClientHeight=4551
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -952,7 +952,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
 ClientHeight=2565
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -976,7 +976,7 @@ MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
 ClientHeight=2261
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0

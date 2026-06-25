@@ -2158,7 +2158,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '17.06.2026';
+  Datum := '25.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4500,12 +4500,36 @@ begin
   DefineDosDevice(DDD_REMOVE_DEFINITION, PChar(Drive + ':'), nil);
 end;
 
+// Das erkennt spontane Offline-Shares SOFORT. Ohne Blockieren. Ohne Reconnect-Versuch.
+function IsNetworkShareOnline(const Drive: Char): Boolean;
+var
+  Handle: THandle;
+  Path: string;
+begin
+  Path := Drive + ':\';
+
+  Handle := CreateFile(
+    PChar(Path),
+    GENERIC_READ,
+    FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
+    nil,
+    OPEN_EXISTING,
+    FILE_FLAG_BACKUP_SEMANTICS,
+    0
+  );
+
+  Result := Handle <> INVALID_HANDLE_VALUE;
+
+  if Result then
+    CloseHandle(Handle);
+end;
+
 // Getrennte Netzlaufwerke erkennen (ohne Timeout!)
 function IsDisconnectedNetworkDrive(Drive: Char): Boolean;
 begin
-  Result :=
-    (GetDriveType(PChar(Drive + ':\')) = DRIVE_REMOTE) and
-    (not DirectoryExists(Drive + ':\'));
+  Result := (GetDriveType(PChar(Drive + ':\')) = DRIVE_REMOTE) and
+            (not IsNetworkShareOnline(Drive));
+//          (not DirectoryExists(Drive + ':\'));
 end;
 
 // Automatisches Entfernen aller getrennten Netzlaufwerke
@@ -4544,9 +4568,8 @@ end;
 // Wieder online Erkennung (blockiert nicht!)
 function IsNetworkDriveOnlineAgain(Drive: Char): Boolean;
 begin
-  Result :=
-    (KnownNetworkDrives[Drive] <> '') and
-    DirectoryExists(Drive + ':\');
+  Result := (KnownNetworkDrives[Drive] <> '') and
+             DirectoryExists(Drive + ':\');
 end;
 
 // Timer-Erweiterung: offline entfernen + online wiederherstellen
@@ -4556,9 +4579,7 @@ var
 begin
   for d := 'A' to 'Z' do
   begin
-    // Offline → entfernen
-    if IsDisconnectedNetworkDrive(d) then
-      RemoveDriveLetter(d);
+    RemoveAllDisconnectedNetworkDrives;
 
     // Wieder online → wiederherstellen
     if IsNetworkDriveOnlineAgain(d) then
@@ -4575,9 +4596,13 @@ var
   Log: Boolean;
   d: Char;
 begin
+  // Offline Drives beim Start entfernen
+  for d := 'A' to 'Z' do
+    if IsDisconnectedNetworkDrive(d) then
+      RemoveDriveLetter(d);
+
   // Offline-Netzlaufwerke systemweit entfernen
   RemoveAllDisconnectedNetworkDrives;
-  Timer3.Enabled := True;
 
   Application.HintHidePause := 5000;
 
@@ -5179,7 +5204,6 @@ begin
   for d := 'A' to 'Z' do
     if IsDisconnectedNetworkDrive(d) then
       RemoveDriveLetter(d);
-
 
   if ShowVomTray = True then
   begin
