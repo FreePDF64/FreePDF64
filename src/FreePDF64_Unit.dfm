@@ -108,7 +108,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AutoSizeClick
       end
       object FolderBtn: TToolButton
-        Left = 28
+        Left = 38
         Top = 0
         Hint = 'Baumansichten wechseln'
         Margins.Left = 4
@@ -121,7 +121,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FolderBtnClick
       end
       object ToolButton1: TToolButton
-        Left = 56
+        Left = 76
         Top = 0
         Width = 5
         Caption = 'ToolButton1'
@@ -130,7 +130,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object RefreshBt: TToolButton
-        Left = 61
+        Left = 81
         Top = 0
         Hint = 'Aktualisieren'
         Margins.Left = 4
@@ -144,7 +144,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = RefreshBtClick
       end
       object BackBtn: TToolButton
-        Left = 89
+        Left = 119
         Top = 0
         Hint = 'Zur'#252'ck'
         Margins.Left = 4
@@ -159,7 +159,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = BackBtnClick
       end
       object FwdBtn: TToolButton
-        Left = 117
+        Left = 157
         Top = 0
         Hint = 'Vorw'#228'rts'
         Margins.Left = 4
@@ -174,7 +174,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FwdBtnClick
       end
       object ToolButton3: TToolButton
-        Left = 145
+        Left = 195
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -187,7 +187,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object TauschenTB: TToolButton
-        Left = 150
+        Left = 200
         Top = 0
         Hint = 'Fenster tauschen'
         Margins.Left = 4
@@ -200,7 +200,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = TauschenTBClick
       end
       object AngleichenTB: TToolButton
-        Left = 178
+        Left = 238
         Top = 0
         Hint = 'Fenster angleichen'
         Margins.Left = 4
@@ -213,7 +213,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AngleichenTBClick
       end
       object FilterTB: TToolButton
-        Left = 206
+        Left = 276
         Top = 0
         Hint = 'Dateifilter festlegen'
         Margins.Left = 4
@@ -228,7 +228,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = FilterTBClick
       end
       object PropertiesBtn: TToolButton
-        Left = 234
+        Left = 314
         Top = 0
         Hint = 'Eigenschaften anzeigen [LEERTASTE]'
         Margins.Left = 4
@@ -243,7 +243,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PropertiesBtnClick
       end
       object MailBtn: TToolButton
-        Left = 262
+        Left = 352
         Top = 0
         Hint = 'Markierte Datei(en) versenden (Senden an > E-Mail-Empf'#228'nger)'
         Margins.Left = 4
@@ -256,7 +256,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Sendenan1Click
       end
       object ToolButton4: TToolButton
-        Left = 290
+        Left = 390
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -269,7 +269,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object VerbindenBt: TToolButton
-        Left = 295
+        Left = 395
         Top = 0
         Hint = 'PS/PDF zusammenf'#252'gen'
         Margins.Left = 4
@@ -282,7 +282,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = VerbindenBtClick
       end
       object WZSTTB: TToolButton
-        Left = 323
+        Left = 433
         Top = 0
         Hint = 'PDF Wasserzeichen/Stempel einf'#252'gen'
         Margins.Left = 4
@@ -295,7 +295,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = WZSTTBClick
       end
       object AnlagenBtn: TToolButton
-        Left = 351
+        Left = 471
         Top = 0
         Hint = 'PDF Anlage hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
@@ -304,7 +304,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AnlagenBtnClick
       end
       object PDFRemove: TToolButton
-        Left = 379
+        Left = 509
         Top = 0
         Hint = 
           'PDF Anlage extrahieren/entfernen:'#13#10'1. Es werden alle Anlagen im ' +
@@ -316,7 +316,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFRemoveClick
       end
       object PDFAttachment: TToolButton
-        Left = 407
+        Left = 547
         Top = 0
         Hint = 'PDF Anlage(n) anzeigen und extrahieren'
         Caption = 'PDFAttachment'
@@ -325,7 +325,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFAttachmentClick
       end
       object ToolButton2: TToolButton
-        Left = 435
+        Left = 585
         Top = 0
         Width = 5
         Caption = 'ToolButton2'
@@ -334,7 +334,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object ExtractBtn: TToolButton
-        Left = 440
+        Left = 590
         Top = 0
         Hint = 'PDF Bilder extrahieren'
         Margins.Left = 4
@@ -347,7 +347,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = ExtractBtnClick
       end
       object HTMLBtn: TToolButton
-        Left = 468
+        Left = 628
         Top = 0
         Hint = 'PDF zu HTML'
         Caption = 'PDF zu HTML'
@@ -356,7 +356,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = HTMLBtnClick
       end
       object PDFdecrypt: TToolButton
-        Left = 496
+        Left = 666
         Top = 0
         Hint = 'PDF Passwortschutz entfernen'
         Caption = 'PDF entschl'#252'sseln'
@@ -365,7 +365,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFdecryptClick
       end
       object PDF_Kompress: TToolButton
-        Left = 524
+        Left = 704
         Top = 0
         Hint = 'PDF komprimieren'
         Caption = 'PDF_Kompress'
@@ -374,7 +374,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDF_KompressClick
       end
       object PDFFontsBtn: TToolButton
-        Left = 552
+        Left = 742
         Top = 0
         Hint = 'PDF Schriftarten auflisten'
         Caption = 'PDFFonts'
@@ -383,7 +383,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFFontsBtnClick
       end
       object ToolButton5: TToolButton
-        Left = 580
+        Left = 780
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -396,7 +396,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object SearchBtn: TToolButton
-        Left = 585
+        Left = 785
         Top = 0
         Hint = 'Suchen...'
         Caption = 'SearchBtn'
@@ -405,7 +405,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = SearchBtnClick
       end
       object PDFInfoBtn: TToolButton
-        Left = 613
+        Left = 823
         Top = 0
         Hint = 
           'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'Re' +
@@ -416,7 +416,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFInfoBtnClick
       end
       object ToolButton7: TToolButton
-        Left = 641
+        Left = 861
         Top = 0
         Width = 5
         Caption = 'ToolButton7'
@@ -425,7 +425,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 646
+        Left = 866
         Top = 0
         Margins.Left = 4
         Margins.Top = 4
@@ -437,7 +437,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnMouseDown = LogBtMouseDown
       end
       object MemoBtn: TToolButton
-        Left = 674
+        Left = 904
         Top = 0
         Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         ImageIndex = 76
@@ -2521,7 +2521,7 @@ object FreePDF64_Form: TFreePDF64_Form
     Top = 179
   end
   object PopupMenu3: TPopupMenu
-    Images = VirtualImageList1
+    Images = VirtualImageList2
     Left = 375
     Top = 903
     object est1: TMenuItem
@@ -2530,13 +2530,13 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object N19: TMenuItem
       Caption = '1'
-      ImageIndex = 98
+      ImageIndex = 8
       ImageName = '172480_home_icon'
       OnClick = berwachung1Click
     end
     object N31: TMenuItem
       Caption = '2'
-      ImageIndex = 95
+      ImageIndex = 7
       ImageName = '6843063_accuracy_archery_arrow_business_goal_icon'
       OnClick = berwachung1Click
     end
@@ -2559,13 +2559,13 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Einstellungenndern2: TMenuItem
       Caption = 'Einstellungen '#228'ndern'
-      ImageIndex = 103
+      ImageIndex = 9
       ImageName = '1976057_config_configuration_settings_icon'
       OnClick = Einstellungenndern2Click
     end
     object Verbinden1: TMenuItem
       Caption = 'PS/PDF zusammenf'#252'gen'
-      ImageIndex = 42
+      ImageIndex = 2
       ImageName = 'Item43'
       OnClick = Verbinden1Click
     end
@@ -2574,20 +2574,20 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Suche3: TMenuItem
       Caption = 'Suchen...'
-      ImageIndex = 10
-      ImageName = 'Item11'
+      ImageIndex = 1
+      ImageName = 'Item16'
       OnClick = SearchBtnClick
     end
     object Logdateiansehen2: TMenuItem
       Caption = 'Logdatei ansehen'
-      ImageIndex = 77
+      ImageIndex = 6
       ImageName = 'Item78'
       OnClick = Logdateiansehen2Click
     end
     object berFreePDF641: TMenuItem
       Caption = #220'ber FreePDF64'
-      ImageIndex = 36
-      ImageName = 'Item37'
+      ImageIndex = 3
+      ImageName = 'Item52'
       OnClick = berFreePDF641Click
     end
     object N14: TMenuItem
@@ -2595,8 +2595,8 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object Beenden2: TMenuItem
       Caption = 'Beenden'
-      ImageIndex = 2
-      ImageName = 'Item3'
+      ImageIndex = 10
+      ImageName = 'Item5'
       OnClick = Beenden2Click
     end
   end
@@ -17433,8 +17433,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = '9051666_warning_danger_attention_exclamation_error_icon'
       end>
     ImageCollection = ImageCollection1
-    Width = 20
-    Height = 20
+    Width = 30
+    Height = 30
     Left = 129
     Top = 899
   end
@@ -17592,5 +17592,68 @@ object FreePDF64_Form: TFreePDF64_Form
     OnTimer = Timer3Timer
     Left = 723
     Top = 370
+  end
+  object VirtualImageList2: TVirtualImageList
+    Images = <
+      item
+        CollectionIndex = 0
+        CollectionName = 'Item1'
+        Name = 'Item1'
+      end
+      item
+        CollectionIndex = 7
+        CollectionName = 'Item16'
+        Name = 'Item16'
+      end
+      item
+        CollectionIndex = 20
+        CollectionName = 'Item43'
+        Name = 'Item43'
+      end
+      item
+        CollectionIndex = 25
+        CollectionName = 'Item52'
+        Name = 'Item52'
+      end
+      item
+        CollectionIndex = 28
+        CollectionName = 'Item58'
+        Name = 'Item58'
+      end
+      item
+        CollectionIndex = 29
+        CollectionName = 'Item59'
+        Name = 'Item59'
+      end
+      item
+        CollectionIndex = 46
+        CollectionName = 'Item78'
+        Name = 'Item78'
+      end
+      item
+        CollectionIndex = 63
+        CollectionName = '6843063_accuracy_archery_arrow_business_goal_icon'
+        Name = '6843063_accuracy_archery_arrow_business_goal_icon'
+      end
+      item
+        CollectionIndex = 65
+        CollectionName = '172480_home_icon'
+        Name = '172480_home_icon'
+      end
+      item
+        CollectionIndex = 70
+        CollectionName = '1976057_config_configuration_settings_icon'
+        Name = '1976057_config_configuration_settings_icon'
+      end
+      item
+        CollectionIndex = 1
+        CollectionName = 'Item5'
+        Name = 'Item5'
+      end>
+    ImageCollection = ImageCollection1
+    Width = 20
+    Height = 20
+    Left = 693
+    Top = 274
   end
 end

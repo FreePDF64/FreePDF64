@@ -360,6 +360,7 @@ type
     WebBrowser1: TWebBrowser;
     WebBrowser2: TWebBrowser;
     Timer3: TTimer;
+    VirtualImageList2: TVirtualImageList;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -2158,7 +2159,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '25.06.2026';
+  Datum := '26.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3337,9 +3338,11 @@ begin
   // RMB zeigt die beiden wichtigen Verzeichnisse an
   if Button = mbRight then
   begin
-    PopupMenu3.Items.Items[0].ImageIndex := MonitorBtn.ImageIndex;
-    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash
-      (FreePDF64_Notify.MonitoringFolder.Text);
+    if MonitorBtn.ImageIndex = 57 then
+      PopupMenu3.Items.Items[0].ImageIndex := 4
+    else
+      PopupMenu3.Items.Items[0].ImageIndex := 5;
+    PopupMenu3.Items.Items[1].Caption := IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text);
     PopupMenu3.Items.Items[2].Caption := IncludeTrailingBackslash(MZiel);
   end;
 end;
@@ -4001,8 +4004,7 @@ begin
 end;
 
 procedure TFreePDF64_Form.berwachung1Click(Sender: TObject);
-begin
-  // Form soll mittig angezeigt werden.
+begin  // Form soll mittig angezeigt werden.
   FreePDF64_Notify.Position := poScreenCenter;
   FreePDF64_Notify.ShowModal;
 end;
