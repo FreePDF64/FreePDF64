@@ -17651,8 +17651,8 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'Item5'
       end>
     ImageCollection = ImageCollection1
-    Width = 20
-    Height = 20
+    Width = 19
+    Height = 19
     Left = 693
     Top = 274
   end
