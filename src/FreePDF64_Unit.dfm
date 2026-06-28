@@ -1393,6 +1393,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Top = 1
           Width = 214
           Height = 28
+          Cursor = crHandPoint
           Margins.Left = 4
           Margins.Top = 4
           Margins.Right = 4
@@ -1865,6 +1866,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 1
         Width = 408
         Height = 28
+        Cursor = crHandPoint
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4

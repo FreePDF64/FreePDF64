@@ -344,9 +344,7 @@ end;
 procedure TFreePDF64_Notify.Ziel_FestCBClick(Sender: TObject);
 begin
   if Ziel_FestCB.Checked = False then
-  begin
     ZielEdit.Text := IncludeTrailingBackslash(Ziel);
-  end;
 end;
 
 procedure TFreePDF64_Notify.FormKeyDown(Sender: TObject; var Key: Word;

@@ -127,7 +127,6 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ParentFont = False
     ReadOnly = True
     TabOrder = 0
-    ExplicitWidth = 357
   end
   object btnStart: TButton
     Left = 35
@@ -275,7 +274,6 @@ object FreePDF64_Notify: TFreePDF64_Notify
     ParentFont = False
     ReadOnly = True
     TabOrder = 2
-    ExplicitWidth = 355
   end
   object Ziel_FestCB: TCheckBox
     Left = 378
@@ -330,8 +328,8 @@ object FreePDF64_Notify: TFreePDF64_Notify
     MaxNotifications = 0
     OnFileCreate = LMDShellNotifyFileCreate
     OnShellChangeNotify = LMDShellNotifyShellChangeNotify
-    Left = 369
-    Top = 137
+    Left = 409
+    Top = 143
   end
   object LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog
     OwnerHandle = pwApplication

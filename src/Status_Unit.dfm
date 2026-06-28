@@ -22,6 +22,7 @@ object Status_Form: TStatus_Form
     Top = 12
     Width = 163
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -33,12 +34,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label1Click
   end
   object Label2: TLabel
     Left = 7
     Top = 62
     Width = 159
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -50,12 +53,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label2Click
+    OnMouseEnter = Label2MouseEnter
   end
   object Label3: TLabel
     Left = 7
     Top = 87
     Width = 90
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -67,12 +73,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label3Click
+    OnMouseEnter = Label3MouseEnter
   end
   object Label4: TLabel
     Left = 7
     Top = 162
     Width = 168
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -84,12 +93,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label4Click
+    OnMouseEnter = Label4MouseEnter
   end
   object Label5: TLabel
     Left = 7
     Top = 187
     Width = 150
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -101,12 +113,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label5Click
+    OnMouseEnter = Label5MouseEnter
   end
   object Label6: TLabel
     Left = 7
     Top = 212
     Width = 96
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -118,12 +133,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label6Click
+    OnMouseEnter = Label6MouseEnter
   end
   object Label7: TLabel
     Left = 7
     Top = 237
     Width = 143
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -135,12 +153,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label7Click
+    OnMouseEnter = Label7MouseEnter
   end
   object Label8: TLabel
     Left = 7
     Top = 262
     Width = 115
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -152,12 +173,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label8Click
+    OnMouseEnter = Label8MouseEnter
   end
   object Label9: TLabel
     Left = 7
     Top = 287
     Width = 41
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -169,12 +193,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label9Click
+    OnMouseEnter = Label9MouseEnter
   end
   object Label10: TLabel
     Left = 7
     Top = 337
     Width = 130
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -186,12 +213,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label10Click
+    OnMouseEnter = Label10MouseEnter
   end
   object Label11: TLabel
     Left = 7
     Top = 362
     Width = 99
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -203,12 +233,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label11Click
   end
   object Label12: TLabel
     Left = 7
     Top = 387
     Width = 167
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -220,12 +252,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label12Click
+    OnMouseEnter = Label12MouseEnter
   end
   object Label13: TLabel
     Left = 7
     Top = 412
     Width = 177
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -237,12 +272,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label13Click
+    OnMouseEnter = Label13MouseEnter
   end
   object Label14: TLabel
     Left = 7
     Top = 437
     Width = 175
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -254,12 +292,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label14Click
+    OnMouseEnter = Label14MouseEnter
   end
   object Label15: TLabel
     Left = 7
     Top = 462
     Width = 127
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -271,12 +312,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label15Click
   end
   object Label16: TLabel
     Left = 7
     Top = 487
     Width = 131
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -288,12 +331,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label16Click
   end
   object Label17: TLabel
     Left = 7
     Top = 512
     Width = 222
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -305,12 +350,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label17Click
   end
   object Label18: TLabel
     Left = 7
     Top = 537
     Width = 179
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -322,12 +369,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label18Click
+    OnMouseEnter = Label18MouseEnter
   end
   object Label19: TLabel
     Left = 7
     Top = 562
     Width = 222
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -339,12 +389,14 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label19Click
   end
   object Label20: TLabel
     Left = 7
     Top = 37
     Width = 87
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -356,12 +408,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label20Click
+    OnMouseEnter = Label20MouseEnter
   end
   object Label21: TLabel
     Left = 7
     Top = 312
     Width = 40
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -373,12 +428,15 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label21Click
+    OnMouseEnter = Label21MouseEnter
   end
   object Label22: TLabel
     Left = 7
     Top = 112
     Width = 180
     Height = 17
+    Cursor = crHandPoint
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -390,12 +448,16 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label22Click
+    OnMouseEnter = Label22MouseEnter
   end
   object Label23: TLabel
     Left = 7
     Top = 137
     Width = 215
     Height = 17
+    Cursor = crHandPoint
+    Hint = 'Men'#252'punkt: Optionen - Ins Unterverzeichnis beim Erstellen'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -407,6 +469,8 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    ParentShowHint = False
+    ShowHint = True
   end
   object Label24: TLabel
     Left = 363
@@ -424,6 +488,7 @@ object Status_Form: TStatus_Form
     Font.Name = 'Segoe UI Semibold'
     Font.Style = [fsBold]
     ParentFont = False
+    OnClick = Label24Click
   end
   object Edit2: TEdit
     Left = 237

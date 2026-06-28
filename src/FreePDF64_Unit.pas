@@ -2159,7 +2159,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '27.06.2026';
+  Datum := '28.06.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -2608,16 +2608,12 @@ end;
 
 procedure TFreePDF64_Form.QuelllabelMouseEnter(Sender: TObject);
 begin
-  Quelllabel.Hint := IncludeTrailingBackslash
-    (LMDShellFolder1.ActiveFolder.PathName) + #13 +
-    '(LMB: Eine Ebene höher)';
+  Quelllabel.Hint := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.ZiellabelMouseEnter(Sender: TObject);
 begin
-  Ziellabel.Hint := IncludeTrailingBackslash
-    (LMDShellFolder2.ActiveFolder.PathName) + #13 +
-    '(LMB: Eine Ebene höher)';
+  Ziellabel.Hint := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName);
 end;
 
 procedure TFreePDF64_Form.RefreshBtClick(Sender: TObject);
@@ -4004,7 +4000,8 @@ begin
 end;
 
 procedure TFreePDF64_Form.berwachung1Click(Sender: TObject);
-begin  // Form soll mittig angezeigt werden.
+begin
+  // Form soll mittig angezeigt werden.
   FreePDF64_Notify.Position := poScreenCenter;
   FreePDF64_Notify.ShowModal;
 end;
@@ -7389,6 +7386,8 @@ begin
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
     IntToStr(Counter);
 end;
+
+
 
 procedure TFreePDF64_Form.MonitorBtnClick(Sender: TObject);
 begin
