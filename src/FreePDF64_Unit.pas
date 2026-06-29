@@ -6358,6 +6358,8 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList1Enter(Sender: TObject);
 begin
+  PDF_Erstellung.Enabled := True;
+
   if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
     LMDShellList1.ItemFocused;
 
@@ -6378,10 +6380,8 @@ procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;
   Change: TItemChange);
 begin
   if LMDShellList1.SelCount > 0 then
-    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) +
-      ' => Erstellung starten!')
-  else
-    PDF_Erstellung.Caption := ('Erstellung starten!');
+    PDF_Erstellung.Caption := ('Markiert: ' + IntToStr(LMDShellList1.SelCount) + ' => Erstellung starten!');
+
   // Abfrage auf Hinweis bzgl. der Extension
   ExtAbfrage;
   SB_Left;
@@ -6446,6 +6446,8 @@ end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
 begin
+  PDF_Erstellung.Enabled := False;
+
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
     LMDShellList2.ItemIndex := 0;
 
@@ -6600,8 +6602,6 @@ end;
 
 procedure TFreePDF64_Form.LMDShellTree1Change(Sender: TObject; Node: TTreeNode);
 begin
-  PDF_Erstellung.Caption := ('Erstellung starten!');
-
   // JPEG-Fenster schließen
   if Image1.Visible then
   begin
