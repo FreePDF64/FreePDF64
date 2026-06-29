@@ -98,6 +98,7 @@ type
     procedure Label13MouseEnter(Sender: TObject);
     procedure Label14MouseEnter(Sender: TObject);
     procedure Label18MouseEnter(Sender: TObject);
+    procedure Label24MouseEnter(Sender: TObject);
   private
     { Private-Deklarationen }
   public
@@ -548,6 +549,14 @@ begin
   Status_Form.Close;
   if not FreePDF64_Form.TrayIcon1.Visible then
     FreePDF64_Form.MonitorBtn.Click;
+end;
+
+procedure TStatus_Form.Label24MouseEnter(Sender: TObject);
+begin
+  if not FreePDF64_Form.TrayIcon1.Visible then
+    Label24.Cursor := crHandPoint
+  else
+    Label24.Cursor := crDefault;
 end;
 
 procedure TStatus_Form.Label2Click(Sender: TObject);

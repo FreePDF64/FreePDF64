@@ -489,6 +489,7 @@ object Status_Form: TStatus_Form
     Font.Style = [fsBold]
     ParentFont = False
     OnClick = Label24Click
+    OnMouseEnter = Label24MouseEnter
   end
   object Edit2: TEdit
     Left = 237
