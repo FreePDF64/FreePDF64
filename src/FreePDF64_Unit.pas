@@ -360,6 +360,7 @@ type
     WebBrowser1: TWebBrowser;
     WebBrowser2: TWebBrowser;
     VirtualImageList2: TVirtualImageList;
+    ShowNetworkShares: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -598,6 +599,7 @@ type
     procedure LMDShellList2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+    procedure ShowNetworkSharesClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2514,6 +2516,7 @@ begin
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
     WriteBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
+    WriteBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
     WriteInteger('Start', 'ShowFolders', Baum);
     WriteBool('Start', 'System Tray', InDenTray.Checked);
     WriteBool('Start', 'System Tray/Taskbar', Systray_Taskleiste.Checked);
@@ -4494,23 +4497,6 @@ begin
   end;
 end;
 
-function IsNetworkDrive(const Drive: Char): Boolean;
-var
-  DriveRoot: string;
-begin
-  DriveRoot := Drive + ':\';
-  Result := GetDriveType(PChar(DriveRoot)) = DRIVE_REMOTE;
-end;
-
-function NetworkDriveReachable(const Drive: Char): Boolean;
-var
-  RemoteName: array[0..MAX_PATH] of Char;
-  BufSize: DWORD;
-begin
-  BufSize := SizeOf(RemoteName);
-  Result := WNetGetConnection(PChar(Drive + ':'), RemoteName, BufSize) = NO_ERROR;
-end;
-
 procedure TFreePDF64_Form.FormCreate(Sender: TObject);
 var
   I, ie1, i1, j1, Laenge: Integer;
@@ -4589,12 +4575,26 @@ begin
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
 
-        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button',
-          AutoSizeBtn.Checked);
+        AutoSizeBtn.Checked := ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
         if AutoSizeBtn.Checked then
           AutoSize.Enabled := True
         else
           AutoSize.Enabled := False;
+
+        ShowNetworkShares.Checked := ReadBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
+        if ShowNetworkShares.Checked then
+        begin
+          LMDShellTree1.Filtered := True;
+          LMDShellList1.Filtered := True;
+          LMDShellTree2.Filtered := True;
+          LMDShellList2.Filtered := True;
+        end else
+        begin
+          LMDShellTree1.Filtered := False;
+          LMDShellList1.Filtered := False;
+          LMDShellTree2.Filtered := False;
+          LMDShellList2.Filtered := False;
+        end;
 
         if not ValueExists('Start', 'Splashscreen') then
           WriteBool('Start', 'Splashscreen', True);
@@ -6531,37 +6531,13 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
-var
-  D: Char;
 begin
-  for D := 'A' to 'Z' do
-  begin
-    if IsNetworkDrive(D) then
-    begin
-      if NetworkDriveReachable(D) then
-      begin
-        Break;
-      end else
-        Accept := not ShellItem.DisplayName.Contains('\\');
-    end;
-  end;
+  Accept := not ShellItem.DisplayName.Contains('\\');
 end;
 
 procedure TFreePDF64_Form.LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
-var
-  D: Char;
 begin
-  for D := 'A' to 'Z' do
-  begin
-    if IsNetworkDrive(D) then
-    begin
-      if NetworkDriveReachable(D) then
-      begin
-        Break;
-      end else
-        Accept := not ShellItem.DisplayName.Contains('\\');
-    end;
-  end;
+  Accept := not ShellItem.DisplayName.Contains('\\');
 end;
 
 procedure TFreePDF64_Form.Loeschen1Click(Sender: TObject);
@@ -7309,6 +7285,24 @@ begin
 
   ProgressBar1.Position := 0;
   Einstellungen_Form.Close;
+end;
+
+procedure TFreePDF64_Form.ShowNetworkSharesClick(Sender: TObject);
+begin
+  ShowNetworkShares.Checked := Not ShowNetworkShares.Checked;
+  if ShowNetworkShares.Checked then
+  begin
+    LMDShellTree1.Filtered := True;
+    LMDShellList1.Filtered := True;
+    LMDShellTree2.Filtered := True;
+    LMDShellList2.Filtered := True;
+  end else
+  begin
+    LMDShellTree1.Filtered := False;
+    LMDShellList1.Filtered := False;
+    LMDShellTree2.Filtered := False;
+    LMDShellList2.Filtered := False;
+  end;
 end;
 
 procedure TFreePDF64_Form.Netzwerk1Click(Sender: TObject);

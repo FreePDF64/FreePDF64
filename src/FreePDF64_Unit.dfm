@@ -1033,6 +1033,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
+        ExplicitLeft = 0
+        ExplicitTop = 30
       end
     end
     object PanelLMDShellList2: TPanel
@@ -2343,6 +2345,10 @@ object FreePDF64_Form: TFreePDF64_Form
       object InDenTray: TMenuItem
         Caption = 'In System Tray/Taskleiste beim Start'
         OnClick = InDenTrayClick
+      end
+      object ShowNetworkShares: TMenuItem
+        Caption = 'Netzwerkfreigaben anzeigen'
+        OnClick = ShowNetworkSharesClick
       end
       object Splash1: TMenuItem
         Caption = 'Splashscreen beim Start'
