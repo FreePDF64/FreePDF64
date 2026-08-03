@@ -4584,17 +4584,19 @@ begin
         ShowNetworkShares.Checked := ReadBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
         if ShowNetworkShares.Checked then
         begin
-          LMDShellTree1.Filtered := True;
-          LMDShellList1.Filtered := True;
-          LMDShellTree2.Filtered := True;
-          LMDShellList2.Filtered := True;
-        end else
-        begin
           LMDShellTree1.Filtered := False;
           LMDShellList1.Filtered := False;
           LMDShellTree2.Filtered := False;
           LMDShellList2.Filtered := False;
+        end else
+        begin
+          LMDShellTree1.Filtered := True;
+          LMDShellList1.Filtered := True;
+          LMDShellTree2.Filtered := True;
+          LMDShellList2.Filtered := True;
         end;
+        LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
+        LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
 
         if not ValueExists('Start', 'Splashscreen') then
           WriteBool('Start', 'Splashscreen', True);
@@ -7292,17 +7294,19 @@ begin
   ShowNetworkShares.Checked := Not ShowNetworkShares.Checked;
   if ShowNetworkShares.Checked then
   begin
-    LMDShellTree1.Filtered := True;
-    LMDShellList1.Filtered := True;
-    LMDShellTree2.Filtered := True;
-    LMDShellList2.Filtered := True;
+    LMDShellTree1.Filtered := False;
+    LMDShellTree2.Filtered := False;
+    LMDShellList1.Filtered := False;
+    LMDShellList2.Filtered := False;
   end else
   begin
-    LMDShellTree1.Filtered := False;
-    LMDShellList1.Filtered := False;
-    LMDShellTree2.Filtered := False;
-    LMDShellList2.Filtered := False;
+    LMDShellTree1.Filtered := True;
+    LMDShellTree2.Filtered := True;
+    LMDShellList1.Filtered := True;
+    LMDShellList2.Filtered := True;
   end;
+  LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
+  LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
 end;
 
 procedure TFreePDF64_Form.Netzwerk1Click(Sender: TObject);

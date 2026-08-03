@@ -1026,15 +1026,13 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = LMDShellTree2Click
         Folder = LMDShellFolder2
         CompressedColor = clBlue
-        Filtered = True
+        Filtered = False
         Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
         ShowCheckBoxes = False
         OnFilterItem = LMDShellTree2FilterItem
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
-        ExplicitLeft = 0
-        ExplicitTop = 30
       end
     end
     object PanelLMDShellList2: TPanel
@@ -1086,7 +1084,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentThemeMode = False
         ThemeMode = ttmNone
         FileFilter = '*.*'
-        Filtered = True
         Folder = LMDShellFolder2
         Options = [loShowFolders, loShowNonFolders, loAllowRename, loAllowDrag, loAllowDrop, loColorCompressed, loExtendedMenu, loShellMenu]
         ShowCheckBoxes = False
@@ -1479,7 +1476,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = LMDShellTree1Click
       Folder = LMDShellFolder1
       CompressedColor = clBlue
-      Filtered = True
+      Filtered = False
       Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
       ShowCheckBoxes = False
       OnFilterItem = LMDShellTree1FilterItem
@@ -1579,7 +1576,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentThemeMode = False
       ThemeMode = ttmNone
       FileFilter = '*.*'
-      Filtered = True
       Folder = LMDShellFolder1
       Options = [loShowFolders, loShowNonFolders, loAllowRename, loAllowDrag, loAllowDrop, loColorCompressed, loExtendedMenu, loShellMenu]
       ShowCheckBoxes = False
