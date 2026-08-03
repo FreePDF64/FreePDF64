@@ -1121,6 +1121,7 @@ object FreePDF64_Form: TFreePDF64_Form
         DefaultColumns = True
         AutoContextMenus = False
         AutoSortSupport = True
+        OnFilterItem = LMDShellList2FilterItem
         Align = alClient
         Color = 16777214
         Font.Charset = ANSI_CHARSET
@@ -1612,6 +1613,7 @@ object FreePDF64_Form: TFreePDF64_Form
       DefaultColumns = True
       AutoContextMenus = False
       AutoSortSupport = True
+      OnFilterItem = LMDShellList1FilterItem
       Align = alClient
       Color = 16777214
       Font.Charset = ANSI_CHARSET
