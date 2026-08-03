@@ -599,6 +599,8 @@ type
     procedure Timer3Timer(Sender: TObject);
     procedure LMDShellList1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellList2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+    procedure LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+    procedure LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -2204,6 +2206,11 @@ end;
 procedure TFreePDF64_Form.LMDShellTree2Click(Sender: TObject);
 begin
   FavClose;
+end;
+
+procedure TFreePDF64_Form.LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+begin
+ Accept := not ShellItem.DisplayName.Contains('\\');
 end;
 
 procedure TFreePDF64_Form.BackBtnClick(Sender: TObject);
@@ -6623,6 +6630,11 @@ end;
 procedure TFreePDF64_Form.LMDShellTree1Click(Sender: TObject);
 begin
   FavClose;
+end;
+
+procedure TFreePDF64_Form.LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+begin
+ Accept := not ShellItem.DisplayName.Contains('\\');
 end;
 
 procedure TFreePDF64_Form.Loeschen1Click(Sender: TObject);

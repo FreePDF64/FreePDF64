@@ -1010,7 +1010,7 @@ end;
 
 procedure TEinstellungen_Form.PDFAnzeigerClick(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open', PChar('https://www.sumatrapdfreader.org/'), NIL, NIL,
+  ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL,
     SW_NORMAL);
 end;
 

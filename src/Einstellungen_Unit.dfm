@@ -65,7 +65,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Top = 215
     Width = 268
     Height = 20
-    Hint = 'Homepage von SumatraPDF aufrufen'
+    Hint = 'Homepage von KillerPDF aufrufen'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4

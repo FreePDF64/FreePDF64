@@ -1026,9 +1026,10 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = LMDShellTree2Click
         Folder = LMDShellFolder2
         CompressedColor = clBlue
-        Filtered = False
+        Filtered = True
         Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
         ShowCheckBoxes = False
+        OnFilterItem = LMDShellTree2FilterItem
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
@@ -1476,9 +1477,10 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = LMDShellTree1Click
       Folder = LMDShellFolder1
       CompressedColor = clBlue
-      Filtered = False
+      Filtered = True
       Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
       ShowCheckBoxes = False
+      OnFilterItem = LMDShellTree1FilterItem
       ShowNonFolders = False
       AutoContextMenus = False
       AutoSortSupport = False
