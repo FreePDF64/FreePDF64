@@ -17393,12 +17393,6 @@ object FreePDF64_Form: TFreePDF64_Form
     Left = 967
     Top = 259
   end
-  object Timer3: TTimer
-    Interval = 2000
-    OnTimer = Timer3Timer
-    Left = 723
-    Top = 370
-  end
   object VirtualImageList2: TVirtualImageList
     Images = <
       item

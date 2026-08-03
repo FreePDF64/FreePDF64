@@ -359,7 +359,6 @@ type
     PaneloverPrgB: TPanel;
     WebBrowser1: TWebBrowser;
     WebBrowser2: TWebBrowser;
-    Timer3: TTimer;
     VirtualImageList2: TVirtualImageList;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
@@ -595,8 +594,6 @@ type
     procedure QuelllabelClick(Sender: TObject);
     procedure ToolButton6Click(Sender: TObject);
     procedure Logdateiansehen2Click(Sender: TObject);
-    procedure DetectKnownNetworkDrives;
-    procedure Timer3Timer(Sender: TObject);
     procedure LMDShellList1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellList2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
@@ -2206,11 +2203,6 @@ end;
 procedure TFreePDF64_Form.LMDShellTree2Click(Sender: TObject);
 begin
   FavClose;
-end;
-
-procedure TFreePDF64_Form.LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
-begin
- Accept := not ShellItem.DisplayName.Contains('\\');
 end;
 
 procedure TFreePDF64_Form.BackBtnClick(Sender: TObject);
@@ -4502,97 +4494,21 @@ begin
   end;
 end;
 
-// Laufwerk systemweit ausblenden (temporär entfernen)
-procedure RemoveDriveLetter(Drive: Char);
-begin
-  DefineDosDevice(DDD_REMOVE_DEFINITION, PChar(Drive + ':'), nil);
-end;
-
-// Das erkennt spontane Offline-Shares SOFORT. Ohne Blockieren. Ohne Reconnect-Versuch.
-function IsNetworkShareOnline(const Drive: Char): Boolean;
+function IsNetworkDrive(const Drive: Char): Boolean;
 var
-  Handle: THandle;
-  Path: string;
+  DriveRoot: string;
 begin
-  Path := Drive + ':\';
-
-  Handle := CreateFile(
-    PChar(Path),
-    GENERIC_READ,
-    FILE_SHARE_READ or FILE_SHARE_WRITE or FILE_SHARE_DELETE,
-    nil,
-    OPEN_EXISTING,
-    FILE_FLAG_BACKUP_SEMANTICS,
-    0
-  );
-
-  Result := Handle <> INVALID_HANDLE_VALUE;
-
-  if Result then
-    CloseHandle(Handle);
+  DriveRoot := Drive + ':\';
+  Result := GetDriveType(PChar(DriveRoot)) = DRIVE_REMOTE;
 end;
 
-// Getrennte Netzlaufwerke erkennen (ohne Timeout!)
-function IsDisconnectedNetworkDrive(Drive: Char): Boolean;
-begin
-  Result := (GetDriveType(PChar(Drive + ':\')) = DRIVE_REMOTE) and
-            (not IsNetworkShareOnline(Drive));
-//          (not DirectoryExists(Drive + ':\'));
-end;
-
-// Automatisches Entfernen aller getrennten Netzlaufwerke
-procedure RemoveAllDisconnectedNetworkDrives;
+function NetworkDriveReachable(const Drive: Char): Boolean;
 var
-  d: Char;
-begin
-  for d := 'A' to 'Z' do
-    if IsDisconnectedNetworkDrive(d) then
-      RemoveDriveLetter(d);
-end;
-
-// Bekannte Netzlaufwerke
-procedure TFreePDF64_Form.DetectKnownNetworkDrives;
-var
-  d: Char;
   RemoteName: array[0..MAX_PATH] of Char;
-  Size: DWORD;
+  BufSize: DWORD;
 begin
-  for d := 'A' to 'Z' do
-  begin
-    Size := MAX_PATH;
-    if WNetGetConnection(PChar(d + ':'), RemoteName, Size) = NO_ERROR then
-      KnownNetworkDrives[d] := RemoteName
-    else
-      KnownNetworkDrives[d] := '';
-  end;
-end;
-
-// Laufwerk wieder einblenden
-procedure RestoreDriveLetter(Drive: Char);
-begin
-  DefineDosDevice(0, PChar(Drive + ':'), PChar(KnownNetworkDrives[Drive]));
-end;
-
-// Wieder online Erkennung (blockiert nicht!)
-function IsNetworkDriveOnlineAgain(Drive: Char): Boolean;
-begin
-  Result := (KnownNetworkDrives[Drive] <> '') and
-             DirectoryExists(Drive + ':\');
-end;
-
-// Timer-Erweiterung: offline entfernen + online wiederherstellen
-procedure TFreePDF64_Form.Timer3Timer(Sender: TObject);
-var
-  d: Char;
-begin
-  for d := 'A' to 'Z' do
-  begin
-    RemoveAllDisconnectedNetworkDrives;
-
-    // Wieder online → wiederherstellen
-    if IsNetworkDriveOnlineAgain(d) then
-      RestoreDriveLetter(d);
-  end;
+  BufSize := SizeOf(RemoteName);
+  Result := WNetGetConnection(PChar(Drive + ':'), RemoteName, BufSize) = NO_ERROR;
 end;
 
 procedure TFreePDF64_Form.FormCreate(Sender: TObject);
@@ -4604,14 +4520,6 @@ var
   Log: Boolean;
   d: Char;
 begin
-  // Offline Drives beim Start entfernen
-  for d := 'A' to 'Z' do
-    if IsDisconnectedNetworkDrive(d) then
-      RemoveDriveLetter(d);
-
-  // Offline-Netzlaufwerke systemweit entfernen
-  RemoveAllDisconnectedNetworkDrives;
-
   Application.HintHidePause := 5000;
 
   UseLatestCommonDialogs := False;
@@ -5203,16 +5111,6 @@ var
   Notify_Active: Boolean;
   d: Char;
 begin
-  // UNC-Pfade speichern
-  DetectKnownNetworkDrives;
-  // Offline-Netzlaufwerke systemweit entfernen
-  RemoveAllDisconnectedNetworkDrives;
-
-  // Offline Drives beim Start entfernen
-  for d := 'A' to 'Z' do
-    if IsDisconnectedNetworkDrive(d) then
-      RemoveDriveLetter(d);
-
   if ShowVomTray = True then
   begin
     ShowVomTray := False;
@@ -5236,8 +5134,8 @@ begin
 
   // Pfad zu den Definition_files viewjpeg.ps für Erstellung JPEG zu PDF sowie PDF/A und PDF/X
   ViewJPEG := ExtractFilePath(Application.ExeName) + 'gs\lib\viewjpeg.ps';
-  PDFA_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFA.ps';
-  PDFX_1 := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFX.ps';
+  PDFA_1   := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFA.ps';
+  PDFX_1   := ExtractFilePath(Application.ExeName) + 'Definition_files\PDFX.ps';
 
   Autostart.Checked := False;
 
@@ -6633,8 +6531,37 @@ begin
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+var
+  D: Char;
 begin
- Accept := not ShellItem.DisplayName.Contains('\\');
+  for D := 'A' to 'Z' do
+  begin
+    if IsNetworkDrive(D) then
+    begin
+      if NetworkDriveReachable(D) then
+      begin
+        Break;
+      end else
+        Accept := not ShellItem.DisplayName.Contains('\\');
+    end;
+  end;
+end;
+
+procedure TFreePDF64_Form.LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
+var
+  D: Char;
+begin
+  for D := 'A' to 'Z' do
+  begin
+    if IsNetworkDrive(D) then
+    begin
+      if NetworkDriveReachable(D) then
+      begin
+        Break;
+      end else
+        Accept := not ShellItem.DisplayName.Contains('\\');
+    end;
+  end;
 end;
 
 procedure TFreePDF64_Form.Loeschen1Click(Sender: TObject);
