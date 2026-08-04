@@ -4569,12 +4569,16 @@ begin
           LMDShellList1.Filtered := False;
           LMDShellTree2.Filtered := False;
           LMDShellList2.Filtered := False;
+          LMDShellFolder1.Filtered := False;
+          LMDShellFolder2.Filtered := False;
         end else
         begin
           LMDShellTree1.Filtered := True;
           LMDShellList1.Filtered := True;
           LMDShellTree2.Filtered := True;
           LMDShellList2.Filtered := True;
+          LMDShellFolder1.Filtered := True;
+          LMDShellFolder2.Filtered := True;
         end;
         LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
         LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
@@ -7220,12 +7224,16 @@ begin
     LMDShellTree2.Filtered := False;
     LMDShellList1.Filtered := False;
     LMDShellList2.Filtered := False;
+    LMDShellFolder1.Filtered := False;
+    LMDShellFolder2.Filtered := False;
   end else
   begin
     LMDShellTree1.Filtered := True;
     LMDShellTree2.Filtered := True;
     LMDShellList1.Filtered := True;
     LMDShellList2.Filtered := True;
+    LMDShellFolder1.Filtered := True;
+    LMDShellFolder2.Filtered := True;
   end;
   LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
   LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
