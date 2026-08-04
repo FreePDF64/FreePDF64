@@ -1483,8 +1483,6 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowNonFolders = False
       AutoContextMenus = False
       AutoSortSupport = False
-      ExplicitLeft = 2
-      ExplicitTop = 30
     end
     object ListBoxL: TListBox
       Left = 17

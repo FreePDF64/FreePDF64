@@ -2935,8 +2935,8 @@ begin
       PDF_Erstellung.Visible := False;
       FormatBtn.Visible := False;
       PanelBottom.Visible := False;
-
     end;
+
     MemoBtn.Visible := True;
     Info_Anzeigen := False;
   end;
@@ -6500,12 +6500,13 @@ begin
         Exit;
       if I >= (FreePDF64_Form.Height - 350) then
         I := FreePDF64_Form.Height - 350;
+
       PDFPanel.Height := I + 225;
       PDF_Erstellung.Visible := False;
       FormatBtn.Visible := False;
       PanelBottom.Visible := False;
-      MemoBtn.Visible := True;
     end;
+    MemoBtn.Visible := True;
 
   end else
     if Button = mbRight then
