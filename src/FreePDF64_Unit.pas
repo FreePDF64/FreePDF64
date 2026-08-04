@@ -2162,7 +2162,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '03.08.2026';
+  Datum := '04.08.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4524,8 +4524,7 @@ begin
   Versch1 := 2;
 
   // Wenn die FreePDF64-Ini-Datei vorgefunden wird...
-  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
-    'FreePDF64.ini') then
+  if FileExists(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini') then
   begin
     try
       // Aufruf der Initialisierungsdatei 'FreePDF64.ini'
@@ -4533,44 +4532,26 @@ begin
       IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
-        FreePDF64_Form.Left := ReadInteger('Position', 'Left',
-          FreePDF64_Form.Left);
-        FreePDF64_Form.Top := ReadInteger('Position', 'Top',
-          FreePDF64_Form.Top);
+        FreePDF64_Form.Left := ReadInteger('Position', 'Left', FreePDF64_Form.Left);
+        FreePDF64_Form.Top := ReadInteger('Position', 'Top', FreePDF64_Form.Top);
         Width := ReadInteger('Position', 'Width', FreePDF64_Form.Width);
         Height := ReadInteger('Position', 'Height', FreePDF64_Form.Height);
-        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width',
-          Panel_Left.Width);
-        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width',
-          Panel_Right.Width);
-        PanelR.Width := ReadInteger('Position', 'Right Panel Width',
-          PanelR.Width);
-        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height',
-          PDFPanel.Height);
+        Panel_Left.Width := ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
+        Panel_Right.Width := ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
+        PanelR.Width := ReadInteger('Position', 'Right Panel Width', PanelR.Width);
+        PDFPanel.Height := ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
         PDFPanelH := PDFPanel.Height;
-        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines',
-          LMDShellList1.GridLines);
-        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines',
-          LMDShellList1.GridLines);
-        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual',
-          ResizeEqual.Checked);
-        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden',
-          VersteckteDateienanzeigen1.Checked);
-        InDenTray.Checked := ReadBool('Start', 'System Tray',
-          InDenTray.Checked);
-        Systray_Taskleiste.Checked := ReadBool('Start', 'System Tray/Taskbar',
-          Systray_Taskleiste.Checked);
+        LMDShellList1.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
+        LMDShellList2.GridLines := ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
+        ResizeEqual.Checked := ReadBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
+        VersteckteDateienanzeigen1.Checked := ReadBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
+        InDenTray.Checked := ReadBool('Start', 'System Tray', InDenTray.Checked);
+        Systray_Taskleiste.Checked := ReadBool('Start', 'System Tray/Taskbar', Systray_Taskleiste.Checked);
         KlickaufX.Checked := ReadBool('Start', 'Minimize', KlickaufX.Checked);
-        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick',
-          DoppelK.Checked);
-        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder',
-          Formatverz.Checked);
-        Formatverz_Date.Checked :=
-          ReadBool('Start', 'Create Formatfolder with Date',
-          Formatverz_Date.Checked);
-        Formatverz_OnlyDate.Checked :=
-          ReadBool('Start', 'Create Formatfolder only Date',
-          Formatverz_OnlyDate.Checked);
+        DoppelK.Checked := ReadBool('Start', 'Create with DoubleClick', DoppelK.Checked);
+        Formatverz.Checked := ReadBool('Start', 'Create Formatfolder', Formatverz.Checked);
+        Formatverz_Date.Checked := ReadBool('Start', 'Create Formatfolder with Date', Formatverz_Date.Checked);
+        Formatverz_OnlyDate.Checked := ReadBool('Start', 'Create Formatfolder only Date', Formatverz_OnlyDate.Checked);
 
         Log := ReadBool('Start', 'Logdatei', Logdatei.Checked);
         Logdatei.Checked := Log;
@@ -4661,19 +4642,16 @@ begin
           end;
           ListBoxR.Items.Add(iec[ie1 - 1]);
         end;
-
       end;
       IniDat.Free;
     except
       begin
         if Einstellungen_Form.SystemklangCB.Checked then
-          PlaySoundFile(ExtractFilePath(Application.ExeName) +
-            'sounds\alert.wav');
+          PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
         ShowMessage('Error');
       end;
     end;
-  end
-  else
+  end else
     Splash1.Checked := True;
 
   MenuItemRightJustify(Hilfe1);
@@ -5245,41 +5223,29 @@ begin
 
   // Ghostscript
   if Einstellungen_Form.Edit1.Text = '' then
-    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) +
-      'gs\bin\gswin64c.exe';
+    Einstellungen_Form.Edit1.Text := ExtractFilePath(Application.ExeName) + 'gs\bin\gswin64c.exe';
   // QPDF
   if Einstellungen_Form.Edit4.Text = '' then
-    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) +
-      'qpdf\bin\qpdf.exe';
+    Einstellungen_Form.Edit4.Text := ExtractFilePath(Application.ExeName) + 'qpdf\bin\qpdf.exe';
   // PDFtk
   if Einstellungen_Form.Edit5.Text = '' then
-    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) +
-      'pdftk\pdftk.exe';
+    Einstellungen_Form.Edit5.Text := ExtractFilePath(Application.ExeName) + 'pdftk\pdftk.exe';
   // ImageMagick-Converter
   if Einstellungen_Form.Edit7.Text = '' then
-    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) +
-      'ImageMagick\';
-  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) +
-    'magick.exe';
+    Einstellungen_Form.Edit7.Text := ExtractFilePath(Application.ExeName) + 'ImageMagick\';
+  ImageMagick := IncludeTrailingBackslash(Einstellungen_Form.Edit7.Text) + 'magick.exe';
   // ExifTool
   if Einstellungen_Form.Edit8.Text = '' then
-    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) +
-      'ExifTool\';
-  ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) +
-    'exiftool.exe';
+    Einstellungen_Form.Edit8.Text := ExtractFilePath(Application.ExeName) + 'ExifTool\';
+  ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
   // XPDF-Tools
   if Einstellungen_Form.Edit6.Text = '' then
-    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) +
-      'xpdf\bin64\';
+    Einstellungen_Form.Edit6.Text := ExtractFilePath(Application.ExeName) + 'xpdf\bin64\';
   // XPDF-Tools
-  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdfimages.exe';
-  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdftohtml.exe';
-  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdfdetach.exe';
-  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) +
-    'pdffonts.exe';
+  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
   // PDF-Anzeiger
   Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'KillerPDF\KillerPDF.exe';
   PDFReader := Einstellungen_Form.Edit3.Text;
@@ -5295,26 +5261,17 @@ begin
     with IniDat do
     begin
       // Linke, rechte Tree-Column-Breite lesen
-      LMDShellList1.Column[0].Width :=
-        ReadInteger('Start', 'ColumnsL Width0', c);
-      LMDShellList1.Column[1].Width :=
-        ReadInteger('Start', 'ColumnsL Width1', c);
-      LMDShellList1.Column[2].Width :=
-        ReadInteger('Start', 'ColumnsL Width2', c);
-      LMDShellList1.Column[3].Width :=
-        ReadInteger('Start', 'ColumnsL Width3', c);
-      LMDShellList2.Column[0].Width :=
-        ReadInteger('Start', 'ColumnsR Width0', c);
-      LMDShellList2.Column[1].Width :=
-        ReadInteger('Start', 'ColumnsR Width1', c);
-      LMDShellList2.Column[2].Width :=
-        ReadInteger('Start', 'ColumnsR Width2', c);
-      LMDShellList2.Column[3].Width :=
-        ReadInteger('Start', 'ColumnsR Width3', c);
+      LMDShellList1.Column[0].Width := ReadInteger('Start', 'ColumnsL Width0', c);
+      LMDShellList1.Column[1].Width := ReadInteger('Start', 'ColumnsL Width1', c);
+      LMDShellList1.Column[2].Width := ReadInteger('Start', 'ColumnsL Width2', c);
+      LMDShellList1.Column[3].Width := ReadInteger('Start', 'ColumnsL Width3', c);
+      LMDShellList2.Column[0].Width := ReadInteger('Start', 'ColumnsR Width0', c);
+      LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
+      LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
+      LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
 
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
-        FreePDF64_Notify.MonitoringFolder.Text :=
-          IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
+        FreePDF64_Notify.MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName);
 
       if not ValueExists('Folder', 'Left') then
       begin
@@ -5329,60 +5286,42 @@ begin
         Ziel := B_Z;
       end;
 
-      FreePDF64_Notify.MonitoringFolder.Text :=
-        ReadString('Monitoring', 'Folder',
-        FreePDF64_Notify.MonitoringFolder.Text);
-      Notify_Active := ReadBool('Monitoring', 'Start',
-        FreePDF64_Notify.LMDShellNotify.Active);
-      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time',
-        FreePDF64_Notify.SpinEditSec.Value);
-      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed',
-        FreePDF64_Notify.Ziel_FestCB.Checked);
-      FreePDF64_Notify.BenachrichtigungCB.Checked := ReadBool('Monitoring', 'Note',
-        FreePDF64_Notify.BenachrichtigungCB.Checked);
-      z1 := ReadString('Monitoring', 'Fixed Folder',
-        FreePDF64_Notify.ZielEdit.Text);
-      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File',
-        Einstellungen_Form.AnzeigenCB.Checked);
-      Einstellungen_Form.SystemklangCB.Checked :=
-        ReadBool('Format', 'System Sound',
-        Einstellungen_Form.SystemklangCB.Checked);
-      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF',
-        Einstellungen_Form.PDF_Shrink.Checked);
-      Einstellungen_Form.PDF_Shrink2.Checked :=
-        ReadBool('Format', 'Shrink PDF2',
-        Einstellungen_Form.PDF_Shrink2.Checked);
+      FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
+      Notify_Active := ReadBool('Monitoring', 'Start', FreePDF64_Notify.LMDShellNotify.Active);
+      FreePDF64_Notify.SpinEditSec.Value := ReadInteger('Monitoring', 'Time', FreePDF64_Notify.SpinEditSec.Value);
+      FreePDF64_Notify.Ziel_FestCB.Checked := ReadBool('Monitoring', 'Fixed', FreePDF64_Notify.Ziel_FestCB.Checked);
+      FreePDF64_Notify.BenachrichtigungCB.Checked := ReadBool('Monitoring', 'Note', FreePDF64_Notify.BenachrichtigungCB.Checked);
+      z1 := ReadString('Monitoring', 'Fixed Folder', FreePDF64_Notify.ZielEdit.Text);
+      Einstellungen_Form.AnzeigenCB.Checked := ReadBool('Format', 'View File', Einstellungen_Form.AnzeigenCB.Checked);
+      Einstellungen_Form.SystemklangCB.Checked := ReadBool('Format', 'System Sound', Einstellungen_Form.SystemklangCB.Checked);
+      Einstellungen_Form.PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', Einstellungen_Form.PDF_Shrink.Checked);
+      Einstellungen_Form.PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2', Einstellungen_Form.PDF_Shrink2.Checked);
       Baum := ReadInteger('Start', 'ShowFolders', Baum);
-      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp',
-        Wasserzeichen_Form.Edit1.Text);
-      Wasserzeichen_Form.bgWatermark.Checked :=
-        ReadBool('Start', 'Watermark bg',
-        Wasserzeichen_Form.bgWatermark.Checked);
-      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg',
-        Wasserzeichen_Form.vgStamp.Checked);
-      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name',
-        AutoSpalte.Checked);
+      Wasserzeichen_Form.Edit1.Text := ReadString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
+      Wasserzeichen_Form.bgWatermark.Checked := ReadBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
+      Wasserzeichen_Form.vgStamp.Checked := ReadBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
+      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name', AutoSpalte.Checked);
       Autostart.Checked := ReadBool('Start', 'Autostart', Autostart.Checked);
-      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne',
-        Dateianlage_Form.Datei1.Text);
-      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten',
-        Dateianlage_Form.Datei2.Text);
-      Einstellungen_Form.HeightSpin.Value :=
-        ReadInteger('Start', 'Memo Height Addition',
-        Einstellungen_Form.HeightSpin.Value);
-      Einstellungen_Form.SoundSpin.Value :=
-        ReadInteger('Format', 'System Sound Volume 0-65535',
-        Einstellungen_Form.SoundSpin.Value);
+      Dateianlage_Form.Datei1.Text := ReadString('Files', 'Datei Vorne', Dateianlage_Form.Datei1.Text);
+      Dateianlage_Form.Datei2.Text := ReadString('Files', 'Datei Hinten', Dateianlage_Form.Datei2.Text);
+      Einstellungen_Form.HeightSpin.Value := ReadInteger('Start', 'Memo Height Addition', Einstellungen_Form.HeightSpin.Value);
+      Einstellungen_Form.SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535', Einstellungen_Form.SoundSpin.Value);
 
       FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(z1);
+
+      // Wenn Splashscreen = True, dann Splashscreen anzeigen
+      if Splash1.Checked then
+      begin
+        Splashscreen_Form.Position := poScreenCenter;
+        Splashscreen_Form.ShowModal;
+      end;
 
       if not ValueExists('Start', 'Counter') then
         Counter := 0
       else
         Counter := ReadInteger('Start', 'Counter', Counter);
 
-      if not ValueExists('Files', 'PDF-Reader') or
-        (Einstellungen_Form.Edit3.Text = '') then
+      if not ValueExists('Files', 'PDF-Reader') or (Einstellungen_Form.Edit3.Text = '') then
         PDFReader := ExtractFilePath(Application.ExeName) + 'KillerPDF\KillerPDF.exe'
       else
         PDFReader := ReadString('Files', 'PDF-Reader', PDFReader);
@@ -5397,35 +5336,29 @@ begin
       // Memo Height Addition
       MHA := Einstellungen_Form.HeightSpin.Value;
 
-      if (Dateianlage_Form.Datei1.Text <> '') or
-        (Dateianlage_Form.Datei2.Text <> '') then
+      if (Dateianlage_Form.Datei1.Text <> '') or (Dateianlage_Form.Datei2.Text <> '') then
         Dateianlage_Form.DateianlageCB.Checked := True
       else
       begin
         Dateianlage_Form.DateianlageCB.Checked := False;
         Dateianlage_Form.Clear.Click;
       end;
-      if not FileExists(Dateianlage_Form.Datei1.Text) or
-        not FileExists(Dateianlage_Form.Datei2.Text) then
+      if not FileExists(Dateianlage_Form.Datei1.Text) or  not FileExists(Dateianlage_Form.Datei2.Text) then
         Dateianlage_Form.Clear.Click;
 
-      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off',
-        Einstellungen_Form.ZusatzAnAus.Checked);
+      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
       if Einstellungen_Form.ZusatzAnAus.Checked = False then
         Einstellungen_Form.Zusatz.Enabled := False
       else
         Einstellungen_Form.Zusatz.Enabled := True;
 
-      Einstellungen_Form.ExifToolGE.Checked :=
-        ReadBool('Zusatz', 'German/English',
-        Einstellungen_Form.ExifToolGE.Checked);
+      Einstellungen_Form.ExifToolGE.Checked := ReadBool('Zusatz', 'German/English', Einstellungen_Form.ExifToolGE.Checked);
       if Einstellungen_Form.ExifToolGE.Checked = True then
         GE := '-lang de' // deutsch
       else
         GE := ''; // englisch
 
-      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font',
-        Einstellungen_Form.FontCB.Checked);
+      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font', Einstellungen_Form.FontCB.Checked);
       if Einstellungen_Form.FontCB.Checked = True then
       begin
         Memo1.Font.Name := 'Consolas';
@@ -5438,8 +5371,7 @@ begin
       end;
 
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash
-          (LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
       // Suche-SearchField lesen
       for I := 0 to 254 do
@@ -5481,8 +5413,7 @@ begin
       begin
         Zusatz_Form.ZusatzCB.Items.BeginUpdate;
         try
-          iec[ie1] := IniDat.ReadString('Zusatz',
-            'Zeichenketten' + IntToStr(ie1), ies);
+          iec[ie1] := IniDat.ReadString('Zusatz', 'Zeichenketten' + IntToStr(ie1), ies);
           if iec[ie1] = '' then
             Break;
           Zusatz_Form.ZusatzCB.Items.Add(iec[ie1]);
@@ -5501,8 +5432,7 @@ begin
   except
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       ShowMessage('Error');
     end;
   end;
@@ -5547,20 +5477,15 @@ begin
       s2 := LMDShellFolder1.ActiveFolder.DisplayName
     else
       s2 := LMDShellFolder1.ActiveFolder.PathName;
-    Quelllabel.Caption := 'Quelle - ' +
-      MinimizeName(IncludeTrailingBackslash(s2) +
-      '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
-      (FavSpL.Width + FavLinks.Width +
-      ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
+    Quelllabel.Caption := 'Quelle - ' + MinimizeName(IncludeTrailingBackslash(s2) + '*.*', FreePDF64_Form.Canvas, Quelllabel.Width -
+      (FavSpL.Width + FavLinks.Width + ParentFolderL.Width + QuellBtn.Width + ComboBoxL.Width));
 
     if StartsWithColons(LMDShellFolder2.ActiveFolder.PathName) then
       s2 := LMDShellFolder2.ActiveFolder.DisplayName
     else
       s2 := LMDShellFolder2.ActiveFolder.PathName;
-    Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s2) +
-      '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
-      (FavSpR.Width + FavRechts.Width +
-      ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
+    Ziellabel.Caption := 'Ziel - ' + MinimizeName(IncludeTrailingBackslash(s2) + '*.*', FreePDF64_Form.Canvas, Ziellabel.Width -
+      (FavSpR.Width + FavRechts.Width + ParentFolderR.Width + ZielBtn.Width + ComboBoxR.Width));
 
     if LMDShellList1.GridLines then
       Gitternetzlinien1.Checked := True
@@ -5614,8 +5539,7 @@ begin
     SB_Left;
     SB_Right;
 
-    StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
-      [Printer.printerindex] +
+    StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers[Printer.printerindex] +
       ' | Erstellte Dateien (seit Nullstellung): ' + IntToStr(Counter);
 
     // Abfrage auf FreePDF64-Registry-Eintrag...
@@ -5652,15 +5576,13 @@ begin
           (ExtractFilePath(Application.ExeName)) + 'Definition_files\PDFA.ps');
         Delete(6);
         Insert(6, '/ICCProfile (' + s1 + 'Definition_files/default_rgb.icc)');
-        SaveToFile(ExtractFilePath(Application.ExeName) +
-          'Definition_files\PDFA.ps');
+        SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition_files\PDFA.ps');
       finally
         Free;
       end;
 
     // Hinweistext auf Log-Button
-    LogBt.Hint := ('Logdatei:') + #13 +
-      ('- Linksklick: Ansehen im unteren Anzeigefenster') + #13 +
+    LogBt.Hint := ('Logdatei:') + #13 + ('- Linksklick: Ansehen im unteren Anzeigefenster') + #13 +
       ('- Rechtsklick: Ansehen im externen Editor');
 
     // Überwachung auf...

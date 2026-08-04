@@ -6,10 +6,10 @@ uses
   Winapi.Windows,
   System.SysUtils,
   Vcl.Forms,
-  FreePDF64_Unit in 'FreePDF64_Unit.pas' {FreePDF64_Form},
   Vcl.Themes,
   Vcl.Styles,
   LMDShConsts in 'LMDShConsts.pas',
+  FreePDF64_Unit in 'FreePDF64_Unit.pas' {FreePDF64_Form},
   DokuInfo_Unit in 'DokuInfo_Unit.pas' {DokuInfo_Form},
   Einstellungen_Unit in 'Einstellungen_Unit.pas' {Einstellungen_Form},
   Encrypt_Unit in 'Encrypt_Unit.pas' {Encrypt_Form},
@@ -68,7 +68,6 @@ begin
   Application.CreateForm(TStatus_Form, Status_Form);
   Application.CreateForm(TSuche_Form, Suche_Form);
   Application.CreateForm(TAuswahl_Form, Auswahl_Form);
-  Application.CreateForm(TSuche_Form, Suche_Form);
   Application.Run;
   
   CloseHandle(hMutex);

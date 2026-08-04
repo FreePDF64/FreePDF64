@@ -1,4 +1,4 @@
-03.08.2026 V6.6.0
+04.08.2026 V6.6.0
 Neu -> Ablösung des SumatraPDF durch KillerPDF für die Anzeige von PDF-Dateien. KillerPDF ist leichter zu bedienen und bietet mehr Möglichkeiten als SumatraPDF.
 29.06.2025 V6.5.3
 Fix -> Codeoptimierungen durchgeführt, speziell zur Startbeschleunigung.

@@ -16,9 +16,9 @@ File_13=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten2_Unit.pas',0,1,1,1,1,0
 File_14=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Module3=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 Module4=D:\Delphi\FreePDF64\Status_Unit.pas
 Module5=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
@@ -37,13 +37,13 @@ Module17=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 Count=18
 EditWindowCount=1
 
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas]
@@ -93,7 +93,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=18
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -148,12 +148,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=7
-CursorY=4599
-TopLine=4562
+CursorX=15
+CursorY=2165
+TopLine=2144
 LeftCol=1
 Elisions=
-Bookmarks={0,4584,26}{1,6831,1}{2,6792,1}{3,8868,1}
+Bookmarks={0,4584,26}{1,6838,1}{2,6799,1}{3,8807,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -181,13 +181,13 @@ EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=18
+CursorX=15
 CursorY=99
-TopLine=20
+TopLine=77
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=D:\Delphi\FreePDF64\Info_Unit.pas
 
 [View4]
 CustomEditViewType=TEditView
@@ -476,8 +476,8 @@ SplitPos=152
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Filtered,OnFilterItem
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,LiveBindings=0,Menu=0,Folder=0,Font=0,LiveBindings-Designer=0,Margins=0,Options=0
+SelectedItem=Action,
+ExpandedItems=LiveBindings-Designer=0,Anchors=0,BorderIcons=0,Constraints=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -573,8 +573,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=8
-Description=18
+Name=26
+Description=70
 filter=1
 
 [DebugLogView]
@@ -766,8 +766,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=550
-Top=906
+Left=505
+Top=1083
 Width=2855
 Height=3210
 MaxLeft=-1
