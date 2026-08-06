@@ -2162,7 +2162,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '04.08.2026';
+  Datum := '06.08.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4504,7 +4504,6 @@ var
   IniFile, ies, k1, s: string;
   iec: Array [0 .. 255] of String;
   Log: Boolean;
-  d: Char;
 begin
   Application.HintHidePause := 5000;
 
@@ -4532,6 +4531,27 @@ begin
       IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
+        ShowNetworkShares.Checked := ReadBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
+        if ShowNetworkShares.Checked then
+        begin
+          LMDShellTree1.Filtered := False;
+          LMDShellList1.Filtered := False;
+          LMDShellTree2.Filtered := False;
+          LMDShellList2.Filtered := False;
+          LMDShellFolder1.Filtered := False;
+          LMDShellFolder2.Filtered := False;
+        end else
+        begin
+          LMDShellTree1.Filtered := True;
+          LMDShellList1.Filtered := True;
+          LMDShellTree2.Filtered := True;
+          LMDShellList2.Filtered := True;
+          LMDShellFolder1.Filtered := True;
+          LMDShellFolder2.Filtered := True;
+        end;
+        LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
+        LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
+
         FreePDF64_Form.Left := ReadInteger('Position', 'Left', FreePDF64_Form.Left);
         FreePDF64_Form.Top := ReadInteger('Position', 'Top', FreePDF64_Form.Top);
         Width := ReadInteger('Position', 'Width', FreePDF64_Form.Width);
@@ -4561,27 +4581,6 @@ begin
           AutoSize.Enabled := True
         else
           AutoSize.Enabled := False;
-
-        ShowNetworkShares.Checked := ReadBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
-        if ShowNetworkShares.Checked then
-        begin
-          LMDShellTree1.Filtered := False;
-          LMDShellList1.Filtered := False;
-          LMDShellTree2.Filtered := False;
-          LMDShellList2.Filtered := False;
-          LMDShellFolder1.Filtered := False;
-          LMDShellFolder2.Filtered := False;
-        end else
-        begin
-          LMDShellTree1.Filtered := True;
-          LMDShellList1.Filtered := True;
-          LMDShellTree2.Filtered := True;
-          LMDShellList2.Filtered := True;
-          LMDShellFolder1.Filtered := True;
-          LMDShellFolder2.Filtered := True;
-        end;
-        LMDShellTree1.RefreshBranches(LMDShellTree1.Selected.Parent);
-        LMDShellTree2.RefreshBranches(LMDShellTree2.Selected.Parent);
 
         if not ValueExists('Start', 'Splashscreen') then
           WriteBool('Start', 'Splashscreen', True);
@@ -5093,7 +5092,6 @@ var
   iec: Array [0 .. 255] of String;
   regKey: TRegistry;
   Notify_Active: Boolean;
-  d: Char;
 begin
   if ShowVomTray = True then
   begin

@@ -963,7 +963,7 @@ begin
   Label6.Cursor := crHandPoint;
   Label7.Cursor := crHandPoint;
 
-  PDFAnzeiger.Hint := 'Homepage von SumatraPDF aufrufen';
+  PDFAnzeiger.Hint := 'Homepage von KillerPDF aufrufen';
 
   if ZusatzAnAus.Checked = False then
     Zusatz.Enabled := False
@@ -1010,8 +1010,7 @@ end;
 
 procedure TEinstellungen_Form.PDFAnzeigerClick(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL,
-    SW_NORMAL);
+  ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL, SW_NORMAL);
 end;
 
 procedure TEinstellungen_Form.ImageMagickClick(Sender: TObject);
