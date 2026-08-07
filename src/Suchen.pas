@@ -1971,6 +1971,7 @@ begin
   // Horizontaler Scrollbalken wird entfernt...
   flbHorzScrollWidth := 0;
   Listbox1.Perform(LB_SETHORIZONTALEXTENT, 0, 0);
+  ListBox1.ItemHeight := 22;
 
   if not System.SysUtils.DirectoryExists(SearchField.Text) then
   begin
@@ -2383,9 +2384,9 @@ begin
     FillRect(Rect);
     TextOut(Rect.Left + 1, Rect.Top, NewText);
     Len:=TextWidth(NewText) + Rect.Left + 10;
-    if Len>flbHorzScrollWidth then
+    if Len > flbHorzScrollWidth then
     begin
-      flbHorzScrollWidth:=Len;
+      flbHorzScrollWidth := Len;
       Listbox1.Perform(LB_SETHORIZONTALEXTENT, flbHorzScrollWidth, 0 );
     end;
   end;
@@ -2404,7 +2405,8 @@ begin
       Font.Color  := clBlack;
     end;
     FillRect(Rect);
-    TextOut(Rect.Left + 2, Rect.Top, (Control as TListBox).Items[Index]);
+//    TextOut(Rect.Left + 2, Rect.Top, (Control as TListBox).Items[Index]);
+    TextOut(Rect.Left + 2, Rect.Top + 1, (Control as TListBox).Items[Index]);
   end
 end;
 
