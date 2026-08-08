@@ -16,9 +16,9 @@ File_13=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten2_Unit.pas',0,1,1,1,1,0
 File_14=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Info_Unit.pas
-Module2=D:\Delphi\FreePDF64\Suchen.pas
+Module0=D:\Delphi\FreePDF64\Suchen.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\Info_Unit.pas
 Module3=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Module5=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
@@ -37,13 +37,13 @@ Module17=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 Count=18
 EditWindowCount=1
 
+[D:\Delphi\FreePDF64\Suchen.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Info_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
@@ -93,7 +93,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=18
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Suchen.pas
 View0=0
 View1=1
 View2=2
@@ -170,12 +170,12 @@ EditViewName=D:\Delphi\FreePDF64\Status_Unit.pas
 [View2]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=40
-CursorY=2409
-TopLine=2373
+CursorX=1
+CursorY=775
+TopLine=745
 LeftCol=1
 Elisions=
-Bookmarks={0,1974,9}
+Bookmarks={0,2161,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
 [View3]
@@ -476,8 +476,8 @@ SplitPos=152
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Align,OnDrawItem
-ExpandedItems=Constraints=0,Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0,Anchors=0,BevelEdges=0,StyleElements=0,Touch=0
+SelectedItem=Caption,OnClick
+ExpandedItems=Anchors=0,Constraints=0,Font=0,LiveBindings=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -573,8 +573,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=14
-Description=36
+Name=62
+Description=171
 filter=1
 
 [DebugLogView]

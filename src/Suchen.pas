@@ -771,7 +771,7 @@ procedure TSuche_Form.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
   if Key = VK_ESCAPE then
-    Close;
+    StopSearchButton.Click;
 end;
 
 procedure TSuche_Form.FormShow(Sender: TObject);
@@ -2003,6 +2003,8 @@ begin
   Mask := FileField.Text;
   StopSuche := False;
   StartSearchButton.Enabled := False;
+  // Der Stop-Button bekommt de Fokus nach Start der Suche!
+  StopSearchButton.SetFocus;
   StopSearchButton.Caption := 'Suche abbrechen';
 
   if (SFHResize < SFHStart) and (Suche_Form.Height = Suche_Form.Height - Suchpanel.Height) then
