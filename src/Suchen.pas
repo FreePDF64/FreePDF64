@@ -2367,11 +2367,11 @@ begin
   FreePDF64_Form.LMDShellList1.Column[0].AutoSize := True;
   FreePDF64_Form.LMDShellList2.Column[0].AutoSize := True;
 
+  Close;
+
   // Wenn im Tray, dann hole Form nach vorne
   if FreePDF64_Form.TrayIcon1.Visible = True then
     FreePDF64_Form.TrayIcon1Click(Sender);
-
-  Close;
 end;
 
 // Horizontaler Scrollbalken
