@@ -2117,7 +2117,7 @@ begin
       else
         // Rufe die Suchefunktion zum Durchsuchen des Ordners auf
         GetFilesInDirectory(Path, Mask, ListBox1.Items, DirCheckbox.Checked, True);
-    finally
+      finally
       // Search has terminated, updates buttons and mouse cursor accordingly
       StartSearchButton.Enabled := True;
       StopSearchButton.Caption  := 'Abbrechen';
@@ -2375,41 +2375,55 @@ begin
 end;
 
 // Horizontaler Scrollbalken
-procedure TSuche_Form.ListBox1DrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
+// Verzeichnisse in Halbfett darstellen!
+procedure TSuche_Form.ListBox1DrawItem(Control: TWinControl; Index: Integer;
+  Rect: TRect; State: TOwnerDrawState);
 var
- Len: Integer;
- NewText: String;
+  S: string;
+  Len: Integer;
+  IsDir: Boolean;
 begin
-  NewText := Listbox1.Items[Index];
-  with Listbox1.Canvas do
+  S := ListBox1.Items[Index];
+
+  // Verzeichnis? (Deine Syntax: [Pfad\Ordner])
+  IsDir := (Copy(S, 1, 1) = '[') and (Copy(S, Length(S), 1) = ']');
+
+  with ListBox1.Canvas do
   begin
+    // Hintergrundfarbe abhängig von Auswahl
+    if odSelected in State then
+    begin
+      Brush.Color := clGradientActiveCaption;
+      Font.Color  := clBlack;
+    end
+    else
+    begin
+      Brush.Color := clWindow;
+      Font.Color  := clWindowText;
+    end;
+
+    // Schriftart setzen
+    if IsDir then
+      Font.Name := 'Segoe UI Semibold'   // Halbfett
+    else
+      Font.Name := 'Segoe UI';           // Normal
+
+    Font.Style := []; // wichtig: Semibold kommt über Font.Name, nicht über Style
+
+    // Hintergrund zeichnen
     FillRect(Rect);
-    TextOut(Rect.Left + 1, Rect.Top, NewText);
-    Len:=TextWidth(NewText) + Rect.Left + 10;
+
+    // Text zeichnen
+    TextOut(Rect.Left + 2, Rect.Top + 1, S);
+
+    // Horizontalen Scrollbalken anpassen
+    Len := TextWidth(S) + Rect.Left + 10;
     if Len > flbHorzScrollWidth then
     begin
       flbHorzScrollWidth := Len;
-      Listbox1.Perform(LB_SETHORIZONTALEXTENT, flbHorzScrollWidth, 0 );
+      ListBox1.Perform(LB_SETHORIZONTALEXTENT, flbHorzScrollWidth, 0);
     end;
   end;
-
-  with (Control as TListBox).Canvas do
-  begin
-    // Standard Hintergrundfarbe
-    Brush.Color := clWindow;
-    Font.Color  := clWindowText;
-    // Wenn das Element ausgewählt ist
-    if (odSelected in State) then
-    begin
-      // Setze die gewünschte Hintergrundfarbe
-      Brush.Color := clGradientActiveCaption;
-      // Setze die gewünschte Schriftfarbe
-      Font.Color  := clBlack;
-    end;
-    FillRect(Rect);
-//    TextOut(Rect.Left + 2, Rect.Top, (Control as TListBox).Items[Index]);
-    TextOut(Rect.Left + 2, Rect.Top + 1, (Control as TListBox).Items[Index]);
-  end
 end;
 
 // Contextmenü des ausgewählten Items anzeigen
