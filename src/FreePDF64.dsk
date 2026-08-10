@@ -16,9 +16,9 @@ File_13=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten2_Unit.pas',0,1,1,1,1,0
 File_14=TSourceModule,'C:\Lw_D\Delphi\FreePDF64\Favoriten_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\Suchen.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module1=D:\Delphi\FreePDF64\Info_Unit.pas
+Module2=D:\Delphi\FreePDF64\Suchen.pas
 Module3=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Module5=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
@@ -37,13 +37,13 @@ Module17=D:\Delphi\FreePDF64\Dateianlage_Unit.pas
 Count=18
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\Suchen.pas]
-ModuleType=TSourceModule
-
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
+[D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
@@ -93,7 +93,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=18
-CurrentEditView=D:\Delphi\FreePDF64\Suchen.pas
+CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -473,11 +473,6 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=152
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Name,OnDblClick
-ExpandedItems=Constraints=0,Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0
 
 [frmDesignPreview]
 PercentageSizes=1
