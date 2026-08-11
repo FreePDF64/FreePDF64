@@ -2375,18 +2375,13 @@ begin
 end;
 
 // Horizontaler Scrollbalken
-// Verzeichnisse in Halbfett darstellen!
 procedure TSuche_Form.ListBox1DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
   S: string;
   Len: Integer;
-  IsDir: Boolean;
 begin
   S := ListBox1.Items[Index];
-
-  // Verzeichnis? (Deine Syntax: [Pfad\Ordner])
-  IsDir := (Copy(S, 1, 1) = '[') and (Copy(S, Length(S), 1) = ']');
 
   with ListBox1.Canvas do
   begin
@@ -2395,20 +2390,8 @@ begin
     begin
       Brush.Color := clGradientActiveCaption;
       Font.Color  := clBlack;
-    end
-    else
-    begin
+    end else
       Brush.Color := clWindow;
-      Font.Color  := clWindowText;
-    end;
-
-    // Schriftart setzen
-    if IsDir then
-      Font.Name := 'Segoe UI Semibold'   // Halbfett
-    else
-      Font.Name := 'Segoe UI';           // Normal
-
-    Font.Style := []; // wichtig: Semibold kommt über Font.Name, nicht über Style
 
     // Hintergrund zeichnen
     FillRect(Rect);
