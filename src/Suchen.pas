@@ -147,6 +147,7 @@ var
   StopSuche, Links, Rechts: Boolean;
   Zaehler, SFHStart, SFHResize: Integer;
   Anzeige: String;
+  AltLeftDown: Boolean;
 
 implementation
 
@@ -2305,6 +2306,32 @@ begin
     Key := #0;
 end;
 
+// Contextmenü des ausgewählten Items anzeigen
+procedure TSuche_Form.ListBox1MouseDown(Sender: TObject; Button: TMouseButton;
+  Shift: TShiftState; X, Y: Integer);
+var
+  s: String;
+begin
+  if ListBox1.SelCount = 0 then
+    Exit;
+
+  if Button = MBRight then
+  begin
+    s := ListBox1.Items[ListBox1.ItemIndex];
+    // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
+    if Pos('[', s) <> 0 then
+      Delete(s, 1, 1);
+    // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
+    if s[Length(s)] = ']' then
+      Delete(s, Length(s), 1);
+
+    ContextMenuForFile(Application.Handle, s, Mouse.CursorPos.X, Mouse.CursorPos.Y);
+  end;
+
+  // Abfrage auf Alt + linke Maustaste...
+  AltLeftDown := (Button = mbLeft) and (ssAlt in Shift);
+end;
+
 // Gehe zum Verzeichnis des Eintrags in der Listbox
 procedure TSuche_Form.ListBox1DblClick(Sender: TObject);
 var
@@ -2314,6 +2341,14 @@ begin
   if (ListBox1.SelCount = 0) or (ListBox1.Count = 0) then
   begin
     MessageDlgCenter('Kein Eintrag gewählt!', mtInformation, [mbOk]);
+    Exit;
+  end;
+
+  // Alt + linke Maustaste soll markierte Datei öffnen
+  if AltLeftDown then
+  begin
+    if FileExists(ListBox1.Items[ListBox1.ItemIndex]) then
+      ShellExecute(Handle, 'open', PChar(ListBox1.Items[ListBox1.ItemIndex]), NIL, NIL, SW_SHOWNORMAL);
     Exit;
   end;
 
@@ -2407,34 +2442,6 @@ begin
       ListBox1.Perform(LB_SETHORIZONTALEXTENT, flbHorzScrollWidth, 0);
     end;
   end;
-end;
-
-// Contextmenü des ausgewählten Items anzeigen
-procedure TSuche_Form.ListBox1MouseDown(Sender: TObject; Button: TMouseButton;
-  Shift: TShiftState; X, Y: Integer);
-var
-  s: String;
-begin
-  if ListBox1.SelCount = 0 then
-    Exit;
-
-  if Button = MBRight then
-  begin
-    s := ListBox1.Items[ListBox1.ItemIndex];
-    // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
-    if Pos('[', s) <> 0 then
-      Delete(s, 1, 1);
-    // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
-    if s[Length(s)] = ']' then
-      Delete(s, Length(s), 1);
-
-    ContextMenuForFile(Application.Handle, s, Mouse.CursorPos.X, Mouse.CursorPos.Y);
-  end;
-
-  // Alt + linke Maustaste soll markierte Datei öffnen
-  if (Button = MBLeft) and (ssAlt in Shift) then
-    if FileExists(ListBox1.Items[ListBox1.ItemIndex]) then
-      ShellExecute(Handle, 'open', PChar(ListBox1.Items[ListBox1.ItemIndex]), NIL, NIL, SW_SHOWNORMAL);
 end;
 
 procedure TSuche_Form.Lschen1Click(Sender: TObject);
