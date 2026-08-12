@@ -90,7 +90,6 @@ type
     procedure SeitenBtClick(Sender: TObject);
     procedure Label1Click(Sender: TObject);
     procedure Label2Click(Sender: TObject);
-    procedure PDFAnzeigerClick(Sender: TObject);
     procedure PDFA_CBClick(Sender: TObject);
     procedure InfoClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -115,6 +114,7 @@ type
     procedure FontCBClick(Sender: TObject);
     procedure PDFX4Click(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
+    procedure PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     private
       { Private-Deklarationen }
     public
@@ -963,7 +963,8 @@ begin
   Label6.Cursor := crHandPoint;
   Label7.Cursor := crHandPoint;
 
-  PDFAnzeiger.Hint := 'Homepage von KillerPDF aufrufen';
+  // Hinweistext auf PDF-Anzeiger-Button
+  PDFAnzeiger.Hint := ('LMB: Homepage von KillerPDF aufrufen') + #13 + ('RMB: Homepage von SumatraPDF aufrufen');
 
   if ZusatzAnAus.Checked = False then
     Zusatz.Enabled := False
@@ -1008,9 +1009,17 @@ begin
   ShellExecute(Application.Handle, 'open', PChar('https://www.xpdfreader.com/index.html'), NIL, NIL, SW_NORMAL);
 end;
 
-procedure TEinstellungen_Form.PDFAnzeigerClick(Sender: TObject);
+procedure TEinstellungen_Form.PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
+  Y: Integer);
 begin
-  ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL, SW_NORMAL);
+  if Button = mbLeft then
+  begin
+    ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL, SW_NORMAL);
+  end
+  else if Button = mbRight then
+  begin
+    ShellExecute(Application.Handle, 'open', PChar('https://www.sumatrapdfreader.org/'), NIL, NIL, SW_NORMAL);
+  end;
 end;
 
 procedure TEinstellungen_Form.ImageMagickClick(Sender: TObject);

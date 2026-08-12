@@ -65,7 +65,9 @@ object Einstellungen_Form: TEinstellungen_Form
     Top = 215
     Width = 268
     Height = 20
-    Hint = 'Homepage von KillerPDF aufrufen'
+    Hint = 
+      'LMB: Homepage von KillerPDF aufrufen'#13#10'RMB: Homepage von SumatraP' +
+      'DF aufrufen'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -79,7 +81,7 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    OnClick = PDFAnzeigerClick
+    OnMouseDown = PDFAnzeigerMouseDown
   end
   object Label3: TLabel
     Left = 14
