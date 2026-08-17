@@ -1283,7 +1283,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Top = 1
           Width = 25
           Height = 28
-          Hint = 'Hinzuf'#252'gen zur rechten Schnellzugriffsliste'
+          Hint = 'Hinzuf'#252'gen zu Favoriten'
           Margins.Left = 4
           Margins.Top = 4
           Margins.Right = 4
@@ -1311,7 +1311,7 @@ object FreePDF64_Form: TFreePDF64_Form
           Top = 1
           Width = 25
           Height = 28
-          Hint = 'Rechte Schnellzugriffsliste'
+          Hint = 'Favoriten'
           Margins.Left = 4
           Margins.Top = 4
           Margins.Right = 4
@@ -1786,7 +1786,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 1
         Width = 25
         Height = 28
-        Hint = 'Hinzuf'#252'gen zur linken Schnellzugriffsliste'
+        Hint = 'Hinzuf'#252'gen zu Favoriten'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1814,7 +1814,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Top = 1
         Width = 25
         Height = 28
-        Hint = 'Linke Schnellzugriffsliste'
+        Hint = 'Favoriten'
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4

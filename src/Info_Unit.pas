@@ -3,10 +3,10 @@
 //
 
 unit Info_Unit;
-                                                         
+
 interface
 
-uses             
+uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
   StdCtrls, Buttons, ExtCtrls, ShellAPI;
 
@@ -33,10 +33,10 @@ type
     procedure ChangelogClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure ProjektseiteClick(Sender: TObject);
-  private
-    { Private declarations }
-  public
-    { Public declarations }
+    private
+      { Private declarations }
+    public
+      { Public declarations }
   end;
 
 var
@@ -46,26 +46,29 @@ implementation
 
 {$R *.DFM}
 
+
 uses FreePDF64_Unit, Einstellungen_Unit;
 
 procedure TInfo_Form.ChangelogClick(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/releases'),
-                                                  NIL, NIL, SW_NORMAL);
+  ShellExecute(Application.Handle, 'open',
+    PChar('https://github.com/FreePDF64/FreePDF64/releases'),
+    NIL, NIL, SW_NORMAL);
   Close;
 end;
 
 procedure TInfo_Form.DownloadLClick(Sender: TObject);
 begin
-  ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64/FreePDF64/tree/main/releases/download'),
-                                                  NIL, NIL, SW_NORMAL);
+  ShellExecute(Application.Handle, 'open',
+    PChar('https://github.com/FreePDF64/FreePDF64/tree/main/releases/download'),
+    NIL, NIL, SW_NORMAL);
   Close;
 end;
 
 procedure TInfo_Form.ProjektseiteClick(Sender: TObject);
 begin
   ShellExecute(Application.Handle, 'open', PChar('https://github.com/FreePDF64'),
-                                                  NIL, NIL, SW_NORMAL);
+    NIL, NIL, SW_NORMAL);
   Close;
 end;
 
@@ -77,8 +80,9 @@ end;
 
 procedure TInfo_Form.MailLClick(Sender: TObject);
 begin
-  ShellExecute(FreePDF64_Form.Handle, 'open', 'mailto:FreePDF64@outlook.com'+'?subject=Fragen/Anregungen/etc. zu FreePDF64',
-               NIL, NIL, SW_SHOWNORMAL);
+  ShellExecute(FreePDF64_Form.Handle, 'open', 'mailto:FreePDF64@outlook.com' +
+    '?subject=Fragen/Anregungen/etc. zu FreePDF64',
+    NIL, NIL, SW_SHOWNORMAL);
   Close;
 end;
 
@@ -96,14 +100,14 @@ begin
   Edit1.Text := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
   Edit2.Text := Application.ExeName;
 
-  Datum := '12.08.2026';
-  Delete(Datum, 11, 9);  // Entfernt die letzten 9 Zeichen
+  Datum := '17.08.2026';
+  Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   InfoL.Caption := FreePDF64_Form.LMDVersionInfo1.ProductName + ' Version '
-                   + FreePDF64_Form.LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' + #13 + #13
-                   + 'Copyright © 2026 by FreePDF64@outlook.com' + #13
-                   + 'FreePDF64 darf sowohl im privaten als auch im kommerziellen' + #13
-                   + 'Umfeld ohne Bezahlung eingesetzt werden ("Freeware")!';
+    + FreePDF64_Form.LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum +
+    ')' + #13 + #13
+    + 'Copyright © 2026 by FreePDF64@outlook.com' + #13
+    + 'FreePDF64 darf sowohl im privaten als auch im kommerziellen' + #13
+    + 'Umfeld ohne Bezahlung eingesetzt werden ("Freeware")!';
 end;
 
 end.
-

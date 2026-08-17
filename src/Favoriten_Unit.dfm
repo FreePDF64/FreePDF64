@@ -3,7 +3,7 @@ object Favoriten_Form: TFavoriten_Form
   Top = 252
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Hinzuf'#252'gen zur linken Schnellzugriffsliste'
+  Caption = 'Hinzuf'#252'gen zu linken Favoriten'
   ClientHeight = 132
   ClientWidth = 370
   Color = clBtnFace
@@ -21,13 +21,13 @@ object Favoriten_Form: TFavoriten_Form
   object Label1: TLabel
     Left = 10
     Top = 10
-    Width = 228
+    Width = 182
     Height = 20
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
-    Caption = 'Wie soll der Schnellzugriff hei'#223'en?'
+    Caption = 'Wie soll der Favorit hei'#223'en?'
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
