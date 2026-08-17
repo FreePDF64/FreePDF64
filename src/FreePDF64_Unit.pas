@@ -3206,7 +3206,7 @@ begin
       'Komprimierte PDF';
 
   // QPDF-Pfad
-  QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(PDFDatei);
+  QPDF_ExtractFile := 'K_' + ExtractFileName(PDFDatei);
   // QPDF-Pfad => Einstellungen_Form.Edit4.Text
   EndPDF := IncludeTrailingBackslash(Ziel) + QPDF_ExtractFile;
   Zeile := Einstellungen_Form.Edit4.Text +
@@ -8016,7 +8016,7 @@ begin
               // Nun die Erstellung wieder zurück von PS zu PDF
               Res := CreateProcess(NIL,
                 PChar(Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 +
-                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_'
+                ' ' + '-sOutputFile="' + ExtractFilePath(Ziel) + 'K_'
                 + ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps'
                 + Hochkommata + AP5)), NIL, NIL, True,
                 CREATE_DEFAULT_ERROR_MODE or CREATE_NEW_CONSOLE or
@@ -8042,7 +8042,7 @@ begin
 
             if Einstellungen_Form.PDF_Shrink2.Checked then
             begin
-              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              QPDF_ExtractFile := 'K_' + ExtractFileName(Ziel);
               QPDF_Zeile :=
                 (QPDF + ' --optimize-images --object-streams=generate --compression-level=9 --recompress-flate "'
                 + Ziel + '" "' + ExtractFilePath(Ziel) + QPDF_ExtractFile +
@@ -8193,13 +8193,13 @@ begin
           begin
             Memo1.Lines.Text := Memo1.Lines.Text +
               (Ghostscript + ' ' + AP1_4 + AP1 + AP1_3 + AP1_2 + AP1_1 + ' ' +
-              '-sOutputFile="' + ExtractFilePath(Ziel) + 'Komprimiert_' +
+              '-sOutputFile="' + ExtractFilePath(Ziel) + 'K_' +
               ExtractFileName(Ziel) + '"' + AX + (Hochkommata + Ziel + '.ps"' +
               AP5 + ' '));
             if Einstellungen_Form.PDF_Shrink2.Enabled and
               Einstellungen_Form.PDF_Shrink2.Checked then
             begin
-              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              QPDF_ExtractFile := 'K_' + ExtractFileName(Ziel);
               Memo1.Lines.Text := Memo1.Lines.Text +
                 (QPDF + ' --optimize-images --compression-level=9 "' + Ziel +
                 '" "' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata);
@@ -8325,7 +8325,7 @@ begin
             if Einstellungen_Form.PDF_Shrink2.Enabled and
               Einstellungen_Form.PDF_Shrink2.Checked then
             begin
-              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              QPDF_ExtractFile := 'K_' + ExtractFileName(Ziel);
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
                 ' =======> FORMATAUSWAHL: PDF zu PDF - komprimiert'));
               Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) +
@@ -8519,12 +8519,12 @@ begin
                       Encrypt_Form.KennwortCB.Checked) then // 128 RC4
                       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss',
                         Now) + ' -            Zieldatei: ' +
-                        ExtractFilePath(Ziel) + 'Komprimiert_' +
+                        ExtractFilePath(Ziel) + 'K_' +
                         ExtractFileName(Ziel) + ' <- 128-Bit RC4'))
                     else
                       Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss',
                         Now) + ' -            Zieldatei: ' +
-                        ExtractFilePath(Ziel) + 'Komprimiert_' +
+                        ExtractFilePath(Ziel) + 'K_' +
                         ExtractFileName(Ziel)))
                   end
                   else if (Encrypt_Form.EncryptCombo.ItemIndex = 0) and
@@ -8538,13 +8538,13 @@ begin
                     Einstellungen_Form.PDF_Shrink.Checked then
                   begin
                     Komprimierung :=
-                      (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_'
+                      (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'K_'
                       + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
                     Komprimierung := 100 - Komprimierung;
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss',
                       Now) + ' -           Dateigröße: ' +
                       FormatByteString(MyFileSize(ExtractFilePath(Ziel) +
-                      'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
+                      'K_' + ExtractFileName(Ziel)))) + ' (um ' +
                       IntToStr(Komprimierung) + '% komprimiert vom Original)');
                   end;
 
@@ -8588,12 +8588,12 @@ begin
 
                   if (Einstellungen_Form.PDF_Shrink.Checked = True) then
                   begin
-                    Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_' + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
+                    Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + 'K_' + ExtractFileName(Ziel)), 100, MyFileSize(AP3)));
                     Komprimierung := 100 - Komprimierung;
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) +
-                                     'Komprimiert_' + ExtractFileName(Ziel)));
+                                     'K_' + ExtractFileName(Ziel)));
                     Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' +
-                                     FormatByteString(MyFileSize(ExtractFilePath(Ziel) + 'Komprimiert_' + ExtractFileName(Ziel)))) + ' (um ' +
+                                     FormatByteString(MyFileSize(ExtractFilePath(Ziel) + 'K_' + ExtractFileName(Ziel)))) + ' (um ' +
                                      IntToStr(Komprimierung) + '% komprimiert vom Original)');
                   end;
 
@@ -8678,13 +8678,13 @@ begin
             if Einstellungen_Form.PDF_Shrink2.Enabled and
               Einstellungen_Form.PDF_Shrink2.Checked then
             begin
-              QPDF_ExtractFile := 'Komprimiert_' + ExtractFileName(Ziel);
+              QPDF_ExtractFile := 'K_' + ExtractFileName(Ziel);
               Zielanz := ExtractFilePath(Ziel) + QPDF_ExtractFile;
             end
             else if Einstellungen_Form.PDF_Shrink.Enabled and
               Einstellungen_Form.PDF_Shrink.Checked then
             begin
-              Zielanz := ExtractFilePath(Ziel) + 'Komprimiert_' +
+              Zielanz := ExtractFilePath(Ziel) + 'K_' +
                 ExtractFileName(Ziel)
             end
             else if Zielanz = Ziel then
