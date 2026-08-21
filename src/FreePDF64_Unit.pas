@@ -8687,13 +8687,12 @@ begin
                 QPDF_ExtractFile := 'K_' + ExtractFileName(Ziel);
                 Zielanz := ExtractFilePath(Ziel) + QPDF_ExtractFile;
               end else
-                Zielanz := ExtractFilePath(Ziel);
+                Zielanz := Ziel;
             end
             else if Einstellungen_Form.PDF_Shrink.Enabled and
               Einstellungen_Form.PDF_Shrink.Checked then
             begin
-              Zielanz := ExtractFilePath(Ziel) + 'K_' +
-                ExtractFileName(Ziel)
+              Zielanz := ExtractFilePath(Ziel) + 'K_' + ExtractFileName(Ziel)
             end
             else if Zielanz = Ziel then
               Zielanz := Ziel;
@@ -8707,24 +8706,20 @@ begin
             Sleep(1000);
 
             if Einstellungen_Form.Edit3.Text = '' then
-              ShowMessage
-                ('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
+              ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!')
             else
               PDFReader := Einstellungen_Form.Edit3.Text;
 
             if Encrypt_Form.EncryptCombo.ItemIndex = 1 then
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
+              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
             else
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
+              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
           end
           else
             if (Einstellungen_Form.AuswahlRG.ItemIndex = 10) or
             (Einstellungen_Form.AuswahlRG.ItemIndex = 12) or
             (Einstellungen_Form.AuswahlRG.ItemIndex = 13) then // BMP/PNG/TIFF
-            ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-              PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
+            ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
           else
             if (Einstellungen_Form.AuswahlRG.ItemIndex = 1) or
             (Einstellungen_Form.AuswahlRG.ItemIndex = 3) then // PS/DOCX/TXT
