@@ -1143,7 +1143,7 @@ object Einstellungen_Form: TEinstellungen_Form
   object PDF_Shrink2: TCheckBox
     Left = 720
     Top = 636
-    Width = 220
+    Width = 190
     Height = 26
     Hint = 'Komprimiert die PDF-Datei beim Erstellen nochmals mittels QPDF'
     Margins.Left = 4
@@ -1257,6 +1257,23 @@ object Einstellungen_Form: TEinstellungen_Form
     ShowHint = True
     TabOrder = 25
     OnClick = PDFX4Click
+  end
+  object Shrink2CB: TCheckBox
+    Left = 907
+    Top = 641
+    Width = 18
+    Height = 21
+    Hint = 'Zieldatei ohne K_-Zusatz'
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
+    Caption = 'Zieldatei ohne K_-Zusatz im Dateinamen'
+    Checked = True
+    ParentShowHint = False
+    ShowHint = True
+    State = cbChecked
+    TabOrder = 45
   end
   object LMDOpenDialog1: TLMDOpenDialog
     Filter = 

@@ -77,6 +77,7 @@ type
     ExifToolGE: TCheckBox;
     FontCB: TCheckBox;
     PDFX4: TCheckBox;
+    Shrink2CB: TCheckBox;
     procedure MonitoringBtnClick(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure OKBitBtn1Click(Sender: TObject);
@@ -595,10 +596,9 @@ begin
       AnzeigenCB.Checked := ReadBool('Format', 'View File', AnzeigenCB.Checked);
       SystemklangCB.Checked := ReadBool('Format', 'System Sound',
         SystemklangCB.Checked);
-      PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF',
-        PDF_Shrink.Checked);
-      PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2',
-        PDF_Shrink2.Checked);
+      PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', PDF_Shrink.Checked);
+      PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF2', PDF_Shrink2.Checked);
+      Shrink2CB.Checked := ReadBool('Format', 'Shrink PDF2 Overwrite', Shrink2CB.Checked);
       HeightSpin.Value := ReadInteger('Start', 'Memo Height Addition',
         HeightSpin.Value);
       SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535',
@@ -695,10 +695,9 @@ begin
       AnzeigenCB.Checked := ReadBool('Format', 'View File', AnzeigenCB.Checked);
       SystemklangCB.Checked := ReadBool('Format', 'System Sound',
         SystemklangCB.Checked);
-      PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF',
-        PDF_Shrink.Checked);
-      PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF',
-        PDF_Shrink2.Checked);
+      PDF_Shrink.Checked := ReadBool('Format', 'Shrink PDF', PDF_Shrink.Checked);
+      PDF_Shrink2.Checked := ReadBool('Format', 'Shrink PDF', PDF_Shrink2.Checked);
+      Shrink2CB.Checked := ReadBool('Format', 'Shrink PDF2 Overwrite', Shrink2CB.Checked);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -1108,6 +1107,7 @@ begin
       WriteBool('Format', 'System Sound', SystemklangCB.Checked);
       WriteBool('Format', 'Shrink PDF', PDF_Shrink.Checked);
       WriteBool('Format', 'Shrink PDF2', PDF_Shrink2.Checked);
+      WriteBool('Format', 'Shrink PDF2 Overwrite', Shrink2CB.Checked);
 
       // Zusatz schreiben
       IniDat.EraseSection('Zusatz');
