@@ -8347,11 +8347,9 @@ begin
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -              Befehle: ' +
                                 (QPDF + ' --optimize-images --object-streams=generate --compression-level=9 --recompress-flate "' + Ziel +
                                  '" ' + '"' + ExtractFilePath(Ziel) + QPDF_ExtractFile + Hochkommata)));
-//                Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Quelldatei: ' + Ziel));
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -            Zieldatei: ' + ExtractFilePath(Ziel) +
                            QPDF_ExtractFile));
 
-//                Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile), 100, MyFileSize(Ziel)));
                 Komprimierung := (MulDiv(MyFileSize(ExtractFilePath(Ziel) + QPDF_ExtractFile), 100, MyFileSize(AP3)));
                 Komprimierung := 100 - Komprimierung;
                 Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' -           Dateigröße: ' +

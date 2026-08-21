@@ -1263,12 +1263,11 @@ object Einstellungen_Form: TEinstellungen_Form
     Top = 641
     Width = 18
     Height = 21
-    Hint = 'Zieldatei ohne K_-Zusatz'
+    Hint = 'Nur komprimierte Datei erzeugen (ohne K_ am Anfang)'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
-    Caption = 'Zieldatei ohne K_-Zusatz im Dateinamen'
     Checked = True
     ParentShowHint = False
     ShowHint = True
