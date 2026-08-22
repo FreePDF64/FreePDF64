@@ -1239,7 +1239,11 @@ end;
 procedure TEinstellungen_Form.PDF_Shrink2Click(Sender: TObject);
 begin
   if PDF_Shrink2.Checked then
-    PDF_Shrink.Checked := False
+  begin
+    PDF_Shrink.Checked := False;
+    Shrink2CB.Enabled  := True;
+  end else
+    Shrink2CB.Enabled  := False;
 end;
 
 procedure TEinstellungen_Form.PDFMarkClick(Sender: TObject);

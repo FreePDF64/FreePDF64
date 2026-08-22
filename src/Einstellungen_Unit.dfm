@@ -1269,6 +1269,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Margins.Right = 4
     Margins.Bottom = 4
     Checked = True
+    Enabled = False
     ParentShowHint = False
     ShowHint = True
     State = cbChecked
