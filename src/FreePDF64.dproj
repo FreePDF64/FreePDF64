@@ -130,10 +130,6 @@
             <Form>Favoriten_Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="Info_Unit.pas">
-            <Form>Info_Form</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="FreePDF64_Notify_Unit.pas">
             <Form>FreePDF64_Notify</Form>
             <FormType>dfm</FormType>
@@ -175,6 +171,10 @@
         </DCCReference>
         <DCCReference Include="Suchen.pas">
             <Form>Suche_Form</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="Info_Unit.pas">
+            <Form>Info_Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <RcItem Include="FreePDF64_1.ico">

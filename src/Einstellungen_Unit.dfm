@@ -911,8 +911,8 @@ object Einstellungen_Form: TEinstellungen_Form
     Width = 220
     Height = 26
     Hint = 
-      'Komprimiert die PDF-Datei beim Erstellen nochmals mittels Ghosts' +
-      'cript'
+      'Komprimiert die PDF-Datei nach Erstellung nochmals mittels Ghost' +
+      'script'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1145,7 +1145,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Top = 636
     Width = 190
     Height = 26
-    Hint = 'Komprimiert die PDF-Datei beim Erstellen nochmals mittels QPDF'
+    Hint = 'Komprimiert die PDF-Datei nach Erstellung nochmals mittels QPDF'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
