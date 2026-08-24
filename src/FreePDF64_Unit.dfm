@@ -1026,7 +1026,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = LMDShellTree2Click
         Folder = LMDShellFolder2
         CompressedColor = clBlue
-        Filtered = False
+        Filtered = True
         Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
         ShowCheckBoxes = False
         OnFilterItem = LMDShellTree2FilterItem
@@ -1084,6 +1084,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentThemeMode = False
         ThemeMode = ttmNone
         FileFilter = '*.*'
+        Filtered = True
         Folder = LMDShellFolder2
         Options = [loShowFolders, loShowNonFolders, loAllowRename, loAllowDrag, loAllowDrop, loColorCompressed, loExtendedMenu, loShellMenu]
         ShowCheckBoxes = False
@@ -1476,7 +1477,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = LMDShellTree1Click
       Folder = LMDShellFolder1
       CompressedColor = clBlue
-      Filtered = False
+      Filtered = True
       Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
       ShowCheckBoxes = False
       OnFilterItem = LMDShellTree1FilterItem
@@ -1576,6 +1577,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentThemeMode = False
       ThemeMode = ttmNone
       FileFilter = '*.*'
+      Filtered = True
       Folder = LMDShellFolder1
       Options = [loShowFolders, loShowNonFolders, loAllowRename, loAllowDrag, loAllowDrop, loColorCompressed, loExtendedMenu, loShellMenu]
       ShowCheckBoxes = False
@@ -2489,6 +2491,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object LMDShellFolder1: TLMDShellFolder
     RootFolder = 'C:\'
     Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
+    Filtered = True
     SortType = stName
     SortOrder = soDesc
     OnChange = LMDShellFolder1Change
@@ -2522,6 +2525,7 @@ object FreePDF64_Form: TFreePDF64_Form
   object LMDShellFolder2: TLMDShellFolder
     RootFolder = 'C:\'
     Options = [foFolders, foNonFolders, foIncludeHidden, foHighlightCompressed, foFilterDirs]
+    Filtered = True
     SortType = stName
     SortOrder = soDesc
     OnChange = LMDShellFolder2Change

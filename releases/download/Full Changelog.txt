@@ -1,5 +1,5 @@
-23.08.2026 V6.6.2
-Fix -> Codeoptimierungen durchgeführt.
+24.08.2026 V6.6.2
+Fix -> Codeoptimierungen durchgeführt (u.a. am Startverhalten).
 17.08.2026 V6.6.1
 Fix -> Codeoptimierungen durchgeführt (u.a. Benennung komprimierter Dateien von Komprimiert_... in K_...).
 17.08.2026 V6.6.0
