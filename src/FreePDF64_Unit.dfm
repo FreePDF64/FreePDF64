@@ -17371,7 +17371,7 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object Timer2: TTimer
     Enabled = False
-    Interval = 3000
+    Interval = 2000
     OnTimer = Timer2Timer
     Left = 581
     Top = 365
