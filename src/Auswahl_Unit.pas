@@ -240,7 +240,14 @@ end;
 
 procedure TAuswahl_Form.AufgehtsBitBtnClick(Sender: TObject);
 begin
-  ModalResult := mrOK;
+  if FileList.Items.Count > 0 then
+    ModalResult := mrOK
+  else
+  begin
+    ShowMessage('Keine Datei(en) hinzugefügt!');
+    ABBRUCH := True;
+    Exit;
+  end;
 end;
 
 procedure TAuswahl_Form.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -284,12 +291,11 @@ begin
             Break;
       end else
       begin
-        if Einstellungen_Form.Edit3.Text = '' then
+        if PDFReader = '' then
         begin
           ShowMessage('Bitte einen PDF-Anzeiger in den Einstellungen hinterlegen!');
           Exit;
-        end else
-          PDFReader := Einstellungen_Form.Edit3.Text;
+        end;
         Application.ProcessMessages;
         // PDF-Anzeiger aufrufen...
         ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);

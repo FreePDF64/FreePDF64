@@ -1,12 +1,19 @@
+04.10.2026 V7.0.0
+Neu -> Endlich! FreePDF64 hat nun einen eigenen Drucker: Es wird bei der Installation von FreePDF64 ein neuer eigener Drucker "FreePDF64 Postscript" installiert (siehe auch FreePDF64-HowTo.pdf).
+Neu -> Neuen PDF-Viewer zum Anzeigen der PDF-Dateien mit F3, auch im Suchefenster, eingebaut.
+Neu -> Menüpunkt: (Automatische) Formatauswahl aufgrund der Dateiendung.
+Fix -> Die Suche wurde nochmals grundlegend entschlackt und auf Geschwindigkeit optimiert.
+Fix -> Deaktivierung der Umschaltung zwischen deutscher/englischer Ausgabe der Datei-Informationen (Metadaten). Ausgabe nur noch auf Englisch.
+Fix -> Menüs der Oberfläche optimiert.
+Fix -> Ghostscript-Update auf neueste Version 10.08.0.
+Fix -> QPDF-Update auf neueste Version 12.4.2.
+Fix -> Update ImageMagick-Tool auf neueste Version.
+Fix -> Optimierung Anzeigen der Hilfetexte.
 24.08.2026 V6.6.2
 Fix -> Codeoptimierungen durchgeführt (u.a. am Startverhalten).
 17.08.2026 V6.6.1
 Fix -> Codeoptimierungen durchgeführt (u.a. Benennung komprimierter Dateien von Komprimiert_... in K_...).
 17.08.2026 V6.6.0
-Neu -> Hinzufügen von KillerPDF (neben SumatraPDF) für die Anzeige von PDF-Dateien. KillerPDF ist leichter zu bedienen und bietet mehr Möglichkeiten als SumatraPDF.
-Fix -> QPDF-Update auf Version 12.4.0.
-12.08.2026 V6.6.0
-Neu -> Hinzufügen von KillerPDF (neben SumatraPDF) für die Anzeige von PDF-Dateien. KillerPDF ist leichter zu bedienen und bietet mehr Möglichkeiten als SumatraPDF.
 Fix -> QPDF-Update auf Version 12.4.0.
 29.06.2025 V6.5.3
 Fix -> Codeoptimierungen durchgeführt, speziell zur Startbeschleunigung.

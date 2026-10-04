@@ -281,7 +281,7 @@ begin
   end;
 
   // 128-Bit oder 256-AES
-  if (EncryptCombo.ItemIndex = 0) or (EncryptCombo.ItemIndex = 1) or (EncryptCombo.ItemIndex = 2) then
+  if EncryptCombo.ItemIndex in [0, 1, 2] then
   begin
     if DruckenCB.Checked then
     begin
@@ -321,7 +321,7 @@ end;
 
 procedure TEncrypt_Form.EncryptComboChange(Sender: TObject);
 begin
-  if (EncryptCombo.ItemIndex = 0) or (EncryptCombo.ItemIndex = 1) or (EncryptCombo.ItemIndex = 2) then // 128-/256-Bit
+  if EncryptCombo.ItemIndex in [0, 1, 2] then // 128-/256-Bit
   begin
     Einstellungen_Form.FastCB.Checked := False;
     Einstellungen_Form.FastCB.Enabled := False;
@@ -335,7 +335,7 @@ end;
 
 procedure TEncrypt_Form.DruckenCBClick(Sender: TObject);
 begin
-  if (EncryptCombo.ItemIndex = 0) or (EncryptCombo.ItemIndex = 1) or (EncryptCombo.ItemIndex = 2) then
+  if EncryptCombo.ItemIndex in [0, 1, 2] then
     if HQCB.Enabled then
     begin
       HQCB.Enabled := False;

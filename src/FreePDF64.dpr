@@ -15,6 +15,7 @@ uses
   Encrypt_Unit in 'Encrypt_Unit.pas' {Encrypt_Form},
   Seiten_Unit in 'Seiten_Unit.pas' {Seiten_Form},
   Favoriten_Unit in 'Favoriten_Unit.pas' {Favoriten_Form},
+  Info_Unit in 'Info_Unit.pas' {Info_Form},
   FreePDF64_Notify_Unit in 'FreePDF64_Notify_Unit.pas' {FreePDF64_Notify},
   Einstellungen_Hilfe_Unit in 'Einstellungen_Hilfe_Unit.pas' {Einstellungen_Hilfe_Form},
   Favoriten2_Unit in 'Favoriten2_Unit.pas' {Favoriten2_Form},
@@ -26,7 +27,10 @@ uses
   Status_Unit in 'Status_Unit.pas' {Status_Form},
   Auswahl_Unit in 'Auswahl_Unit.pas' {Auswahl_Form},
   Suchen in 'Suchen.pas' {Suche_Form},
-  Info_Unit in 'Info_Unit.pas' {Info_Form};
+  Anleitung_Unit in 'Anleitung_Unit.pas' {Anleitung_Form},
+  Suche_Info_Unit in 'Suche_Info_Unit.pas' {Suche_Info},
+  uPDFBrowserForm in 'uPDFBrowserForm.pas' {PDFBrowserForm},
+  FreePDF64PrinterConfig in '..\FreePDF64_PostScriptPrinter\Source\FreePDF64PrinterConfig.pas';
 
 {$R *.RES}
 
@@ -68,7 +72,8 @@ begin
   Application.CreateForm(TStatus_Form, Status_Form);
   Application.CreateForm(TSuche_Form, Suche_Form);
   Application.CreateForm(TAuswahl_Form, Auswahl_Form);
-  Application.CreateForm(TInfo_Form, Info_Form);
+  Application.CreateForm(TAnleitung_Form, Anleitung_Form);
+  Application.CreateForm(TSuche_Info, Suche_Info);
   Application.Run;
   
   CloseHandle(hMutex);

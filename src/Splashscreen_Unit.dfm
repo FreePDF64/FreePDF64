@@ -1,30 +1,34 @@
 object Splashscreen_Form: TSplashscreen_Form
   Left = 0
   Top = 0
+  Margins.Left = 6
+  Margins.Top = 6
+  Margins.Right = 6
+  Margins.Bottom = 6
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'FreePDF64'
-  ClientHeight = 538
-  ClientWidth = 783
+  ClientHeight = 1076
+  ClientWidth = 1594
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -15
+  Font.Height = -30
   Font.Name = 'Segoe UI'
   Font.Style = []
   FormStyle = fsStayOnTop
   OnShow = FormShow
-  PixelsPerInch = 120
-  TextHeight = 20
+  PixelsPerInch = 240
+  TextHeight = 41
   object Image1: TImage
     Left = 0
-    Top = 51
-    Width = 783
-    Height = 487
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Top = 102
+    Width = 1594
+    Height = 974
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 8
     Align = alClient
     ParentShowHint = False
     Picture.Data = {
@@ -2514,27 +2518,24 @@ object Splashscreen_Form: TSplashscreen_Form
     Proportional = True
     ShowHint = False
     Stretch = True
-    ExplicitWidth = 780
-    ExplicitHeight = 490
   end
   object Panel1: TPanel
     Left = 0
     Top = 0
-    Width = 783
-    Height = 51
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Width = 1594
+    Height = 102
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 8
     Align = alTop
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
-    Font.Height = -20
+    Font.Height = -40
     Font.Name = 'Aptos Display'
     Font.Style = [fsBold]
     ParentFont = False
     TabOrder = 0
-    ExplicitWidth = 780
   end
   object Timer1: TTimer
     Interval = 4000

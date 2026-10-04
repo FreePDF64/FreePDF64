@@ -3,7 +3,7 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Diagnostics,
   System.Classes, Vcl.Graphics, Vcl.Controls, System.IOUtils,
   Vcl.StdCtrls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Buttons, Vcl.ImgList, Vcl.FileCtrl, IniFiles, Vcl.Menus, System.DateUtils,
@@ -46,7 +46,6 @@ type
     Clear: TSpeedButton;
     PanelBottom: TPanel;
     Btn_2: TSpeedButton;
-    Btn_7: TSpeedButton;
     Btn_6: TSpeedButton;
     Btn_1: TSpeedButton;
     Btn_5: TSpeedButton;
@@ -76,11 +75,12 @@ type
     FileSize: TSpinEdit;
     DTP: TDateTimePicker;
     DateiCheckBox: TCheckBox;
-    SortBtn: TBitBtn;
     SucheEdit: TEdit;
     Timer2: TTimer;
     AnzeigenPanel: TPanel;
     Gehezu1: TMenuItem;
+    Btn_8: TSpeedButton;
+    PDFViewer1: TMenuItem;
     procedure ButtonHochClick(Sender: TObject);
     procedure BrowseClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -99,7 +99,6 @@ type
     procedure FileSizeEnter(Sender: TObject);
     procedure FileSizeClick(Sender: TObject);
     procedure ClearClick(Sender: TObject);
-    procedure Allesmarkieren1Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure Btn_4Click(Sender: TObject);
@@ -120,26 +119,30 @@ type
     procedure Kopieren1Click(Sender: TObject);
     procedure Bewegen1Click(Sender: TObject);
     procedure Lschen1Click(Sender: TObject);
-    procedure Btn_7Click(Sender: TObject);
-    procedure Btn_7MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure Markieren1Click(Sender: TObject);
     procedure InfoClick(Sender: TObject);
     procedure AlterCBClick(Sender: TObject);
     procedure DateiCheckBoxClick(Sender: TObject);
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
-    procedure SortBtnClick(Sender: TObject);
     procedure SucheEditChange(Sender: TObject);
     procedure Panel_obenEnter(Sender: TObject);
     procedure Timer2Timer(Sender: TObject);
     procedure MoveSelectedItemsToTop(ListBox: TListBox);
     procedure AnzeigenPanelClick(Sender: TObject);
+    procedure Btn_8Click(Sender: TObject);
+    procedure FileFieldCloseUp(Sender: TObject);
     public
       { Public-Deklarationen }
       procedure PlaySoundFile(FileName: string);
+      procedure FileFieldChange(Sender: TObject);
     private
       { Private-Deklarationen }
-     flbHorzScrollWidth: Integer;
-  end;
+      flbHorzScrollWidth: Integer;
+      BrowseHook: HHOOK;
+      FLastPersistent: string;
+      FWaitForm: TForm;
+      SearchStopwatch: TStopwatch;
+    end;
 
 var
   Suche_Form: TSuche_Form;
@@ -153,7 +156,7 @@ implementation
 
 {$R *.dfm}
 
-uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit;
+uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm;
 
 procedure TSuche_Form.Panel_obenEnter(Sender: TObject);
 begin
@@ -218,8 +221,13 @@ end;
 procedure TSuche_Form.FormCreate(Sender: TObject);
 var
   Laenge: Integer;
+  Scale: Single;
 begin
-  ListBox1.Style      := lbOwnerDrawFixed;
+  // Zeilenhöhe des Suchergebnisses einstellen
+  Scale := ListBox1.CurrentPPI / 96;
+  ListBox1.ItemHeight := Round(17 * Scale);
+  // -----------------------------------------
+
   ListBox1.OnDrawItem := ListBox1DrawItem;
 
     // Suche_Form zusätzlich in der Taskbar anzeigen lassen
@@ -229,31 +237,31 @@ begin
   Suche_ItemAnzeigen  := False;
 
   // Die Buttons werden dargestellt und ausgerichtet!
-  Laenge := Suche_Form.Width div 8;
-  Btn_1.Left := 1;
+  Laenge := Suche_Form.Width div 9;
+  Btn_8.Left := 1;
+  Btn_8.Align := alLeft;
+  Btn_8.Width := Laenge;
+  Btn_1.Left := 2;
   Btn_1.Align := alLeft;
   Btn_1.Width := Laenge;
-  Btn_2.Left := 2;
+  Btn_2.Left := 3;
   Btn_2.Align := alLeft;
   Btn_2.Width := Laenge;
-  Btn_3.Left := 3;
+  Btn_3.Left := 4;
   Btn_3.Align := alLeft;
   Btn_3.Width := Laenge;
-  Btn_4.Left := 4;
+  Btn_4.Left := 5;
   Btn_4.Align := alLeft;
   Btn_4.Width := Laenge;
-  Btn_0.Left := 5;
+  Btn_0.Left := 6;
   Btn_0.Align := alLeft;
   Btn_0.Width := Laenge;
-  Btn_6.Left := 6;
+  Btn_6.Left := 7;
   Btn_6.Align := alLeft;
   Btn_6.Width := Laenge;
-  Btn_5.Left := 7;
-  Btn_5.Align := alLeft;
+  Btn_5.Left := 8;
+  Btn_5.Align := alClient;
   Btn_5.Width := Laenge;
-  Btn_7.Left := 8;
-  Btn_7.Align := alClient;
-  Btn_7.Width := Laenge;
 end;
 
 procedure TSuche_Form.FormResize(Sender: TObject);
@@ -262,22 +270,22 @@ var
 begin
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := Suche_Form.Width div 8;
-  Btn_7.Width := Laenge;
-  Btn_7.Left := 1;
   Btn_5.Width := Laenge;
-  Btn_5.Left := 2;
+  Btn_5.Left := 1;
   Btn_6.Width := Laenge;
-  Btn_6.Left := 3;
+  Btn_6.Left := 2;
   Btn_0.Width := Laenge;
-  Btn_0.Left := 4;
+  Btn_0.Left := 3;
   Btn_4.Width := Laenge;
-  Btn_4.Left := 5;
+  Btn_4.Left := 4;
   Btn_3.Width := Laenge;
-  Btn_3.Left := 6;
+  Btn_3.Left := 5;
   Btn_2.Width := Laenge;
-  Btn_2.Left := 7;
+  Btn_2.Left := 6;
   Btn_1.Width := Laenge;
-  Btn_1.Left := 8;
+  Btn_1.Left := 7;
+  Btn_8.Width := Laenge;
+  Btn_8.Left := 8;
 
   SFHResize := Suche_Form.Height;
 end;
@@ -345,21 +353,21 @@ begin
       IniDat.EraseSection('Suche');
       if SearchField.Items.Count > 0 then
         for i := 0 to SearchField.Items.Count do
-          IniDat.WriteString('Suche', 'SearchField' + IntToStr(i), SearchField.Items[i]);
+          IniDat.WriteString('Search', 'SearchField' + IntToStr(i), SearchField.Items[i]);
 
       if FileField.Items.Count > 0 then
         for i := 0 to FileField.Items.Count do
-          IniDat.WriteString('Suche', 'FileField' + IntToStr(i), FileField.Items[i]);
+          IniDat.WriteString('Search', 'FileField' + IntToStr(i), FileField.Items[i]);
 
       // Textsuche schreiben.
       if TextCB.Items.Count > 0 then
       for i := 0 to TextCB.Items.Count do
-        IniDat.WriteString('Suche', 'Textsearch' + IntToStr(i), TextCB.Items[i]);
+        IniDat.WriteString('Search', 'Textsearch' + IntToStr(i), TextCB.Items[i]);
 
-    IniDat.WriteInteger('Suche', 'Top',    Suche_Form.Top);
-    IniDat.WriteInteger('Suche', 'Left',   Suche_Form.Left);
-    IniDat.WriteInteger('Suche', 'Height', Suche_Form.Height);
-    IniDat.WriteInteger('Suche', 'Width',  Suche_Form.Width);
+    IniDat.WriteInteger('Search', 'Top',    Suche_Form.Top);
+    IniDat.WriteInteger('Search', 'Left',   Suche_Form.Left);
+    IniDat.WriteInteger('Search', 'Height', Suche_Form.Height);
+    IniDat.WriteInteger('Search', 'Width',  Suche_Form.Width);
     // Speicher wird wieder freigeben
     IniDat.Free;
   except
@@ -367,23 +375,53 @@ begin
   end;
 end;
 
-// Verzeichnis auswählen zur Suche
-procedure TSuche_Form.Allesmarkieren1Click(Sender: TObject);
-begin
-  Btn_7.Caption := 'Warte...';
-  LockWindowUpdate(ListBox1.Handle);
-  ListBox1.SelectAll;
-  LockWindowUpdate(0);
-  StatusBar1.Canvas.Font := StatusBar1.Font;
-  StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
-  Btn_7.Caption := 'Markieren';
-  // Zum obersten Eintrag gehen
-  ListBox1.ItemIndex := 0;
-end;
-
 procedure TSuche_Form.Bewegen1Click(Sender: TObject);
 begin
   Btn_3.Click;
+end;
+
+procedure CenterDialogOverForm(DialogHandle: HWND; Owner: TForm);
+var
+  RDlg, ROwner: TRect;
+  X, Y: Integer;
+begin
+  if (DialogHandle = 0) or (Owner = nil) then Exit;
+
+  GetWindowRect(DialogHandle, RDlg);
+  GetWindowRect(Owner.Handle, ROwner);
+
+  X := ROwner.Left + ((ROwner.Right - ROwner.Left) div 2) - ((RDlg.Right - RDlg.Left) div 2);
+  Y := ROwner.Top  + ((ROwner.Bottom - ROwner.Top) div 2) - ((RDlg.Bottom - RDlg.Top) div 2);
+
+  SetWindowPos(DialogHandle, 0, X, Y, 0, 0,
+    SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE);
+end;
+
+function BrowseHookProc(nCode: Integer; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
+var
+  RDlg, RSearch: TRect;
+  X, Y: Integer;
+begin
+  if (nCode = HCBT_ACTIVATE) and (Suche_Form <> nil) then
+  begin
+    // Rechteck des Dialogs
+    GetWindowRect(wParam, RDlg);
+
+    // Rechteck des Suchfeldes (SearchField)
+    GetWindowRect(Suche_Form.SearchField.Handle, RSearch);
+
+    // X = horizontale Mitte des Suchfeldes
+    X := RSearch.Left + ((RSearch.Right - RSearch.Left) div 2)
+         - ((RDlg.Right - RDlg.Left) div 2) + 160;   // 160 px nach rechts
+
+    // Y = Unterkante des Suchfeldes
+    Y := RSearch.Bottom;
+
+    // Fenster verschieben
+    SetWindowPos(wParam, 0, X, Y, 0, 0, SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE);
+  end;
+
+  Result := CallNextHookEx(Suche_Form.BrowseHook, nCode, wParam, lParam);
 end;
 
 procedure TSuche_Form.BrowseClick(Sender: TObject);
@@ -392,13 +430,18 @@ var
 begin
   s := SearchField.Text;
 
-  LMDShellSysBrowseDialog1.SelectedPath := ExcludeTrailingBackslash(s);
+  LMDShellSysBrowseDialog1.SelectedPath := '';
   LMDShellSysBrowseDialog1.Caption := 'Laufwerk oder Verzeichnis auswählen';
-  LMDShellSysBrowseDialog1.InstructionText :=
-    'Bitte das gewünschte Laufwerk oder Verzeichnis auswählen:';
+  LMDShellSysBrowseDialog1.InstructionText := 'Bitte das gewünschte Laufwerk oder Verzeichnis auswählen:';
+
+  // Hook setzen – fängt das nächste Fenster ab
+  BrowseHook := SetWindowsHookEx(WH_CBT, @BrowseHookProc, 0, GetCurrentThreadId);
 
   if LMDShellSysBrowseDialog1.Execute then
     s := LMDShellSysBrowseDialog1.SelectedPath;
+
+  // Hook entfernen
+  UnhookWindowsHookEx(BrowseHook);
 
   SearchField.Text := s;
 end;
@@ -474,34 +517,108 @@ begin
     ListBox1.Selected[0] := True;
 end;
 
-// Markieren
-procedure TSuche_Form.Btn_7Click(Sender: TObject);
-begin
-  if ListBox1.Count < 0 then
-    Exit
-  else
-  begin
-    LockWindowUpdate(ListBox1.Handle);
-    ListBox1.SelectAll;
-    LockWindowUpdate(0);
-    if ListBox1.SelCount > 0 then
-      StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
-  end;
-  StatusBar1.Canvas.Font := StatusBar1.Font;
-  StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
-  Btn_7.Caption := 'Markieren';
-  // Zum obersten Eintrag gehen
-  ListBox1.ItemIndex := 0;
+// Task schließen (hier Ghostscript)
+procedure KillTask(ExeFileName: string);
+var
+  h: HWND;
+begin // ExeFileName = caption or cmd path
+  h := FindWindow(NIL, LPCWSTR(ExeFileName));
+  if h <> 0 then
+    PostMessage(h, WM_CLOSE, 0, 0);
 end;
 
-procedure TSuche_Form.Btn_7MouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+// Button: F3 Anzeigen
+procedure TSuche_Form.Btn_8Click(Sender: TObject);
+var
+  i: Integer;
+  s: String;
+  PDFForm: TPDFBrowserForm;
+  Offset: Integer;
+  PDFCount: Integer;
+  BaseOffset: Integer;
 begin
-  Btn_7.Caption := 'Warten...';
+  if ListBox1.SelCount = 0 then
+    Exit;
+
+  PDFCount := 0;
+
+  // Grundversatz bei 100 % DPI
+  BaseOffset := 20;
+
+  // Alle markierten Dateien durchlaufen
+  for i := 0 to ListBox1.Count - 1 do
+  begin
+    if ListBox1.Selected[i] then
+    begin
+      s := ListBox1.Items.Strings[i];
+      // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
+      if (Length(s) > 0) and (s[1] = '[') then
+        Delete(s, 1, 1);
+      // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
+      if (Length(s) > 0) and (s[Length(s)] = ']') then
+        Delete(s, Length(s), 1);
+      // Nur PDF-Dateien anzeigen
+      if UpperCase(ExtractFileExt(s)) = '.PDF' then
+      begin
+        PDFForm := TPDFBrowserForm.Create(Self);
+        PDFForm.PDFFileName := s;
+        // DPI-skalierter Versatz
+        // 100 % = 30 Pixel
+        // 125 % = 38 Pixel
+        // 150 % = 45 Pixel
+        // 175 % = 53 Pixel
+        // 200 % = 60 Pixel
+        Offset := MulDiv(
+                 (PDFCount mod 8) * BaseOffset,
+                  PDFForm.CurrentPPI,
+                  96
+                 );
+        PDFForm.Left := PDFForm.Left + Offset;
+        PDFForm.Top := PDFForm.Top + Offset;
+        PDFForm.Show;
+        Application.ProcessMessages;
+        Inc(PDFCount);
+      end;
+    end;
+  end;
+
+  // Falls keine PDF-Datei ausgewählt wurde
+  if PDFCount = 0 then
+    ShowMessage('Es wurden keine PDF-Dateien ausgewählt!');
 end;
 
 procedure TSuche_Form.Markieren1Click(Sender: TObject);
 begin
-  Btn_7.Click;
+  Suche_Form.Caption := 'Markieren gestartet. Bitte warten...';
+
+  if ListBox1.Count = 0 then
+  begin
+    Suche_Form.Caption := 'Suchen nach Datei(en)/Verzeichnis(se)';
+    Exit;
+  end;
+
+  LockWindowUpdate(ListBox1.Handle);
+  try
+    // Alle Einträge direkt über die Windows-ListBox markieren.
+    // -1 bedeutet: alle Einträge.
+    SendMessage(ListBox1.Handle, LB_SETSEL, 1, -1);
+
+    // Die Anzahl ist nach Select-All bekannt:
+    StatusBar1.Panels[1].Text :=
+      'Markiert: ' + IntToStr(ListBox1.Count);
+  finally
+    LockWindowUpdate(0);
+  end;
+
+  StatusBar1.Canvas.Font := StatusBar1.Font;
+  StatusBar1.Panels[0].Width :=
+    ListBox1.Width -
+    (StatusBar1.Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+
+  // Zum obersten Eintrag gehen
+  ListBox1.ItemIndex := 0;
+
+  Suche_Form.Caption := 'Suchen nach Datei(en)/Verzeichnis(se)';
 end;
 
 procedure TSuche_Form.ButtonHochClick(Sender: TObject);
@@ -619,7 +736,7 @@ begin
       StatusBar1.Panels[0].Text :=
         'Datei(en) kopiert ins Überwachungs-Quellverzeichnis...'
     end;
-  ListBox1.ClearSelection;
+//  ListBox1.ClearSelection;
 end;
 
 procedure TSuche_Form.DatumCheckBoxClick(Sender: TObject);
@@ -787,10 +904,10 @@ begin
     IniDat := TIniFile.Create(IniFile);
     with IniDat do
     begin
-      Suche_Form.Top    := ReadInteger('Suche', 'Top',    Suche_Form.Top);
-      Suche_Form.Left   := ReadInteger('Suche', 'Left',   Suche_Form.Left);
-      Suche_Form.Height := ReadInteger('Suche', 'Height', Suche_Form.Height);
-      Suche_Form.Width  := ReadInteger('Suche', 'Width',  Suche_Form.Width);
+      Suche_Form.Top    := ReadInteger('Search', 'Top',    Suche_Form.Top);
+      Suche_Form.Left   := ReadInteger('Search', 'Left',   Suche_Form.Left);
+      Suche_Form.Height := ReadInteger('Search', 'Height', Suche_Form.Height);
+      Suche_Form.Width  := ReadInteger('Search', 'Width',  Suche_Form.Width);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -817,7 +934,6 @@ begin
 
   Timer1.Enabled          := False;
   SuchergebnisBtn.Enabled := False;
-  SortBtn.Enabled         := False;
   SucheEdit.Visible       := False;
   AnzeigenPanel.Visible   := False;
   SucheEdit.Text          := '';
@@ -825,7 +941,7 @@ begin
   DTP.Time := Time;
 
   ListBox1.Clear;
-  FilesFoldersCB.ItemIndex := 0; // Zeige Dateien und Verzeichnisse
+  FilesFoldersCB.ItemIndex := 1; // Zeige Dateien
   FileSizeCombo.ItemIndex  := 1;
   FileSize.Value           := 1;
   SizeAuswahl.ItemIndex    := 1;
@@ -835,10 +951,10 @@ begin
   DateiCheckBox.Checked    := False;
   Sizeauswahl.Enabled      := False;
   SizeAuswahl.ItemIndex    := 0;
-  TextCB.Enabled           := False;
+  TextCB.Enabled           := True;
   TextCB.Text              := '';
   FileField.Text           := '';
-  TextLabel.Enabled        := False;
+  TextLabel.Enabled        := True;
   DirCheckbox.Checked      := True;
   HiddenCheckbox.State     := cbChecked;
   DatumCheckBox.Checked    := False;
@@ -881,30 +997,36 @@ end;
 // Fragezeichen: Hilfe für die Suchfunktionen
 procedure TSuche_Form.InfoClick(Sender: TObject);
 begin
-  if MessageDlg('Hilfe zum Suchefenster' + #13 +
-                '===============' + #13 +
-                'Suchen nach:' + #13 +
-                '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +
-                '- Beispiel: Test*.* findet u.a.: Testlauf.docx, Test1.ini, Testdatei.prn' + #13 + #13 +
-                '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis' + #13 +
-                '- Beispiel: Test?.log findet u.a.: Test1.log, Test8.log' + #13 +
-                '- Beispiel: Test??.log findet u.a.: Test1.log, Test8.log, TestA3.log, Test45.log' + #13 + #13 +
-                '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
-                '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt' + #13 + #13 +
-                'Versteckt+System' + #13 +
-                '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Versteckt (H) und System (S)' + #13 +
-                '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 + #13 +
-                'Text suchen:' + #13 +
-                '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 + #13 +
-                'Suchergebnis:' + #13 +
-                '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
-                '- Zur Suche in das Suchergebnis klicken und dann einfaches Tippen eines Buchstabens' + #13 +
-                '- Alt+linker Mausklick öffnet markierte Datei des Suchergebnisses' + #13 +
-                '- Rechter Mausklick öffnet Standard-Kontextmenü der markierten Datei/Verzeichnis' + #13 +
-                '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis',
-                mtInformation, [mbOk], 0, mbOk) = mrCancel then
-                  Exit;
+  Suche_Info.Position := poMainFormCenter;
+  Suche_Info.Memo1.Lines.Text :=
+    'Suchen nach:' + #13 +
+    '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +
+    '- Beispiel: Test* findet u.a.: Testlauf.docx, Test1.ini, Testdatei.prn, testhost.dll, usw.' + #13 +
+    '- Beispiel: *Test* findet u.a.: applatest.xml, Austesten.xls, TranslateString.dcu, usw.' + #13 +
+    '- Beispiel: Test ohne * findet nur: Test' + #13 + #13 +
+    '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis' + #13 +
+    '- Beispiel: Test?.log findet u.a.: Test1.log, Test8.log, usw.' + #13 +
+    '- Beispiel: Test??.log findet u.a.: Test1.log, Test8.log, TestA3.log, Test45.log, usw.' + #13 + #13 +
+    '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
+    '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt, usw.' + #13 +
+    '- Beispiel: *.pdf|*.prn findet alle Dateien mit der Endung pdf und prn.' + #13 + #13 +
+    'Versteckt+System' + #13 +
+    '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Hidden (H) und System (S)' + #13 +
+    '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 +
+    '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 +#13 +
+    'Text suchen:' + #13 +
+    '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 + #13 +
+    'Suchergebnis:' + #13 +
+    '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
+    '- Zur Suche in das Suchergebnis klicken und dann einfaches Tippen eines Buchstabens' + #13 +
+    '- Alt+linker Mausklick öffnet markierte Datei des Suchergebnisses' + #13 +
+    '- Rechter Mausklick öffnet Standard-Kontextmenü der markierten Datei/Verzeichnis' + #13 +
+    '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis' + #13 +
+    '- Strg+A markiert alle Dateien des Suchergebnisses';
+
+  Suche_Info.ShowModal;
 end;
+
 
 procedure TSuche_Form.Kopieren1Click(Sender: TObject);
 begin
@@ -933,7 +1055,6 @@ var
   BytesRead: Cardinal;
   WorkDir: String;
   Handle: Boolean;
-  i: Integer;
 begin
   // Memo-Inhalt-Schriftfarbe auf Weiss setzen
   FreePDF64_Form.Memo1.Font.Color := clWhite;
@@ -976,12 +1097,6 @@ begin
         CloseHandle(PI.hThread);
         CloseHandle(PI.hProcess);
       end;
-    if (Einstellungen_Form.ExifToolGE.Checked = True) and Info_Anzeigen then
-      // Textausgabe ausrichten
-      for i := 1 to FreePDF64_Form.Memo1.Lines.Count do
-        FreePDF64_Form.Memo1.Lines[i] :=
-          StringReplace(FreePDF64_Form.Memo1.Lines[i], ':', #9 + ':',
-          [rfIgnoreCase]);
   finally
     CloseHandle(StdOutPipeRead);
   end;
@@ -1046,22 +1161,17 @@ begin
 
   if FreePDF64_Form.Memo1.Lines.Count > 0 then
   begin
-    i := TextHoehe(FreePDF64_Form.Memo1.Font, FreePDF64_Form.Memo1.Text);
-    i := (i * FreePDF64_Form.Memo1.Lines.Count) + MHA;
-    if i < FreePDF64_Form.Memo1.Parent.Height then
-      Exit;
-    if FreePDF64_Form.Height < 400 then
-      Exit;
-    if i >= (FreePDF64_Form.Height - 350) then
-      i := FreePDF64_Form.Height - 350;
-//    FreePDF64_Form.PDFPanel.Height := i;
-
-      FreePDF64_Form.PDFPanel.Height := i + 225;
-      FreePDF64_Form.PDF_Erstellung.Visible := False;
-      FreePDF64_Form.FormatBtn.Visible := False;
-      FreePDF64_Form.PanelBottom.Visible := False;
-
+    FreePDF64_Form.PDFPanel.Left   := 0;
+    FreePDF64_Form.PDFPanel.Top    := 0;
+    FreePDF64_Form.PDFPanel.Width  := FreePDF64_Form.ClientWidth;
+    FreePDF64_Form.PDFPanel.Height := FreePDF64_Form.ClientHeight - FreePDF64_Form.ToolBar1.Height;
+    FreePDF64_Form.PDFPanel.BringToFront;
+    // Buttons unsichtbar machen...
+    FreePDF64_Form.PDF_Erstellung.Visible := False;
+    FreePDF64_Form.FormatBtn.Visible := False;
+    FreePDF64_Form.PanelBottom.Visible := False;
   end;
+
   FreePDF64_Form.MemoBtn.Visible := True;
   Info_Anzeigen := False;
 end;
@@ -1129,10 +1239,12 @@ procedure TSuche_Form.SuchergebnisBtnClick(Sender: TObject);
 var
   f: TextFile;
   i: Integer;
-  tmp: String;
+  tmp, s: String;
 begin
   if ListBox1.Count = 0 then
     Exit;
+
+  s := StatusBar1.Panels[0].Text;
 
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
@@ -1149,6 +1261,8 @@ begin
     WriteLn(f, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss - ', Now) + 'Suchen in: ' + SearchField.Text + ' (inkl. Unterverzeichnisse)'))
   else
     WriteLn(f, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss - ', Now) + 'Suchen in: ' + SearchField.Text + ' (ohne Unterverzeichnisse)'));
+
+  WriteLn(f, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss - ', Now) + s));
 
   for i := 0 to ListBox1.Count - 1 do
   begin
@@ -1184,10 +1298,9 @@ begin
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
 
-  s1 := IncludeTrailingBackslash(FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName);
-  LMDShellSysBrowseDialog1.SelectedPath := s1;
+  LMDShellSysBrowseDialog1.SelectedPath := '';
   LMDShellSysBrowseDialog1.Caption := 'In welches Verzeichnis soll kopiert werden?';
-  LMDShellSysBrowseDialog1.InstructionText := 'Bitte das gewünschte Verzeichnis auswählen.';
+  LMDShellSysBrowseDialog1.InstructionText := 'Bitte das gewünschte Verzeichnis auswählen:';
 
   if LMDShellSysBrowseDialog1.Execute then
     s1 := LMDShellSysBrowseDialog1.SelectedPath
@@ -1248,7 +1361,7 @@ begin
   end;
 end;
 
-// Abfrage auf Attribute
+// Abfrage auf Attribute (Dateien und Verzeichnisse)
 function GetFileAttributes(const FileName: string): TFileAttributes;
 var
   srec: TSearchRec;
@@ -1258,16 +1371,25 @@ begin
   faHidden   := $00000002;
   faArchive  := $00000020;
 
-  result := [];
-  if FindFirst(FileName, faAnyFile, srec) = 0 then begin
+  Result := [];
+
+  if FindFirst(FileName, faAnyFile, srec) = 0 then
+  begin
     try
-      if (srec.Attr and faReadOnly)  > 0 then result := result + [ReadOnly];  //Schreibgesch. Datei
-      if (srec.Attr and faHidden)    > 0 then result := result + [Hidden];    //Verborgene Datei
-      if (srec.Attr and faSysFile)   > 0 then result := result + [SysFile];   //Systemdatei
-      if (srec.Attr and faVolumeId)  > 0 then result := result + [VolumeId];  //Laufwerks-ID
-      if (srec.Attr and faDirectory) > 0 then result := result + [Directory]; //Verzeichnis
-      if (srec.Attr and faArchive)   > 0 then result := result + [Archive];   //Archivdatei
-      if (srec.Attr and faAnyFile)   > 0 then result := result + [AnyFile];   //Beliebige Datei
+      // allgemeine Attribute
+      if (srec.Attr and faReadOnly)  <> 0 then Result := Result + [ReadOnly];
+      if (srec.Attr and faHidden)    <> 0 then Result := Result + [Hidden];
+      if (srec.Attr and faSysFile)   <> 0 then Result := Result + [SysFile];
+      if (srec.Attr and faVolumeID)  <> 0 then Result := Result + [VolumeId];
+      if (srec.Attr and faArchive)   <> 0 then Result := Result + [Archive];
+
+      // Verzeichnisattribut
+      if (srec.Attr and faDirectory) <> 0 then
+        Result := Result + [Directory];
+
+      // Kennzeichnung: beliebige Datei / Objekt
+      if (srec.Attr and faAnyFile) <> 0 then
+        Result := Result + [AnyFile];
     finally
       FindClose(srec);
     end;
@@ -1320,6 +1442,7 @@ begin
 
   if ListBox1.Count = 0 then
     Exit;
+
   if ListBox1.SelCount > 0 then
     StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
 
@@ -1328,39 +1451,66 @@ begin
     begin
       if FileExists(ListBox1.Items.Strings[i]) then
       begin
-        d  := GetFileLastWriteTime(ListBox1.Items.Strings[i]);
+        d := GetFileLastWriteTime(ListBox1.Items.Strings[i]);
+
         // Größenausgabe formatieren
-        s  := FloatToStrF(GetFileSize(ListBox1.Items.Strings[i]), ffNumber, 15, 0) + ' Bytes';
+        s := FloatToStrF(GetFileSize(ListBox1.Items.Strings[i]),
+                         ffNumber, 15, 0) + ' Bytes';
+
         if HiddenCheckBox.State = cbGrayed then
         begin
           fa := GetFileAttributes(ListBox1.Items.Strings[i]);
+
           at := '';
-          if ReadOnly in fa then at := at + 'R';
-          if Archive  in fa then at := at + 'A';
-          if Hidden   in fa then at := at + 'H';
-          if SysFile  in fa then at := at + 'S';
-          StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d) + ', ' + s + ' (Attribute: ' + at + ')';
+          if ReadOnly  in fa then at := at + 'R';
+          if Archive   in fa then at := at + 'A';
+          if Hidden    in fa then at := at + 'H';
+          if SysFile   in fa then at := at + 'S';
+          if Directory in fa then at := at + 'D';
+
+          StatusBar1.Panels[0].Text :=
+            FormatDateTime('dd.mm.yyyy hh:mm:ss', d) +
+            ', ' + s +
+            ' (Attribute: ' + at + ')';
+
           if at = '' then
-            StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d) + ', ' + s;
-        end else
-            StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d) + ', ' + s;
-      end else
-      if DirectoryExists(RemoveFirstAndLastChar(ListBox1.Items.Strings[i])) then
+            StatusBar1.Panels[0].Text :=
+              FormatDateTime('dd.mm.yyyy hh:mm:ss', d) +
+              ', ' + s;
+        end
+        else
+          StatusBar1.Panels[0].Text :=
+            FormatDateTime('dd.mm.yyyy hh:mm:ss', d) +
+            ', ' + s;
+      end
+      else if DirectoryExists(RemoveFirstAndLastChar(ListBox1.Items.Strings[i])) then
       begin
-        d  := GetFileLastWriteTime(RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+        d := GetFileLastWriteTime(
+               RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+
         if HiddenCheckBox.State = cbGrayed then
         begin
-          fa := GetFileAttributes(RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+          fa := GetFileAttributes(
+                  RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+
           at := '';
-          if ReadOnly in fa then at := at + 'R';
-          if Archive  in fa then at := at + 'A';
-          if Hidden   in fa then at := at + 'H';
-          if SysFile  in fa then at := at + 'S';
-          StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d) + ' (Attribute: ' + at + ')';
+          if ReadOnly  in fa then at := at + 'R';
+          if Archive   in fa then at := at + 'A';
+          if Hidden    in fa then at := at + 'H';
+          if SysFile   in fa then at := at + 'S';
+          if Directory in fa then at := at + 'D';
+
+          StatusBar1.Panels[0].Text :=
+            FormatDateTime('dd.mm.yyyy hh:mm:ss', d) +
+            ' (Attribute: ' + at + ')';
+
           if at = '' then
-            StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d);
-        end else
-          StatusBar1.Panels[0].Text := FormatDateTime('dd.mm.yyyy hh:mm:ss', d);
+            StatusBar1.Panels[0].Text :=
+              FormatDateTime('dd.mm.yyyy hh:mm:ss', d);
+        end
+        else
+          StatusBar1.Panels[0].Text :=
+            FormatDateTime('dd.mm.yyyy hh:mm:ss', d);
       end;
     end;
 end;
@@ -1377,13 +1527,9 @@ begin
   StatusBar1.Panels[0].Text := '';
   StatusBar1.Panels[1].Text := '';
 
-  s1 := IncludeTrailingBackslash
-    (FreePDF64_Form.LMDShellFolder2.ActiveFolder.PathName);
-  LMDShellSysBrowseDialog1.SelectedPath := s1;
-  LMDShellSysBrowseDialog1.Caption :=
-    'In welches Verzeichnis soll verschoben werden?';
-  LMDShellSysBrowseDialog1.InstructionText :=
-    'Bitte das gewünschte Verzeichnis auswählen.';
+  LMDShellSysBrowseDialog1.SelectedPath := '';
+  LMDShellSysBrowseDialog1.Caption := 'In welches Verzeichnis soll verschoben werden?';
+  LMDShellSysBrowseDialog1.InstructionText := 'Bitte das gewünschte Verzeichnis auswählen:';
 
   if LMDShellSysBrowseDialog1.Execute then
     s1 := LMDShellSysBrowseDialog1.SelectedPath
@@ -1406,8 +1552,7 @@ begin
         if UmbenennenCB.Checked then
           MoveFileEx(s, IncludeTrailingBackslash(s1) + ExtractFileName(s), True)
         else
-          MoveFileEx(s, IncludeTrailingBackslash(s1) +
-            ExtractFileName(s), False);
+          MoveFileEx(s, IncludeTrailingBackslash(s1) + ExtractFileName(s), False);
         ListBox1.DeleteSelected;
         ListBox1.ClearSelection;
         if ListBox1.Count > 0 then
@@ -1415,11 +1560,9 @@ begin
         Exit;
       end
       else if UmbenennenCB.Checked then
-        MoveFileEx(pchar(s), pchar(IncludeTrailingBackslash(s1) +
-          ExtractFileName(s)), True)
+        MoveFileEx(pchar(s), pchar(IncludeTrailingBackslash(s1) + ExtractFileName(s)), True)
       else
-        MoveFileEx(pchar(s), pchar(IncludeTrailingBackslash(s1) +
-          ExtractFileName(s)), False);
+        MoveFileEx(pchar(s), pchar(IncludeTrailingBackslash(s1) + ExtractFileName(s)), False);
       StatusBar1.Panels[0].Text := 'Bewegenvorgang durchgeführt...';
     end;
 
@@ -1431,71 +1574,152 @@ begin
 end;
 
 procedure TSuche_Form.Timer1Timer(Sender: TObject);
+var
+  DateiAnzahl: Integer;
+  VerzeichnisAnzahl: Integer;
+  StatusText: string;
 begin
-  StatusBar1.Panels[0].Text := Anzeige;
-  Timer1.Enabled := False; // Timer stoppen, um nur einmal zu aktualisieren
+  // Timer zunächst ausschalten.
+  Timer1.Enabled := False;
 
-  if StartSearchButton.Enabled = True then
+  // =========================================================
+  // SUCHE LÄUFT NOCH
+  //
+  // Der Start-Button ist während der Suche deaktiviert.
+  // In diesem Fall nur den aktuellen Pfad anzeigen.
+  // =========================================================
+  if not StartSearchButton.Enabled then
   begin
-    // Nur Dateien
-    if FilesFoldersCB.ItemIndex = 1 then
-    begin
-      if ListBox1.Count = 0 then
-      begin
-        if StopSuche then
-          StatusBar1.Panels[0].Text := '[0 Datei(en) gefunden]' + ' - Suche abgebrochen'
-        else
-          StatusBar1.Panels[0].Text := '[0 Datei(en) gefunden]';
-      end else
-      begin
-        if StopSuche then
-          StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) gefunden]' + ' - Suche abgebrochen'
-        else
-          StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) gefunden]';
-      end;
-    end else
-      // Nur Verzeichnisse
-      if FilesFoldersCB.ItemIndex = 2 then
-      begin
-        if ListBox1.Count = 0 then
-        begin
-          if StopSuche then
-            StatusBar1.Panels[0].Text := '[0 Verzeichnis(se) gefunden]' + ' - Suche abgebrochen'
-          else
-            StatusBar1.Panels[0].Text := '[0 Verzeichnis(se) gefunden]';
-        end else
-        begin
-          if StopSuche then
-            StatusBar1.Panels[0].Text := '[' + IntToStr(Zaehler) + ' Verzeichnis(se) gefunden]' + ' - Suche abgebrochen'
-          else
-            StatusBar1.Panels[0].Text := '[' + IntToStr(Zaehler) + ' Verzeichnis(se) gefunden]';
-        end;
-      end else
-        // Dateien und Verzeichnisse
-        if FilesFoldersCB.ItemIndex = 0 then
-        begin
-          if ListBox1.Count = 0 then
-          begin
-            if StopSuche then
-              StatusBar1.Panels[0].Text := '[0 Datei(en) und 0 Verzeichnis(se) gefunden]' + ' - Suche abgebrochen'
-            else
-              StatusBar1.Panels[0].Text := '[0 Datei(en) und 0 Verzeichnis(se) gefunden]';
-          end else
-          begin
-            if DateiCheckBox.Checked and StopSuche then
-              StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) gefunden] - Suche abgebrochen'
-            else
-            if DateiCheckBox.Checked and not StopSuche then
-              StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) gefunden]'
-            else
-            if (DateiCheckBox.Checked = False) and StopSuche then
-              StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) und ' + IntToStr(Zaehler) + ' Verzeichnis(se) gefunden]' + ' - Suche abgebrochen'
-            else
-            if (DateiCheckBox.Checked = False) and not StopSuche then
-              StatusBar1.Panels[0].Text := '[' + IntToStr(ListBox1.Count - Zaehler) + ' Datei(en) und ' + IntToStr(Zaehler) + ' Verzeichnis(se) gefunden]'
-          end;
-        end;
+    StatusBar1.Panels[0].Text := Anzeige;
+
+    // Timer wieder aktivieren, damit der nächste
+    // aktuelle Suchpfad angezeigt werden kann.
+    Timer1.Enabled := True;
+
+    Exit;
   end;
+
+  // =========================================================
+  // SUCHE IST BEENDET ODER WURDE ABGEBROCHEN
+  // =========================================================
+
+  // ---------------------------------------------------------
+  // Anzahl Verzeichnisse
+  // ---------------------------------------------------------
+  VerzeichnisAnzahl := Zaehler;
+
+  // ---------------------------------------------------------
+  // Anzahl Dateien
+  //
+  // ListBox1 enthält am Ende:
+  //
+  //   Verzeichnisse + Dateien
+  //
+  // Zaehler enthält:
+  //
+  //   Verzeichnisse
+  //
+  // Deshalb:
+  //
+  //   Dateien = ListBox1.Count - Zaehler
+  // ---------------------------------------------------------
+  DateiAnzahl :=
+    ListBox1.Count - VerzeichnisAnzahl;
+
+  // Sicherheit gegen negative Werte
+  if VerzeichnisAnzahl < 0 then
+    VerzeichnisAnzahl := 0;
+
+  if DateiAnzahl < 0 then
+    DateiAnzahl := 0;
+
+  // =========================================================
+  // STATUS-TEXT ERSTELLEN
+  // =========================================================
+  case FilesFoldersCB.ItemIndex of
+
+    // =======================================================
+    // Dateien und Verzeichnisse
+    // =======================================================
+    0:
+      begin
+        if DateiCheckBox.Checked then
+        begin
+          // Nur Dateien
+          StatusText :=
+            '[' +
+            IntToStr(DateiAnzahl) +
+            ' Datei(en) gefunden]';
+        end
+        else
+        begin
+          // Dateien und Verzeichnisse
+          StatusText :=
+            '[' +
+            IntToStr(DateiAnzahl) +
+            ' Datei(en) und ' +
+            IntToStr(VerzeichnisAnzahl) +
+            ' Verzeichnis(se) gefunden]';
+        end;
+      end;
+
+    // =======================================================
+    // Nur Dateien
+    // =======================================================
+    1:
+      begin
+        StatusText :=
+          '[' +
+          IntToStr(DateiAnzahl) +
+          ' Datei(en) gefunden]';
+      end;
+
+    // =======================================================
+    // Nur Verzeichnisse
+    // =======================================================
+    2:
+      begin
+        StatusText :=
+          '[' +
+          IntToStr(VerzeichnisAnzahl) +
+          ' Verzeichnis(se) gefunden]';
+      end;
+
+  else
+    begin
+      StatusBar1.Panels[0].Text := '';
+      Exit;
+    end;
+
+  end;
+
+  // =========================================================
+  // ABGEBROCHEN?
+  // =========================================================
+  if StopSuche then
+    StatusText :=
+      StatusText +
+      ' - Suche abgebrochen';
+
+  // =========================================================
+  // GESAMTE SUCHDAUER STOPPEN
+  //
+  // Die Stoppuhr wurde beim Klick auf den Start-Button
+  // gestartet.
+  // =========================================================
+  if SearchStopwatch.IsRunning then
+    SearchStopwatch.Stop;
+
+  // =========================================================
+  // GESAMTE SUCHDAUER ANZEIGEN
+  // =========================================================
+  StatusText :=
+    StatusText + Format('   |  Suchdauer: %.2f s', [SearchStopwatch.Elapsed.TotalSeconds]);
+
+  // =========================================================
+  // ENDGÜLTIGE STATUSANZEIGE
+  // =========================================================
+  StatusBar1.Panels[0].Text := StatusText;
 end;
 
 function StrAlloc1(Size: Cardinal): PAnsiChar;
@@ -1507,76 +1731,71 @@ begin
 end;
 
 // Textsuche in Datei(en)
-function ScanFile(const FileName: string; const forString: string; caseSensitive: Boolean): Longint;
+function ScanFile(const FileName, forString: string; caseSensitive: Boolean): Longint;
 const
-  BufferSize = $8001;  // 32K + 1 bytes
+  BufferSize = 32768; // 32 KB
 var
-  pBuf, pEnd, pPos, pScan, SearchFor: PAnsiChar;
-  filesize: LongInt;
-  bytesRemaining: LongInt;
-  bytesToRead: Integer;
-  F: file;
-  oldMode: Word;
+  F: TFileStream;
+  Buffer: TBytes;
+  ReadBytes: Integer;
+  SearchFor: string;
+  Haystack: string;
+  PosFound: Integer;
+  Overlap: Integer;
 begin
-  // assume failure
   Result := -1;
-  if (Length(forString) = 0) or (Length(FileName) = 0) then Exit;
-  SearchFor := nil;
-  pBuf      := nil;
-  // open file as binary, 1 byte recordsize
-  AssignFile(F, FileName);
-  oldMode  := FileMode;
-  FileMode := 0;    // read-only access
-  Reset(F, 1);
-  FileMode := oldMode;
-  try // allocate memory for buffer and pchar search string
-    SearchFor := StrAlloc1(Length(forString) + 1);
-    StrPCopy(SearchFor, forString);
-    if not caseSensitive then  // convert to upper case
-      AnsiUpper(SearchFor);
-    GetMem(pBuf, BufferSize);
-    filesize       := System.Filesize(F);
-    bytesRemaining := filesize;
-    pPos           := nil;
-    while bytesRemaining > 0 do
-    begin
-      // calc how many bytes to read this round
-      if bytesRemaining >= BufferSize then
-        bytesToRead := Pred(BufferSize)
-      else
-        bytesToRead := bytesRemaining;
-      // read a buffer full and zero-terminate the buffer
-      BlockRead(F, pBuf^, bytesToRead, bytesToRead);
-      pEnd  := @pBuf[bytesToRead];
-      pEnd^ := #0;
-      pScan := pBuf;
-      while pScan < pEnd do
+
+  if (forString = '') or (FileName = '') then
+    Exit;
+
+  // Suchstring vorbereiten
+  if caseSensitive then
+    SearchFor := forString
+  else
+    SearchFor := UpperCase(forString);
+
+  // Datei öffnen (ReadOnly, aber löschbar!)
+  F := nil;
+  try
+    try
+      F := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
+      SetLength(Buffer, BufferSize);
+      Overlap := Length(SearchFor);
+
+      while True do
       begin
-        if not caseSensitive then // convert to upper case
-          AnsiUpper(pScan);
-        pPos := StrPos(pScan, SearchFor);  // search for substring
-        if pPos <> nil then
-        begin // Found it!
-          Result := FileSize - bytesRemaining + Longint(pPos) - Longint(pBuf);
+        ReadBytes := F.Read(Buffer[0], BufferSize);
+        if ReadBytes = 0 then
+          Break;
+
+        // Puffer in String konvertieren
+        SetString(Haystack, PAnsiChar(@Buffer[0]), ReadBytes);
+
+        if not caseSensitive then
+          Haystack := UpperCase(Haystack);
+
+        PosFound := Pos(SearchFor, Haystack);
+
+        if PosFound > 0 then
+        begin
+          Result := F.Position - ReadBytes + PosFound - 1;
           Break;
         end;
-        pScan := StrEnd(pScan);
-        Inc(pScan);
+
+        // Überlappung für Suchstring am Blockende
+        if ReadBytes = BufferSize then
+          F.Position := F.Position - Overlap;
       end;
-      if pPos <> nil then Break;
-      bytesRemaining := bytesRemaining - bytesToRead;
-      if bytesRemaining > 0 then
-      begin
-        Seek(F, FilePos(F) - Length(forString));
-        bytesRemaining := bytesRemaining + Length(forString);
-      end;
-    end; // While
+    except
+      // Datei kann nicht gelesen werden (z.B. Zugriff verweigert,
+      // Datei inzwischen gelöscht/gesperrt oder Lesefehler):
+      // Datei einfach überspringen und Suche fortsetzen.
+      Result := -1;
+    end;
   finally
-    CloseFile(F);
-    if SearchFor <> nil then StrDispose(SearchFor);
-    if pBuf <> nil then FreeMem(pBuf, BufferSize);
+    F.Free;
   end;
-end; // ScanFile
+end;
 
 // Rekursiv suchen mit FindFirst...
 // Der 2te Parameter sind die Dateiattribute:
@@ -1602,364 +1821,1453 @@ end; // ScanFile
 // FindData: TWin32FindData; z.B. SR.FindData.cFileName
 // end;
 
-// Jetzt kommen die Suche-Routinen! -> OHNE Datumsabfrage und Größe
-procedure GetFilesInDirectory(Directory: string; const Mask: string; List: TStrings; WithSubDirs, ClearList: Boolean);
-  procedure ScanDir(const Directory: string);
+// ============================================================================
+// SUCHE OHNE DATUMS- UND GRÖSSENABFRAGE
+// ============================================================================
+// ============================================================================
+// SUCHE OHNE DATUMS- UND GRÖSSENABFRAGE
+// ============================================================================
+procedure GetFilesInDirectory(Directory: string; const Mask: string;
+  List: TStrings; WithSubDirs, ClearList: Boolean);
+var
+  DirectoryResults: TStringList;
+  FileResults: TStringList;
+
+  FirstResultsShown: Integer;
+  ResultsPublishedOnStop: Boolean;
+
+  LastStatusUpdate: UInt64;
+  MaskArray: TStringDynArray;
+
+  procedure PublishResults;
   var
-    faHidden: Byte;
-    SR: TSearchRec;
-    MaskArray: TStringDynArray;
-    Maske: String;
-    FileAttrs: Integer;
+    I: Integer;
   begin
-    FileAttrs := 0;
-    faHidden  := 2;
-    MaskArray := SplitString(Mask, '|');
+    List.BeginUpdate;
+    try
+      List.Clear;
 
-    if Suche_Form.HiddenCheckbox.State = cbUnchecked then
-      FileAttrs := faAnyFile - faHidden - faSysfile
-    else
-      FileAttrs := faAnyFile; // faDirectory + faHidden + faSysfile;
+      for I := 0 to DirectoryResults.Count - 1 do
+        List.Add(DirectoryResults[I]);
 
-    // Im MaskArray sind alle Suchmasken zu finden...
-    for Maske in MaskArray do
-      if FindFirst(Directory + Maske, FileAttrs, SR) = 0 then
-        try
-          repeat
-            // Auch Verzeichnisse anzeigen
-            if (SR.Name <> '.') and (SR.Name <> '..') then
-            begin
-              // Anzeige der Dateien und Verzeichnisse
-              if (((SR.Attr and faDirectory) <> 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 2))) then
-              begin
-                List.Add('[' + Directory + SR.FindData.cFileName + ']');
-                Inc(Zaehler);
-              end else
-                // Nur Anzeige der Dateien
-                if Suche_Form.TextCB.Text = '' then
-                begin
-                  if (((SR.Attr and faDirectory) = 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 1))) then
-                    // Prüfung auf die Suchmaske
-                    if MatchesMask(String(SR.FindData.cFileName), Maske) then
-                      List.Add(Directory + SR.FindData.cFileName);
-                end else
-                begin
-                  if ((SR.Attr and faDirectory) = 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 1)) and
-                      (ScanFile(Directory + SR.FindData.cFileName, Suche_Form.TextCB.Text, False) >= 0) then
-                    if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                      List.Add(Directory + SR.FindData.cFileName);
-                end;
-            end;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
-        end;
-    if WithSubDirs then
-    begin
-      if FindFirst(Directory + '*.*', faAnyFile, SR) = 0 then
-        try
-          repeat
-            if ((SR.Attr and faDirectory) = faDirectory) and (SR.Name <> '.') and (SR.Name <> '..') then
-              ScanDir(Directory + SR.FindData.cFileName + '\');
-            if StopSuche then
-              Break;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
-        end;
-      Application.ProcessMessages;
+      for I := 0 to FileResults.Count - 1 do
+        List.Add(FileResults[I]);
+    finally
+      List.EndUpdate;
     end;
-    Anzeige := Directory;
-    Suche_Form.Timer1.Enabled := True;
-    List.EndUpdate;
+
+    Application.ProcessMessages;
   end;
 
+  procedure PublishResultsOnStop;
+  begin
+    if ResultsPublishedOnStop then
+      Exit;
+
+    ResultsPublishedOnStop := True;
+    PublishResults;
+  end;
+
+  procedure UpdateSearchStatus(const CurrentDirectory: string);
+  var
+    NowTick: UInt64;
+  begin
+    NowTick := GetTickCount64;
+
+    if (LastStatusUpdate = 0) or
+       (NowTick - LastStatusUpdate >= 100) then
+    begin
+      LastStatusUpdate := NowTick;
+      Anzeige := CurrentDirectory;
+      Suche_Form.Timer1.Enabled := True;
+    end;
+  end;
+
+  function SearchShouldStop(const CurrentDirectory: string): Boolean;
+  begin
+    UpdateSearchStatus(CurrentDirectory);
+
+    Application.ProcessMessages;
+
+    Result := StopSuche;
+
+    if Result then
+      PublishResultsOnStop;
+  end;
+
+  function FindFirstExW(const Path: string;
+    var Data: WIN32_FIND_DATAW): THandle;
+  begin
+    Result :=
+      FindFirstFileExW(
+        PChar(Path),
+        FindExInfoBasic,
+        @Data,
+        FindExSearchNameMatch,
+        nil,
+        0
+      );
+  end;
+
+  function FormatSearchResult(const FullPath: string;
+    IsDirectory: Boolean): string;
+  begin
+    if IsDirectory then
+      Result := '[' + FullPath + ']'
+    else
+      Result := FullPath;
+  end;
+
+  procedure ShowSearchResult(const S: string);
+  begin
+    if FirstResultsShown >= 100 then
+      Exit;
+
+    Inc(FirstResultsShown);
+
+    List.Add(S);
+
+    Application.ProcessMessages;
+
+    if StopSuche then
+      PublishResultsOnStop;
+  end;
+
+  procedure AddDirectoryResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, True);
+
+    DirectoryResults.Add(S);
+
+    ShowSearchResult(S);
+
+    Inc(Zaehler);
+  end;
+
+  procedure AddFileResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, False);
+
+    FileResults.Add(S);
+
+    ShowSearchResult(S);
+  end;
+
+  procedure ScanDir(const Dir: string);
+  var
+    h: THandle;
+    fd: WIN32_FIND_DATAW;
+
+    ShowDirs: Boolean;
+    ShowFiles: Boolean;
+
+    SearchText: string;
+    SearchTextUpper: string;
+    HasSearchText: Boolean;
+
+    NameStr: string;
+    FullPath: string;
+
+    IsDir: Boolean;
+    Maske: string;
+
+    SubDirs: TStringList;
+    I: Integer;
+
+    DirectoryMatchesMask: Boolean;
+
+    ScanResult: Longint;
+
+    HiddenAndSystem: Boolean;
+  begin
+    if SearchShouldStop(Dir) then
+      Exit;
+
+    SearchText := Suche_Form.TextCB.Text;
+    HasSearchText := SearchText <> '';
+    if HasSearchText then
+      SearchTextUpper := UpperCase(SearchText)
+    else
+      SearchTextUpper := '';
+
+    ShowDirs :=
+      (Suche_Form.FilesFoldersCB.ItemIndex = 0) or
+      (Suche_Form.FilesFoldersCB.ItemIndex = 2);
+
+    ShowFiles :=
+      (Suche_Form.FilesFoldersCB.ItemIndex = 0) or
+      (Suche_Form.FilesFoldersCB.ItemIndex = 1);
+
+    h := FindFirstExW(Dir + '*.*', fd);
+
+    if h <> INVALID_HANDLE_VALUE then
+    try
+      repeat
+        if SearchShouldStop(Dir) then
+          Break;
+
+        NameStr := fd.cFileName;
+
+        if (NameStr <> '.') and
+           (NameStr <> '..') then
+        begin
+          IsDir :=
+            (fd.dwFileAttributes and
+             FILE_ATTRIBUTE_DIRECTORY) <> 0;
+
+          FullPath := Dir + NameStr;
+
+          // --------------------------------------------------------------
+          // HIDDEN + SYSTEM
+          //
+          // cbUnchecked:
+          //   HIDDEN + SYSTEM gleichzeitig -> nicht anzeigen
+          //
+          // cbChecked:
+          //   alles anzeigen
+          //
+          // cbGrayed:
+          //   wie im Original ebenfalls alles anzeigen
+          // --------------------------------------------------------------
+          HiddenAndSystem :=
+            ((fd.dwFileAttributes and FILE_ATTRIBUTE_HIDDEN) <> 0) and
+            ((fd.dwFileAttributes and FILE_ATTRIBUTE_SYSTEM) <> 0);
+
+          if (Suche_Form.HiddenCheckbox.State = cbUnchecked) and
+             HiddenAndSystem then
+          begin
+            // HIDDEN + SYSTEM wird nur bei cbUnchecked übersprungen.
+          end
+          else if IsDir and ShowDirs then
+          begin
+            DirectoryMatchesMask := False;
+
+            for Maske in MaskArray do
+            begin
+              if SearchShouldStop(Dir) then
+                Break;
+
+              if MatchesMask(NameStr, Maske) then
+              begin
+                DirectoryMatchesMask := True;
+                Break;
+              end;
+            end;
+
+            if DirectoryMatchesMask and
+               not StopSuche then
+            begin
+              if (not HasSearchText) or
+                 (Pos(
+                    SearchTextUpper,
+                    UpperCase(NameStr)
+                  ) > 0) then
+              begin
+                AddDirectoryResult(FullPath);
+              end;
+            end;
+          end
+          else if (not IsDir) and ShowFiles then
+          begin
+            for Maske in MaskArray do
+            begin
+              if SearchShouldStop(Dir) then
+                Break;
+
+              if MatchesMask(NameStr, Maske) then
+              begin
+                if not HasSearchText then
+                begin
+                  AddFileResult(FullPath);
+                end
+                else
+                begin
+                  if StopSuche then
+                    Break;
+
+                  ScanResult :=
+                    ScanFile(
+                      FullPath,
+                      SearchText,
+                      False
+                    );
+
+                  if ScanResult = -2 then
+                  begin
+                    StopSuche := True;
+                    PublishResultsOnStop;
+                    Exit;
+                  end;
+
+                  if ScanResult >= 0 then
+                  begin
+                    if not StopSuche then
+                      AddFileResult(FullPath);
+                  end;
+                end;
+
+                Break;
+              end;
+            end;
+          end;
+        end;
+
+      until StopSuche or
+            not FindNextFileW(h, fd);
+
+    finally
+      CloseHandle(h);
+    end;
+
+    // ================================================================
+    // UNTERVERZEICHNISSE
+    // ================================================================
+    if WithSubDirs and
+       not StopSuche then
+    begin
+      SubDirs := TStringList.Create;
+      try
+        SubDirs.CaseSensitive := False;
+        SubDirs.Sorted := True;
+
+        h := FindFirstExW(Dir + '*.*', fd);
+
+        if h <> INVALID_HANDLE_VALUE then
+        try
+          repeat
+            if SearchShouldStop(Dir) then
+              Break;
+
+            NameStr := fd.cFileName;
+
+            if ((fd.dwFileAttributes and
+                 FILE_ATTRIBUTE_DIRECTORY) <> 0) and
+               (NameStr <> '.') and
+               (NameStr <> '..') then
+            begin
+              // ----------------------------------------------------------
+              // Auch hier ausschließlich HIDDEN + SYSTEM prüfen.
+              //
+              // cbUnchecked -> H+S-Verzeichnis nicht durchsuchen
+              // cbChecked    -> H+S-Verzeichnis durchsuchen
+              // cbGrayed    -> H+S-Verzeichnis durchsuchen
+              // ----------------------------------------------------------
+              HiddenAndSystem :=
+                ((fd.dwFileAttributes and FILE_ATTRIBUTE_HIDDEN) <> 0) and
+                ((fd.dwFileAttributes and FILE_ATTRIBUTE_SYSTEM) <> 0);
+
+              if (Suche_Form.HiddenCheckbox.State <> cbUnchecked) or
+                 not HiddenAndSystem then
+              begin
+                SubDirs.Add(NameStr);
+              end;
+            end;
+
+          until StopSuche or
+                not FindNextFileW(h, fd);
+
+        finally
+          CloseHandle(h);
+        end;
+
+        for I := 0 to SubDirs.Count - 1 do
+        begin
+          if SearchShouldStop(Dir) then
+            Break;
+
+          ScanDir(
+            IncludeTrailingPathDelimiter(
+              Dir + SubDirs[I]
+            )
+          );
+
+          if StopSuche then
+            Break;
+        end;
+
+      finally
+        SubDirs.Free;
+      end;
+    end;
+
+    UpdateSearchStatus(Dir);
+  end;
+
+var
+  RootDirectory: string;
 begin
-  List.BeginUpdate;
+  Zaehler := 0;
+
+  FirstResultsShown := 0;
+  ResultsPublishedOnStop := False;
+  LastStatusUpdate := 0;
+  MaskArray := SplitString(Mask, '|');
+
+  DirectoryResults := TStringList.Create;
+  FileResults := TStringList.Create;
+
   try
+    FileResults.CaseSensitive := False;
+    FileResults.Sorted := True;
+    FileResults.Duplicates := dupIgnore;
+
+    DirectoryResults.CaseSensitive := False;
+    DirectoryResults.Duplicates := dupIgnore;
+
     if ClearList then
       List.Clear;
+
     if Directory = '\' then
       Exit;
-    ScanDir(IncludeTrailingBackslash(Directory));
+
+    RootDirectory :=
+      IncludeTrailingPathDelimiter(Directory);
+
+    ScanDir(RootDirectory);
+
+    // Falls noch kein sofortiger Abbruch-Publish erfolgt ist:
+    PublishResults;
+
   finally
-    // List.EndUpdate;
+    DirectoryResults.Free;
+    FileResults.Free;
   end;
 end;
 
-// Jetzt kommen die Suche-Routinen!  -> MIT Datumsabfrage und/oder Größe
+// ============================================================================
+// DATE / SIZE
+// ============================================================================
 procedure GetFilesInDirectory_DateSize(Directory: string; const Mask: string;
   List: TStrings; MinMaxFileSize: Int64; WithSubDirs, ClearList: Boolean);
-  procedure ScanDir(const Directory: string);
+var
+  DirectoryResults: TStringList;
+  FileResults: TStringList;
+
+  FirstResultsShown: Integer;
+  ResultsPublishedOnStop: Boolean;
+
+  LastStatusUpdate: UInt64;
+  MaskArray: TStringDynArray;
+
+  procedure PublishResults;
   var
-    faHidden: Byte;
-    FileAttrs, r1, r2: Integer;
-    SR: TSearchRec;
-    MaskArray: TStringDynArray;
-    Maske: String;
+    I: Integer;
   begin
-    FileAttrs := 0;
-    faHidden  := 2;
-    MaskArray := SplitString(Mask, '|');
+    List.BeginUpdate;
+    try
+      List.Clear;
 
-    if Suche_Form.HiddenCheckbox.State = cbUnchecked then
-      FileAttrs := faAnyFile - faHidden - faSysfile
+      for I := 0 to DirectoryResults.Count - 1 do
+        List.Add(DirectoryResults[I]);
+
+      for I := 0 to FileResults.Count - 1 do
+        List.Add(FileResults[I]);
+    finally
+      List.EndUpdate;
+    end;
+
+    Application.ProcessMessages;
+  end;
+
+  procedure PublishResultsOnStop;
+  begin
+    if ResultsPublishedOnStop then
+      Exit;
+
+    ResultsPublishedOnStop := True;
+    PublishResults;
+  end;
+
+  procedure UpdateSearchStatus(const CurrentDirectory: string);
+  var
+    NowTick: UInt64;
+  begin
+    NowTick := GetTickCount64;
+
+    if (LastStatusUpdate = 0) or
+       (NowTick - LastStatusUpdate >= 100) then
+    begin
+      LastStatusUpdate := NowTick;
+      Anzeige := CurrentDirectory;
+      Suche_Form.Timer1.Enabled := True;
+    end;
+  end;
+
+  function SearchShouldStop(const CurrentDirectory: string): Boolean;
+  begin
+    UpdateSearchStatus(CurrentDirectory);
+
+    Application.ProcessMessages;
+
+    Result := StopSuche;
+
+    if Result then
+      PublishResultsOnStop;
+  end;
+
+  function FindFirstExW(const Path: string;
+    var Data: WIN32_FIND_DATAW): THandle;
+  begin
+    Result :=
+      FindFirstFileExW(
+        PChar(Path),
+        FindExInfoBasic,
+        @Data,
+        FindExSearchNameMatch,
+        nil,
+        0
+      );
+  end;
+
+  function FormatSearchResult(const FullPath: string;
+    IsDirectory: Boolean): string;
+  begin
+    if IsDirectory then
+      Result := '[' + FullPath + ']'
     else
-      FileAttrs := faAnyFile; // faDirectory + faHidden + faSysfile;
+      Result := FullPath;
+  end;
 
-    // Im MaskArray sind alle Suchmasken zu finden...
-    for Maske in MaskArray do
-      if FindFirst(Directory + Maske, FileAttrs, SR) = 0 then
-        try
-          repeat
-            if (SR.Name <> '.') and (SR.Name <> '..') then
+  function FileTimeToDateTimeValue(
+    const FileTime: TFileTime): TDateTime;
+  var
+    LocalFileTime: TFileTime;
+    SystemTime: TSystemTime;
+  begin
+    Result := 0;
+
+    if FileTimeToLocalFileTime(
+      FileTime,
+      LocalFileTime
+    ) then
+    begin
+      if FileTimeToSystemTime(
+        LocalFileTime,
+        SystemTime
+      ) then
+      begin
+        Result := SystemTimeToDateTime(SystemTime);
+      end;
+    end;
+  end;
+
+  function GetFileSize64(
+    const Data: WIN32_FIND_DATAW): Int64;
+  begin
+    Result :=
+      (Int64(Data.nFileSizeHigh) shl 32) or
+      Int64(Data.nFileSizeLow);
+  end;
+
+  procedure ShowSearchResult(const S: string);
+  begin
+    if FirstResultsShown >= 100 then
+      Exit;
+
+    Inc(FirstResultsShown);
+
+    List.Add(S);
+
+    Application.ProcessMessages;
+
+    if StopSuche then
+      PublishResultsOnStop;
+  end;
+
+  procedure AddDirectoryResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, True);
+
+    DirectoryResults.Add(S);
+
+    ShowSearchResult(S);
+
+    Inc(Zaehler);
+  end;
+
+  procedure AddFileResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, False);
+
+    FileResults.Add(S);
+
+    ShowSearchResult(S);
+  end;
+
+  procedure ScanDir(const Dir: string);
+  var
+    h: THandle;
+    fd: WIN32_FIND_DATAW;
+
+    SearchTextUpper: string;
+
+    ShowDirs: Boolean;
+    ShowFiles: Boolean;
+
+    CheckDate: Boolean;
+    CheckSize: Boolean;
+    CheckText: Boolean;
+
+    SearchText: string;
+    MinDate: TDateTime;
+    MaxDate: TDateTime;
+
+    FileSizeMode: Integer;
+    CurrentFileSize: Int64;
+    CurrentFileDate: TDateTime;
+
+    NameStr: string;
+    FullPath: string;
+    Maske: string;
+
+    IsDir: Boolean;
+    DirectoryMatchesMask: Boolean;
+
+    SubDirs: TStringList;
+    I: Integer;
+
+    DateOK: Boolean;
+    SizeOK: Boolean;
+    MaskOK: Boolean;
+
+    ScanResult: Longint;
+
+    HiddenAndSystem: Boolean;
+  begin
+    if SearchShouldStop(Dir) then
+      Exit;
+
+    SearchText := Suche_Form.TextCB.Text;
+    CheckText := SearchText <> '';
+    if CheckText then
+      SearchTextUpper := UpperCase(SearchText)
+    else
+      SearchTextUpper := '';
+
+    CheckDate := Suche_Form.DatumCheckBox.Checked;
+    CheckSize := Suche_Form.DateiCheckBox.Checked;
+
+    MinDate := Suche_Form.SearchMinDate.DateTime;
+    MaxDate := Suche_Form.SearchMaxDate.DateTime;
+
+    FileSizeMode := Suche_Form.FileSizeCombo.ItemIndex;
+
+    ShowDirs :=
+      (Suche_Form.FilesFoldersCB.ItemIndex = 0) or
+      (Suche_Form.FilesFoldersCB.ItemIndex = 2);
+
+    ShowFiles :=
+      (Suche_Form.FilesFoldersCB.ItemIndex = 0) or
+      (Suche_Form.FilesFoldersCB.ItemIndex = 1);
+
+    h := FindFirstExW(Dir + '*.*', fd);
+
+    if h <> INVALID_HANDLE_VALUE then
+    try
+      repeat
+        if SearchShouldStop(Dir) then
+          Break;
+
+        NameStr := fd.cFileName;
+
+        if (NameStr = '.') or
+           (NameStr = '..') then
+          Continue;
+
+        IsDir :=
+          (fd.dwFileAttributes and
+           FILE_ATTRIBUTE_DIRECTORY) <> 0;
+
+        FullPath := Dir + NameStr;
+
+        // --------------------------------------------------------------
+        // HIDDEN + SYSTEM
+        // --------------------------------------------------------------
+        HiddenAndSystem :=
+          ((fd.dwFileAttributes and FILE_ATTRIBUTE_HIDDEN) <> 0) and
+          ((fd.dwFileAttributes and FILE_ATTRIBUTE_SYSTEM) <> 0);
+
+        // Nur cbUnchecked blendet H+S aus.
+        // cbChecked und cbGrayed zeigen alles.
+        if (Suche_Form.HiddenCheckbox.State = cbUnchecked) and
+           HiddenAndSystem then
+        begin
+          Continue;
+        end;
+
+        // ===================================================
+        // VERZEICHNIS
+        // ===================================================
+        if IsDir then
+        begin
+          if ShowDirs then
+          begin
+            DateOK := True;
+
+            if CheckDate then
             begin
-              // Anzeige Dateien/Verzeichnisse und Verzeichnisse (faDirectory <> 0)
-              if (((SR.Attr and faDirectory) <> 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 2))) then
+              CurrentFileDate :=
+                FileTimeToDateTimeValue(
+                  fd.ftLastWriteTime
+                );
+
+              DateOK :=
+                (CompareDateTime(
+                   CurrentFileDate,
+                   MinDate
+                 ) >= 0) and
+                (CompareDateTime(
+                   CurrentFileDate,
+                   MaxDate
+                 ) <= 0);
+            end;
+
+            if DateOK and
+               not SearchShouldStop(Dir) then
+            begin
+              DirectoryMatchesMask := False;
+
+              for Maske in MaskArray do
               begin
-                if Suche_Form.DatumCheckBox.Checked then
+                if SearchShouldStop(Dir) then
+                  Break;
+
+                if MatchesMask(NameStr, Maske) then
                 begin
-                  r1 := CompareDateTime(SR.TimeStamp, Suche_Form.SearchMinDate.DateTime);
-                  r2 := CompareDateTime(SR.TimeStamp, Suche_Form.SearchMaxDate.DateTime);
-                  if ((r1 = 0) or (r1 = 1)) and ((r2 = 0) or (r2 = -1)) then
-                  begin
-                    if (Suche_Form.FilesFoldersCB.ItemIndex = 1) then // Anzeige Dateien
-                      List.Add(Directory + SR.FindData.cFileName)
-                    else
-                      List.Add('[' + Directory + SR.FindData.cFileName + ']');
-                    Inc(Zaehler);
-                  end;
-                end else
-                begin
-                  if (Suche_Form.FilesFoldersCB.ItemIndex = 1) then // Anzeige Dateien
-                    List.Add(Directory + SR.FindData.cFileName)
-                  else
-                    List.Add('[' + Directory + SR.FindData.cFileName + ']');
-                  Inc(Zaehler);
+                  DirectoryMatchesMask := True;
+                  Break;
                 end;
-              end else
-              // Nur Anzeige Dateien (faDirectory = 0)
-              if (((SR.Attr and faDirectory) = 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 1))) then
+              end;
+
+              if DirectoryMatchesMask and
+                 not StopSuche then
               begin
-                if Suche_Form.DatumCheckBox.Checked then
+                if (not CheckText) or
+                   (Pos(
+                      SearchTextUpper,
+                       UpperCase(NameStr)
+                    ) > 0) then
                 begin
-                  r1 := CompareDateTime(SR.TimeStamp, Suche_Form.SearchMinDate.DateTime);
-                  r2 := CompareDateTime(SR.TimeStamp, Suche_Form.SearchMaxDate.DateTime);
-                  if ((r1 = 0) or (r1 = 1)) and ((r2 = 0) or (r2 = -1)) then
-                  if Suche_Form.TextCB.Text = '' then // Datei(en) anzeigen, keine Verzeichnisse, Textsuche ist leer
-                  begin
-                    if not Suche_Form.DateiCheckBox.Checked then
-                    begin
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName)
-                    end else
-                    // Dateigröße nun soll mitgesucht werden
-                    if Suche_Form.DateiCheckBox.Checked then
-                    begin
-                    if ((Suche_Form.FileSizeCombo.ItemIndex = 0) and (SR.Size = MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 1) and (SR.Size > MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 2) and (SR.Size < MinMaxFileSize)) then
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName);
-                    end;
-                  end else
-                  if Suche_Form.TextCB.Text <> '' then // Datei(en) anzeigen, keine Verzeichnisse, mit Textsuche
-                  begin
-                    if not Suche_Form.DateiCheckBox.Checked then
-                    begin
-                      if ScanFile(Directory + SR.FindData.cFileName, Suche_Form.TextCB.Text, False) >= 0 then
-                        if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                          List.Add(Directory + SR.FindData.cFileName)
-                    end else
-                    // Dateigröße nun soll mitgesucht werden
-                    if Suche_Form.DateiCheckBox.Checked then
-                    begin
-                      if ((Suche_Form.FileSizeCombo.ItemIndex = 0) and (SR.Size = MinMaxFileSize)) or
-                         ((Suche_Form.FileSizeCombo.ItemIndex = 1) and (SR.Size > MinMaxFileSize)) or
-                         ((Suche_Form.FileSizeCombo.ItemIndex = 2) and (SR.Size < MinMaxFileSize)) and
-                          (ScanFile(Directory + SR.Name, Suche_Form.TextCB.Text, False) >= 0) then
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName);
-                    end;
-                  end;
-                end else
-                // NUR die Dateigröße soll mitgesucht werden
-                if Suche_Form.DateiCheckBox.Checked then
-                begin
-                if ((Suche_Form.FileSizeCombo.ItemIndex = 0) and (SR.Size = MinMaxFileSize)) or
-                   ((Suche_Form.FileSizeCombo.ItemIndex = 1) and (SR.Size > MinMaxFileSize)) or
-                   ((Suche_Form.FileSizeCombo.ItemIndex = 2) and (SR.Size < MinMaxFileSize)) then
-                  if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                    List.Add(Directory + SR.FindData.cFileName);
+                  AddDirectoryResult(FullPath);
                 end;
               end;
             end;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
-        end;
-    if WithSubDirs then
-    begin
-      if FindFirst(Directory + '*.*', faAnyFile, SR) = 0 then
-        try
-          repeat
-            if ((SR.Attr and faDirectory) = faDirectory) and (SR.Name <> '.') and (SR.Name <> '..') then
-              ScanDir(Directory + SR.FindData.cFileName + '\');
-            if StopSuche then
+          end;
+        end
+
+        // ===================================================
+        // DATEI
+        // ===================================================
+        else if ShowFiles then
+        begin
+          if CheckDate then
+          begin
+            CurrentFileDate :=
+              FileTimeToDateTimeValue(
+                fd.ftLastWriteTime
+              );
+
+            DateOK :=
+              (CompareDateTime(
+                 CurrentFileDate,
+                 MinDate
+               ) >= 0) and
+              (CompareDateTime(
+                 CurrentFileDate,
+                 MaxDate
+               ) <= 0);
+
+            if not DateOK then
+              Continue;
+          end;
+
+          if CheckSize then
+          begin
+            CurrentFileSize :=
+              GetFileSize64(fd);
+
+            case FileSizeMode of
+              0:
+                SizeOK :=
+                  CurrentFileSize = MinMaxFileSize;
+
+              1:
+                SizeOK :=
+                  CurrentFileSize > MinMaxFileSize;
+
+              2:
+                SizeOK :=
+                  CurrentFileSize < MinMaxFileSize;
+            else
+              SizeOK := True;
+            end;
+
+            if not SizeOK then
+              Continue;
+          end;
+
+          if SearchShouldStop(Dir) then
+            Break;
+
+          MaskOK := False;
+
+          for Maske in MaskArray do
+          begin
+            if SearchShouldStop(Dir) then
+              Break;
+
+            if MatchesMask(NameStr, Maske) then
             begin
-              Suche_Form.StatusBar1.Panels[0].Text := 'Suche abgebrochen...';
+              MaskOK := True;
               Break;
             end;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
+          end;
+
+          if StopSuche then
+            Break;
+
+          if not MaskOK then
+            Continue;
+
+          if CheckText then
+          begin
+            if StopSuche then
+              Break;
+
+            ScanResult :=
+              ScanFile(
+                FullPath,
+                SearchText,
+                False
+              );
+
+            if ScanResult = -2 then
+            begin
+              StopSuche := True;
+              PublishResultsOnStop;
+              Exit;
+            end;
+
+            if ScanResult < 0 then
+              Continue;
+
+            if StopSuche then
+              Break;
+          end;
+
+          if not StopSuche then
+            AddFileResult(FullPath);
         end;
-      Application.ProcessMessages;
+
+      until StopSuche or
+            not FindNextFileW(h, fd);
+
+    finally
+      CloseHandle(h);
     end;
-    Anzeige := Directory;
-    Suche_Form.Timer1.Enabled := True;
-    List.EndUpdate;
+
+    // ===================================================
+    // UNTERVERZEICHNISSE
+    // ===================================================
+    if WithSubDirs and
+       not StopSuche then
+    begin
+      SubDirs := TStringList.Create;
+      try
+        SubDirs.CaseSensitive := False;
+        SubDirs.Sorted := True;
+
+        h := FindFirstExW(Dir + '*.*', fd);
+
+        if h <> INVALID_HANDLE_VALUE then
+        try
+          repeat
+            if SearchShouldStop(Dir) then
+              Break;
+
+            NameStr := fd.cFileName;
+
+            if ((fd.dwFileAttributes and
+                 FILE_ATTRIBUTE_DIRECTORY) <> 0) and
+               (NameStr <> '.') and
+               (NameStr <> '..') then
+            begin
+              // Nur HIDDEN + SYSTEM gemeinsam wird bei cbUnchecked
+              // vom rekursiven Durchsuchen ausgeschlossen.
+              HiddenAndSystem :=
+                ((fd.dwFileAttributes and FILE_ATTRIBUTE_HIDDEN) <> 0) and
+                ((fd.dwFileAttributes and FILE_ATTRIBUTE_SYSTEM) <> 0);
+
+              if (Suche_Form.HiddenCheckbox.State <> cbUnchecked) or
+                 not HiddenAndSystem then
+              begin
+                SubDirs.Add(NameStr);
+              end;
+            end;
+
+          until StopSuche or
+                not FindNextFileW(h, fd);
+
+        finally
+          CloseHandle(h);
+        end;
+
+        for I := 0 to SubDirs.Count - 1 do
+        begin
+          if SearchShouldStop(Dir) then
+            Break;
+
+          ScanDir(
+            IncludeTrailingPathDelimiter(
+              Dir + SubDirs[I]
+            )
+          );
+
+          if StopSuche then
+            Break;
+        end;
+
+      finally
+        SubDirs.Free;
+      end;
+    end;
+
+    UpdateSearchStatus(Dir);
   end;
 
+var
+  RootDirectory: string;
 begin
-  List.BeginUpdate;
+  Zaehler := 0;
+
+  FirstResultsShown := 0;
+  ResultsPublishedOnStop := False;
+  LastStatusUpdate := 0;
+  MaskArray := SplitString(Mask, '|');
+
+  DirectoryResults := TStringList.Create;
+  FileResults := TStringList.Create;
+
   try
+    FileResults.CaseSensitive := False;
+    FileResults.Sorted := True;
+    FileResults.Duplicates := dupIgnore;
+
+    DirectoryResults.CaseSensitive := False;
+    DirectoryResults.Duplicates := dupIgnore;
+
     if ClearList then
       List.Clear;
+
     if Directory = '\' then
       Exit;
-    ScanDir(IncludeTrailingBackslash(Directory));
+
+    RootDirectory :=
+      IncludeTrailingPathDelimiter(Directory);
+
+    ScanDir(RootDirectory);
+
+    PublishResults;
+
   finally
-    // List.EndUpdate;
+    DirectoryResults.Free;
+    FileResults.Free;
   end;
 end;
 
-// Jetzt kommen die Suche-Routinen!  -> MIT Altersabfrage und Größe
-procedure GetFilesInDirectory_Age(Directory: string; const Mask: string; List: TStrings; MinMaxFileSize: Int64; WithSubDirs, ClearList: Boolean);
-  procedure ScanDir(const Directory: string);
+// ============================================================================
+// AGE
+// ============================================================================
+procedure GetFilesInDirectory_Age(Directory: string; const Mask: string;
+  List: TStrings; MinMaxFileSize: Int64; WithSubDirs, ClearList: Boolean);
+var
+  DirectoryResults: TStringList;
+  FileResults: TStringList;
+
+  FirstResultsShown: Integer;
+  ResultsPublishedOnStop: Boolean;
+
+  LastStatusUpdate: UInt64;
+  MaskArray: TStringDynArray;
+
+  procedure PublishResults;
   var
-    faHidden: Byte;
-    FileAttrs, r1: Integer;
-    SR: TSearchRec;
-    MaskArray: TStringDynArray;
-    Maske: String;
+    I: Integer;
   begin
-    FileAttrs := 0;
-    faHidden  := 2;
-    MaskArray := SplitString(Mask, '|');
+    List.BeginUpdate;
+    try
+      List.Clear;
 
-    if Suche_Form.HiddenCheckbox.State = cbUnchecked then
-      FileAttrs := faAnyFile - faHidden - faSysfile
+      for I := 0 to DirectoryResults.Count - 1 do
+        List.Add(DirectoryResults[I]);
+
+      for I := 0 to FileResults.Count - 1 do
+        List.Add(FileResults[I]);
+    finally
+      List.EndUpdate;
+    end;
+
+    Application.ProcessMessages;
+  end;
+
+  procedure PublishResultsOnStop;
+  begin
+    if ResultsPublishedOnStop then
+      Exit;
+
+    ResultsPublishedOnStop := True;
+    PublishResults;
+  end;
+
+  procedure UpdateSearchStatus(const CurrentDirectory: string);
+  var
+    NowTick: UInt64;
+  begin
+    NowTick := GetTickCount64;
+
+    if (LastStatusUpdate = 0) or
+       (NowTick - LastStatusUpdate >= 100) then
+    begin
+      LastStatusUpdate := NowTick;
+      Anzeige := CurrentDirectory;
+      Suche_Form.Timer1.Enabled := True;
+    end;
+  end;
+
+  function SearchShouldStop(const CurrentDirectory: string): Boolean;
+  begin
+    UpdateSearchStatus(CurrentDirectory);
+
+    Application.ProcessMessages;
+
+    Result := StopSuche;
+
+    if Result then
+      PublishResultsOnStop;
+  end;
+
+  function FormatSearchResult(const FullPath: string;
+    IsDirectory: Boolean): string;
+  begin
+    if IsDirectory then
+      Result := '[' + FullPath + ']'
     else
-      FileAttrs := faAnyFile; // faDirectory + faHidden + faSysfile;
+      Result := FullPath;
+  end;
 
-    // Im MaskArray sind alle Suchmasken zu finden...
+  procedure ShowSearchResult(const S: string);
+  begin
+    if FirstResultsShown >= 100 then
+      Exit;
+
+    Inc(FirstResultsShown);
+
+    List.Add(S);
+
+    Application.ProcessMessages;
+
+    if StopSuche then
+      PublishResultsOnStop;
+  end;
+
+  procedure AddDirectoryResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, True);
+
+    DirectoryResults.Add(S);
+
+    ShowSearchResult(S);
+
+    Inc(Zaehler);
+  end;
+
+  procedure AddFileResult(const FullPath: string);
+  var
+    S: string;
+  begin
+    if StopSuche then
+      Exit;
+
+    S := FormatSearchResult(FullPath, False);
+
+    FileResults.Add(S);
+
+    ShowSearchResult(S);
+  end;
+
+  procedure ScanDir(const CurrentDirectory: string);
+  var
+    SR: TSearchRec;
+
+    Maske: string;
+
+    FilesFoldersIdx: Integer;
+
+    UseAge: Boolean;
+    UseText: Boolean;
+    UseSize: Boolean;
+
+    TextSearch: string;
+    FileSizeMode: Integer;
+
+    AgeDateTime: TDateTime;
+    AgeDateOnly: TDate;
+
+    r1: Integer;
+
+    MaskOK: Boolean;
+    SizeOK: Boolean;
+
+    FullPath: string;
+
+    SubDirs: TStringList;
+    I: Integer;
+
+    ScanResult: Longint;
+
+    HiddenAndSystem: Boolean;
+const
+  faHidden: Byte = 2;
+  begin
+    if SearchShouldStop(CurrentDirectory) then
+      Exit;
+
+    FilesFoldersIdx :=
+      Suche_Form.FilesFoldersCB.ItemIndex;
+
+    UseAge :=
+      Suche_Form.AlterCB.Checked;
+
+    UseText :=
+      Suche_Form.TextCB.Text <> '';
+
+    UseSize :=
+      Suche_Form.DateiCheckBox.Checked;
+
+    TextSearch :=
+      Suche_Form.TextCB.Text;
+
+    FileSizeMode :=
+      Suche_Form.FileSizeCombo.ItemIndex;
+
+    AgeDateTime :=
+      Suche_Form.DTP.DateTime;
+
+    AgeDateOnly :=
+      Suche_Form.DTP.Date;
+
+    // ===================================================
+    // AKTUELLES VERZEICHNIS
+    // ===================================================
     for Maske in MaskArray do
-      if FindFirst(Directory + Maske, FileAttrs, SR) = 0 then
-        try
-          repeat
-            if (SR.Name <> '.') and (SR.Name <> '..') then
+    begin
+      if SearchShouldStop(CurrentDirectory) then
+        Exit;
+
+      // Immer mit faAnyFile suchen.
+      // Die HIDDEN+SYSTEM-Entscheidung erfolgt anschließend
+      // ausdrücklich über HiddenCheckbox.State.
+      if FindFirst(
+        CurrentDirectory + Maske,
+        faAnyFile,
+        SR
+      ) = 0 then
+      try
+        repeat
+          if SearchShouldStop(CurrentDirectory) then
+            Break;
+
+          if (SR.Name = '.') or
+             (SR.Name = '..') then
+            Continue;
+
+          FullPath :=
+            CurrentDirectory +
+            SR.FindData.cFileName;
+
+          // --------------------------------------------------------------
+          // HIDDEN + SYSTEM
+          //
+          // cbUnchecked -> nur H+S ausblenden
+          // cbChecked    -> alles anzeigen
+          // cbGrayed    -> alles anzeigen
+          // --------------------------------------------------------------
+          HiddenAndSystem :=
+            ((SR.Attr and faHidden) <> 0) and
+            ((SR.Attr and faSysFile) <> 0);
+
+          if (Suche_Form.HiddenCheckbox.State = cbUnchecked) and
+             HiddenAndSystem then
+          begin
+            Continue;
+          end;
+
+          // =================================================
+          // VERZEICHNIS
+          // =================================================
+          if ((SR.Attr and faDirectory) <> 0) then
+          begin
+            if (FilesFoldersIdx = 0) or
+               (FilesFoldersIdx = 2) then
             begin
-              // Anzeige Dateien/Verzeichnisse und Verzeichnisse (faDirectory <> 0)
-              if (((SR.Attr and faDirectory) <> 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 2))) then
+              if UseAge then
               begin
-                if Suche_Form.AlterCB.Checked then
+                r1 :=
+                  CompareDate(
+                    SR.TimeStamp,
+                    AgeDateOnly
+                  );
+
+                if (r1 = 0) or
+                   (r1 = 1) then
                 begin
-                  // Stunden, Tage, Wochen, Monate, Jahre
-                  r1 := CompareDate(SR.TimeStamp, Suche_Form.DTP.Date);
-                  if (r1 = 0) or (r1 = 1) then
+                  MaskOK :=
+                    MatchesMask(
+                      String(SR.FindData.cFileName),
+                      Maske
+                    );
+
+                  if MaskOK and
+                     not StopSuche then
                   begin
-                    if (Suche_Form.FilesFoldersCB.ItemIndex = 1) then // Anzeige Dateien
-                      List.Add(Directory + SR.FindData.cFileName)
-                    else
-                      List.Add('[' + Directory + SR.FindData.cFileName + ']');
-                    Inc(Zaehler);
-                  end;
-                end
-              end else
-              // Nur Anzeige Dateien (faDirectory = 0)
-              if (((SR.Attr and faDirectory) = 0) and ((Suche_Form.FilesFoldersCB.ItemIndex = 0) or (Suche_Form.FilesFoldersCB.ItemIndex = 1))) then
-              begin
-                if Suche_Form.AlterCB.Checked then
-                begin
-                  r1 := CompareDateTime(SR.TimeStamp, Suche_Form.DTP.DateTime);
-                  if (r1 = 0) or (r1 = 1) then
-                  if Suche_Form.TextCB.Text = '' then // Datei(en) anzeigen, keine Verzeichnisse, Textsuche ist leer
-                  begin
-                    if not Suche_Form.DateiCheckBox.Checked then
-                    begin
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName)
-                    end else
-                    // Dateigröße nun soll mitgesucht werden
-                    if Suche_Form.DateiCheckBox.Checked then
-                    begin
-                    if ((Suche_Form.FileSizeCombo.ItemIndex = 0) and (SR.Size = MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 1) and (SR.Size > MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 2) and (SR.Size < MinMaxFileSize)) then
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName);
-                    end;
-                  end else
-                  if Suche_Form.TextCB.Text <> '' then // Datei(en) anzeigen, keine Verzeichnisse, mit Textsuche
-                  begin
-                    if not Suche_Form.DateiCheckBox.Checked then
-                    begin
-                      if ScanFile(Directory + SR.FindData.cFileName, Suche_Form.TextCB.Text, False) >= 0 then
-                        if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                          List.Add(Directory + SR.FindData.cFileName)
-                    end else
-                    // Dateigröße nun soll mitgesucht werden
-                    if Suche_Form.DateiCheckBox.Checked then
-                    begin
-                    if ((Suche_Form.FileSizeCombo.ItemIndex = 0) and (SR.Size = MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 1) and (SR.Size > MinMaxFileSize)) or
-                       ((Suche_Form.FileSizeCombo.ItemIndex = 2) and (SR.Size < MinMaxFileSize)) and
-                        (ScanFile(Directory + SR.FindData.cFileName, Suche_Form.TextCB.Text, False) >= 0) then
-                      if MatchesMask(String(SR.FindData.cFileName), Maske) then // Prüfung auf die Suchmaske
-                        List.Add(Directory + SR.FindData.cFileName);
-                    end;
+                    AddDirectoryResult(FullPath);
                   end;
                 end;
               end;
             end;
-          until FindNext(SR) <> 0;
-        finally
-          FindClose(SR);
-        end;
-    if WithSubDirs then
+          end
+
+          // =================================================
+          // DATEI
+          // =================================================
+          else if (FilesFoldersIdx = 0) or
+                  (FilesFoldersIdx = 1) then
+          begin
+            if UseAge then
+            begin
+              r1 :=
+                CompareDateTime(
+                  SR.TimeStamp,
+                  AgeDateTime
+                );
+
+              if (r1 <> 0) and
+                 (r1 <> 1) then
+                Continue;
+            end;
+
+            if SearchShouldStop(CurrentDirectory) then
+              Break;
+
+            if UseSize then
+            begin
+              case FileSizeMode of
+                0:
+                  SizeOK :=
+                    SR.Size = MinMaxFileSize;
+
+                1:
+                  SizeOK :=
+                    SR.Size > MinMaxFileSize;
+
+                2:
+                  SizeOK :=
+                    SR.Size < MinMaxFileSize;
+              else
+                SizeOK := True;
+              end;
+
+              if not SizeOK then
+                Continue;
+            end;
+
+            if SearchShouldStop(CurrentDirectory) then
+              Break;
+
+            MaskOK :=
+              MatchesMask(
+                String(SR.FindData.cFileName),
+                Maske
+              );
+
+            if not MaskOK then
+              Continue;
+
+            if UseText then
+            begin
+              if StopSuche then
+                Break;
+
+              ScanResult :=
+                ScanFile(
+                  FullPath,
+                  TextSearch,
+                  False
+                );
+
+              if ScanResult = -2 then
+              begin
+                StopSuche := True;
+                PublishResultsOnStop;
+                Exit;
+              end;
+
+              if ScanResult < 0 then
+                Continue;
+
+              if StopSuche then
+                Break;
+            end;
+
+            if not StopSuche then
+              AddFileResult(FullPath);
+          end;
+
+        until StopSuche or
+              (FindNext(SR) <> 0);
+
+      finally
+        FindClose(SR);
+      end;
+    end;
+
+    // ===================================================
+    // UNTERVERZEICHNISSE
+    // ===================================================
+    if WithSubDirs and
+       not StopSuche then
     begin
-      if FindFirst(Directory + '*.*', faAnyFile, SR) = 0 then
+      SubDirs := TStringList.Create;
+      try
+        SubDirs.CaseSensitive := False;
+        SubDirs.Sorted := True;
+
+        if FindFirst(
+          CurrentDirectory + '*.*',
+          faAnyFile,
+          SR
+        ) = 0 then
         try
           repeat
-            if ((SR.Attr and faDirectory) = faDirectory) and (SR.Name <> '.') and (SR.Name <> '..') then
-              ScanDir(Directory + SR.FindData.cFileName + '\');
-            if StopSuche then
-            begin
-              Suche_Form.StatusBar1.Panels[0].Text := 'Suche abgebrochen...';
+            if SearchShouldStop(CurrentDirectory) then
               Break;
+
+            if ((SR.Attr and faDirectory) = faDirectory) and
+               (SR.Name <> '.') and
+               (SR.Name <> '..') then
+            begin
+              // ----------------------------------------------------------
+              // Auch hier nur HIDDEN + SYSTEM gemeinsam ausschließen.
+              //
+              // cbUnchecked -> H+S-Verzeichnis nicht durchsuchen
+              // cbChecked    -> durchsuchen
+              // cbGrayed    -> durchsuchen
+              // ----------------------------------------------------------
+              HiddenAndSystem :=
+                ((SR.Attr and faHidden) <> 0) and
+                ((SR.Attr and faSysFile) <> 0);
+
+              if (Suche_Form.HiddenCheckbox.State <> cbUnchecked) or
+                 not HiddenAndSystem then
+              begin
+                SubDirs.Add(SR.Name);
+              end;
             end;
-          until FindNext(SR) <> 0;
+
+          until StopSuche or
+                (FindNext(SR) <> 0);
+
         finally
           FindClose(SR);
         end;
-      Application.ProcessMessages;
+
+        for I := 0 to SubDirs.Count - 1 do
+        begin
+          if SearchShouldStop(CurrentDirectory) then
+            Break;
+
+          ScanDir(
+            IncludeTrailingPathDelimiter(
+              CurrentDirectory + SubDirs[I]
+            )
+          );
+
+          if StopSuche then
+            Break;
+        end;
+
+      finally
+        SubDirs.Free;
+      end;
     end;
-    Anzeige := Directory;
-    Suche_Form.Timer1.Enabled := True;
-    List.EndUpdate;
+
+    UpdateSearchStatus(CurrentDirectory);
   end;
 
+var
+  RootDirectory: string;
 begin
-  List.BeginUpdate;
+  Zaehler := 0;
+
+  FirstResultsShown := 0;
+  ResultsPublishedOnStop := False;
+  LastStatusUpdate := 0;
+  MaskArray := SplitString(Mask, '|');
+
+  DirectoryResults := TStringList.Create;
+  FileResults := TStringList.Create;
+
   try
+    FileResults.CaseSensitive := False;
+    FileResults.Sorted := True;
+    FileResults.Duplicates := dupIgnore;
+
+    DirectoryResults.CaseSensitive := False;
+    DirectoryResults.Duplicates := dupIgnore;
+
     if ClearList then
       List.Clear;
+
     if Directory = '\' then
       Exit;
-    ScanDir(IncludeTrailingBackslash(Directory));
+
+    RootDirectory :=
+      IncludeTrailingPathDelimiter(
+        Directory
+      );
+
+    ScanDir(RootDirectory);
+
+    PublishResults;
+
   finally
-    // List.EndUpdate;
+    DirectoryResults.Free;
+    FileResults.Free;
   end;
 end;
 
@@ -1969,50 +3277,89 @@ var
   Path, Mask: String;
   MinMaxFileSize: Int64;
 begin
+  // =========================================================
+  // GESAMTE SUCHZEIT MESSEN
+  //
+  // Start: direkt beim Klick auf den Start-Button
+  // Ende: wird später im Timer1Timer behandelt
+  // =========================================================
+  SearchStopwatch := TStopwatch.StartNew;
+
   // Horizontaler Scrollbalken wird entfernt...
   flbHorzScrollWidth := 0;
   Listbox1.Perform(LB_SETHORIZONTALEXTENT, 0, 0);
-  ListBox1.ItemHeight := 22;
+  MinMaxFileSize := 0;
 
   if not System.SysUtils.DirectoryExists(SearchField.Text) then
   begin
-    MessageDlgCenter('Suchpfad nicht gefunden!' + #13 + SearchField.Text, mtwarning, [mbOk]);
+    MessageDlgCenter(
+      'Suchpfad nicht gefunden!' + #13 + SearchField.Text,
+      mtwarning,
+      [mbOk]
+    );
+
     if Einstellungen_Form.SystemklangCB.Checked then
-      PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+      PlaySoundFile(
+        ExtractFilePath(Application.ExeName) + 'sounds\alert.wav'
+      );
+
+    // Suche wurde wegen ungültigem Pfad nicht gestartet.
+    // Stopwatch stoppen, damit keine laufende Zeit bestehen bleibt.
+    SearchStopwatch.Stop;
+
     Exit;
   end;
+
   // Aufhebung der Größenbeschränkung
-  Suche_Form.Constraints.MinHeight := Suche_Form.Height - Suchpanel.Height + PanelBottom.Height + StatusBar1.Height;
+  Suche_Form.Constraints.MinHeight :=
+    Suche_Form.Height - Suchpanel.Height +
+    PanelBottom.Height + StatusBar1.Height;
+
   Suche_Form.Constraints.MaxHeight := 0;
 
   PanelBottom.Visible   := True;
   StatusBar1.Visible    := True;
   SucheEdit.Visible     := False;
   AnzeigenPanel.Visible := False;
+
   // PanelBottom mit den Buttons soll immer über der StatusBar erscheinen
   StatusBar1.Top := PanelBottom.Top + PanelBottom.Height + 1;
+
   StatusBar1.Panels[0].Text := '...';
   StatusBar1.Panels[1].Text := 'Markiert: ';
+
   StatusBar1.Canvas.Font := StatusBar1.Font;
-  StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+
+  StatusBar1.Panels[0].Width :=
+    ListBox1.Width -
+    (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+
   Zaehler := 0;
   ListBox1.Clear;
-  ListBox1.Sorted := True;
   FreePDF64_Form.Memo1.Clear;
   StatusBar1.Panels[1].Text := '';
-  Path := IncludeTrailingBackslash(SearchField.Text);
+
+  FileField.Text   := Trim(FileField.Text);
+  SearchField.Text := Trim(SearchField.Text);
+
+  Application.ProcessMessages;
+
   Mask := FileField.Text;
+  Path := IncludeTrailingBackslash(SearchField.Text);
+
   StopSuche := False;
   StartSearchButton.Enabled := False;
-  // Der Stop-Button bekommt de Fokus nach Start der Suche!
-  StopSearchButton.SetFocus;
-  StopSearchButton.Caption := 'Suche abbrechen';
 
-  if (SFHResize < SFHStart) and (Suche_Form.Height = Suche_Form.Height - Suchpanel.Height) then
+  // Der Stop-Button bekommt den Fokus nach Start der Suche
+  StopSearchButton.SetFocus;
+
+  if (SFHResize < SFHStart) and
+     (Suche_Form.Height = Suche_Form.Height - Suchpanel.Height) then
   begin
     Suche_Form.Height := SFHStart;
     SFHResize := SFHStart;
-  end else
+  end
+  else
   begin
     if SFHResize < SFHStart then
       Suche_Form.Height := SFHResize
@@ -2021,7 +3368,8 @@ begin
     begin
       Suche_Form.Height := SFHResize;
       SFHStart := SFHResize;
-    end else
+    end
+    else
     if SFHStart > SFHResize then
       Suche_Form.Height := SFHStart
     else
@@ -2036,27 +3384,31 @@ begin
   SearchMinDate.Time := Time;
   SearchMaxDate.Time := StrToTime('23:59:59');
 
-  // Suche nach Größe...
+  // =========================================================
+  // SUCHE NACH GRÖSSE
+  // =========================================================
   if Length(FileSize.Text) > 0 then
   begin
     if SizeAuswahl.ItemIndex = 0 then // Byte
     begin
       try
-        MinMaxFileSize := StrToInt(FileSize.Text)
+        MinMaxFileSize := StrToInt(FileSize.Text);
       except
         on EConvertError do
           MinMaxFileSize := 0;
       end;
     end;
+
     if SizeAuswahl.ItemIndex = 1 then // KB
     begin
       try
-        MinMaxFileSize := StrToInt(FileSize.Text) * 1024
+        MinMaxFileSize := StrToInt(FileSize.Text) * 1024;
       except
         on EConvertError do
           MinMaxFileSize := 0;
       end;
     end;
+
     if SizeAuswahl.ItemIndex = 2 then // MB
     begin
       try
@@ -2066,10 +3418,12 @@ begin
           MinMaxFileSize := 0;
       end;
     end;
+
     if SizeAuswahl.ItemIndex = 3 then // GB
     begin
       try
-        MinMaxFileSize := StrToInt64(FileSize.Text) * (1024 * 1024 * 1024);
+        MinMaxFileSize :=
+          StrToInt64(FileSize.Text) * (1024 * 1024 * 1024);
       except
         on EConvertError do
           MinMaxFileSize := 0;
@@ -2077,82 +3431,174 @@ begin
     end;
   end;
 
-  // Suchfelder-Einträge hinzufügen
+  // =========================================================
+  // SUCHFELDER-EINTRÄGE HINZUFÜGEN
+  // =========================================================
   if SearchField.Items.IndexOf(SearchField.Text) < 0 then
     SearchField.Items.Insert(0, SearchField.Text);
+
   if FileField.Items.IndexOf(FileField.Text) < 0 then
     FileField.Items.Insert(0, FileField.Text);
+
   if TextCB.Items.IndexOf(TextCB.Text) < 0 then
     TextCB.Items.Insert(0, TextCB.Text);
 
+  // =========================================================
+  // SUCHE STARTEN
+  // =========================================================
   if Path <> '' then
   begin
-    if Mask = ''  then
+    if Mask = '' then
       Mask := '*.*';
+
     if Mask = '*.*' then
       Mask := '*';
 
+    Zaehler := 0;
+
     try
-      // Wenn "Nicht älter als" angekreuzt ist und/oder auch nach einer bestimmten Größe damit gesucht wird...
+      // -------------------------------------------------------
+      // Suche nach Alter
+      // -------------------------------------------------------
       if AlterCB.Checked then
       begin
-        // Get the current date and time and write into DTP
         DTP.Date := Date;
         DTP.Time := Time;
+
         if AgeAuswahl.ItemIndex = 0 then // Stunden
-          DTP.DateTime := IncHour(DTP.DateTime, - AgeSizeEdit.Value);
+          DTP.DateTime := IncHour(
+            DTP.DateTime,
+            -AgeSizeEdit.Value
+          );
+
         if AgeAuswahl.ItemIndex = 1 then // Tage
-          DTP.DateTime := IncDay(DTP.Date, - AgeSizeEdit.Value);
+          DTP.DateTime := IncDay(
+            DTP.Date,
+            -AgeSizeEdit.Value
+          );
+
         if AgeAuswahl.ItemIndex = 2 then // Wochen
-          DTP.DateTime := IncWeek(DTP.Date, - AgeSizeEdit.Value);
+          DTP.DateTime := IncWeek(
+            DTP.Date,
+            -AgeSizeEdit.Value
+          );
+
         if AgeAuswahl.ItemIndex = 3 then // Monate
-          DTP.DateTime := IncMonth(DTP.Date, - AgeSizeEdit.Value);
+          DTP.DateTime := IncMonth(
+            DTP.DateTime,
+            -AgeSizeEdit.Value
+          );
+
         if AgeAuswahl.ItemIndex = 4 then // Jahre
-          DTP.DateTime := IncYear(DTP.Date, - AgeSizeEdit.Value);
-        // In DTP.DateTime steht nun das gewünschte Datum/Uhrzeit!
-        GetFilesInDirectory_Age(Path, Mask, ListBox1.Items, MinMaxFileSize, DirCheckbox.Checked, True)
-      end else
-      // Wenn "Datum zwischen" angekreuzt ist oder nach einer bestimmten Größe gesucht wird...
-      if DatumCheckBox.Checked or DateiCheckBox.Checked then
-        GetFilesInDirectory_DateSize(Path, Mask, ListBox1.Items, MinMaxFileSize, DirCheckbox.Checked, True)
+          DTP.DateTime := IncYear(
+            DTP.DateTime,
+            -AgeSizeEdit.Value
+          );
+
+        GetFilesInDirectory_Age(
+          Path,
+          Mask,
+          ListBox1.Items,
+          MinMaxFileSize,
+          DirCheckbox.Checked,
+          True
+        );
+      end
+
+      // -------------------------------------------------------
+      // Suche nach Datum und/oder Größe
+      // -------------------------------------------------------
       else
-        // Rufe die Suchefunktion zum Durchsuchen des Ordners auf
-        GetFilesInDirectory(Path, Mask, ListBox1.Items, DirCheckbox.Checked, True);
-      finally
-      // Search has terminated, updates buttons and mouse cursor accordingly
+      if DatumCheckBox.Checked or DateiCheckBox.Checked then
+      begin
+        GetFilesInDirectory_DateSize(
+          Path,
+          Mask,
+          ListBox1.Items,
+          MinMaxFileSize,
+          DirCheckbox.Checked,
+          True
+        );
+      end
+
+      // -------------------------------------------------------
+      // Normale Suche
+      // -------------------------------------------------------
+      else
+      begin
+        GetFilesInDirectory(
+          Path,
+          Mask,
+          ListBox1.Items,
+          DirCheckbox.Checked,
+          True
+        );
+      end;
+
+    finally
+      // -------------------------------------------------------
+      // Suche beendet
+      // -------------------------------------------------------
       StartSearchButton.Enabled := True;
       StopSearchButton.Caption  := 'Abbrechen';
+
+      if Assigned(FWaitForm) then
+      begin
+        FWaitForm.Close;
+        FreeAndNil(FWaitForm);
+      end;
     end;
-  end else
-    // Wenn der Suchpfad leer ist
+  end
+  else
     Showmessage('Bitte geben Sie einen gültigen Suchpfad ein.');
 
+  // =========================================================
+  // SUCHENDE-SOUND
+  // =========================================================
   if Einstellungen_Form.SystemklangCB.Checked then
-    PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\standard.wav');
+    PlaySoundFile(
+      ExtractFilePath(Application.ExeName) + 'sounds\standard.wav'
+    );
 
+  // =========================================================
+  // ABGEBROCHEN
+  // =========================================================
   if StopSuche then
-    Suche_Form.StatusBar1.Panels[0].Text := Suche_Form.StatusBar1.Panels[0].Text + ' - Suche abgebrochen';
+    Suche_Form.StatusBar1.Panels[0].Text :=
+      Suche_Form.StatusBar1.Panels[0].Text +
+      ' - Suche abgebrochen';
 
+  // =========================================================
+  // KEINE ERGEBNISSE
+  // =========================================================
   if ListBox1.Count = 0 then
   begin
     StatusBar1.Panels[0].Text := '';
     StatusBar1.Panels[1].Text := '';
   end;
 
+  // =========================================================
+  // ERGEBNISSE VORHANDEN
+  // =========================================================
   if ListBox1.Count > 1 then
   begin
-    SuchergebnisBtn.Enabled    := True;
-    SortBtn.Enabled            := True;
-    StatusBar1.Panels[1].Text  := 'Markiert: ' + IntToStr(ListBox1.SelCount);
-    StatusBar1.Canvas.Font     := StatusBar1.Font;
-    StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
-  end else
-  begin
-    SuchergebnisBtn.Enabled := False;
-    SortBtn.Enabled         := False;
-  end;
+    SuchergebnisBtn.Enabled := True;
 
-  // Nach Ende der Suche - wo ist der Fokus?
+    StatusBar1.Panels[1].Text :=
+      'Markiert: ' + IntToStr(ListBox1.SelCount);
+
+    StatusBar1.Canvas.Font := StatusBar1.Font;
+
+    StatusBar1.Panels[0].Width :=
+      ListBox1.Width -
+      (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+  end
+  else
+    SuchergebnisBtn.Enabled := False;
+
+  // =========================================================
+  // FOKUS NACH ENDE DER SUCHE
+  // =========================================================
   if ListBox1.Count = 0 then
     FileField.SetFocus
   else
@@ -2162,90 +3608,123 @@ begin
   end;
 
   if ListBox1.SelCount > 0 then
-    StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
+    StatusBar1.Panels[1].Text :=
+      'Markiert: ' + IntToStr(ListBox1.SelCount);
 end;
 
 procedure TSuche_Form.StopSearchButtonClick(Sender: TObject);
+var
+  WaitLabel: TLabel;
 begin
   if StartSearchButton.Enabled then
   begin
     SucheEdit.Visible     := False;
     AnzeigenPanel.Visible := False;
     Close;
-  end else
-  begin
-    StopSuche := True;
-    StopSearchButton.Caption := 'Abbrechen';
+    Exit;
   end;
+
+  // Abbruch anfordern
+  StopSuche := True;
+
+  StopSearchButton.Caption := 'Warten...';
+
+  // Wartefenster nur einmal erzeugen
+  if not Assigned(FWaitForm) then
+  begin
+    FWaitForm := TForm.Create(Self);
+
+    FWaitForm.BorderStyle := bsDialog;
+    FWaitForm.BorderIcons := [];
+    FWaitForm.Position    := poScreenCenter;
+    FWaitForm.Width       := 480;
+    FWaitForm.Height      := 80;
+    FWaitForm.Caption     := 'Suchergebnis wird vorbereitet...';
+
+    WaitLabel := TLabel.Create(FWaitForm);
+    WaitLabel.Parent    := FWaitForm;
+    WaitLabel.Align     := alClient;
+    WaitLabel.Alignment := taCenter;
+    WaitLabel.Layout    := tlCenter;
+    WaitLabel.Caption   := 'Bitte warten...';
+  end;
+
+  // Nicht modal anzeigen!
+  FWaitForm.Show;
+  FWaitForm.Update;
+
+  // Nur Nachrichten verarbeiten und sofort zurückkehren.
+  // KEINE while-Schleife!
+  Application.ProcessMessages;
 end;
 
 procedure TSuche_Form.SearchFieldDropDown(Sender: TObject);
 var
+  Last: string;
   i: Integer;
 begin
-  if SearchField.Items.IndexOf(SearchField.Text) < 0 then
-    SearchField.Items.Insert(0, SearchField.Text);
+  Last := SearchField.Text;
 
-  for i := SearchField.Items.Count downto 0 do
-    if SearchField.Items.Strings[i] = '' then
+  // Leere Einträge entfernen (korrekter Bereich!)
+  for i := SearchField.Items.Count - 1 downto 0 do
+    if SearchField.Items[i] = '' then
       SearchField.Items.Delete(i);
-end;
 
-// Sortiert die Verzeichnis(se) nach oben
-procedure MoveItemsWithBracketToTop(ListBox: TListBox);
-var
-  i, j: Integer;
-  TempList: TStringList;
-begin
-  TempList := TStringList.Create;
-  try
-    // Zuerst die Items, die mit '[' beginnen, in TempList verschieben
-    for i := 0 to ListBox.Items.Count - 1 do
-    begin
-      if ListBox.Items[i].StartsWith('[') then
-        TempList.Add(ListBox.Items[i]);
-    end;
-    // Die Items, die mit '[' beginnen, aus der ListBox entfernen
-    for i := ListBox.Items.Count - 1 downto 0 do
-    begin
-      if ListBox.Items[i].StartsWith('[') then
-        ListBox.Items.Delete(i);
-    end;
-    // Die Items aus TempList wieder oben in die ListBox einfügen
-    for j := 0 to TempList.Count - 1 do
-    begin
-      ListBox.Items.Insert(j, TempList[j]);
-    end;
-  finally
-    TempList.Free;
-  end;
-end;
-
-// ListBox sortieren
-procedure TSuche_Form.SortBtnClick(Sender: TObject);
-begin
-//  LockWindowUpdate(ListBox1.Handle);
-  SortBtn.Caption := 'Sortierung läuft...';
-  MoveItemsWithBracketToTop(ListBox1);
-  SortBtn.Caption := 'Ergebnis umsortieren';
-//  LockWindowUpdate(0);
-
-  if ListBox1.Count > 0 then
+  // Letzten Eintrag oben einfügen, wenn er noch nicht existiert
+  if (Last <> '') and (SearchField.Items.IndexOf(Last) < 0) then
+    SearchField.Items.Insert(0, Last)
+  else
   begin
-    ListBox1.ClearSelection;
-    ListBox1.Selected[0] := True;
+    // Falls vorhanden → nach oben verschieben
+    i := SearchField.Items.IndexOf(Last);
+    if i > 0 then
+    begin
+      SearchField.Items.Delete(i);
+      SearchField.Items.Insert(0, Last);
+    end;
   end;
+
+  // Immer den obersten Eintrag auswählen
+  if SearchField.Items.Count > 0 then
+    SearchField.ItemIndex := 0;
+end;
+
+procedure TSuche_Form.FileFieldChange(Sender: TObject);
+begin
+  FLastPersistent := FileField.Text;
+end;
+
+procedure TSuche_Form.FileFieldCloseUp(Sender: TObject);
+var
+  idx: Integer;
+  S: string;
+begin
+  S := TrimRight(FileField.Text);
+
+  if S = '' then
+    Exit;
+
+  FileField.Text := S;
+
+  idx := FileField.Items.IndexOf(S);
+
+  if idx > 0 then
+  begin
+    FileField.Items.Delete(idx);
+    FileField.Items.Insert(0, S);
+  end
+  else if idx < 0 then
+    FileField.Items.Insert(0, S);
+
+  FLastPersistent := S;
 end;
 
 procedure TSuche_Form.FileFieldDropDown(Sender: TObject);
 var
   i: Integer;
 begin
-  if FileField.Items.IndexOf(FileField.Text) < 0 then
-    FileField.Items.Insert(0, FileField.Text);
-
-  for i := FileField.Items.Count downto 0 do
-    if FileField.Items.Strings[i] = '' then
+  for i := FileField.Items.Count - 1 downto 0 do
+    if Trim(FileField.Items[i]) = '' then
       FileField.Items.Delete(i);
 end;
 
@@ -2338,109 +3817,226 @@ var
   i: Integer;
   s: String;
 begin
+  // Keine Auswahl → Hinweis
   if (ListBox1.SelCount = 0) or (ListBox1.Count = 0) then
   begin
     MessageDlgCenter('Kein Eintrag gewählt!', mtInformation, [mbOk]);
     Exit;
   end;
 
-  // Alt + linke Maustaste soll markierte Datei öffnen
+  // ALT + Linksklick → Datei direkt öffnen
   if AltLeftDown then
   begin
-    if FileExists(ListBox1.Items[ListBox1.ItemIndex]) then
-      ShellExecute(Handle, 'open', PChar(ListBox1.Items[ListBox1.ItemIndex]), NIL, NIL, SW_SHOWNORMAL);
+    s := ListBox1.Items[ListBox1.ItemIndex];
+
+    if FileExists(s) then
+      ShellExecute(Handle, 'open', PChar(s), nil, nil, SW_SHOWNORMAL);
+
     Exit;
   end;
 
+  // Normale Suche
   Suche_ItemAnzeigen := True;
+
+  // Markierten Eintrag holen
+  s := '';
 
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
-      s := ListBox1.Items.Strings[i];
+    begin
+      s := ListBox1.Items[i];
+      Break;
+    end;
 
-  // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
-  if Pos('[', s) <> 0 then
+  if s = '' then
+    Exit;
+
+  // Klammern entfernen: [Pfad] → Pfad
+  if (Length(s) > 0) and (s[1] = '[') then
     Delete(s, 1, 1);
-  // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
-  if s[Length(s)] = ']' then
+
+  if (Length(s) > 0) and (s[Length(s)] = ']') then
     Delete(s, Length(s), 1);
 
   FreePDF64_Form.BringToFront;
+
+  // ============================================================
+  // LINKS
+  // ============================================================
   if Links then
   begin
-    FreePDF64_Form.LMDShellFolder1.ChDir(ExtractFilePath(s));
-    for i := 0 to FreePDF64_Form.LMDShellList1.Items.Count - 1 do
+    // ----------------------------------------------------------
+    // Verzeichnis:
+    // Direkt in das angeklickte Verzeichnis wechseln.
+    // Dadurch nur EIN ChDir.
+    // ----------------------------------------------------------
+    if DirectoryExists(s) then
     begin
-      if FreePDF64_Form.LMDShellList1.Items[i].Caption = ExtractFileName(s) then
-      begin
-        FreePDF64_Form.LMDShellList1.ItemFocused := FreePDF64_Form.LMDShellList1.Items.Item[i];
-        FreePDF64_Form.LMDShellList1.Selected    := FreePDF64_Form.LMDShellList1.Items.Item[i];
+      FreePDF64_Form.LMDShellFolder1.ChDir(s);
 
-        FreePDF64_Form.LMDShellList1.SetFocus;
-        FreePDF64_Form.LMDShellList1.Items.Item[i].MakeVisible(False);
-        If DirectoryExists(s) then
-          FreePDF64_Form.LMDShellFolder1.ChDir(s);
-      end;
-    end;
-  end else
-  begin
-    FreePDF64_Form.LMDShellFolder2.ChDir(ExtractFilePath(s));
-    for i := 0 to FreePDF64_Form.LMDShellList2.Items.Count - 1 do
+      // Das Verzeichnis ist jetzt geöffnet.
+      // Eine erneute Suche/Markierung des Ordners ist nicht
+      // notwendig, da wir uns bereits darin befinden.
+    end
+    else
     begin
-      if FreePDF64_Form.LMDShellList2.Items[i].Caption = ExtractFileName(s) then
-      begin
-        FreePDF64_Form.LMDShellList2.ItemFocused := FreePDF64_Form.LMDShellList2.Items.Item[i];
-        FreePDF64_Form.LMDShellList2.Selected    := FreePDF64_Form.LMDShellList2.Items.Item[i];
-        FreePDF64_Form.LMDShellList2.SetFocus;
-        FreePDF64_Form.LMDShellList2.Items.Item[i].MakeVisible(False);
-        If DirectoryExists(s) then
-          FreePDF64_Form.LMDShellFolder2.ChDir(s);
-      end;
+      // --------------------------------------------------------
+      // Datei:
+      // Übergeordnetes Verzeichnis öffnen und Datei markieren.
+      // --------------------------------------------------------
+      FreePDF64_Form.LMDShellFolder1.ChDir(ExtractFilePath(s));
+
+      for i := 0 to FreePDF64_Form.LMDShellList1.Items.Count - 1 do
+        if SameText(
+          FreePDF64_Form.LMDShellList1.Items[i].Caption,
+          ExtractFileName(s)
+        ) then
+        begin
+          FreePDF64_Form.LMDShellList1.ItemFocused :=
+            FreePDF64_Form.LMDShellList1.Items[i];
+
+          FreePDF64_Form.LMDShellList1.Selected :=
+            FreePDF64_Form.LMDShellList1.Items[i];
+
+          FreePDF64_Form.LMDShellList1.SetFocus;
+
+          FreePDF64_Form.LMDShellList1.Items[i].MakeVisible(False);
+
+          Break;
+        end;
+    end;
+  end
+
+  // ============================================================
+  // RECHTS
+  // ============================================================
+  else
+  begin
+    // ----------------------------------------------------------
+    // Verzeichnis:
+    // Direkt in das angeklickte Verzeichnis wechseln.
+    // Dadurch nur EIN ChDir.
+    // ----------------------------------------------------------
+    if DirectoryExists(s) then
+    begin
+      FreePDF64_Form.LMDShellFolder2.ChDir(s);
+
+      // Das Verzeichnis ist jetzt geöffnet.
+    end
+    else
+    begin
+      // --------------------------------------------------------
+      // Datei:
+      // Übergeordnetes Verzeichnis öffnen und Datei markieren.
+      // --------------------------------------------------------
+      FreePDF64_Form.LMDShellFolder2.ChDir(ExtractFilePath(s));
+
+      for i := 0 to FreePDF64_Form.LMDShellList2.Items.Count - 1 do
+        if SameText(
+          FreePDF64_Form.LMDShellList2.Items[i].Caption,
+          ExtractFileName(s)
+        ) then
+        begin
+          FreePDF64_Form.LMDShellList2.ItemFocused :=
+            FreePDF64_Form.LMDShellList2.Items[i];
+
+          FreePDF64_Form.LMDShellList2.Selected :=
+            FreePDF64_Form.LMDShellList2.Items[i];
+
+          FreePDF64_Form.LMDShellList2.SetFocus;
+
+          FreePDF64_Form.LMDShellList2.Items[i].MakeVisible(False);
+
+          Break;
+        end;
     end;
   end;
 
-  FreePDF64_Form.LMDShellList1.Column[0].AutoSize := True;
-  FreePDF64_Form.LMDShellList2.Column[0].AutoSize := True;
+  // ============================================================
+  // Autosize
+  // ============================================================
+  //
+  // Wie im Original, aber nur die tatsächlich verwendete
+  // LMDShellList wird angepasst.
+  // ============================================================
+  if Links then
+    FreePDF64_Form.LMDShellList1.Column[0].AutoSize := True
+  else
+    FreePDF64_Form.LMDShellList2.Column[0].AutoSize := True;
+
+  // Wenn im Tray → nach vorne holen
+  if FreePDF64_Form.TrayIcon1.Visible then
+    FreePDF64_Form.TrayIcon1Click(Sender);
 
   Close;
-
-  // Wenn im Tray, dann hole Form nach vorne
-  if FreePDF64_Form.TrayIcon1.Visible = True then
-    FreePDF64_Form.TrayIcon1Click(Sender);
 end;
 
-// Horizontaler Scrollbalken
 procedure TSuche_Form.ListBox1DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
   S: string;
+  Scale: Single;
+  TextLeft: Integer;
+  TextTop: Integer;
+  TextPx: Integer;
   Len: Integer;
 begin
   S := ListBox1.Items[Index];
+  Scale := ListBox1.CurrentPPI / 96;
 
   with ListBox1.Canvas do
   begin
-    // Hintergrundfarbe abhängig von Auswahl
+    // Hintergrund und Schriftfarbe
     if odSelected in State then
     begin
-      Brush.Color := clGradientActiveCaption;
-      Font.Color  := clBlack;
-    end else
+      // Blau wie die Textauswahl im FileField
+      Brush.Color := $00D77800;
+      Font.Color := clWhite;
+    end
+    else if odHotLight in State then
+    begin
+      Brush.Color := $00F5F5F5;
+      Font.Color := clBlack;
+    end
+    else
+    begin
       Brush.Color := clWindow;
+      Font.Color := clWindowText;
+    end;
 
-    // Hintergrund zeichnen
     FillRect(Rect);
 
-    // Text zeichnen
-    TextOut(Rect.Left + 2, Rect.Top + 1, S);
+    // Tatsächliche Texthöhe der aktuellen Schrift
+    TextPx := TextHeight('Hg');
 
-    // Horizontalen Scrollbalken anpassen
-    Len := TextWidth(S) + Rect.Left + 10;
+    // Text exakt vertikal in der Zeile zentrieren
+    TextTop := Rect.Top +
+      ((Rect.Bottom - Rect.Top) - TextPx) div 2;
+
+    // Linker Innenabstand
+    TextLeft := Rect.Left + Round(8 * Scale);
+
+    TextOut(TextLeft, TextTop, S);
+
+    // Horizontale Scrollbreite
+    Len := TextWidth(S) + Round(20 * Scale);
+
     if Len > flbHorzScrollWidth then
     begin
       flbHorzScrollWidth := Len;
-      ListBox1.Perform(LB_SETHORIZONTALEXTENT, flbHorzScrollWidth, 0);
+
+      ListBox1.Perform(
+        LB_SETHORIZONTALEXTENT,
+        Round(flbHorzScrollWidth / Scale),
+        0
+      );
     end;
+
+    // Dezente Trennlinie
+    Pen.Color := $00DDDDDD;
+
+    MoveTo(Rect.Left, Rect.Bottom - 1);
+    LineTo(Rect.Right, Rect.Bottom - 1);
   end;
 end;
 

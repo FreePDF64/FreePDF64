@@ -1,4 +1,4 @@
-//
+Ôªø//
 // Programmname: FreePDF64
 //
 
@@ -74,7 +74,6 @@ type
     ExifTool: TLabel;
     Edit8: TEdit;
     Button7: TButton;
-    ExifToolGE: TCheckBox;
     FontCB: TCheckBox;
     PDFX4: TCheckBox;
     Shrink2CB: TCheckBox;
@@ -111,11 +110,11 @@ type
     procedure PDF_Shrink2Click(Sender: TObject);
     procedure ExifToolClick(Sender: TObject);
     procedure Button7Click(Sender: TObject);
-    procedure ExifToolGEClick(Sender: TObject);
     procedure FontCBClick(Sender: TObject);
     procedure PDFX4Click(Sender: TObject);
     procedure Edit3Exit(Sender: TObject);
     procedure PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     private
       { Private-Deklarationen }
     public
@@ -124,6 +123,7 @@ type
 
 var
   Einstellungen_Form: TEinstellungen_Form;
+  AbbrechenBtn: Boolean;
 
 implementation
 
@@ -138,6 +138,37 @@ const
 
 procedure TEinstellungen_Form.AuswahlRGClick(Sender: TObject);
 begin
+  if FreePDF64_Form.Formloaded and FreePDF64_Form.AutoFormat.Checked and
+     HinweisAutoFormat and not AbbrechenBtn then
+  begin
+    HinweisAutoFormat := False;
+    AbbrechenBtn      := True;
+
+    MessageDlg(
+      'Automatische Formatauswahl' +
+      sLineBreak + sLineBreak +
+      'Die automatische Erkennung der Dateiendung ist aktiviert.' +
+      sLineBreak + sLineBreak +
+      'Zuordnung der Dateiendungen:' +
+      sLineBreak + sLineBreak +
+      'Dateiendung:'#9' '#9'Format:' + sLineBreak +
+      'PS / PDF'#9#9'‚Üí'#9'PDF' + sLineBreak +
+      'BMP'#9#9'‚Üí'#9'PDF' + sLineBreak +
+      'JPEG'#9#9'‚Üí'#9'PDF' + sLineBreak +
+      'PNG'#9#9'‚Üí'#9'PDF' + sLineBreak +
+      'TIFF'#9#9'‚Üí'#9'PDF' +
+      sLineBreak + sLineBreak +
+      'W√§hrend der automatischen √úberwachung wird die' + sLineBreak +
+      'Formatauswahl anhand der Dateiendung festgelegt.' +
+      sLineBreak + sLineBreak +
+      'Eine manuelle √Ñnderung der Formatauswahl ist erst' + sLineBreak +
+      'nach Deaktivierung dieser Option m√∂glich.',
+      mtInformation,
+      [mbOK],
+      0
+    );
+  end;
+
   // PDF und JPEG zu PDF
   if (AuswahlRG.ItemIndex = 0) or (AuswahlRG.ItemIndex = 11) then
   begin
@@ -491,9 +522,9 @@ begin
 
   LMDShellSysBrowseDialog1.SelectedPath := ExcludeTrailingBackslash(s);
   LMDShellSysBrowseDialog1.Caption :=
-    'Bitte das \FreePDF64\xpdf\bin64-Verzeichnis ausw‰hlen';
+    'Bitte das \FreePDF64\xpdf\bin64-Verzeichnis ausw√§hlen';
   LMDShellSysBrowseDialog1.InstructionText :=
-    'Die Tools aus diesem Verzeichnis f¸hren verschiedene Funktionen f¸r PDF-Dateien aus.';
+    'Die Tools aus diesem Verzeichnis f√ºhren verschiedene Funktionen f√ºr PDF-Dateien aus.';
 
   if LMDShellSysBrowseDialog1.Execute then
     s := LMDShellSysBrowseDialog1.SelectedPath;
@@ -511,9 +542,9 @@ begin
 
   LMDShellSysBrowseDialog1.SelectedPath := ExcludeTrailingBackslash(s);
   LMDShellSysBrowseDialog1.Caption :=
-    'Bitte das \FreePDF64\ImageMagick-Verzeichnis ausw‰hlen';
+    'Bitte das \FreePDF64\ImageMagick-Verzeichnis ausw√§hlen';
   LMDShellSysBrowseDialog1.InstructionText :=
-    'Die Tools aus diesem Verzeichnis sind f¸r die Grafikumwandlungen zust‰ndig.';
+    'Die Tools aus diesem Verzeichnis sind f√ºr die Grafikumwandlungen zust√§ndig.';
 
   if LMDShellSysBrowseDialog1.Execute then
     s := LMDShellSysBrowseDialog1.SelectedPath;
@@ -531,9 +562,9 @@ begin
 
   LMDShellSysBrowseDialog1.SelectedPath := ExcludeTrailingBackslash(s);
   LMDShellSysBrowseDialog1.Caption :=
-    'Bitte das \FreePDF64\ExifTool-Verzeichnis ausw‰hlen';
+    'Bitte das \FreePDF64\ExifTool-Verzeichnis ausw√§hlen';
   LMDShellSysBrowseDialog1.InstructionText :=
-    'ExifTool ist f¸r die Anzeige der Datei-Informationen zust‰ndig.';
+    'ExifTool ist f√ºr die Anzeige der Datei-Informationen zust√§ndig.';
 
   if LMDShellSysBrowseDialog1.Execute then
     s := LMDShellSysBrowseDialog1.SelectedPath;
@@ -589,7 +620,7 @@ begin
       SchriftParams.ItemIndex := ReadInteger('Resolution', 'dpi',
         SchriftParams.ItemIndex);
       SpinEdit1.Value := ReadInteger('Resolution', 'dpi2', SpinEdit1.Value);
-      SpinEdit2.Value := ReadInteger('Resolution', 'Qualit‰t', SpinEdit2.Value);
+      SpinEdit2.Value := ReadInteger('Resolution', 'Qualit√§t', SpinEdit2.Value);
       AuswahlRG.ItemIndex := ReadInteger('Format', 'Choice',
         AuswahlRG.ItemIndex);
       FastCB.Checked := ReadBool('Format', 'FastWebView', FastCB.Checked);
@@ -604,8 +635,6 @@ begin
       SoundSpin.Value := ReadInteger('Format', 'System Sound Volume 0-65535',
         SoundSpin.Value);
       ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', ZusatzAnAus.Checked);
-      ExifToolGE.Checked := ReadBool('Zusatz', 'German/English',
-        ExifToolGE.Checked);
       FontCB.Checked := ReadBool('Zusatz', 'Memo Font', FontCB.Checked);
       FreePDF64_Notify.MonitoringFolder.Text :=
         ReadString('Monitoring', 'Folder', s);
@@ -633,6 +662,8 @@ begin
   PDFA_CB.Checked := False;
   PDFX.Checked    := False;
   PDFX4.Checked   := False;
+
+  AbbrechenBtn    := True;
   Close;
 end;
 
@@ -646,7 +677,7 @@ end;
 procedure TEinstellungen_Form.Edit3Exit(Sender: TObject);
 begin
   if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'KillerPDF\KillerPDF.exe';
+    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.6.1-64.exe';
   PDFReader := Einstellungen_Form.Edit3.Text;
 end;
 
@@ -654,8 +685,17 @@ procedure TEinstellungen_Form.EncryptBtClick(Sender: TObject);
 begin
   // Form soll mittig angezeigt werden
   Encrypt_Form.Position := poMainFormCenter;
-  // Aufruf der Verschl¸sselungs-Form
+  // Aufruf der Verschl√ºsselungs-Form
   Encrypt_Form.ShowModal;
+end;
+
+procedure TEinstellungen_Form.FormCloseQuery(Sender: TObject;
+  var CanClose: Boolean);
+begin
+  if FreePDF64_Form.AutoFormat.Checked then
+    HinweisAutoFormat := True
+  else
+    HinweisAutoFormat := False;
 end;
 
 procedure TEinstellungen_Form.FormCreate(Sender: TObject);
@@ -688,7 +728,7 @@ begin
       SchriftParams.ItemIndex := ReadInteger('Resolution', 'dpi',
         SchriftParams.ItemIndex);
       SpinEdit1.Value := ReadInteger('Resolution', 'dpi2', SpinEdit1.Value);
-      SpinEdit2.Value := ReadInteger('Resolution', 'Qualit‰t', SpinEdit2.Value);
+      SpinEdit2.Value := ReadInteger('Resolution', 'Qualit√§t', SpinEdit2.Value);
       AuswahlRG.ItemIndex := ReadInteger('Format', 'Choice',
         AuswahlRG.ItemIndex);
       FastCB.Checked := ReadBool('Format', 'FastWebView', FastCB.Checked);
@@ -940,9 +980,15 @@ procedure TEinstellungen_Form.FormShow(Sender: TObject);
 var
   s: string;
 begin
-  Edit3.Text := PDFReader;
+  if FreePDF64_Form.AutoFormat.Checked then
+    HinweisAutoFormat := True
+  else
+    HinweisAutoFormat := False;
 
-  s := '‹berwachung';
+  Edit3.Text := PDFReader;
+  AbbrechenBtn := False;
+
+  s := '√úberwachung';
   if FreePDF64_Notify.LMDShellNotify.Active = True then
   begin
     UeberwachungBtn.Caption := s + ' ist AN';
@@ -963,7 +1009,7 @@ begin
   Label7.Cursor := crHandPoint;
 
   // Hinweistext auf PDF-Anzeiger-Button
-  PDFAnzeiger.Hint := ('LMB: Homepage von KillerPDF aufrufen') + #13 + ('RMB: Homepage von SumatraPDF aufrufen');
+  PDFAnzeiger.Hint := 'Homepage von SumatraPDF aufrufen';
 
   if ZusatzAnAus.Checked = False then
     Zusatz.Enabled := False
@@ -1011,14 +1057,7 @@ end;
 procedure TEinstellungen_Form.PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
   Y: Integer);
 begin
-  if Button = mbLeft then
-  begin
-    ShellExecute(Application.Handle, 'open', PChar('https://killerpdf.net/'), NIL, NIL, SW_NORMAL);
-  end
-  else if Button = mbRight then
-  begin
-    ShellExecute(Application.Handle, 'open', PChar('https://www.sumatrapdfreader.org/'), NIL, NIL, SW_NORMAL);
-  end;
+  ShellExecute(Application.Handle, 'open', PChar('https://www.sumatrapdfreader.org/'), NIL, NIL, SW_NORMAL);
 end;
 
 procedure TEinstellungen_Form.ImageMagickClick(Sender: TObject);
@@ -1031,15 +1070,6 @@ procedure TEinstellungen_Form.ExifToolClick(Sender: TObject);
 begin
   ShellExecute(Application.Handle, 'open', PChar('https://exiftool.org/'), NIL,
     NIL, SW_NORMAL);
-end;
-
-// Umschalten zwischen deutscher/englischer Datei-Informationen
-procedure TEinstellungen_Form.ExifToolGEClick(Sender: TObject);
-begin
-  if ExifToolGE.Checked = True then
-    GE := '-lang de' // deutsch
-  else
-    GE := ''; // englisch
 end;
 
 procedure TEinstellungen_Form.FontCBClick(Sender: TObject);
@@ -1056,7 +1086,7 @@ begin
   end;
 end;
 
-// Word: 0 - 65535, wobei 65535 die lauteste St‰rke ist
+// Word: 0 - 65535, wobei 65535 die lauteste St√§rke ist
 procedure SetVolume(const volL, volR: Word);
 var
   hWO: HWAVEOUT;
@@ -1110,16 +1140,15 @@ begin
       WriteBool('Format', 'Shrink PDF2 Overwrite', Shrink2CB.Checked);
 
       // Zusatz schreiben
-      IniDat.EraseSection('Zusatz');
+      IniDat.EraseSection('Other');
       if Zusatz_Form.ZusatzCB.Items.Count > 0 then
         for i := 1 to Zusatz_Form.ZusatzCB.Items.Count do
           if Zusatz_Form.ZusatzCB.Items[i] <> '"' then
-            WriteString('Zusatz', 'Zeichenketten' + IntToStr(i - 1),
+            WriteString('Other', 'Zeichenketten' + IntToStr(i - 1),
               '"' + Zusatz_Form.ZusatzCB.Items[i - 1] + '"');
 
-      WriteBool('Zusatz', 'On/Off', ZusatzAnAus.Checked);
-      WriteBool('Zusatz', 'German/English', ExifToolGE.Checked);
-      WriteBool('Zusatz', 'Memo Font', FontCB.Checked);
+      WriteBool('Other', 'On/Off', ZusatzAnAus.Checked);
+      WriteBool('Other', 'Memo Font', FontCB.Checked);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -1135,7 +1164,7 @@ begin
   if (Vol1 < 0) or (Vol1 > 65535) then
     Vol1 := 65535;
   Vol2 := Vol1;
-  // Word: 0 - 65535, wobei 65535 die lauteste St‰rke ist
+  // Word: 0 - 65535, wobei 65535 die lauteste St√§rke ist
   SetVolume(Vol1, Vol2);
   // Memo Height Addition
   MHA := HeightSpin.Value;
@@ -1183,8 +1212,6 @@ begin
       FreePDF64_Form.FormatBtn.Caption := 'Formatauswahl:' + Text_FormatBtn +
         '- (256 AES)';
   end;
-  // Abfrage auf Hinweis bzgl. der Extension
-  FreePDF64_Form.ExtAbfrage;
 end;
 
 procedure TEinstellungen_Form.PDFA_CBClick(Sender: TObject);

@@ -1,4 +1,4 @@
-//
+ï»¿//
 // Programmname: FreePDF64
 //
 
@@ -9,8 +9,8 @@ interface
 uses
   Forms, StdCtrls, Buttons, Controls, Classes, ShlObj, Windows,
   LMDShNtf, LMDCustomComponent, Dialogs, LMDShBase, ShellAPI, LMDShBrwDlg,
-  LMDShDlg, LMDBrowseDlg, Vcl.Samples.Spin, IniFiles, Printers, Registry,
-  Vcl.ExtCtrls, LMDShLink, Graphics, System.Notification;
+  LMDShDlg, LMDBrowseDlg, Vcl.Samples.Spin, IniFiles, Printers,
+  Vcl.ExtCtrls, Graphics, System.Notification, FreePDF64PrinterConfig;
 
 type
   TFreePDF64_Notify = class(TForm)
@@ -29,11 +29,10 @@ type
     Ziel_FestCB: TCheckBox;
     LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog;
     LMDShellRestartDialog1: TLMDShellRestartDialog;
-    SendToBtn: TSpeedButton;
-    LMDShellLink1: TLMDShellLink;
     NotificationCenter1: TNotificationCenter;
     BenachrichtigungCB: TCheckBox;
     Label1: TLabel;
+    TimerPDFUeberwachung: TTimer;
     procedure btnStartClick(Sender: TObject);
     procedure btnStopClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -45,107 +44,216 @@ type
     procedure LMDShellNotifyShellChangeNotify(aSender: TObject; aPIDL1, aPIDL2: PItemIDList;
               aEvents: TLMDShellNotifyEventTypes);
     procedure Ziel_FestCBClick(Sender: TObject);
-    procedure SendToBtnClick(Sender: TObject);
+    procedure TimerPDFUeberwachungTimer(Sender: TObject);
   private
     { Private declarations }
     procedure Abfrage(const EventName: string; aPIDL1: PItemIDList = nil;
                                                 aPIDL2: PItemIDList = nil);
+    procedure StarteNaechsteDatei;
   public
     { Public declarations }
   end;
 
 var
   FreePDF64_Notify: TFreePDF64_Notify;
+  PDF_UeberwachungAktiv: Boolean;
+  PDF_Ueberwachung_GroesseAlt: Int64;
+  PDF_Ueberwachung_StableCount: Integer;
+  PDF_Ueberwachung_StartTick: Cardinal;
+
 
 implementation
 
 {$WARNINGS OFF}
 uses
   SysUtils, LMDShPIDL, Einstellungen_Unit, FreePDF64_Unit, Zusatz_Unit, System.IOUtils;
+
 {$WARNINGS ON}
 
 {$R *.DFM}
 
-// Abfrage und Handlung, wenn ausgewählte Datei im ausgewählten Verzeichnis erkannt wurde...
-procedure TFreePDF64_Notify.Abfrage(const EventName: string; aPIDL1, aPIDL2: PItemIDList);
+
+procedure UpdateFreePDF64PrinterSourceDirectory(
+  const SourceDirectory: string);
 var
-  N: TNotification;
-  s: String;
-  i, t: Integer;
+  Ini: TIniFile;
+  Dir: string;
+  ConfigDir: string;
 begin
-  t := SpinEditSec.Value * 1000; //von ms in sec.
+  Dir := Trim(SourceDirectory);
 
-  // Hat ein Ereignis stattgefunden?
-  if Assigned(aPIDL1) or Assigned(aPIDL2) then
-  begin
-    // Aktuelles Verzeichnis speichern
-    s := FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName;
-    // Wenn das aktive Verzeichnis nicht das Überwachungsverzeichnis ist, dann ChangeDir...
-    if FreePDF64_Form.LMDShellFolder1.ActiveFolder.PathName <> IncludeTrailingBackslash(MonitoringFolder.Text) then
-      FreePDF64_Form.LMDShellFolder1.ChDir(IncludeTrailingBackslash(MonitoringFolder.Text));
+  if Dir = '' then
+    Exit;
 
-    if Einstellungen_Form.ZusatzAnAus.Checked = True then
-    begin
-      // Folgende Zeichenketten werden aus den ermittelten Dateinamen beim Drucken in eine PDF entfernt:
-      try
-        FreePDF64_Form.LMDShellList1.Items.Item[0].Caption :=
-          StringReplace(FreePDF64_Form.LMDShellList1.Items.Item[0].Caption, Zusatz_Form.ZusatzCB.Text, '', [rfReplaceAll, rfIgnoreCase]);
-      finally
-        Application.ProcessMessages;
-      end;
-    end;
+  Dir := IncludeTrailingPathDelimiter(Dir);
 
-    MonitoringFile := UpperCase(FreePDF64_Form.LMDShellList1.Items.Item[0].Caption);
-    // Suche nach der neuen Datei im Überwachungsverzeichnis
-    for i := 0 to FreePDF64_Form.LMDShellList1.Items.Count - 1 do
-      if UpperCase(FreePDF64_Form.LMDShellList1.Items.Item[i].Caption) = MonitoringFile then // und gefunden...
-      begin
-        // Wartezeit bis zur weiteren Verarbeitung
-        Sleep(t);
+  { Das Ã¼berwachte Quellverzeichnis muss vorhanden sein. }
+  if not DirectoryExists(Dir) then
+    if not ForceDirectories(Dir) then
+      raise Exception.Create(
+        'Das Quellverzeichnis konnte nicht erstellt werden:' +
+        sLineBreak + Dir);
 
-        FreePDF64_Form.LMDShellList1.Selected := FreePDF64_Form.LMDShellList1.Items.Item[i];
+  ConfigDir := ExtractFilePath(FREEPDF64_CONFIG_FILE);
 
-        Überwachung_Erstellung := True;
-        if Ziel_FestCB.Checked then
-          Ziel := IncludeTrailingBackslash(ZielEdit.Text);
-        FreePDF64_Form.PDF_Erstellung.Click;
+  { Dieses Verzeichnis muss einmalig durch die Installation
+    angelegt und fÃ¼r normale Benutzer beschreibbar sein. }
+  if not DirectoryExists(ConfigDir) then
+    raise Exception.Create(
+      'Das FreePDF64-Konfigurationsverzeichnis ist nicht vorhanden:' +
+      sLineBreak +
+      ConfigDir +
+      sLineBreak +
+      sLineBreak +
+      'Bitte zuerst Set_FreePDF64_Permissions.cmd als Administrator ausfÃ¼hren.');
 
-        // Windows-Benachrichtigung anzeigen lassen, das Druck stattgefunden hat
-        N := NotificationCenter1.CreateNotification;
-        try
-          N.Title := 'Druckerstatus';
-          N.AlertBody := 'FreePDF64-Drucker: Datei wurde gedruckt!';
-          N.EnableSound := True; // optional
-          // Notification anzeigen
-          if BenachrichtigungCB.Checked then
-            NotificationCenter1.PresentNotification(N);
-        finally
-          N.Free;
-        end;
+  Ini := TIniFile.Create(FREEPDF64_CONFIG_FILE);
+  try
+    Ini.WriteString(
+      'Printer',
+      'SourceDirectory',
+      Dir);
 
-        Sleep(t);
-
-        // Datei nach der Erstellung in den Papierkorb löschen
-        try
-//          if not DeleteFile(IncludeTrailingBackslash(MonitoringFolder.Text) + FreePDF64_Form.LMDShellList1.Selected.Caption) then
-          if not DeleteFile(IncludeTrailingBackslash(MonitoringFolder.Text) + FreePDF64_Form.LMDShellList1.Items.Item[i].Caption) then
-            if Einstellungen_Form.SystemklangCB.Checked then
-              FreePDF64_Form.PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav')
-        except
-//          ShowMessage(SysErrorMessage(GetLastError));
-          Application.ProcessMessages;
-        end;
-      end;
-    // Rücksprung zum aktuellen Verzeichnis
-    FreePDF64_Form.LMDShellFolder1.ChDir(s);
+    Ini.UpdateFile;
+  finally
+    Ini.Free;
   end;
+end;
+
+// Sucht nach der Verarbeitung einer Datei nach weiteren Dateien im
+// Ãœberwachungsverzeichnis. Dadurch werden auch mehrere gleichzeitig
+// eingekopierte Dateien nacheinander verarbeitet, selbst wenn fÃ¼r
+// einzelne Dateien kein weiteres Notify-Ereignis mehr ankommt.
+procedure TFreePDF64_Notify.StarteNaechsteDatei;
+var
+  MonPath: string;
+  SR: TSearchRec;
+  DateiPfad: string;
+begin
+  if PDF_UeberwachungAktiv then
+    Exit;
+
+  MonPath := IncludeTrailingPathDelimiter(Trim(MonitoringFolder.Text));
+  if MonPath = '' then
+    Exit;
+
+  if not DirectoryExists(MonPath) then
+    Exit;
+
+  if FindFirst(MonPath + '*.*', faAnyFile, SR) = 0 then
+  try
+    repeat
+      if (SR.Name <> '.') and (SR.Name <> '..') and
+         ((SR.Attr and faDirectory) = 0) then
+      begin
+        DateiPfad := MonPath + SR.Name;
+
+        if FileExists(DateiPfad) then
+        begin
+          FreePDF64_Form.PDF_UeberwachungsDatei := DateiPfad;
+          PDF_UeberwachungAktiv := True;
+          PDF_Ueberwachung_GroesseAlt := -1;
+          PDF_Ueberwachung_StableCount := 0;
+          PDF_Ueberwachung_StartTick := GetTickCount;
+          TimerPDFUeberwachung.Enabled := True;
+          Exit;
+        end;
+      end;
+    until FindNext(SR) <> 0;
+  finally
+    FindClose(SR);
+  end;
+end;
+
+// Abfrage und Handlung, wenn ausgewï¿½hlte Datei im ausgewÃ¤hlten Verzeichnis erkannt wurde...
+procedure TFreePDF64_Notify.Abfrage(const EventName: string;
+  aPIDL1, aPIDL2: PItemIDList);
+var
+  MonPath: string;
+  DateiPfad: string;
+  PIDLPath: array[0..MAX_PATH - 1] of WideChar;
+begin
+  { --------------------------------------------------------------- }
+  { Keine gÃ¼ltige PIDL -> nichts zu tun                             }
+  { --------------------------------------------------------------- }
+  if not (Assigned(aPIDL1) or Assigned(aPIDL2)) then
+    Exit;
+
+  { --------------------------------------------------------------- }
+  { Wenn bereits eine Datei zur Verarbeitung vorgemerkt ist,         }
+  { dieses Ereignis nicht erneut Ã¼bernehmen.                         }
+  { --------------------------------------------------------------- }
+  if PDF_UeberwachungAktiv then
+    Exit;
+
+  MonPath := IncludeTrailingPathDelimiter(
+    Trim(MonitoringFolder.Text));
+
+  if MonPath = '' then
+    Exit;
+
+  { --------------------------------------------------------------- }
+  { Pfad aus PIDL1 ermitteln                                         }
+  { --------------------------------------------------------------- }
+  DateiPfad := '';
+
+  if Assigned(aPIDL1) then
+  begin
+    FillChar(PIDLPath, SizeOf(PIDLPath), 0);
+
+    if SHGetPathFromIDListW(aPIDL1, PIDLPath) then
+      DateiPfad := PIDLPath;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Falls PIDL1 keinen Dateipfad liefert, PIDL2 versuchen            }
+  { --------------------------------------------------------------- }
+  if (DateiPfad = '') and Assigned(aPIDL2) then
+  begin
+    FillChar(PIDLPath, SizeOf(PIDLPath), 0);
+
+    if SHGetPathFromIDListW(aPIDL2, PIDLPath) then
+      DateiPfad := PIDLPath;
+  end;
+
+  if DateiPfad = '' then
+    Exit;
+
+  { --------------------------------------------------------------- }
+  { Nur Dateien direkt im Ã¼berwachten Verzeichnis verarbeiten        }
+  { --------------------------------------------------------------- }
+  if not SameText(
+    IncludeTrailingPathDelimiter(ExtractFilePath(DateiPfad)),
+    MonPath) then
+    Exit;
+
+  if not FileExists(DateiPfad) then
+    Exit;
+
+  if ExtractFileName(DateiPfad) = '' then
+    Exit;
+
+  { --------------------------------------------------------------- }
+  { Datei fÃ¼r den Timer vormerken                                   }
+  { --------------------------------------------------------------- }
+  FreePDF64_Form.PDF_UeberwachungsDatei := DateiPfad;
+  PDF_UeberwachungAktiv := True;
+  PDF_Ueberwachung_GroesseAlt := -1;
+  PDF_Ueberwachung_StableCount := 0;
+  PDF_Ueberwachung_StartTick := GetTickCount;
+
+  { --------------------------------------------------------------- }
+  { Die eigentliche Verarbeitung erfolgt NICHT im Shell-Notify-      }
+  { Event. Dadurch wird LMDShellNotify nicht blockiert.              }
+  { --------------------------------------------------------------- }
+  TimerPDFUeberwachung.Enabled := True;
 end;
 
 // Notify bei OnFileCreate
 procedure TFreePDF64_Notify.LMDShellNotifyFileCreate(aSender: TObject;
   aPIDL: PItemIDList);
 begin
-//  Abfrage('OnFileCreate', aPIDL);
+  Abfrage('OnFileCreate', aPIDL);
 end;
 
 // Notify bei OnShellChangeNotify
@@ -159,19 +267,31 @@ procedure TFreePDF64_Notify.MonitoringBtnClick(Sender: TObject);
 var
   s: String;
 begin
-  // Übergabe des gewählten Verzeichnisses
+  // Ãœbergabe des gewÃ¤hlten Verzeichnisses
   s := MonitoringFolder.Text;
 
   LMDShellSysBrowseDialog1.SelectedPath    := ExcludeTrailingBackslash(s);
-  LMDShellSysBrowseDialog1.Caption         := 'Überwachungsverzeichnis auswählen';
-  LMDShellSysBrowseDialog1.InstructionText := 'Die automatische Überwachung fragt dieses Verzeichnis nach eingehenden Dateien ab. ' +
-                                              'Wenn die Überwachung aktiv ist, werden diese automatisch in das gewünschte Format ' +
+  LMDShellSysBrowseDialog1.Caption         := 'Ãœberwachungsverzeichnis auswÃ¤hlen';
+  LMDShellSysBrowseDialog1.InstructionText := 'Die automatische Ãœberwachung fragt dieses Verzeichnis nach eingehenden Dateien ab. ' +
+                                              'Wenn die Ãœberwachung aktiv ist, werden diese automatisch in das gewÃ¼nschte Format ' +
                                               'umgewandelt und ins Zielverzeichnis verschoben.';
 
   if LMDShellSysBrowseDialog1.Execute then
     MonitoringFolder.Text := IncludeTrailingBackslash(LMDShellSysBrowseDialog1.SelectedPath)
   else
     MonitoringFolder.Text := IncludeTrailingBackslash(s);
+
+  // FÃ¼r Ãœbernahme des Sourcedirectory fÃ¼r den FreePDF64 Postscript-Drucker
+  If btnStart.Enabled then
+  begin
+    btnStart.Click;
+    btnStop.Click;
+  end else
+  If btnStop.Enabled then
+  begin
+    btnStop.Click;
+    btnStart.Click;
+  end;
 
   OkBitBtn.SetFocus;
 end;
@@ -217,7 +337,12 @@ begin
   else
     FreePDF64_Form.ZielLabel.Font.Color := clWindowText;
 
-  Close;
+   try
+     UpdateFreePDF64PrinterSourceDirectory(FreePDF64_Notify.MonitoringFolder.Text);
+   except
+     // Fehler ignorieren
+   end;
+   Close;
 end;
 
 // Pfad von %APPDATA%
@@ -226,73 +351,219 @@ begin
   Result := TPath.GetHomePath;
 end;
 
-procedure TFreePDF64_Notify.SendToBtnClick(Sender: TObject);
+procedure TFreePDF64_Notify.TimerPDFUeberwachungTimer(Sender: TObject);
 var
-  Reg, s: String;
-  F: TextFile;
-  Registry: TRegistry;
+  DateiPfad: string;
+  DateiName: string;
+  DateiEndung: string;
+  MonPath: string;
+  AktuelleGroesse: Int64;
+  t: Integer;
+  N: TNotification;
+  PDFStartOK: Boolean;
 begin
-  FreePDF64_Form.Memo1.Clear;
+  { --------------------------------------------------------------- }
+  { Timer fÃ¼r diesen Durchlauf ausschalten                          }
+  { --------------------------------------------------------------- }
+  TimerPDFUeberwachung.Enabled := False;
 
-  // Link zu SendTo hinzufügen
-  LMDShellLink1.Path     := MonitoringFolder.Text;
-  LMDShellLink1.FileName := GetAppDataPath +'\Microsoft\Windows\SendTo\FreePDF64-Quellverzeichnis.lnk';
-  LMDShellLink1.Save(LMDShellLink1.FileName);
+  { --------------------------------------------------------------- }
+  { Keine aktive Datei                                              }
+  { --------------------------------------------------------------- }
+  if not PDF_UeberwachungAktiv then
+    Exit;
 
-  // Definitions-Datei "mfilemon.reg" mit dem richtigen Pfad anpassen!
-  s := ExcludeTrailingBackslash(ExtractFilePath(MonitoringFolder.Text));
-  s := StringReplace(s, '\', '\\', [rfReplaceAll]);
-  with TStringList.Create do
-  try
-    LoadFromFile(IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) + 'Definition_files\mfilemon.reg');
-    Delete(3);
-    // Zum Beispiel "OutputPath"="C:\\FreePDF64\\Quellverzeichnis"
-    Insert(3, '"OutputPath"="' + s + '"');
-    SaveToFile(ExtractFilePath(Application.ExeName) + 'Definition_files\mfilemon.reg');
-  finally
-    Free;
+  DateiPfad := FreePDF64_Form.PDF_UeberwachungsDatei;
+
+  if DateiPfad = '' then
+  begin
+    PDF_UeberwachungAktiv := False;
+    PDF_Ueberwachung_GroesseAlt := -1;
+    PDF_Ueberwachung_StableCount := 0;
+    PDF_Ueberwachung_StartTick := 0;
+    Exit;
   end;
-  Reg := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName) + 'Definition_files');
-  Reg := Reg + 'mfilemon.reg';
 
-  Registry := TRegistry.Create(KEY_READ);
+  MonPath := IncludeTrailingPathDelimiter(
+    Trim(MonitoringFolder.Text));
+
+  { --------------------------------------------------------------- }
+  { Datei muss weiterhin im Ã¼berwachten Verzeichnis liegen          }
+  { --------------------------------------------------------------- }
+  if not SameText(
+    IncludeTrailingPathDelimiter(ExtractFilePath(DateiPfad)),
+    MonPath) then
+  begin
+    FreePDF64_Form.PDF_UeberwachungsDatei := '';
+    PDF_UeberwachungAktiv := False;
+    PDF_Ueberwachung_GroesseAlt := -1;
+    PDF_Ueberwachung_StableCount := 0;
+    PDF_Ueberwachung_StartTick := 0;
+    Exit;
+  end;
+
+  DateiName := ExtractFileName(DateiPfad);
+
+  if DateiName = '' then
+  begin
+    FreePDF64_Form.PDF_UeberwachungsDatei := '';
+    PDF_UeberwachungAktiv := False;
+    Exit;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Maximal 120 Sekunden auf eine fertige Datei warten              }
+  { --------------------------------------------------------------- }
+  if GetTickCount - PDF_Ueberwachung_StartTick >= 120000 then
+  begin
+    FreePDF64_Form.PDF_UeberwachungsDatei := '';
+    PDF_UeberwachungAktiv := False;
+    PDF_Ueberwachung_GroesseAlt := -1;
+    PDF_Ueberwachung_StableCount := 0;
+    PDF_Ueberwachung_StartTick := 0;
+    Exit;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Datei muss vorhanden und lesbar sein                            }
+  { --------------------------------------------------------------- }
+  if not FileExists(DateiPfad) then
+  begin
+    TimerPDFUeberwachung.Enabled := True;
+    Exit;
+  end;
+
   try
-    Registry.RootKey := HKEY_LOCAL_MACHINE;
-    if Registry.OpenKeyReadOnly('SYSTEM\CurrentControlSet\Control\Print\Monitors\Multi File Port Monitor\Multi File Port') then
-    begin
-      // Starte die Erstellung...
-      if ShellExecute(Handle, NIL, PChar(Reg), NIL, NIL, SW_SHOWNORMAL) <= 32 then
-      begin
-        ShowMessage('Es ist ein Fehler aufgetreten!');
-        Exit;
-      end;
-      MessageDlg('Der FreePDF64-Drucker wurde auf das neue Überwachungsverzeichnis angepasst. Dies erfordert nun einen Windows-Neustart!', mtInformation, mbOKCancel, 0);
-      OkBitBtn.Click;
+    AktuelleGroesse := TFile.GetSize(DateiPfad);
+  except
+    AktuelleGroesse := -1;
+  end;
 
-      if (FreePDF64_Form.Logdatei.Checked) then
-      begin
-        // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
-        AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
-        try
-          Append(F);
-        except
-          Rewrite(F)
-        end;
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' - Das Überwachungsverzeichnis "' + ExcludeTrailingBackslash(MonitoringFolder.Text) +
-                         '" wurde dem "Senden an"-Menü hinzugefügt.'));
-        Writeln(F, PChar(FormatDateTime('dd.mm.yyyy hh:mm:ss', Now) + ' - Der FreePDF64-Drucker wurde auf das neue Überwachungsverzeichnis angepasst.'));
-        Closefile(F);
-      end;
+  if AktuelleGroesse <= 0 then
+  begin
+    TimerPDFUeberwachung.Enabled := True;
+    Exit;
+  end;
 
-      LMDShellRestartDialog1.Execute;
-    end else
+  { --------------------------------------------------------------- }
+  { DateigrÃ¶ÃŸe Ã¼berwachen                                           }
+  { --------------------------------------------------------------- }
+  if AktuelleGroesse = PDF_Ueberwachung_GroesseAlt then
+    Inc(PDF_Ueberwachung_StableCount)
+  else
+    PDF_Ueberwachung_StableCount := 0;
+
+  PDF_Ueberwachung_GroesseAlt := AktuelleGroesse;
+
+  { --------------------------------------------------------------- }
+  { Drei aufeinanderfolgende gleiche GrÃ¶ÃŸen = Datei fertig          }
+  { --------------------------------------------------------------- }
+  if PDF_Ueberwachung_StableCount < 3 then
+  begin
+    TimerPDFUeberwachung.Enabled := True;
+    Exit;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Datei ist jetzt stabil                                          }
+  { --------------------------------------------------------------- }
+  Ãœberwachung_Erstellung := True;
+
+  { --------------------------------------------------------------- }
+  { Zielverzeichnis                                                  }
+  { --------------------------------------------------------------- }
+  if Ziel_FestCB.Checked then
+    Ziel := IncludeTrailingPathDelimiter(ZielEdit.Text);
+
+  { --------------------------------------------------------------- }
+  { PDF-Erstellung                                                  }
+  { --------------------------------------------------------------- }
+  PDFStartOK := True;
+
+  try
+    FreePDF64_Form.PDF_Erstellung.Click;
+  except
+    on E: Exception do
     begin
-      MessageDlg('Der FreePDF64-Drucker wurde noch nicht installiert - siehe FreePDF64-HowTo.', mtInformation, mbOKCancel, 0);
-      Exit;
+      PDFStartOK := False;
+
+      if Einstellungen_Form.SystemklangCB.Checked then
+        FreePDF64_Form.PlaySoundFile(
+          ExtractFilePath(Application.ExeName) +
+          'sounds\alert.wav');
     end;
-  finally
-    Registry.Free;
   end;
+
+  { --------------------------------------------------------------- }
+  { Bei Fehler nicht lÃ¶schen und Ãœberwachungsstatus zurÃ¼cksetzen     }
+  { --------------------------------------------------------------- }
+  if not PDFStartOK then
+  begin
+    FreePDF64_Form.PDF_UeberwachungsDatei := '';
+    PDF_UeberwachungAktiv := False;
+    PDF_Ueberwachung_GroesseAlt := -1;
+    PDF_Ueberwachung_StableCount := 0;
+    PDF_Ueberwachung_StartTick := 0;
+    Ãœberwachung_Erstellung := False;
+    Exit;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Benachrichtigung                                                }
+  { --------------------------------------------------------------- }
+  N := NotificationCenter1.CreateNotification;
+  try
+    N.Title := 'Druckerstatus';
+    N.AlertBody := 'FreePDF64-Drucker: Datei wurde gedruckt!';
+    N.EnableSound := True;
+
+    if BenachrichtigungCB.Checked then
+      NotificationCenter1.PresentNotification(N);
+  finally
+    N.Free;
+  end;
+
+  { --------------------------------------------------------------- }
+  { Bisherige Wartezeit nach der Verarbeitung beibehalten           }
+  { --------------------------------------------------------------- }
+  t := SpinEditSec.Value * 1000;
+
+  if t > 0 then
+    Sleep(t);
+
+  { --------------------------------------------------------------- }
+  { Originaldatei lÃ¶schen                                           }
+  { --------------------------------------------------------------- }
+  try
+    if not DeleteFile(DateiPfad) then
+    begin
+      if Einstellungen_Form.SystemklangCB.Checked then
+        FreePDF64_Form.PlaySoundFile(
+          ExtractFilePath(Application.ExeName) +
+          'sounds\alert.wav');
+    end;
+  except
+    if Einstellungen_Form.SystemklangCB.Checked then
+      FreePDF64_Form.PlaySoundFile(
+        ExtractFilePath(Application.ExeName) +
+        'sounds\alert.wav');
+  end;
+
+  { --------------------------------------------------------------- }
+  { Ãœberwachungsstatus zurÃ¼cksetzen                                 }
+  { --------------------------------------------------------------- }
+  FreePDF64_Form.PDF_UeberwachungsDatei := '';
+  PDF_UeberwachungAktiv := False;
+  PDF_Ueberwachung_GroesseAlt := -1;
+  PDF_Ueberwachung_StableCount := 0;
+  PDF_Ueberwachung_StartTick := 0;
+  Ãœberwachung_Erstellung := False;
+
+  { ------------------------------------------------------------- }
+  { Falls mehrere Dateien gleichzeitig eingegangen sind, die      }
+  { nÃ¤chste vorhandene Datei direkt fÃ¼r den Timer vormerken.      }
+  { ------------------------------------------------------------- }
+  StarteNaechsteDatei;
 end;
 
 procedure TFreePDF64_Notify.CancelBitBtn1Click(Sender: TObject);
@@ -326,13 +597,13 @@ begin
 
   if LMDShellNotify.Active = True then
   begin
-    Einstellungen_Form.UeberwachungBtn.Caption    := 'Überwachung ist AN';
+    Einstellungen_Form.UeberwachungBtn.Caption    := 'Ãœberwachung ist AN';
     Einstellungen_Form.UeberwachungBtn.ImageIndex := 57;
     FreePDF64_Form.MonitorBtn.ImageIndex          := 57;
     FreePDF64_Form.MonitorBtn.Caption             := '  AN';
   end else
   begin
-    Einstellungen_Form.UeberwachungBtn.Caption    := 'Überwachung ist AUS';
+    Einstellungen_Form.UeberwachungBtn.Caption    := 'Ãœberwachung ist AUS';
     Einstellungen_Form.UeberwachungBtn.ImageIndex := 58;
     FreePDF64_Form.MonitorBtn.ImageIndex          := 58;
     FreePDF64_Form.MonitorBtn.Caption             := '  AUS';
@@ -364,6 +635,9 @@ procedure TFreePDF64_Notify.FormShow(Sender: TObject);
 var
   Z: String;
 begin
+  TimerPDFUeberwachung.Enabled := False;
+  TimerPDFUeberwachung.Interval := 500;
+
   Z := Ziel;
   if not Ziel_FestCB.Checked then
     ZielEdit.Text := IncludeTrailingBackslash(Z);
@@ -381,32 +655,44 @@ begin
     FreePDF64_Form.MonitorBtn.ImageIndex := 58;
   end;
 
-  SendToBtn.Hint := '1. Das Überwachungsverzeichnis wird dem "Senden an"-Menü von Windows hinzugefügt.' + #13 +
-                    '2. Dem FreePDF64-Drucker wird dieses neue Überwachungsverzeichnis mitgeteilt. Dies erfordert danach einen Windows-Neustart!';
   MonitoringBtn.SetFocus;
 end;
 
 procedure TFreePDF64_Notify.btnStartClick(Sender: TObject);
 begin
+  FreePDF64_Form.PDF_UeberwachungsDatei := '';
+  PDF_UeberwachungAktiv := False;
+  PDF_Ueberwachung_GroesseAlt := -1;
+  PDF_Ueberwachung_StableCount := 0;
+  PDF_Ueberwachung_StartTick := 0;
+  TimerPDFUeberwachung.Enabled := False;
+
   btnStart.Enabled := False;
   LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(MonitoringFolder.Text));
   LMDShellNotify.Active := True;
   FreePDF64_Form.MonitorBtn.ImageIndex := 57;
   FreePDF64_Form.MonitorBtn.Caption := '  AN';
   btnStop.Enabled := True;
-  Einstellungen_Form.UeberwachungBtn.Caption := 'Überwachung ist AN';
+  Einstellungen_Form.UeberwachungBtn.Caption := 'Ãœberwachung ist AN';
   Einstellungen_Form.UeberwachungBtn.ImageIndex := 57;
 end;
 
 procedure TFreePDF64_Notify.btnStopClick(Sender: TObject);
 begin
   LMDShellNotify.Active := False;
+  TimerPDFUeberwachung.Enabled := False;
+  FreePDF64_Form.PDF_UeberwachungsDatei := '';
+  PDF_UeberwachungAktiv := False;
+  PDF_Ueberwachung_GroesseAlt := -1;
+  PDF_Ueberwachung_StableCount := 0;
+  PDF_Ueberwachung_StartTick := 0;
   FreePDF64_Form.MonitorBtn.ImageIndex := 58;
   FreePDF64_Form.MonitorBtn.Caption := '  AUS';
   btnStart.Enabled := True;
   btnStop.Enabled := False;
-  Einstellungen_Form.UeberwachungBtn.Caption := 'Überwachung ist AUS';
+  Einstellungen_Form.UeberwachungBtn.Caption := 'Ãœberwachung ist AUS';
   Einstellungen_Form.UeberwachungBtn.ImageIndex := 58;
 end;
 
 end.
+

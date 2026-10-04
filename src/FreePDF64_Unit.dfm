@@ -2,8 +2,8 @@ object FreePDF64_Form: TFreePDF64_Form
   Left = 0
   Top = 0
   Caption = 'FreePDF64 - Die PDF-Toolsammlung'
-  ClientHeight = 751
-  ClientWidth = 1497
+  ClientHeight = 695
+  ClientWidth = 1282
   Color = clBtnFace
   Constraints.MinHeight = 450
   Constraints.MinWidth = 375
@@ -22,7 +22,6 @@ object FreePDF64_Form: TFreePDF64_Form
   OnCreate = FormCreate
   OnDestroy = FormDestroy
   OnKeyDown = FormKeyDown
-  OnKeyUp = FormKeyUp
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 120
@@ -30,31 +29,28 @@ object FreePDF64_Form: TFreePDF64_Form
   object Splitter1: TSplitter
     Left = 280
     Top = 47
-    Height = 510
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
-    ExplicitHeight = 454
   end
   object Splitter2: TSplitter
-    Left = 841
+    Left = 626
     Top = 47
     Width = 6
-    Height = 510
+    Height = 454
     Hint = 'Doppelklick f'#252'r 50/50-Anzeige'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
     Align = alRight
-    ExplicitLeft = 626
-    ExplicitHeight = 454
   end
   object Splitter3: TSplitter
     Left = 0
-    Top = 592
-    Width = 1497
+    Top = 536
+    Width = 1282
     Height = 6
     Cursor = crVSplit
     Hint = 'Doppelklick f'#252'r gespeicherte Position'
@@ -63,13 +59,11 @@ object FreePDF64_Form: TFreePDF64_Form
     Margins.Right = 4
     Margins.Bottom = 4
     Align = alBottom
-    ExplicitTop = 536
-    ExplicitWidth = 1282
   end
   object TopPanel: TPanel
     Left = 0
     Top = 0
-    Width = 1497
+    Width = 1282
     Height = 47
     Margins.Left = 4
     Margins.Top = 4
@@ -80,7 +74,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 1168
+      Width = 953
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -88,7 +82,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alClient
       ButtonHeight = 36
-      ButtonWidth = 38
+      ButtonWidth = 37
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       List = True
@@ -408,9 +402,9 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 823
         Top = 0
         Hint = 
-          'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'Re' +
-          'chtsklick im unteren Anzeigefenster zeigt die Metadaten im'#13#10'exte' +
-          'rnen Editor an'
+          'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'RM' +
+          'B im unteren Anzeigefenster zeigt die Metadaten im'#13#10'externen Edi' +
+          'tor an'
         ImageIndex = 62
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
@@ -447,7 +441,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object ConfigBtn: TButton
-      Left = 1296
+      Left = 1081
       Top = 1
       Width = 200
       Height = 45
@@ -479,7 +473,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = ConfigBtnClick
     end
     object MonitorBtn: TBitBtn
-      Left = 1211
+      Left = 996
       Top = 1
       Width = 85
       Height = 45
@@ -507,7 +501,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseEnter = MonitorBtnMouseEnter
     end
     object StatusBitBtn: TBitBtn
-      Left = 1169
+      Left = 954
       Top = 1
       Width = 42
       Height = 45
@@ -536,8 +530,8 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 557
-    Width = 1497
+    Top = 501
+    Width = 1282
     Height = 35
     Margins.Left = 4
     Margins.Top = 4
@@ -556,12 +550,12 @@ object FreePDF64_Form: TFreePDF64_Form
       Width = 150
       Height = 33
       Hint = 
-        '- PDF-Dateien  werden im gegen'#252'berliegenden Fenster angezeigt. F' +
-        'enster schlie'#223'en mit F3'#13#10'- PS-Dateien werden entweder mit dem PD' +
-        'F-Anzeiger angezeigt oder mit Ghostscript'#13#10'- Bilder werden im ge' +
-        'gen'#252'berliegenden Fenster angezeigt. Fenster schlie'#223'en mit F3'#13#10'- ' +
-        'Alle anderen Dateien werden "versucht" im unteren Anzeigefenster' +
-        ' anzuzeigen!'
+        'PDF-Dateien werden in einem neuen Fenster angezeigt. Fenster sch' +
+        'lie'#223'en mit dem Close Button (oder Alt+F4)'#13#10'PS-Dateien werden ent' +
+        'weder mit dem PDF-Anzeiger angezeigt oder mit Ghostscript'#13#10'Bilde' +
+        'r werden im gegen'#252'berliegenden Fenster angezeigt. Fenster schlie' +
+        #223'en mit F3'#13#10'Alle anderen Dateien werden "versucht" im unteren An' +
+        'zeigefenster anzuzeigen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -607,14 +601,16 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowHint = True
       OnMouseDown = Btn_NewFolderMouseDown
       OnMouseUp = Btn_NewFolderMouseUp
-      ExplicitLeft = 748
+      ExplicitHeight = 34
     end
     object Btn_Move: TSpeedButton
       Left = 601
       Top = 1
       Width = 150
       Height = 33
-      Hint = 'Verschiebt die Datei(en) in das andere Fenster'
+      Hint = 
+        'LMB: Verschieben in das andere Fenster'#13#10'RMB: Verschieben mit Dia' +
+        'log'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -631,9 +627,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentShowHint = False
       ParentBiDiMode = False
       ShowHint = True
-      OnClick = Btn_MoveClick
       OnMouseDown = Btn_MoveMouseDown
-      OnMouseUp = Btn_MoveMouseUp
       ExplicitHeight = 34
     end
     object Btn_Delete: TSpeedButton
@@ -641,7 +635,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Top = 1
       Width = 150
       Height = 33
-      Hint = 'L'#246'schen'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -686,6 +679,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ShowHint = True
       OnClick = Btn_RenameClick
       OnMouseDown = Btn_RenameMouseDown
+      OnMouseEnter = Btn_RenameMouseEnter
       OnMouseUp = Btn_RenameMouseUp
       ExplicitHeight = 34
     end
@@ -694,7 +688,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Top = 1
       Width = 150
       Height = 33
-      Hint = 'Kopiert die Datei(en) in das andere Fenster'
+      Hint = 'LMB: Kopieren in das andere Fenster'#13#10'RMB: Kopieren mit Dialog'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -711,9 +705,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentShowHint = False
       ParentBiDiMode = False
       ShowHint = True
-      OnClick = Btn_CopyClick
       OnMouseDown = Btn_CopyMouseDown
-      OnMouseUp = Btn_CopyMouseUp
       ExplicitHeight = 34
     end
     object BtnEditor: TSpeedButton
@@ -746,8 +738,8 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object PDFPanel: TPanel
     Left = 0
-    Top = 598
-    Width = 1497
+    Top = 542
+    Width = 1282
     Height = 153
     Margins.Left = 4
     Margins.Top = 4
@@ -759,7 +751,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object StatusBar1: TStatusBar
       Left = 0
       Top = 130
-      Width = 1497
+      Width = 1282
       Height = 23
       Margins.Left = 4
       Margins.Top = 4
@@ -775,7 +767,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object Memo1: TMemo
       Left = 0
       Top = 44
-      Width = 1497
+      Width = 1282
       Height = 86
       Margins.Left = 4
       Margins.Top = 4
@@ -800,11 +792,12 @@ object FreePDF64_Form: TFreePDF64_Form
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
+      ExplicitWidth = 1081
     end
     object BottomPanel: TPanel
       Left = 0
       Top = 0
-      Width = 1497
+      Width = 1282
       Height = 44
       Margins.Left = 4
       Margins.Top = 4
@@ -843,7 +836,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ExplicitHeight = 43
       end
       object PDF_Erstellung: TButton
-        Left = 1096
+        Left = 881
         Top = 1
         Width = 400
         Height = 42
@@ -877,7 +870,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object ProgressBar1: TProgressBar
         Left = 421
         Top = 1
-        Width = 445
+        Width = 230
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -889,7 +882,7 @@ object FreePDF64_Form: TFreePDF64_Form
         TabOrder = 1
       end
       object AbbrechenPn: TPanel
-        Left = 866
+        Left = 651
         Top = 1
         Width = 230
         Height = 42
@@ -919,7 +912,7 @@ object FreePDF64_Form: TFreePDF64_Form
       object PaneloverPrgB: TPanel
         Left = 421
         Top = 1
-        Width = 445
+        Width = 230
         Height = 42
         Margins.Left = 4
         Margins.Top = 4
@@ -939,10 +932,10 @@ object FreePDF64_Form: TFreePDF64_Form
     end
   end
   object PanelR: TPanel
-    Left = 847
+    Left = 632
     Top = 47
     Width = 650
-    Height = 510
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -955,7 +948,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 281
       Top = 1
       Width = 4
-      Height = 508
+      Height = 452
       Hint = 'Doppelklick f'#252'r 50/50'
       Margins.Left = 4
       Margins.Top = 4
@@ -968,7 +961,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 1
       Top = 1
       Width = 280
-      Height = 508
+      Height = 452
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1001,7 +994,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Left = 1
         Top = 29
         Width = 278
-        Height = 478
+        Height = 422
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1024,10 +1017,12 @@ object FreePDF64_Form: TFreePDF64_Form
         TabStop = False
         OnChange = LMDShellTree2Change
         OnClick = LMDShellTree2Click
+        OnEditing = LMDShellTree2Editing
+        OnMouseDown = LMDShellTree2MouseDown
         Folder = LMDShellFolder2
         CompressedColor = clBlue
         Filtered = True
-        Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
+        Options = [toShowHidden, toShowFolders, toAllowRename, toExpandTopNode, toExtendedMenu, toShellMenu]
         ShowCheckBoxes = False
         OnFilterItem = LMDShellTree2FilterItem
         ShowNonFolders = False
@@ -1039,7 +1034,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 285
       Top = 1
       Width = 364
-      Height = 508
+      Height = 452
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1049,12 +1044,12 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 1
       DesignSize = (
         364
-        508)
+        452)
       object Image1: TImage
         Left = 1
         Top = 31
         Width = 362
-        Height = 453
+        Height = 397
         Hint = 
           '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
           ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -1068,15 +1063,14 @@ object FreePDF64_Form: TFreePDF64_Form
         Visible = False
         OnClick = Image1Click
         OnContextPopup = Image1ContextPopup
-        ExplicitTop = 29
-        ExplicitWidth = 280
-        ExplicitHeight = 479
+        ExplicitWidth = 364
+        ExplicitHeight = 455
       end
       object LMDShellList2: TLMDShellList
         Left = 1
         Top = 31
         Width = 362
-        Height = 453
+        Height = 397
         Margins.Left = 4
         Margins.Top = 4
         Margins.Right = 4
@@ -1142,6 +1136,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnEnter = LMDShellList2Enter
         OnKeyDown = LMDShellList2KeyDown
         OnMouseDown = LMDShellList2MouseDown
+        OnInfoTip = LMDShellList2InfoTip
         OnSelectItem = LMDShellList2SelectItem
       end
       object ListBoxR: TListBox
@@ -1196,7 +1191,7 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object StatusBar_Right: TStatusBar
         Left = 1
-        Top = 484
+        Top = 428
         Width = 362
         Height = 23
         Margins.Left = 4
@@ -1231,7 +1226,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentFont = False
         TabOrder = 4
         object RootR: TSpeedButton
-          Left = 26
+          Left = 41
           Top = 1
           Width = 20
           Height = 28
@@ -1254,11 +1249,12 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = RootRClick
+          ExplicitHeight = 29
         end
         object ParentFolderR: TSpeedButton
-          Left = 46
+          Left = 61
           Top = 1
-          Width = 28
+          Width = 20
           Height = 28
           Hint = 'Eine Ebene h'#246'her'
           Margins.Left = 4
@@ -1278,11 +1274,12 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = ParentFolderRClick
+          ExplicitHeight = 29
         end
         object FavSpR: TSpeedButton
-          Left = 288
+          Left = 295
           Top = 1
-          Width = 25
+          Width = 20
           Height = 28
           Hint = 'Hinzuf'#252'gen zu Favoriten'
           Margins.Left = 4
@@ -1304,13 +1301,13 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = FavSpRClick
-          ExplicitLeft = 314
-          ExplicitHeight = 27
+          ExplicitLeft = 298
+          ExplicitHeight = 29
         end
         object FavRechts: TSpeedButton
-          Left = 313
+          Left = 315
           Top = 1
-          Width = 25
+          Width = 23
           Height = 28
           Hint = 'Favoriten'
           Margins.Left = 4
@@ -1333,8 +1330,8 @@ object FreePDF64_Form: TFreePDF64_Form
           ParentShowHint = False
           ShowHint = True
           OnClick = FavRechtsClick
-          ExplicitLeft = 339
-          ExplicitHeight = 27
+          ExplicitLeft = 318
+          ExplicitHeight = 29
         end
         object ZielBtn: TSpeedButton
           Left = 1
@@ -1362,8 +1359,35 @@ object FreePDF64_Form: TFreePDF64_Form
           ShowHint = True
           OnClick = ZielBtnClick
           OnMouseEnter = ZielBtnMouseEnter
-          ExplicitLeft = 16
-          ExplicitHeight = 26
+          ExplicitHeight = 29
+        end
+        object ViewStyleBtn2: TSpeedButton
+          Left = 26
+          Top = 1
+          Width = 15
+          Height = 28
+          Hint = 'Umschalten zwischen den Ansichten Details und Liste'
+          Margins.Left = 4
+          Margins.Top = 4
+          Margins.Right = 4
+          Margins.Bottom = 4
+          Align = alLeft
+          ImageIndex = 9
+          ImageName = 'Item10'
+          Images = VirtualImageList1
+          Flat = True
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clWindowText
+          Font.Height = -14
+          Font.Name = 'MS Sans Serif'
+          Font.Style = [fsBold]
+          Layout = blGlyphRight
+          NumGlyphs = 2
+          ParentFont = False
+          ParentShowHint = False
+          ShowHint = True
+          OnClick = ViewStyleBtn2Click
+          ExplicitHeight = 29
         end
         object ComboBoxR: TComboBox
           Left = 338
@@ -1391,7 +1415,7 @@ object FreePDF64_Form: TFreePDF64_Form
           OnDropDown = ComboBoxRDropDown
         end
         object Ziellabel: TPanel
-          Left = 74
+          Left = 81
           Top = 1
           Width = 214
           Height = 28
@@ -1415,31 +1439,13 @@ object FreePDF64_Form: TFreePDF64_Form
           OnMouseEnter = ZiellabelMouseEnter
         end
       end
-      object WebBrowser2: TWebBrowser
-        Left = 359
-        Top = 0
-        Width = 5
-        Height = 3
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        TabStop = False
-        TabOrder = 5
-        ControlData = {
-          4C0000006A000000400000000000000000000000000000000000000000000000
-          000000004C000000000000000000000001000000E0D057007335CF11AE690800
-          2B2E126208000000000000004C0000000114020000000000C000000000000046
-          8000000000000000000000000000000000000000000000000000000000000000
-          00000000000000000100000000000000000000000000000000000000}
-      end
     end
   end
   object Panel_Left: TPanel
     Left = 0
     Top = 47
     Width = 280
-    Height = 510
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1452,7 +1458,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Left = 1
       Top = 29
       Width = 278
-      Height = 480
+      Height = 424
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1475,10 +1481,12 @@ object FreePDF64_Form: TFreePDF64_Form
       TabStop = False
       OnChange = LMDShellTree1Change
       OnClick = LMDShellTree1Click
+      OnEditing = LMDShellTree1Editing
+      OnMouseDown = LMDShellTree1MouseDown
       Folder = LMDShellFolder1
       CompressedColor = clBlue
       Filtered = True
-      Options = [toShowHidden, toShowFolders, toAllowRename, toAllowDrag, toAllowDrop, toExpandTopNode, toExtendedMenu, toShellMenu]
+      Options = [toShowHidden, toShowFolders, toAllowRename, toExpandTopNode, toExtendedMenu, toShellMenu]
       ShowCheckBoxes = False
       OnFilterItem = LMDShellTree1FilterItem
       ShowNonFolders = False
@@ -1529,8 +1537,8 @@ object FreePDF64_Form: TFreePDF64_Form
   object PanelL: TPanel
     Left = 283
     Top = 47
-    Width = 558
-    Height = 510
+    Width = 343
+    Height = 454
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -1540,13 +1548,13 @@ object FreePDF64_Form: TFreePDF64_Form
     TabOrder = 5
     OnResize = PanelLResize
     DesignSize = (
-      558
-      510)
+      343
+      454)
     object Image2: TImage
       Left = 1
       Top = 31
-      Width = 556
-      Height = 454
+      Width = 341
+      Height = 398
       Hint = 
         '- Linksklick f'#252'r Proportional an/aus'#13#10'- Rechtsklick f'#252'r richtige' +
         ' Bilddrehung. Proportional'#13#10'an/aus ist erst wieder nach Neuauswa' +
@@ -1560,16 +1568,14 @@ object FreePDF64_Form: TFreePDF64_Form
       Visible = False
       OnClick = Image2Click
       OnContextPopup = Image2ContextPopup
-      ExplicitLeft = 4
-      ExplicitTop = 24
-      ExplicitWidth = 369
-      ExplicitHeight = 479
+      ExplicitWidth = 557
+      ExplicitHeight = 455
     end
     object LMDShellList1: TLMDShellList
       Left = 1
       Top = 31
-      Width = 556
-      Height = 454
+      Width = 341
+      Height = 398
       Margins.Left = 0
       Margins.Top = 0
       Margins.Right = 0
@@ -1636,6 +1642,7 @@ object FreePDF64_Form: TFreePDF64_Form
       OnEnter = LMDShellList1Enter
       OnKeyDown = LMDShellList1KeyDown
       OnMouseDown = LMDShellList1MouseDown
+      OnInfoTip = LMDShellList1InfoTip
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
@@ -1670,8 +1677,8 @@ object FreePDF64_Form: TFreePDF64_Form
     end
     object StatusBar_Left: TStatusBar
       Left = 1
-      Top = 485
-      Width = 556
+      Top = 429
+      Width = 341
       Height = 24
       Margins.Left = 4
       Margins.Top = 4
@@ -1690,7 +1697,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object Panel1: TPanel
       Left = 1
       Top = 1
-      Width = 556
+      Width = 341
       Height = 30
       Margins.Left = 4
       Margins.Top = 4
@@ -1705,7 +1712,7 @@ object FreePDF64_Form: TFreePDF64_Form
       ParentFont = False
       TabOrder = 3
       object RootL: TSpeedButton
-        Left = 26
+        Left = 41
         Top = 1
         Width = 20
         Height = 28
@@ -1728,11 +1735,12 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = RootLClick
+        ExplicitHeight = 29
       end
       object ParentFolderL: TSpeedButton
-        Left = 46
+        Left = 61
         Top = 1
-        Width = 28
+        Width = 20
         Height = 28
         Hint = 'Eine Ebene h'#246'her'
         Margins.Left = 4
@@ -1752,6 +1760,7 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = ParentFolderLClick
+        ExplicitHeight = 29
       end
       object QuellBtn: TSpeedButton
         Left = 1
@@ -1779,14 +1788,12 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowHint = True
         OnClick = QuellBtnClick
         OnMouseEnter = QuellBtnMouseEnter
-        ExplicitLeft = 16
-        ExplicitTop = 6
-        ExplicitHeight = 26
+        ExplicitHeight = 29
       end
       object FavSpL: TSpeedButton
-        Left = 482
+        Left = 274
         Top = 1
-        Width = 25
+        Width = 20
         Height = 28
         Hint = 'Hinzuf'#252'gen zu Favoriten'
         Margins.Left = 4
@@ -1808,13 +1815,13 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = FavSpLClick
-        ExplicitLeft = 485
-        ExplicitHeight = 27
+        ExplicitLeft = 491
+        ExplicitHeight = 29
       end
       object FavLinks: TSpeedButton
-        Left = 507
+        Left = 294
         Top = 1
-        Width = 25
+        Width = 23
         Height = 28
         Hint = 'Favoriten'
         Margins.Left = 4
@@ -1837,11 +1844,39 @@ object FreePDF64_Form: TFreePDF64_Form
         ParentShowHint = False
         ShowHint = True
         OnClick = FavLinksClick
-        ExplicitLeft = 510
-        ExplicitHeight = 27
+        ExplicitLeft = 511
+        ExplicitHeight = 29
+      end
+      object ViewStyleBtn1: TSpeedButton
+        Left = 26
+        Top = 1
+        Width = 15
+        Height = 28
+        Hint = 'Umschalten zwischen den Ansichten Details und Liste'
+        Margins.Left = 4
+        Margins.Top = 4
+        Margins.Right = 4
+        Margins.Bottom = 4
+        Align = alLeft
+        ImageIndex = 9
+        ImageName = 'Item10'
+        Images = VirtualImageList1
+        Flat = True
+        Font.Charset = DEFAULT_CHARSET
+        Font.Color = clWindowText
+        Font.Height = -14
+        Font.Name = 'MS Sans Serif'
+        Font.Style = [fsBold]
+        Layout = blGlyphRight
+        NumGlyphs = 2
+        ParentFont = False
+        ParentShowHint = False
+        ShowHint = True
+        OnClick = ViewStyleBtn1Click
+        ExplicitHeight = 29
       end
       object ComboBoxL: TComboBox
-        Left = 532
+        Left = 317
         Top = 1
         Width = 23
         Height = 28
@@ -1866,9 +1901,9 @@ object FreePDF64_Form: TFreePDF64_Form
         OnDropDown = ComboBoxLDropDown
       end
       object Quelllabel: TPanel
-        Left = 74
+        Left = 81
         Top = 1
-        Width = 408
+        Width = 193
         Height = 28
         Cursor = crHandPoint
         Margins.Left = 4
@@ -1890,24 +1925,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
       end
-    end
-    object WebBrowser1: TWebBrowser
-      Left = 452
-      Top = 0
-      Width = 1
-      Height = 1
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      TabStop = False
-      TabOrder = 4
-      ControlData = {
-        4C00000015000000150000000000000000000000000000000000000000000000
-        000000004C000000000000000000000001000000E0D057007335CF11AE690800
-        2B2E126208000000000000004C0000000114020000000000C000000000000046
-        8000000000000000000000000000000000000000000000000000000000000000
-        00000000000000000100000000000000000000000000000000000000}
     end
   end
   object ActionList1: TActionList
@@ -2107,7 +2124,6 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object CopyTo: TMenuItem
         Action = LMDShellEditCopyFiles1
-        ShortCut = 8308
       end
       object Bewegen1: TMenuItem
         Caption = 'Bewegen'
@@ -2119,7 +2135,6 @@ object FreePDF64_Form: TFreePDF64_Form
       object MoveTo: TMenuItem
         Action = LMDShellEditMoveFiles1
         Caption = 'Bewegen (Dialog)'
-        ShortCut = 8309
       end
       object NeuerOrdner1: TMenuItem
         Caption = 'Neuer Ordner'
@@ -2147,53 +2162,56 @@ object FreePDF64_Form: TFreePDF64_Form
       object N6: TMenuItem
         Caption = '-'
       end
-      object Merge: TMenuItem
-        Caption = 'PS/PDF zusammenf'#252'gen'
-        ShortCut = 32854
-        OnClick = MergeClick
-      end
-      object Wasserzeichen1: TMenuItem
-        Caption = 'PDF Wasserzeichen/Stempel einf'#252'gen'
-        ShortCut = 32855
-        OnClick = Wasserzeichen1Click
-      end
-      object AnlageeinerPDFDateihinzufgen1: TMenuItem
-        Caption = 'PDF Anlage hinzuf'#252'gen'
-        ShortCut = 16452
-        OnClick = AnlagenBtnClick
-      end
-      object Anlageentfernen1: TMenuItem
-        Caption = 'PDF Anlage extrahieren/entfernen'
-        ShortCut = 16466
-        OnClick = PDFRemoveClick
-      end
-      object PDFAnlagenanzeigenextrahieren1: TMenuItem
-        Caption = 'PDF Anlage(n) anzeigen und extrahieren'
-        ShortCut = 16472
-        OnClick = PDFAttachmentClick
-      end
-      object ExtrahiereBilder1: TMenuItem
-        Caption = 'PDF Bilder extrahieren'
-        ShortCut = 32834
-        OnClick = ExtractBtnClick
-      end
-      object KonvertierezuHTML1: TMenuItem
-        Caption = 'PDF zu HTML'
-        ShortCut = 16456
-        OnClick = HTMLBtnClick
-      end
-      object Passwortschutzentfernen1: TMenuItem
-        Caption = 'PDF Passwortschutz entfernen'
-        ShortCut = 32848
-        OnClick = PDFdecryptClick
-      end
-      object VerwendeteSchriftartenauflisten1: TMenuItem
-        Caption = 'PDF Schriftarten auflisten'
-        OnClick = PDFFontsBtnClick
-      end
-      object PDFkomprimieren1: TMenuItem
-        Caption = 'PDF komprimieren'
-        OnClick = PDF_KompressClick
+      object PDFWerkzeuge1: TMenuItem
+        Caption = 'PDF-Werkzeuge'
+        object Merge: TMenuItem
+          Caption = 'PS/PDF zusammenf'#252'gen'
+          ShortCut = 32854
+          OnClick = MergeClick
+        end
+        object Wasserzeichen1: TMenuItem
+          Caption = 'PDF Wasserzeichen/Stempel einf'#252'gen'
+          ShortCut = 32855
+          OnClick = Wasserzeichen1Click
+        end
+        object AnlageeinerPDFDateihinzufgen1: TMenuItem
+          Caption = 'PDF Anlage hinzuf'#252'gen'
+          ShortCut = 16452
+          OnClick = AnlagenBtnClick
+        end
+        object Anlageentfernen1: TMenuItem
+          Caption = 'PDF Anlage extrahieren/entfernen'
+          ShortCut = 16466
+          OnClick = PDFRemoveClick
+        end
+        object PDFAnlagenanzeigenextrahieren1: TMenuItem
+          Caption = 'PDF Anlage(n) anzeigen und extrahieren'
+          ShortCut = 16472
+          OnClick = PDFAttachmentClick
+        end
+        object ExtrahiereBilder1: TMenuItem
+          Caption = 'PDF Bilder extrahieren'
+          ShortCut = 32834
+          OnClick = ExtractBtnClick
+        end
+        object KonvertierezuHTML1: TMenuItem
+          Caption = 'PDF zu HTML'
+          ShortCut = 16456
+          OnClick = HTMLBtnClick
+        end
+        object Passwortschutzentfernen1: TMenuItem
+          Caption = 'PDF Passwortschutz entfernen'
+          ShortCut = 32848
+          OnClick = PDFdecryptClick
+        end
+        object VerwendeteSchriftartenauflisten1: TMenuItem
+          Caption = 'PDF Schriftarten auflisten'
+          OnClick = PDFFontsBtnClick
+        end
+        object PDFkomprimieren1: TMenuItem
+          Caption = 'PDF komprimieren'
+          OnClick = PDF_KompressClick
+        end
       end
       object PDFInformationenanzeigen1: TMenuItem
         Caption = 'Datei/Ordnerinformationen anzeigen'
@@ -2263,25 +2281,58 @@ object FreePDF64_Form: TFreePDF64_Form
       object N3: TMenuItem
         Caption = '-'
       end
-      object Logdatei: TMenuItem
-        Caption = 'Logdatei'
-        Checked = True
-        OnClick = LogdateiClick
+      object LogundStatusinformationen1: TMenuItem
+        Caption = 'Log- und Statusinformationen'
+        object Logdatei: TMenuItem
+          Caption = 'Logdatei'
+          Checked = True
+          OnClick = LogdateiClick
+        end
+        object Logdateiansehen1: TMenuItem
+          Caption = 'Logdatei ansehen...'
+          ShortCut = 16460
+          OnClick = Logdateiansehen1Click
+        end
+        object PortMonitorlogansehen1: TMenuItem
+          Caption = 'PortMonitor.log ansehen...'
+          ShortCut = 16464
+          OnClick = PortMonitorlogansehen1Click
+        end
+        object Status1: TMenuItem
+          Caption = 'Statusinformationen'
+          ShortCut = 16467
+          OnClick = Status1Click
+        end
       end
-      object Logdateiansehen1: TMenuItem
-        Caption = 'Logdatei ansehen...'
-        ShortCut = 16460
-        OnClick = Logdateiansehen1Click
-      end
-      object FreePDF64inibearbeiten1: TMenuItem
-        Caption = 'FreePDF64.ini bearbeiten...'
-        ShortCut = 16457
-        OnClick = FreePDF64inibearbeiten1Click
-      end
-      object Status1: TMenuItem
-        Caption = 'Statusinformationen'
-        ShortCut = 16467
-        OnClick = Status1Click
+      object Bereinigung1: TMenuItem
+        Caption = 'Verwaltung && Bereinigung'
+        object FreePDF64inibearbeiten1: TMenuItem
+          Caption = 'FreePDF64.ini bearbeiten...'
+          ShortCut = 16457
+          OnClick = FreePDF64inibearbeiten1Click
+        end
+        object N21: TMenuItem
+          Caption = '-'
+        end
+        object Logdateilschen1: TMenuItem
+          Caption = 'Logdatei l'#246'schen'
+          OnClick = Logdateilschen1Click
+        end
+        object SuchenHistorylschen1: TMenuItem
+          Caption = 'Suchen-History l'#246'schen'
+          OnClick = SuchenHistorylschen1Click
+        end
+        object History1: TMenuItem
+          Caption = 'Verzeichnis-History l'#246'schen'
+          OnClick = History1Click
+        end
+        object N20: TMenuItem
+          Caption = '-'
+        end
+        object Nullstellung: TMenuItem
+          Caption = 'Erstellz'#228'hler auf Null?'
+          OnClick = NullstellungClick
+        end
       end
       object PDFInfoanzeigen1: TMenuItem
         Caption = 'PDF-Info anzeigen'
@@ -2292,73 +2343,81 @@ object FreePDF64_Form: TFreePDF64_Form
       object N5: TMenuItem
         Caption = '-'
       end
-      object SuchenHistorylschen1: TMenuItem
-        Caption = 'Suchen-History l'#246'schen'
-        OnClick = SuchenHistorylschen1Click
-      end
-      object History1: TMenuItem
-        Caption = 'Verzeichnis-History l'#246'schen'
-        OnClick = History1Click
-      end
-      object Logdateilschen1: TMenuItem
-        Caption = 'Logdatei l'#246'schen'
-        OnClick = Logdateilschen1Click
-      end
-      object Nullstellung: TMenuItem
-        Caption = 'Erstellz'#228'hler auf Null?'
-        OnClick = NullstellungClick
-      end
       object N7: TMenuItem
         Caption = '-'
       end
-      object AutoSizeBtn: TMenuItem
-        Caption = 'AutoSize-Button anzeigen'
-        Checked = True
-        OnClick = AutoSizeBtnClick
-      end
-      object DoppelK: TMenuItem
-        Caption = 'Starte Erstellung durch Doppelklick'
-        OnClick = DoppelKClick
-      end
-      object InsUnterverzeichnisbeimErstellen1: TMenuItem
-        Caption = 'Ins Unterverzeichnis beim Erstellen'
-        object Formatverz: TMenuItem
-          Caption = 'Ohne Datum'
-          OnClick = FormatverzClick
+      object Oberflche1: TMenuItem
+        Caption = 'Oberfl'#228'che'
+        object AutoSizeBtn: TMenuItem
+          Caption = 'AutoSize-Button anzeigen'
+          Checked = True
+          OnClick = AutoSizeBtnClick
         end
-        object Formatverz_Date: TMenuItem
-          Caption = 'Mit Datum'
-          OnClick = Formatverz_DateClick
+        object UPD: TMenuItem
+          Caption = 'Umbenennen per Doppelklick erlauben'
+          OnClick = UPDClick
         end
-        object Formatverz_OnlyDate: TMenuItem
-          Caption = 'Nur Datum'
-          OnClick = Formatverz_OnlyDateClick
+        object Splash1: TMenuItem
+          Caption = 'Splashscreen beim Start anzeigen'
+          OnClick = Splash1Click
         end
       end
-      object Systray_Taskleiste: TMenuItem
-        Caption = 'In System Tray verkleinern (sonst Taskleiste)'
-        Checked = True
-        OnClick = Systray_TaskleisteClick
+      object PDFErstellung1: TMenuItem
+        Caption = 'PDF-Erstellung'
+        object DoppelK: TMenuItem
+          Caption = 'Erstellung per Doppelklick starten'
+          OnClick = DoppelKClick
+        end
+        object AutoFormat: TMenuItem
+          Caption = 'Format anhand der Dateiendung ausw'#228'hlen'
+          Checked = True
+          OnClick = AutoFormatClick
+        end
+        object InsUnterverzeichnisbeimErstellen1: TMenuItem
+          Caption = 'Dateien im Unterverzeichnis erstellen'
+          object Formatverz: TMenuItem
+            Caption = 'Ohne Datum'
+            OnClick = FormatverzClick
+          end
+          object Formatverz_Date: TMenuItem
+            Caption = 'Mit Datum'
+            OnClick = Formatverz_DateClick
+          end
+          object Formatverz_OnlyDate: TMenuItem
+            Caption = 'Nur Datum'
+            OnClick = Formatverz_OnlyDateClick
+          end
+        end
       end
-      object InDenTray: TMenuItem
-        Caption = 'In System Tray/Taskleiste beim Start'
-        OnClick = InDenTrayClick
+      object Programmfenster1: TMenuItem
+        Caption = 'Programmfenster'
+        object KlickaufX: TMenuItem
+          Caption = 'Beim Schlie'#223'en minimieren'
+          OnClick = KlickaufXClick
+        end
+        object Systray_Taskleiste: TMenuItem
+          Caption = 'Beim Minimieren in den Infobereich verschieben'
+          Checked = True
+          OnClick = Systray_TaskleisteClick
+        end
+        object InDenTray: TMenuItem
+          Caption = 'Beim Start im Infobereich anzeigen'
+          OnClick = InDenTrayClick
+        end
       end
-      object ShowNetworkShares: TMenuItem
-        Caption = 'Netzwerkfreigaben anzeigen'
-        OnClick = ShowNetworkSharesClick
+      object Dateisystem1: TMenuItem
+        Caption = 'Dateisystem'
+        object ShowNetworkShares: TMenuItem
+          Caption = 'Netzwerkfreigaben anzeigen'
+          OnClick = ShowNetworkSharesClick
+        end
       end
-      object Splash1: TMenuItem
-        Caption = 'Splashscreen beim Start'
-        OnClick = Splash1Click
-      end
-      object KlickaufX: TMenuItem
-        Caption = 'Programm minimieren bei Klick auf [X]'
-        OnClick = KlickaufXClick
-      end
-      object Autostart: TMenuItem
-        Caption = 'FreePDF64 zum Windows-Autostart hinzuf'#252'gen'
-        OnClick = AutostartClick
+      object WindowsIntegration1: TMenuItem
+        Caption = 'Windows-Integration'
+        object Autostart: TMenuItem
+          Caption = 'Mit Windows starten'
+          OnClick = AutostartClick
+        end
       end
       object N15: TMenuItem
         Caption = '-'
@@ -2376,11 +2435,11 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = '-'
       end
       object Positionspeichern1: TMenuItem
-        Caption = 'Fensterposition speichern'
+        Caption = 'Nur Fensterposition speichern'
         OnClick = Positionspeichern1Click
       end
       object Speichern1: TMenuItem
-        Caption = 'Einstellungen speichern'
+        Caption = 'Alle Einstellungen speichern'
         Hint = 'Test'
         OnClick = Speichern1Click
       end
@@ -2407,13 +2466,16 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'Drucker'
         OnClick = Drucker1Click
       end
-      object NLverbinden: TMenuItem
-        Action = LMDShellMapDrive1
-        Caption = 'Netzlaufwerk verbinden...'
-      end
-      object NLtrennen: TMenuItem
-        Action = LMDShellUnMapDrive1
-        Caption = 'Netzlaufwerk trennen...'
+      object Netzlaufwerk1: TMenuItem
+        Caption = 'Netzlaufwerke'
+        object NLverbinden: TMenuItem
+          Action = LMDShellMapDrive1
+          Caption = 'Netzlaufwerk verbinden...'
+        end
+        object NLtrennen: TMenuItem
+          Action = LMDShellUnMapDrive1
+          Caption = 'Netzlaufwerk trennen...'
+        end
       end
       object Netzwerk1: TMenuItem
         Caption = 'Netzwerkverbindungen'
@@ -2445,21 +2507,9 @@ object FreePDF64_Form: TFreePDF64_Form
         ShortCut = 16468
         OnClick = TaskManager1Click
       end
-      object N17: TMenuItem
-        Caption = '-'
-      end
-      object Installation1: TMenuItem
-        Caption = 'Installation vom FreePDF64-Drucker'
-        OnClick = Installation1Click
-      end
     end
     object Hilfe1: TMenuItem
       Caption = 'Hilfe'
-      object Anleitung1: TMenuItem
-        Caption = 'Funktionen'
-        Visible = False
-        OnClick = Anleitung1Click
-      end
       object HilfezudenEinstellungen1: TMenuItem
         Caption = 'Hilfe zu den Einstellungen'
         Visible = False
@@ -2469,6 +2519,10 @@ object FreePDF64_Form: TFreePDF64_Form
         Caption = 'FreePDF64-HowTo'
         ShortCut = 112
         OnClick = FreePDFHowTo1Click
+      end
+      object Anleitung1: TMenuItem
+        Caption = 'Funktionen'
+        OnClick = Anleitung1Click
       end
       object Feedback1: TMenuItem
         Caption = 'Feedback geben, Fragen stellen o.'#228'. ...'
@@ -17259,7 +17313,9 @@ object FreePDF64_Form: TFreePDF64_Form
   end
   object TrayIcon1: TTrayIcon
     AnimateInterval = 300
-    Hint = 'FreePDF64'#13#10'- LMB f'#252'r Wiederherstellen'#13#10'- RMB f'#252'r Auswahlmen'#252
+    Hint = 
+      'FreePDF64'#13#10'- LMB f'#252'r Wiederherstellen'#13#10'- MMB '#246'ffnet Suchefenster' +
+      #13#10'- RMB f'#252'r Auswahlmen'#252
     Icon.Data = {
       0000010001002020000001001800A80C00001600000028000000200000004000
       00000100180000000000800C000000000000000000000000000000000000FFFF

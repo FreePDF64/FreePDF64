@@ -13,8 +13,10 @@ uses
 type
   TEinstellungen_Hilfe_Form = class(TForm)
     Memo1: TMemo;
-    procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
-    procedure FormShow(Sender: TObject);
+    Button1: TButton;
+    procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
   private
     { Private-Deklarationen }
   public
@@ -28,17 +30,32 @@ implementation
 
 {$R *.dfm}
 
-procedure TEinstellungen_Hilfe_Form.FormShow(Sender: TObject);
+procedure TEinstellungen_Hilfe_Form.Button1Click(Sender: TObject);
 begin
-  Einstellungen_Hilfe_Form.Height := 860;
-  Einstellungen_Hilfe_Form.Width  := 1080;
+  Close;
 end;
 
-procedure TEinstellungen_Hilfe_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
+procedure TEinstellungen_Hilfe_Form.FormCreate(Sender: TObject);
+begin
+  Position := poMainFormCenter;
+  KeyPreview := True;
+
+  // Scrollbares Memo
+  Memo1.ScrollBars := ssBoth;
+  Memo1.ReadOnly   := True;
+  Memo1.WordWrap   := False;
+
+  BorderStyle := bsSizeable;   // Höhe darf verändert werden
+end;
+
+procedure TEinstellungen_Hilfe_Form.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if (Key = VK_ESCAPE) then
+  if Key = VK_ESCAPE then
+  begin
+    Key := 0;   // verhindert Piepton
     Close;
+  end;
 end;
 
 end.

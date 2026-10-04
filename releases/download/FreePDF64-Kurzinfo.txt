@@ -3,10 +3,10 @@ FreePDF64
 PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder extrahieren, verschlüsseln (128-Bit RC4/AES oder 256-Bit AES), mit Wasserzeichen oder Stempel versehen, uvm.
 
 Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung:
-- Einfachste Installation des FreePDF64-Druckers (siehe beiliegende Anleitung unter: Hilfe - FreePDF64-HowTo)
+- Installation des FreePDF64 Postscript-Druckers direkt mit der FreePDF64-Installation
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
-- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
+- Drucke nun aus jeder Windows-Anwendung heraus auf den FreePDF64 Postscript-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
 
 Funktionen:
 01: Erstellen von PS (Postscript-Dateien) zu PDF-/BMP-/JPEG-/PNG-/TIFF-/TXT-Dateien

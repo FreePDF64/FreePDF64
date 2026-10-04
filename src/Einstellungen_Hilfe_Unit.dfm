@@ -1,35 +1,40 @@
 object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
   Left = 0
   Top = 0
+  Margins.Left = 6
+  Margins.Top = 6
+  Margins.Right = 6
+  Margins.Bottom = 6
   BorderIcons = [biSystemMenu]
   Caption = 'Hilfe zu den Einstellungen'
-  ClientHeight = 815
-  ClientWidth = 1062
+  ClientHeight = 1630
+  ClientWidth = 2116
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -14
+  Font.Height = -28
   Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
-  OnShow = FormShow
-  PixelsPerInch = 120
-  TextHeight = 17
+  OnCreate = FormCreate
+  OnKeyDown = FormKeyDown
+  PixelsPerInch = 240
+  TextHeight = 34
   object Memo1: TMemo
     Left = 0
     Top = 0
-    Width = 1062
-    Height = 815
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Width = 2116
+    Height = 1558
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 8
     Align = alClient
     BevelOuter = bvNone
     Color = clBtnFace
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
-    Font.Height = -15
+    Font.Height = -30
     Font.Name = 'Segoe UI'
     Font.Style = []
     Lines.Strings = (
@@ -57,6 +62,10 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
       ' - JPEG zu PDF. '
       ' - PNG zu PDF. '
       ' - TIFF zu PDF. '
+      
+        ' Hinweis: Ein Sternchen (*) hinter der Formatauswahl bedeutet, d' +
+        'as dieses Format automatisch aufgrund der Dateiendung ausgew'#228'hlt' +
+        ' wird (optional). '
       ''
       ' PDF-Metadaten (die sogenannten PDFMarks):'
       
@@ -189,20 +198,21 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
       ''
       ' '#220'berwachung:'
       
-        ' Hier kann man ein '#220'berwachungsverzeichnis angeben, in welchem a' +
-        'uf jede neu eingehende Datei '#252'berwacht wird (siehe dazu unter de' +
-        'm Men'#252'punkt  '
+        ' Hier kann man die automatische '#220'berwachung aktivieren. Ein Good' +
+        'ie des Programms! '
       
-        ' Hilfe - FreePDF64-HowTo und dort Abschnitt "Erstellen/Einrichte' +
-        'n des FreePDF64-Druckers unter Windows"). Diese kann dann sofort' +
-        ' automatisch in das '
+        ' Das '#220'berwachungsverzeichnis (Standard: C:\FreePDF64\Quellverzei' +
+        'chnis) wird auf jede neu eingehende Datei (oder mehrere) '#252'berwac' +
+        'ht. Sobald dort eine'
       
-        ' gew'#252'nschte Format erstellt werden. Des Weiteren kann die Einste' +
-        'llung der Wartezeit bis zum Erstellvorgang angepa'#223't werden - fal' +
-        'ls es zu '
+        ' Datei vorliegt, wird diese automatisch in das gew'#252'nschte Format' +
+        ' erstellt. Der FreePDF64 Postscript-Drucker druckt ebenso in das' +
+        ' '#220'berwachungsverzeichnis! '
       
-        ' '#220'berschneidungen mit dem Druck ins Zielverzeichnis und dem ansc' +
-        'hlie'#223'enden Beginn der Erstellung kommt.'
+        ' (siehe dazu unter dem Men'#252'punkt Hilfe - FreePDF64-HowTo und dor' +
+        't Abschnitt "Der FreePDF64 Postscript-Drucker"). Des Weiteren ka' +
+        'nn die Einstellung '
+      ' der Wartezeit bis zum Erstellvorgang angepa'#223't werden.'
       ''
       
         ' HINWEIS bzgl. Entfernung des PDF-Passworts aus PDF-Dateien durc' +
@@ -224,11 +234,23 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
         'z entfernen" (siehe in der Symbolleiste) nutzen!')
     ParentFont = False
     ReadOnly = True
-    ScrollBars = ssVertical
+    ScrollBars = ssBoth
     TabOrder = 0
     WantReturns = False
-    OnKeyDown = Memo1KeyDown
-    ExplicitWidth = 1052
-    ExplicitHeight = 813
+    WordWrap = False
+  end
+  object Button1: TButton
+    Left = 0
+    Top = 1558
+    Width = 2116
+    Height = 72
+    Margins.Left = 8
+    Margins.Top = 8
+    Margins.Right = 8
+    Margins.Bottom = 8
+    Align = alBottom
+    Caption = 'Schlie'#223'en'
+    TabOrder = 1
+    OnClick = Button1Click
   end
 end
