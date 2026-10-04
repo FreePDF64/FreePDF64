@@ -2422,6 +2422,12 @@ procedure TFreePDF64_Form.ShowFolders1Click(Sender: TObject);
 begin
   FavClose;
 
+  // Rechte Panels anzeigbar?
+  if Panel_Right.Width > PanelR.Width then
+    Panel_Right.Width := Panel_Left.Width;
+  if Panel_Right.Width > PanelLMDShellList2.Width then
+    Panel_Right.Width := PanelLMDShellList2.Width;
+
   // Beide Baumansichten nicht sichtbar? Dann linke Baumansicht einschalten
   if not LMDShellTree1.Visible and not LMDShellTree2.Visible then
   begin
@@ -2462,6 +2468,7 @@ begin
         Panel3.Visible := False;
         Baum := 3;
       end;
+
   AutoSize.Click;
 end;
 
@@ -3724,8 +3731,7 @@ begin
 
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     Auswahl := LMDShellList1.SelectedItem.PathName
-  else if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True
-  then
+  else if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
     Auswahl := LMDShellList2.SelectedItem.PathName
   else
     Exit;
@@ -3858,18 +3864,19 @@ begin
     if Memo1.Lines.Count > 0 then
     begin
       PaneloverPrgB.Visible := True;
-      I := FreePDF64_Form.Height - 350;
       PaneloverPrgB.Caption := Auswahl;
 
-      PDFPanel.Height := I + 225;
-      if PDFPanel.Height > ToolBar1.Height then
-        PDFPanel.Height := I + 107
-      else
-        PDFPanel.Height := I + 225;
+      PDFPanel.Parent := Self;
+      PDFPanel.Left   := 0;
+      PDFPanel.Top    := 0;
+      PDFPanel.Width  := ClientWidth;
+      PDFPanel.Height := ClientHeight - ToolBar1.Height;
+      PDFPanel.BringToFront;
 
+      // Buttons unsichtbar machen...
       PDF_Erstellung.Visible := False;
-      FormatBtn.Visible := False;
-      PanelBottom.Visible := False;
+      FormatBtn.Visible      := False;
+      PanelBottom.Visible    := False;
 
       MemoBtn.Visible := True;
     end else
@@ -3878,8 +3885,9 @@ begin
       if PDFPanel.Height > PDFPanelH then
       begin
         Memo1.Clear;
-        PDFPanel.Height := PDFPanelH;
-        MemoBtn.Visible := False;
+        PDFPanel.Height       := PDFPanelH;
+        PaneloverPrgB.Visible := False;
+        MemoBtn.Visible       := False;
       end;
     end;
   end;

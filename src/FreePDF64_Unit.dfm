@@ -792,7 +792,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
-      ExplicitWidth = 1081
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1042,6 +1041,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
+      ExplicitWidth = 336
       DesignSize = (
         364
         452)
@@ -1063,7 +1063,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Visible = False
         OnClick = Image1Click
         OnContextPopup = Image1ContextPopup
-        ExplicitWidth = 364
+        ExplicitWidth = 307
         ExplicitHeight = 455
       end
       object LMDShellList2: TLMDShellList
@@ -1138,6 +1138,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnMouseDown = LMDShellList2MouseDown
         OnInfoTip = LMDShellList2InfoTip
         OnSelectItem = LMDShellList2SelectItem
+        ExplicitWidth = 260
       end
       object ListBoxR: TListBox
         Left = 142
