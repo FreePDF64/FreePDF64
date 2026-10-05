@@ -20,7 +20,7 @@ object Zusatz_Form: TZusatz_Form
     Left = 15
     Top = 43
     Width = 272
-    Height = 100
+    Height = 80
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4

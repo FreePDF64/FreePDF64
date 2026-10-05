@@ -385,6 +385,7 @@ type
     Dateisystem1: TMenuItem;
     WindowsIntegration1: TMenuItem;
     UPD: TMenuItem;
+    PortMonitorLoglschen1: TMenuItem;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -634,6 +635,7 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure LMDShellTree1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
+    procedure PortMonitorLoglschen1Click(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -6915,6 +6917,7 @@ begin
   Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count - 1);
 end;
 
+
 // Aufuf vom PopUp-Menü
 procedure TFreePDF64_Form.Logdateiansehen2Click(Sender: TObject);
 begin
@@ -6938,12 +6941,25 @@ var
 begin
   Msg := 'Soll die Logdatei wirklich gelöscht werden?';
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
-    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt')
-    then
+    if not DeleteFile(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt') then
     begin
       if Einstellungen_Form.SystemklangCB.Checked then
-        PlaySoundFile(ExtractFilePath(Application.ExeName) +
-          'sounds\alert.wav');
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
+      // ShowMessage(SysErrorMessage(GetLastError));
+    end;
+end;
+
+// PortMonitor.log löschen
+procedure TFreePDF64_Form.PortMonitorLoglschen1Click(Sender: TObject);
+var
+  Msg: String;
+begin
+  Msg := 'Soll die PortMonitor.log wirklich gelöscht werden?';
+  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
+    if not DeleteFile(IncludeTrailingPathDelimiter(GetEnvironmentVariable('ProgramData')) + 'FreePDF64\PortMonitor.log') then
+    begin
+      if Einstellungen_Form.SystemklangCB.Checked then
+        PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\alert.wav');
       // ShowMessage(SysErrorMessage(GetLastError));
     end;
 end;
@@ -8165,18 +8181,21 @@ begin
         { PDF-Erstellung erst nach der Endungsprüfung               }
         { --------------------------------------------------------- }
 
+        // AP3 bleibt immer unverändert und zeigt auf die tatsächliche Quelldatei.
+        // Endzielname bestimmt ausschließlich den Namen der Zieldatei.
+        Endzielname := AP3;
+
         if Einstellungen_Form.ZusatzAnAus.Checked = True then
         begin
           try
             begin
-              // Folgende Zeichenketten werden aus den ermittelten Dateinamen beim Drucken in eine PDF-Datei entfernt...
-              Endzielname := AP3;
+              // ZusatzCB verändert nur den Zieldateinamen.
+              // Die Quelldatei AP3 wird NICHT umbenannt.
               for c := 0 to Zusatz_Form.ZusatzCB.Items.Count - 1 do
               begin
-                AP3 := StringReplace(AP3, Zusatz_Form.ZusatzCB.Items.Strings[c],
+                Endzielname := StringReplace(Endzielname,
+                  Zusatz_Form.ZusatzCB.Items.Strings[c],
                   '', [rfReplaceAll, rfIgnoreCase]);
-                if not RenameFile(Endzielname, AP3) then
-                  // ShowMessage('Error renaming file!');
               end;
             end;
           finally
@@ -8188,29 +8207,29 @@ begin
 
         if Einstellungen_Form.AuswahlRG.ItemIndex in [0, 10, 11, 12, 13] then // PDF
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '.pdf'))
+            ChangeFileExt(ExtractFileName(Endzielname), '.pdf'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 1 then // PS
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '.ps'))
+            ChangeFileExt(ExtractFileName(Endzielname), '.ps'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 2 then // DOCX
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '.docx'))
+            ChangeFileExt(ExtractFileName(Endzielname), '.docx'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 3 then // TXT
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '.txt'))
+            ChangeFileExt(ExtractFileName(Endzielname), '.txt'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 4 then // BMP
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '_%03d.bmp'))
+            ChangeFileExt(ExtractFileName(Endzielname), '_%03d.bmp'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 5 then // JPEG
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '_%03d.jpg'))
+            ChangeFileExt(ExtractFileName(Endzielname), '_%03d.jpg'))
         else if Einstellungen_Form.AuswahlRG.ItemIndex = 6 then // PNG
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '_%03d.png'))
+            ChangeFileExt(ExtractFileName(Endzielname), '_%03d.png'))
         else if (Einstellungen_Form.AuswahlRG.ItemIndex > 6) and
           (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then // TIFF
           Ziel := (IncludeTrailingBackslash(z) +
-            ChangeFileExt(ExtractFileName(AP3), '.tif'));
+            ChangeFileExt(ExtractFileName(Endzielname), '.tif'));
 
         // Anonymous Pipe erzeugen
         if CreatePipe(InpHandle, OutpHandle, NIL, 0) then
@@ -9273,11 +9292,20 @@ begin
             else if Zielanz = Ziel then
               Zielanz := Ziel;
 
+            // Falls in einem Erstellungszweig keine explizite
+            // Zielanz-Zuweisung erfolgte, immer die tatsächlich
+            // erstellte Zieldatei verwenden.
+            if Zielanz = '' then
+              Zielanz := Ziel;
+
             if Einstellungen_Form.AuswahlRG.ItemIndex in [10, 12, 13] then // PDF anzeigen
               Zielanz := Ziel;
 
             // Pause von 1 sec. einbauen...
             Sleep(1000);
+
+            // Den aktuell in den Einstellungen hinterlegten PDF-Reader verwenden.
+            PDFReader := Trim(Einstellungen_Form.Edit3.Text);
 
             if PDFReader = '' then
               ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');

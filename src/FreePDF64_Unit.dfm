@@ -1027,8 +1027,6 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
-        ExplicitTop = 130
-        ExplicitHeight = 321
       end
     end
     object PanelLMDShellList2: TPanel
@@ -2319,6 +2317,10 @@ object FreePDF64_Form: TFreePDF64_Form
         object Logdateilschen1: TMenuItem
           Caption = 'Logdatei l'#246'schen'
           OnClick = Logdateilschen1Click
+        end
+        object PortMonitorLoglschen1: TMenuItem
+          Caption = 'PortMonitor.log l'#246'schen'
+          OnClick = PortMonitorLoglschen1Click
         end
         object SuchenHistorylschen1: TMenuItem
           Caption = 'Suchen-History l'#246'schen'
