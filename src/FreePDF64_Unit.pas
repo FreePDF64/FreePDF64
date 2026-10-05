@@ -747,11 +747,8 @@ begin
   a := LMDShellList1.Column[0].AutoSize;
   SetAutoSize(True);
 
-  // Splitter mittig setzen
-  if Panel_Right.Visible then
-    PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
-  else
-    PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+  // Splitter soll sich in der Mitte befinden
+  PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
 
   // AutoSize zurücksetzen
   SetAutoSize(a);
@@ -1737,12 +1734,7 @@ begin
     LMDShellList2.Column[0].AutoSize := True;
 
     // Splitter soll sich in der Mitte befinden
-    if Panel_Right.Visible then
-      PanelR.Width :=
-        (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
-    else
-      PanelR.Width :=
-        (PanelL.Width + PanelR.Width) div 2;
+    PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
 
     // Erzwingt die Neuberechnung der Fenstergröße
     FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
@@ -2147,7 +2139,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '04.10.2026';
+  Datum := '05.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -2422,11 +2414,8 @@ procedure TFreePDF64_Form.ShowFolders1Click(Sender: TObject);
 begin
   FavClose;
 
-  // Rechte Panels anzeigbar?
-  if Panel_Right.Width > PanelR.Width then
-    Panel_Right.Width := Panel_Left.Width;
-  if Panel_Right.Width > PanelLMDShellList2.Width then
-    Panel_Right.Width := PanelLMDShellList2.Width;
+  // Rechter Panel gleich linker Panel
+  Panel_Right.Width := Panel_Left.Width;
 
   // Beide Baumansichten nicht sichtbar? Dann linke Baumansicht einschalten
   if not LMDShellTree1.Visible and not LMDShellTree2.Visible then
@@ -2468,8 +2457,6 @@ begin
         Panel3.Visible := False;
         Baum := 3;
       end;
-
-  AutoSize.Click;
 end;
 
 procedure TFreePDF64_Form.ZielverzeichnisimExplorerffnen1Click(Sender: TObject);
@@ -2507,7 +2494,6 @@ begin
     WriteInteger('Position', 'Width', FreePDF64_Form.Width);
     WriteInteger('Position', 'Height', FreePDF64_Form.Height);
     WriteInteger('Position', 'Left Tree Width', Panel_Left.Width);
-    WriteInteger('Position', 'Right Tree Width', Panel_Right.Width);
     WriteInteger('Position', 'Right Panel Width', PanelR.Width);
     WriteInteger('Position', 'Memo Panel Height', PDFPanel.Height);
     WriteString('Folder', 'Left',
@@ -4645,11 +4631,9 @@ begin
       Height := Ini.ReadInteger('Position', 'Height', Height);
 
       Panel_Left.Width  := Ini.ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
-      Panel_Right.Width := Ini.ReadInteger('Position', 'Right Tree Width', Panel_Right.Width);
+      PDFPanel.Height   := Ini.ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
       PanelR.Width      := Ini.ReadInteger('Position', 'Right Panel Width', PanelR.Width);
-
-      PDFPanel.Height := Ini.ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
-      PDFPanelH := PDFPanel.Height;
+      PDFPanelH         := PDFPanel.Height;
 
       // Folder-Einstellungen
       LMDShellList1.GridLines := Ini.ReadBool('Folder', 'Gridlines', LMDShellList1.GridLines);
@@ -4854,11 +4838,7 @@ begin
   // Ist die FreePDF64_Form nun sichtbar?
   if FormLoaded = True then
   begin
-    // Splitter soll sich in der Mitte befinden.
-    if ResizeEqual.Checked and not Panel_Right.Visible then
-      PanelR.Width := (PanelL.Width + PanelR.Width) div 2
-    else
-      if ResizeEqual.Checked and Panel_Right.Visible then
+    if ResizeEqual.Checked and Panel_Right.Visible then
       PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
   end;
 
@@ -4866,9 +4846,10 @@ begin
   if WindowState = wsNormal then
   begin
     // Splitter soll sich in der Mitte befinden.
-    if Panel_Right.Visible then
+    if ResizeEqual.Checked and Panel_Right.Visible then
       PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
     else
+    if ResizeEqual.Checked and not Panel_Right.Visible then
       PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
   end;
 
@@ -5214,10 +5195,10 @@ begin
   ExifTool := IncludeTrailingBackslash(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
   if Einstellungen_Form.Edit6.Text = '' then
     Einstellungen_Form.Edit6.Text := BasePath + 'xpdf\bin64\';
-  XPDF_Images := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
-  XPDF_ToHTML := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
-  XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
-  XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
+  XPDF_Images  := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfimages.exe';
+  XPDF_ToHTML  := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdftohtml.exe';
+  XPDF_Detach  := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+  XPDF_Fonts   := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
 
   Memo1.Height := 64;
 
@@ -5249,18 +5230,17 @@ begin
       if not ValueExists('Folder', 'Left') then
       begin
         Ziel := BasePath + 'Zielverzeichnis';
-        A_S := BasePath + 'Quellverzeichnis';
-        B_Z := Ziel;
+        A_S  := BasePath + 'Quellverzeichnis';
+        B_Z  := Ziel;
       end
       else
       begin
-        A_S := ReadString('Folder', 'Left', A_S);
-        B_Z := ReadString('Folder', 'Target', B_Z);
+        A_S  := ReadString('Folder', 'Left', A_S);
+        B_Z  := ReadString('Folder', 'Target', B_Z);
         Ziel := B_Z;
       end;
 
-      FreePDF64_Notify.MonitoringFolder.Text :=
-        ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
+      FreePDF64_Notify.MonitoringFolder.Text := ReadString('Monitoring', 'Folder', FreePDF64_Notify.MonitoringFolder.Text);
       try
         UpdateFreePDF64PrinterSourceDirectory(FreePDF64_Notify.MonitoringFolder.Text);
       except
@@ -5344,16 +5324,13 @@ begin
         Dateianlage_Form.Clear.Click;
       end;
 
-      if not FileExists(Dateianlage_Form.Datei1.Text) or
-         not FileExists(Dateianlage_Form.Datei2.Text) then
+      if not FileExists(Dateianlage_Form.Datei1.Text) or not FileExists(Dateianlage_Form.Datei2.Text) then
         Dateianlage_Form.Clear.Click;
 
-      Einstellungen_Form.ZusatzAnAus.Checked :=
-        ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
+      Einstellungen_Form.ZusatzAnAus.Checked := ReadBool('Zusatz', 'On/Off', Einstellungen_Form.ZusatzAnAus.Checked);
       Einstellungen_Form.Zusatz.Enabled := Einstellungen_Form.ZusatzAnAus.Checked;
 
-      Einstellungen_Form.FontCB.Checked :=
-        ReadBool('Zusatz', 'Memo Font', Einstellungen_Form.FontCB.Checked);
+      Einstellungen_Form.FontCB.Checked := ReadBool('Zusatz', 'Memo Font', Einstellungen_Form.FontCB.Checked);
       if Einstellungen_Form.FontCB.Checked then
       begin
         Memo1.Font.Name := 'Consolas';
@@ -5366,8 +5343,7 @@ begin
       end;
 
       if not FreePDF64_Notify.Ziel_FestCB.Checked then
-        FreePDF64_Notify.ZielEdit.Text :=
-          IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
+        FreePDF64_Notify.ZielEdit.Text := IncludeTrailingBackslash(LMDShellFolder2.RootFolder);
 
       // Suche-SearchField lesen
       for I := 0 to 254 do
@@ -5420,11 +5396,11 @@ begin
         end;
       end;
 
-      FSortAscending := True;
+      FSortAscending  := True;
       FSortAscending2 := True;
-      FSortColumn := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2 := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
-      FSortAscending := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
@@ -5501,7 +5477,7 @@ begin
       Height := Height - 1;
     end;
 
-    tmpt := LMDShellList1.Options;
+    tmpt  := LMDShellList1.Options;
     tmpt2 := LMDShellTree1.Options;
     if VersteckteDateienanzeigen1.Checked then
     begin
@@ -5578,8 +5554,7 @@ begin
       'LMB: Ansehen im unteren Anzeigefenster' + #13 +
       'RMB: Ansehen im externen Editor';
 
-    FreePDF64_Notify.LMDShellNotify.WatchFolder :=
-      Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
+    FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
     if FreePDF64_Notify.LMDShellNotify.Active then
     begin
       MonitorBtn.ImageIndex := 57;

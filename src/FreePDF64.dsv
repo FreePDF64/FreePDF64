@@ -1,11 +1,11 @@
 ﻿[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjRfVW5pdC5wYXM=]
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=1
-CursorY=6818
-TopLine=6800
+CursorX=15
+CursorY=2150
+TopLine=2123
 LeftCol=1
 Elisions=
-Bookmarks=
+Bookmarks={0,2426,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxTdWNoZW4ucGFz]
@@ -17,4 +17,14 @@ LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
+
+[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxJbmZvX1VuaXQucGFz]
+Module=D:\Delphi\FreePDF64\Info_Unit.pas
+CursorX=15
+CursorY=103
+TopLine=75
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Delphi\FreePDF64\Info_Unit.pas
 

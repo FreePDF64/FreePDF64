@@ -63,12 +63,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=30
-CursorY=2425
-TopLine=2407
+CursorX=66
+CursorY=4633
+TopLine=4612
 LeftCol=1
 Elisions=
-Bookmarks={0,2427,43}
+Bookmarks={0,750,1}{1,1713,22}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -206,7 +206,7 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -214,8 +214,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Align,CustomHint
-ExpandedItems=LiveBindings=0,Folder=0,Anchors=0,Constraints=0,BevelEdges=0,Font=0,LiveBindings-Designer=0,Margins=0,Padding=0
+SelectedItem=Caption,OnResize
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,Folder=0,Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0,Options=0,HotTrackStyles=0,IconOptions=0,BevelEdges=0,Padding=0,StyleElements=0,Touch=0,Menu=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -254,8 +254,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=32
-Description=88
+Name=8
+Description=11
 filter=1
 
 [DebugLogView]
@@ -597,7 +597,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -623,7 +623,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -649,7 +649,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0

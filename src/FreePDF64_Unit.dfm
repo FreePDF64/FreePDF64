@@ -1027,6 +1027,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ShowNonFolders = False
         AutoContextMenus = False
         AutoSortSupport = False
+        ExplicitTop = 130
+        ExplicitHeight = 321
       end
     end
     object PanelLMDShellList2: TPanel
@@ -1041,7 +1043,6 @@ object FreePDF64_Form: TFreePDF64_Form
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitWidth = 336
       DesignSize = (
         364
         452)
@@ -1138,7 +1139,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnMouseDown = LMDShellList2MouseDown
         OnInfoTip = LMDShellList2InfoTip
         OnSelectItem = LMDShellList2SelectItem
-        ExplicitWidth = 260
       end
       object ListBoxR: TListBox
         Left = 142
@@ -1569,8 +1569,9 @@ object FreePDF64_Form: TFreePDF64_Form
       Visible = False
       OnClick = Image2Click
       OnContextPopup = Image2ContextPopup
+      ExplicitTop = 160
       ExplicitWidth = 557
-      ExplicitHeight = 455
+      ExplicitHeight = 326
     end
     object LMDShellList1: TLMDShellList
       Left = 1
