@@ -223,10 +223,10 @@ var
   Laenge: Integer;
   Scale: Single;
 begin
-  // Zeilenhöhe des Suchergebnisses einstellen
+  // Zeilenhöhe des Suchergebnisses einstellen ---------------------------------
   Scale := ListBox1.CurrentPPI / 96;
-  ListBox1.ItemHeight := Round(17 * Scale);
-  // -----------------------------------------
+  ListBox1.ItemHeight := Round(18 * Scale);
+  // ---------------------------------------------------------------------------
 
   ListBox1.OnDrawItem := ListBox1DrawItem;
 
@@ -4010,12 +4010,10 @@ begin
     TextPx := TextHeight('Hg');
 
     // Text exakt vertikal in der Zeile zentrieren
-    TextTop := Rect.Top +
-      ((Rect.Bottom - Rect.Top) - TextPx) div 2;
+    TextTop := Rect.Top + ((Rect.Bottom - Rect.Top) - TextPx) div 2;
 
     // Linker Innenabstand
     TextLeft := Rect.Left + Round(8 * Scale);
-
     TextOut(TextLeft, TextTop, S);
 
     // Horizontale Scrollbreite
@@ -4032,11 +4030,13 @@ begin
       );
     end;
 
-    // Dezente Trennlinie
-    Pen.Color := $00DDDDDD;
-
-    MoveTo(Rect.Left, Rect.Bottom - 1);
-    LineTo(Rect.Right, Rect.Bottom - 1);
+    if FreePDF64_Form.Gitternetzlinien1.Checked then
+    begin
+      // Die horizontale Trennlinie zwischen den ListBox-Einträgen
+      Pen.Color := $00DDDDDD;
+      MoveTo(Rect.Left, Rect.Bottom - 1);
+      LineTo(Rect.Right, Rect.Bottom - 1);
+    end;
   end;
 end;
 
