@@ -2776,6 +2776,11 @@ end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
 begin
+  // Suchformular wurde noch nicht erzeugt bzw. nach dem letzten
+  // Schließen mit caFree bereits wieder freigegeben.
+  if not Assigned(Suche_Form) then
+    Suche_Form := TSuche_Form.Create(Application);
+
   if IsIconic(Suche_Form.Handle) then
     Suche_Form.WindowState := wsNormal
   else

@@ -334,6 +334,14 @@ begin
   AnzeigenPanel.Visible := False;
   StopSuche             := True;
 
+  // Suchergebnisse beim Schließen freigeben, Form selbst bleibt erhalten
+  ListBox1.Items.BeginUpdate;
+  try
+    ListBox1.Items.Clear;
+  finally
+    ListBox1.Items.EndUpdate;
+  end;
+
   // Horizontaler Scrollbalken wird wieder entfernt
   flbHorzScrollWidth := 0;
   Listbox1.Perform(LB_SETHORIZONTALEXTENT, 0, 0);
@@ -369,13 +377,13 @@ begin
   end;
   // ============================================================
 
-  for i := FileField.Items.Count downto 0 do
+  for i := FileField.Items.Count - 1 downto 0 do
     if FileField.Items.Strings[i] = '' then
       FileField.Items.Delete(i);
-  for i := SearchField.Items.Count downto 0 do
+  for i := SearchField.Items.Count - 1 downto 0 do
     if SearchField.Items.Strings[i] = '' then
       SearchField.Items.Delete(i);
-  for i := TextCB.Items.Count downto 0 do
+  for i := TextCB.Items.Count - 1 downto 0 do
     if TextCB.Items.Strings[i] = '' then
       TextCB.Items.Delete(i);
   try
@@ -386,16 +394,16 @@ begin
       // Verlauf Suche-Form schreiben.
       IniDat.EraseSection('Suche');
       if SearchField.Items.Count > 0 then
-        for i := 0 to SearchField.Items.Count do
+        for i := 0 to SearchField.Items.Count - 1 do
           IniDat.WriteString('Search', 'SearchField' + IntToStr(i), SearchField.Items[i]);
 
       if FileField.Items.Count > 0 then
-        for i := 0 to FileField.Items.Count do
+        for i := 0 to FileField.Items.Count - 1 do
           IniDat.WriteString('Search', 'FileField' + IntToStr(i), FileField.Items[i]);
 
       // Textsuche schreiben.
       if TextCB.Items.Count > 0 then
-      for i := 0 to TextCB.Items.Count do
+      for i := 0 to TextCB.Items.Count - 1 do
         IniDat.WriteString('Search', 'Textsearch' + IntToStr(i), TextCB.Items[i]);
 
     IniDat.WriteInteger('Search', 'Top',    Suche_Form.Top);
@@ -407,6 +415,7 @@ begin
   except
     Showmessage('Fehler festgestellt!');
   end;
+
 end;
 
 procedure TSuche_Form.Bewegen1Click(Sender: TObject);
@@ -3799,7 +3808,7 @@ begin
   if TextCB.Items.IndexOf(TextCB.Text) < 0 then
     TextCB.Items.Insert(0, TextCB.Text);
 
-  for i := TextCB.Items.Count downto 0 do
+  for i := TextCB.Items.Count - 1 downto 0 do
     if TextCB.Items.Strings[i] = '' then
       TextCB.Items.Delete(i);
 end;
@@ -4110,4 +4119,5 @@ begin
 end;
 
 end.
+
 
