@@ -12,9 +12,9 @@ File_9=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_2.ico',0,1,1,1,1,0,0,,
 
 [Modules]
 Module0=D:\Delphi\FreePDF64\Suchen.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\Auswahl_Unit.pas
-Module3=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\Info_Unit.pas
+Module2=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module3=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Module5=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module6=D:\Delphi\FreePDF64\Zusatz_Unit.pas
@@ -24,13 +24,13 @@ EditWindowCount=1
 [D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Auswahl_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
@@ -154,12 +154,12 @@ EditViewName=D:\Delphi\FreePDF64\Zusatz_Unit.pas
 [View6]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=9
-CursorY=4039
-TopLine=4001
+CursorX=44
+CursorY=1085
+TopLine=1052
 LeftCol=1
 Elisions=
-Bookmarks=
+Bookmarks={0,938,1}{1,4113,1}{2,4113,1}{3,4113,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
 [Watches]
@@ -294,8 +294,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Name,CustomHint
-ExpandedItems=Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0
+SelectedItem=Tag,OnClick
+ExpandedItems=Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0,Anchors=1,Constraints=0,BevelEdges=0,Padding=0,StyleElements=0,Touch=0,Menu=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -334,8 +334,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=77
-Description=214
+Name=40
+Description=110
 filter=1
 
 [DebugLogView]

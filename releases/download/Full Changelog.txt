@@ -1,4 +1,6 @@
-06.10.2026 V7.0.0
+06.10.2026 V7.0.1
+Fix -> Die Suche im Suchergebnis wurde vereinfacht.
+04.10.2026 V7.0.0
 Neu -> Endlich! FreePDF64 hat nun einen eigenen Drucker: Es wird bei der Installation von FreePDF64 ein neuer eigener Drucker "FreePDF64 Postscript" installiert (siehe auch FreePDF64-HowTo.pdf).
 Neu -> Neuen PDF-Viewer zum Anzeigen der PDF-Dateien mit F3, auch im Suchefenster, eingebaut.
 Neu -> Menüpunkt: (Automatische) Formatauswahl aufgrund der Dateiendung.

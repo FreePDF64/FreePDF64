@@ -656,7 +656,7 @@ object Suche_Form: TSuche_Form
     end
     object SuchergebnisBtn: TBitBtn
       Left = 912
-      Top = 191
+      Top = 188
       Width = 156
       Height = 26
       Hint = 'Suchergebnis speichern und anzeigen'
@@ -814,7 +814,7 @@ object Suche_Form: TSuche_Form
     end
     object DateiCheckBox: TCheckBox
       Left = 14
-      Top = 188
+      Top = 190
       Width = 121
       Height = 21
       Margins.Left = 4
@@ -824,6 +824,22 @@ object Suche_Form: TSuche_Form
       Caption = 'Dateigr'#246#223'e:'
       TabOrder = 24
       OnClick = DateiCheckBoxClick
+    end
+    object SuchergebnisCB: TCheckBox
+      Left = 697
+      Top = 190
+      Width = 204
+      Height = 21
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      Anchors = [akTop, akRight]
+      Caption = 'Suche im Suchergebnis [F2]'
+      ParentShowHint = False
+      ShowHint = False
+      TabOrder = 25
+      OnClick = SuchergebnisCBClick
     end
   end
   object Suchpanel: TPanel
@@ -1140,9 +1156,9 @@ object Suche_Form: TSuche_Form
     object AnzeigenPanel: TPanel
       Left = 201
       Top = 2
-      Width = 97
+      Width = 105
       Height = 26
-      Hint = 'Gefundene Eintr'#228'ge ganz oben anzeigen'
+      Hint = 'Gefundene Eintr'#228'ge ganz oben im Suchergebnis anzeigen'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -1235,11 +1251,5 @@ object Suche_Form: TSuche_Form
       Visible = False
       OnClick = Btn_8Click
     end
-  end
-  object Timer2: TTimer
-    Interval = 500
-    OnTimer = Timer2Timer
-    Left = 807
-    Top = 447
   end
 end

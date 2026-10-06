@@ -76,11 +76,11 @@ type
     DTP: TDateTimePicker;
     DateiCheckBox: TCheckBox;
     SucheEdit: TEdit;
-    Timer2: TTimer;
     AnzeigenPanel: TPanel;
     Gehezu1: TMenuItem;
     Btn_8: TSpeedButton;
     PDFViewer1: TMenuItem;
+    SuchergebnisCB: TCheckBox;
     procedure ButtonHochClick(Sender: TObject);
     procedure BrowseClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -126,11 +126,11 @@ type
     procedure ListBox1DrawItem(Control: TWinControl; Index: Integer; Rect: TRect; State: TOwnerDrawState);
     procedure SucheEditChange(Sender: TObject);
     procedure Panel_obenEnter(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
     procedure MoveSelectedItemsToTop(ListBox: TListBox);
     procedure AnzeigenPanelClick(Sender: TObject);
     procedure Btn_8Click(Sender: TObject);
     procedure FileFieldCloseUp(Sender: TObject);
+    procedure SuchergebnisCBClick(Sender: TObject);
     public
       { Public-Deklarationen }
       procedure PlaySoundFile(FileName: string);
@@ -142,6 +142,7 @@ type
       FLastPersistent: string;
       FWaitForm: TForm;
       SearchStopwatch: TStopwatch;
+      function IsShortCut(var Message: TWMKey): Boolean; override;
     end;
 
 var
@@ -157,6 +158,39 @@ implementation
 {$R *.dfm}
 
 uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm;
+
+function TSuche_Form.IsShortCut(var Message: TWMKey): Boolean;
+begin
+  if Message.CharCode = VK_F2 then
+  begin
+    SuchergebnisCB.Checked := not SuchergebnisCB.Checked;
+
+    if SuchergebnisCB.Checked then
+    begin
+      SucheEdit.Text        := '';
+      SucheEdit.Visible     := True;
+      AnzeigenPanel.Visible := True;
+
+      SucheEdit.Color     := $00E8F1FF;
+      AnzeigenPanel.Color := $00D6E8FF;
+
+      SucheEdit.SetFocus;
+    end
+    else
+    begin
+      SucheEdit.Visible     := False;
+      AnzeigenPanel.Visible := False;
+
+      SucheEdit.Color     := clWhite;
+      AnzeigenPanel.Color := clWhite;
+    end;
+
+    Result := True;
+    Exit;
+  end;
+
+  Result := inherited IsShortCut(Message);
+end;
 
 procedure TSuche_Form.Panel_obenEnter(Sender: TObject);
 begin
@@ -825,64 +859,68 @@ begin
   end;
 end;
 
-procedure TSuche_Form.Timer2Timer(Sender: TObject);
-begin
-  if SucheEdit.Color = clWhite then
-  begin
-    SucheEdit.Color     := clGradientActiveCaption;
-    AnzeigenPanel.Color := clGradientActiveCaption;
-  end else
-  begin
-    SucheEdit.Color     := clWhite;
-    AnzeigenPanel.Color := clWhite;
-  end;
-
-  if SucheEdit.Visible then
-    SucheEdit.SetFocus;
-end;
-
-// Suche den SucheEdit.Text im Suchergebnis der ListBox
+// Suche den Inhalt von SucheEdit.Text im Suchergebnis der ListBox
 procedure TSuche_Form.SucheEditChange(Sender: TObject);
 var
-  i: Integer;
-  searchText: string;
+  I: Integer;
+  SearchText: string;
+  FirstMatch: Integer;
 begin
-  Timer2.Enabled      := False;
   SucheEdit.Color     := clWhite;
   AnzeigenPanel.Color := clWhite;
-  searchText          := SucheEdit.Text;
-  // Flackern verhindern
+
+  SearchText := Trim(SucheEdit.Text);
+  FirstMatch := -1;
+
+  // Zeichnen während der Suche abschalten -> kein Flackern
   SendMessage(ListBox1.Handle, WM_SETREDRAW, WPARAM(False), 0);
   ListBox1.Items.BeginUpdate;
   try
+    // Vorherige Markierungen entfernen
     ListBox1.ClearSelection;
-    for i := 0 to ListBox1.Items.Count - 1 do
+
+    // Nur suchen, wenn tatsächlich ein Suchtext vorhanden ist
+    if SearchText <> '' then
     begin
-      if Pos(LowerCase(searchText), LowerCase(ExtractFileName(ListBox1.Items[i]))) > 0 then
+      SearchText := LowerCase(SearchText);
+
+      for I := 0 to ListBox1.Items.Count - 1 do
       begin
-        ListBox1.Selected[i] := True;
-        ListBox1.TopIndex    := ListBox1.ItemIndex;
+        // Im kompletten angezeigten ListBox-Eintrag suchen
+        if Pos(SearchText, LowerCase(ListBox1.Items[I])) > 0 then
+        begin
+          ListBox1.Selected[I] := True;
+
+          // Position des ersten Treffers merken
+          if FirstMatch = -1 then
+            FirstMatch := I;
+        end;
       end;
     end;
+
+    // Nur einmal zum ersten Treffer springen
+    if FirstMatch >= 0 then
+      ListBox1.TopIndex := FirstMatch;
+
   finally
     ListBox1.Items.EndUpdate;
+
+    // Zeichnen wieder einschalten
+    SendMessage(ListBox1.Handle, WM_SETREDRAW, WPARAM(True), 0);
+
+    // ListBox sofort neu zeichnen
+    ListBox1.Invalidate;
+    ListBox1.Update;
   end;
-  SendMessage(ListBox1.Handle, WM_SETREDRAW, WPARAM(True), 0);
-  StatusBar1.Panels[1].Text  := 'Markiert: ' + IntToStr(ListBox1.SelCount);
+
+  // Anzahl der gefundenen/markierten Einträge anzeigen
+  StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
 end;
 
-// Taste drücken ruft Suche auf im Suchergebnis
 procedure TSuche_Form.FormKeyPress(Sender: TObject; var Key: Char);
 begin
   if (Key = #13) then
-    StartSearchButton.Click
-  else
-  if (ListBox1.Count > 0) and ListBox1.Focused then
-  begin
-    SucheEdit.Visible     := True;
-    AnzeigenPanel.Visible := True;
-    Timer2.Enabled        := True;
-  end;
+    StartSearchButton.Click;
 end;
 
 procedure TSuche_Form.FormKeyDown(Sender: TObject; var Key: Word;
@@ -890,6 +928,30 @@ procedure TSuche_Form.FormKeyDown(Sender: TObject; var Key: Word;
 begin
   if Key = VK_ESCAPE then
     StopSearchButton.Click;
+end;
+
+// Suche-Checkbox für Suchen im Suchergebnis
+procedure TSuche_Form.SuchergebnisCBClick(Sender: TObject);
+begin
+  if SuchergebnisCB.Checked then
+    if (ListBox1.Count > 0) then
+    begin
+      SucheEdit.Text        := '';
+      SucheEdit.Visible     := True;
+      AnzeigenPanel.Visible := True;
+
+      SucheEdit.Color     := $00E8F1FF;
+      AnzeigenPanel.Color := $00D6E8FF;
+
+      SucheEdit.SetFocus;
+    end else
+    begin
+      SucheEdit.Visible     := False;
+      AnzeigenPanel.Visible := False;
+
+      SucheEdit.Color     := clWhite;
+      AnzeigenPanel.Color := clWhite;
+    end;
 end;
 
 procedure TSuche_Form.FormShow(Sender: TObject);
@@ -933,10 +995,11 @@ begin
   Suche_Form.Constraints.MinWidth  := 800;
 
   Timer1.Enabled          := False;
+  SuchergebnisCB.Enabled  := False;
+  SuchergebnisCB.Checked  := False;
   SuchergebnisBtn.Enabled := False;
   SucheEdit.Visible       := False;
   AnzeigenPanel.Visible   := False;
-  SucheEdit.Text          := '';
   DTP.Date := Date;
   DTP.Time := Time;
 
@@ -1018,7 +1081,8 @@ begin
     '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 + #13 +
     'Suchergebnis:' + #13 +
     '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
-    '- Zur Suche in das Suchergebnis klicken und dann einfaches Tippen eines Buchstabens' + #13 +
+    '- Zur Suche die Checkbox "Suche im Suchergebnis" anklicken (oder F2) und dann einfach' + #13 +
+    '  Suchbegriff in Suchfeld unten links eingeben' + #13 +
     '- Alt+linker Mausklick öffnet markierte Datei des Suchergebnisses' + #13 +
     '- Rechter Mausklick öffnet Standard-Kontextmenü der markierten Datei/Verzeichnis' + #13 +
     '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis' + #13 +
@@ -1437,8 +1501,9 @@ var
   at: String;
   fa: TFileAttributes;
 begin
-  SucheEdit.Visible     := False;
-  AnzeigenPanel.Visible := False;
+  SucheEdit.Visible      := False;
+  AnzeigenPanel.Visible  := False;
+  SuchergebnisCB.Checked := False;
 
   if ListBox1.Count = 0 then
     Exit;
@@ -3311,9 +3376,7 @@ begin
   end;
 
   // Aufhebung der Größenbeschränkung
-  Suche_Form.Constraints.MinHeight :=
-    Suche_Form.Height - Suchpanel.Height +
-    PanelBottom.Height + StatusBar1.Height;
+  Suche_Form.Constraints.MinHeight := Suche_Form.Height - Suchpanel.Height + PanelBottom.Height + StatusBar1.Height;
 
   Suche_Form.Constraints.MaxHeight := 0;
 
@@ -3330,9 +3393,7 @@ begin
 
   StatusBar1.Canvas.Font := StatusBar1.Font;
 
-  StatusBar1.Panels[0].Width :=
-    ListBox1.Width -
-    (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+  StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
 
   Zaehler := 0;
   ListBox1.Clear;
@@ -3582,6 +3643,7 @@ begin
   // =========================================================
   if ListBox1.Count > 1 then
   begin
+    SuchergebnisCB.Enabled  := True;
     SuchergebnisBtn.Enabled := True;
 
     StatusBar1.Panels[1].Text :=
@@ -3593,8 +3655,10 @@ begin
       ListBox1.Width -
       (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
   end
-  else
+  else begin
+    SuchergebnisCB.Enabled  := False;
     SuchergebnisBtn.Enabled := False;
+  end;
 
   // =========================================================
   // FOKUS NACH ENDE DER SUCHE
@@ -4046,3 +4110,4 @@ begin
 end;
 
 end.
+
