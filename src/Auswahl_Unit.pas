@@ -60,8 +60,8 @@ begin
   inherited;
   with Msg.MinMaxInfo^ do
   begin
-     ptMinTrackSize.x:= 531;
-     ptMinTrackSize.y:= 390;
+     ptMinTrackSize.x:= 550;
+     ptMinTrackSize.y:= 450;
   end
 end;
 
