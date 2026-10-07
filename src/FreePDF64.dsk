@@ -12,9 +12,9 @@ File_9=TSourceModule,'D:\Temp\Suchen_.pas',0,1,1602,25,1623,0,0,,
 File_10=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_2.ico',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module2=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 Module3=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Module4=D:\Delphi\FreePDF64\Anleitung_Unit.pas
 Module5=D:\Delphi\FreePDF64\Auswahl_Unit.pas
@@ -24,13 +24,13 @@ Module8=D:\Delphi\FreePDF64\Zusatz_Unit.pas
 Count=9
 EditWindowCount=1
 
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
@@ -53,7 +53,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=9
-CurrentEditView=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -328,7 +328,7 @@ SplitPos=111
 [PropInspDesignerSelection]
 ArrangeBy=Name
 SelectedItem=Caption,
-ExpandedItems=Anchors=0,BorderIcons=0
+ExpandedItems=Anchors=0,Constraints=0,Font=0
 
 [frmDesignPreview]
 PercentageSizes=1
