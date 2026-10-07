@@ -51,7 +51,7 @@ var
 implementation
 
 uses
-  FreePDF64_Unit, Einstellungen_Unit, DokuInfo_Unit, FreePDF64_Notify_Unit;
+  FreePDF64_Unit, Einstellungen_Unit, DokuInfo_Unit, FreePDF64_Notify_Unit, uPDFBrowserForm;
 
 {$R *.DFM}
 
@@ -105,8 +105,7 @@ begin
   Auswahl_Form.Caption := 'Dateien auswählen! Zielname ist: ' + MinimizeName(MERGEDATEI, Auswahl_Form.Canvas, 100);
   ABBRUCH := False;
   MergeViewer.Hint := 'Markierte Datei anzeigen...' + #10#13 +
-                      '- wenn Ghostscript Image -> [ Eingabetaste ] für Weiter, [ STRG+C ] für Abbrechen' + #10#13 +
-                      '- sonst mit dem eingestellten PDF-Anzeiger';
+                      '- wenn Ghostscript Image -> [ Eingabetaste ] für Weiter, [ STRG+C ] für Abbrechen';
 end;
 
 procedure TAuswahl_Form.HinzufuegenClick(Sender: TObject);
@@ -268,10 +267,14 @@ end;
 // Vorschau
 procedure TAuswahl_Form.MergeViewerClick(Sender: TObject);
 var
-  i: Integer;
+  i, Offset, BaseOffset: Integer;
+  PDFForm: TPDFBrowserForm;
 begin
   // Wo liegt das Ghostscript-Programm?
   Ghostscript := Einstellungen_Form.Edit1.Text;
+
+  // Grundversatz bei 100 % DPI
+  BaseOffset := 20;
 
   for i := 0 to FileList.Items.Count - 1 do
   begin
@@ -291,15 +294,16 @@ begin
             Break;
       end else
       begin
-        if PDFReader = '' then
-        begin
-          ShowMessage('Bitte einen PDF-Anzeiger in den Einstellungen hinterlegen!');
-          Exit;
-        end;
+        // PDFForm aufrufen...
+        PDFForm := TPDFBrowserForm.Create(Self);
+        PDFForm.PDFFileName := Auswahl;
+        // DPI-skalierter Versatz
+        Offset := MulDiv((i mod 8) * BaseOffset, PDFForm.CurrentPPI, 96);
+        PDFForm.Left := PDFForm.Left + Offset;
+        PDFForm.Top := PDFForm.Top + Offset;
+        PDFForm.FormStyle := fsStayOnTop;
+        PDFForm.Show;
         Application.ProcessMessages;
-        // PDF-Anzeiger aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Auswahl + '"'), '', SW_NORMAL);
-        KillTask(Einstellungen_Form.Edit3.Text);
         FileList.Items[i].Selected := False;
       end;
     end;

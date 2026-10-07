@@ -4,7 +4,7 @@ object Einstellungen_Form: TEinstellungen_Form
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Einstellungen f'#252'r '#220'berwachung und manuelle Erstellung'
-  ClientHeight = 728
+  ClientHeight = 706
   ClientWidth = 954
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -21,7 +21,7 @@ object Einstellungen_Form: TEinstellungen_Form
   TextHeight = 20
   object Label1: TLabel
     Left = 14
-    Top = 5
+    Top = 8
     Width = 234
     Height = 20
     Hint = 'Homepage von Ghostscript aufrufen'
@@ -42,7 +42,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label2: TLabel
     Left = 14
-    Top = 185
+    Top = 188
     Width = 217
     Height = 20
     Hint = 'Homepage von Notepad++ aufrufen'
@@ -61,30 +61,9 @@ object Einstellungen_Form: TEinstellungen_Form
     ShowHint = True
     OnClick = Label2Click
   end
-  object PDFAnzeiger: TLabel
-    Left = 14
-    Top = 215
-    Width = 268
-    Height = 20
-    Hint = 'Homepage von SumatraPDF aufrufen'
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
-    Caption = 'Auswahl des PDF-Anzeigers (optional):   '
-    Font.Charset = ANSI_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -15
-    Font.Name = 'Segoe UI'
-    Font.Style = []
-    ParentFont = False
-    ParentShowHint = False
-    ShowHint = True
-    OnMouseDown = PDFAnzeigerMouseDown
-  end
   object Label3: TLabel
     Left = 14
-    Top = 35
+    Top = 38
     Width = 242
     Height = 20
     Hint = 'Homepage von QPDF aufrufen'
@@ -105,7 +84,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label6: TLabel
     Left = 14
-    Top = 65
+    Top = 68
     Width = 243
     Height = 20
     Hint = 'Homepage von PDFtk aufrufen'
@@ -126,7 +105,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label7: TLabel
     Left = 14
-    Top = 95
+    Top = 98
     Width = 236
     Height = 20
     Hint = 'Homepage der Xpdf-Tools aufrufen'
@@ -169,7 +148,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object ImageMagick: TLabel
     Left = 14
-    Top = 125
+    Top = 128
     Width = 253
     Height = 20
     Hint = 'Homepage von ImageMagick aufrufen'
@@ -190,7 +169,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label8: TLabel
     Left = 840
-    Top = 476
+    Top = 443
     Width = 27
     Height = 20
     Margins.Left = 4
@@ -201,7 +180,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label9: TLabel
     Left = 830
-    Top = 437
+    Top = 404
     Width = 37
     Height = 20
     Margins.Left = 4
@@ -212,7 +191,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object ExifTool: TLabel
     Left = 14
-    Top = 155
+    Top = 158
     Width = 216
     Height = 20
     Hint = 'Homepage von ExifTool aufrufen'
@@ -311,7 +290,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object DistParam: TRadioGroup
     Left = 481
-    Top = 256
+    Top = 221
     Width = 222
     Height = 155
     Margins.Left = 4
@@ -334,12 +313,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = False
-    TabOrder = 19
+    TabOrder = 17
     TabStop = True
   end
   object SchriftParams: TRadioGroup
     Left = 278
-    Top = 390
+    Top = 355
     Width = 188
     Height = 214
     Margins.Left = 4
@@ -361,12 +340,12 @@ object Einstellungen_Form: TEinstellungen_Form
       '600 dpi'
       '720 dpi')
     ParentFont = False
-    TabOrder = 18
+    TabOrder = 16
     TabStop = True
   end
   object PDFLevel: TRadioGroup
     Left = 278
-    Top = 256
+    Top = 221
     Width = 188
     Height = 126
     Margins.Left = 4
@@ -386,12 +365,12 @@ object Einstellungen_Form: TEinstellungen_Form
       'Acrobat 7 (PDF 1.6)'
       'Acrobat 8 (PDF 1.7)')
     ParentFont = False
-    TabOrder = 17
+    TabOrder = 15
     TabStop = True
   end
   object OKBitBtn1: TBitBtn
     Left = 278
-    Top = 675
+    Top = 650
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -506,12 +485,12 @@ object Einstellungen_Form: TEinstellungen_Form
       0000000000000000000000000000000000000000000000000000}
     ModalResult = 1
     ParentFont = False
-    TabOrder = 35
+    TabOrder = 33
     OnClick = OKBitBtn1Click
   end
   object AuswahlRG: TRadioGroup
     Left = 14
-    Top = 256
+    Top = 220
     Width = 249
     Height = 405
     Margins.Left = 4
@@ -543,13 +522,13 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = False
-    TabOrder = 16
+    TabOrder = 14
     TabStop = True
     OnClick = AuswahlRGClick
   end
   object AusgabeRG: TGroupBox
     Left = 481
-    Top = 425
+    Top = 384
     Width = 222
     Height = 70
     Margins.Left = 4
@@ -563,7 +542,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Font.Name = 'Segoe UI'
     Font.Style = []
     ParentFont = False
-    TabOrder = 20
+    TabOrder = 18
     object Label4: TLabel
       Left = 8
       Top = 30
@@ -624,10 +603,12 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object AnzeigenCB: TCheckBox
     Left = 720
-    Top = 516
+    Top = 486
     Width = 220
     Height = 26
-    Hint = 'Zeigt die erstelle(n) PDF-Datei(en) im PDF-Anzeiger an'
+    Hint = 
+      'Zeigt die erstelle(n) PDF-Datei(en) im integrierten PDF-Anzeiger' +
+      ' an'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -643,51 +624,11 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentShowHint = False
     ShowHint = True
     State = cbChecked
-    TabOrder = 26
-  end
-  object Edit3: TEdit
-    Left = 278
-    Top = 215
-    Width = 622
-    Height = 28
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
-    Font.Charset = ANSI_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -15
-    Font.Name = 'Segoe UI'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 14
-    OnExit = Edit3Exit
-  end
-  object Button3: TButton
-    Left = 911
-    Top = 215
-    Width = 31
-    Height = 28
-    Hint = 'Pfad zum PDF-Anzeiger'
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
-    Caption = '>>'
-    Font.Charset = ANSI_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -15
-    Font.Name = 'Segoe UI'
-    Font.Style = []
-    ParentFont = False
-    ParentShowHint = False
-    ShowHint = True
-    TabOrder = 15
-    OnClick = Button3Click
+    TabOrder = 24
   end
   object EncryptBt: TBitBtn
     Left = 278
-    Top = 618
+    Top = 585
     Width = 188
     Height = 43
     Hint = 'PDF-Dateien verschl'#252'sseln mit 128-Bit RC4/AES oder 256-Bit AES'
@@ -708,12 +649,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 31
+    TabOrder = 29
     OnClick = EncryptBtClick
   end
   object AutoRP: TRadioGroup
     Left = 720
-    Top = 256
+    Top = 221
     Width = 220
     Height = 105
     Hint = 
@@ -739,13 +680,13 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 21
+    TabOrder = 19
     WordWrap = True
     OnClick = AutoRPClick
   end
   object PDFMark: TBitBtn
     Left = 14
-    Top = 675
+    Top = 650
     Width = 249
     Height = 44
     Hint = 
@@ -768,12 +709,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 34
+    TabOrder = 32
     OnClick = PDFMarkClick
   end
   object CancelBitBtn1: TBitBtn
     Left = 459
-    Top = 675
+    Top = 650
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -888,12 +829,12 @@ object Einstellungen_Form: TEinstellungen_Form
       0000000000000000000000000000000000000000000000000000}
     ModalResult = 2
     ParentFont = False
-    TabOrder = 36
+    TabOrder = 34
     OnClick = CancelBitBtn1Click
   end
   object SeitenBt: TBitBtn
     Left = 481
-    Top = 510
+    Top = 470
     Width = 222
     Height = 43
     Hint = 
@@ -916,12 +857,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 39
+    TabOrder = 37
     OnClick = SeitenBtClick
   end
   object PDFA: TRadioGroup
     Left = 720
-    Top = 395
+    Top = 364
     Width = 102
     Height = 114
     Margins.Left = 4
@@ -940,12 +881,12 @@ object Einstellungen_Form: TEinstellungen_Form
       'PDF/A-2b'
       'PDF/A-3b')
     ParentFont = False
-    TabOrder = 23
+    TabOrder = 21
     TabStop = True
   end
   object PDFA_CB: TCheckBox
     Left = 720
-    Top = 370
+    Top = 334
     Width = 74
     Height = 21
     Hint = 'PDF/A-1 bis PDF/A-3 ist ein Dateiformat zur Langzeitarchivierung'
@@ -956,12 +897,12 @@ object Einstellungen_Form: TEinstellungen_Form
     Caption = 'PDF/A'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 22
+    TabOrder = 20
     OnClick = PDFA_CBClick
   end
   object Info: TButton
     Left = 871
-    Top = 675
+    Top = 650
     Width = 69
     Height = 44
     Hint = 'Hilfe zu den Einstellungen'
@@ -977,12 +918,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentBiDiMode = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 38
+    TabOrder = 36
     OnClick = InfoClick
   end
   object FastCB: TCheckBox
     Left = 720
-    Top = 576
+    Top = 546
     Width = 220
     Height = 26
     Hint = 'PDF-Datei wird optimiert f'#252'r schnelle Webanzeige'
@@ -999,11 +940,11 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 28
+    TabOrder = 26
   end
   object UeberwachungBtn: TBitBtn
     Left = 637
-    Top = 675
+    Top = 650
     Width = 220
     Height = 44
     Hint = #220'berwachungseinstellungen'
@@ -1022,7 +963,7 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 37
+    TabOrder = 35
     OnClick = UeberwachungBtnClick
   end
   object Edit4: TEdit
@@ -1105,7 +1046,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDF_Shrink: TCheckBox
     Left = 720
-    Top = 606
+    Top = 576
     Width = 220
     Height = 26
     Hint = 
@@ -1124,7 +1065,7 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 29
+    TabOrder = 27
     OnClick = PDF_ShrinkClick
   end
   object Edit6: TEdit
@@ -1167,9 +1108,9 @@ object Einstellungen_Form: TEinstellungen_Form
     OnClick = Button5Click
   end
   object Zusatz: TBitBtn
-    Left = 582
-    Top = 618
-    Width = 121
+    Left = 573
+    Top = 585
+    Width = 130
     Height = 43
     Hint = 
       'Entfernen von Zeichenketten aus den ermittelten Dateinamen beim ' +
@@ -1181,12 +1122,12 @@ object Einstellungen_Form: TEinstellungen_Form
     Caption = 'Zeichenketten'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 33
+    TabOrder = 31
     OnClick = ZusatzClick
   end
   object ZusatzAnAus: TCheckBox
-    Left = 506
-    Top = 629
+    Left = 490
+    Top = 596
     Width = 72
     Height = 21
     Hint = 'Entfernung der Zeichenketten ein-/ausschalten'
@@ -1199,12 +1140,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentShowHint = False
     ShowHint = True
     State = cbChecked
-    TabOrder = 32
+    TabOrder = 30
     OnClick = ZusatzAnAusClick
   end
   object SystemklangCB: TCheckBox
     Left = 720
-    Top = 546
+    Top = 516
     Width = 220
     Height = 26
     Hint = 'Ein Systemklang wird nach der Erstellung abgespielt'
@@ -1221,11 +1162,11 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 27
+    TabOrder = 25
   end
   object Dateianlage: TBitBtn
     Left = 481
-    Top = 561
+    Top = 525
     Width = 222
     Height = 43
     Hint = 
@@ -1238,12 +1179,12 @@ object Einstellungen_Form: TEinstellungen_Form
     Caption = 'Datei vorne/hinten anf'#252'gen'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 40
+    TabOrder = 38
     OnClick = DateianlageClick
   end
   object PDFX: TCheckBox
     Left = 830
-    Top = 369
+    Top = 333
     Width = 80
     Height = 23
     Hint = 'PDF/X-3 ist f'#252'r den Austausch digitaler Druckvorlagen'
@@ -1254,7 +1195,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Caption = 'PDF/X-3'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 24
+    TabOrder = 22
     OnClick = PDFXClick
   end
   object Edit7: TEdit
@@ -1298,7 +1239,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object HeightSpin: TSpinEdit
     Left = 871
-    Top = 432
+    Top = 399
     Width = 47
     Height = 31
     Hint = 
@@ -1314,12 +1255,12 @@ object Einstellungen_Form: TEinstellungen_Form
     MinValue = 0
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 41
+    TabOrder = 39
     Value = 80
   end
   object SoundSpin: TSpinEdit
     Left = 871
-    Top = 471
+    Top = 438
     Width = 69
     Height = 31
     Hint = 
@@ -1335,12 +1276,12 @@ object Einstellungen_Form: TEinstellungen_Form
     MinValue = 0
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 43
+    TabOrder = 41
     Value = 40000
   end
   object PDF_Shrink2: TCheckBox
     Left = 720
-    Top = 636
+    Top = 606
     Width = 190
     Height = 26
     Hint = 'Komprimiert die PDF-Datei beim Erstellen nochmals mittels QPDF'
@@ -1357,7 +1298,7 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentFont = False
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 30
+    TabOrder = 28
     OnClick = PDF_Shrink2Click
   end
   object Edit8: TEdit
@@ -1401,7 +1342,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object FontCB: TCheckBox
     Left = 922
-    Top = 437
+    Top = 404
     Width = 18
     Height = 21
     Hint = 
@@ -1416,12 +1357,12 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentShowHint = False
     ShowHint = True
     State = cbChecked
-    TabOrder = 42
+    TabOrder = 40
     OnClick = FontCBClick
   end
   object PDFX4: TCheckBox
     Left = 830
-    Top = 395
+    Top = 359
     Width = 95
     Height = 23
     Hint = 
@@ -1434,12 +1375,12 @@ object Einstellungen_Form: TEinstellungen_Form
     Caption = 'PDF/X-4a'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 25
+    TabOrder = 23
     OnClick = PDFX4Click
   end
   object Shrink2CB: TCheckBox
-    Left = 907
-    Top = 641
+    Left = 910
+    Top = 610
     Width = 18
     Height = 21
     Hint = 'Nur komprimierte Datei erzeugen (ohne K_ am Anfang)'
@@ -1452,7 +1393,7 @@ object Einstellungen_Form: TEinstellungen_Form
     ParentShowHint = False
     ShowHint = True
     State = cbChecked
-    TabOrder = 44
+    TabOrder = 42
   end
   object LMDOpenDialog1: TLMDOpenDialog
     Filter = 

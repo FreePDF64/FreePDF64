@@ -32,9 +32,6 @@ type
     SpinEdit1: TSpinEdit;
     SpinEdit2: TSpinEdit;
     AnzeigenCB: TCheckBox;
-    Edit3: TEdit;
-    Button3: TButton;
-    PDFAnzeiger: TLabel;
     EncryptBt: TBitBtn;
     AutoRP: TRadioGroup;
     PDFMark: TBitBtn;
@@ -81,7 +78,6 @@ type
     procedure Button2Click(Sender: TObject);
     procedure OKBitBtn1Click(Sender: TObject);
     procedure AuswahlRGClick(Sender: TObject);
-    procedure Button3Click(Sender: TObject);
     procedure EncryptBtClick(Sender: TObject);
     procedure AutoRPClick(Sender: TObject);
     procedure PDFMarkClick(Sender: TObject);
@@ -112,8 +108,6 @@ type
     procedure Button7Click(Sender: TObject);
     procedure FontCBClick(Sender: TObject);
     procedure PDFX4Click(Sender: TObject);
-    procedure Edit3Exit(Sender: TObject);
-    procedure PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure FormCloseQuery(Sender: TObject; var CanClose: Boolean);
     private
       { Private-Deklarationen }
@@ -581,15 +575,6 @@ begin
     Edit2.Text := LMDOpenDialog1.Filename;
 end;
 
-// Pfad zur PDF-Readerauswahl
-procedure TEinstellungen_Form.Button3Click(Sender: TObject);
-begin
-  LMDOpenDialog1.InitialDir := ExtractFilePath(Edit3.Text);
-  if LMDOpenDialog1.Execute then
-    PDFReader := LMDOpenDialog1.Filename;
-  Edit3.Text := PDFReader;
-end;
-
 procedure TEinstellungen_Form.CancelBitBtn1Click(Sender: TObject);
 var
   IniDat: TIniFile;
@@ -610,7 +595,6 @@ begin
       Edit2.Text := ReadString('Files', 'Editor', Edit2.Text);
       Edit7.Text := ReadString('Files', 'ImageMagick', Edit7.Text);
       Edit8.Text := ReadString('Files', 'ExifTool', Edit8.Text);
-      Edit3.Text := ReadString('Files', 'PDF-Reader', PDFReader);
       PDFLevel.ItemIndex := ReadInteger('Compatibility', 'Level',
         PDFLevel.ItemIndex);
       DistParam.ItemIndex := ReadInteger('Distiller', 'Parameter',
@@ -672,13 +656,6 @@ begin
   // Form soll mittig angezeigt werden
   Dateianlage_Form.Position := poMainFormCenter;
   Dateianlage_Form.ShowModal;
-end;
-
-procedure TEinstellungen_Form.Edit3Exit(Sender: TObject);
-begin
-  if Einstellungen_Form.Edit3.Text = '' then
-    Einstellungen_Form.Edit3.Text := ExtractFilePath(Application.ExeName) + 'SumatraPDF\SumatraPDF-3.6.1-64.exe';
-  PDFReader := Einstellungen_Form.Edit3.Text;
 end;
 
 procedure TEinstellungen_Form.EncryptBtClick(Sender: TObject);
@@ -985,7 +962,6 @@ begin
   else
     HinweisAutoFormat := False;
 
-  Edit3.Text := PDFReader;
   AbbrechenBtn := False;
 
   s := 'Überwachung';
@@ -999,7 +975,6 @@ begin
     UeberwachungBtn.Caption := s + ' ist AUS';
     UeberwachungBtn.ImageIndex := 58;
   end;
-  PDFAnzeiger.Cursor := crHandPoint;
   ImageMagick.Cursor := crHandPoint;
   ExifTool.Cursor := crHandPoint;
   Label1.Cursor := crHandPoint;
@@ -1007,9 +982,6 @@ begin
   Label3.Cursor := crHandPoint;
   Label6.Cursor := crHandPoint;
   Label7.Cursor := crHandPoint;
-
-  // Hinweistext auf PDF-Anzeiger-Button
-  PDFAnzeiger.Hint := 'Homepage von SumatraPDF aufrufen';
 
   if ZusatzAnAus.Checked = False then
     Zusatz.Enabled := False
@@ -1052,12 +1024,6 @@ end;
 procedure TEinstellungen_Form.Label7Click(Sender: TObject);
 begin
   ShellExecute(Application.Handle, 'open', PChar('https://www.xpdfreader.com/index.html'), NIL, NIL, SW_NORMAL);
-end;
-
-procedure TEinstellungen_Form.PDFAnzeigerMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X,
-  Y: Integer);
-begin
-  ShellExecute(Application.Handle, 'open', PChar('https://www.sumatrapdfreader.org/'), NIL, NIL, SW_NORMAL);
 end;
 
 procedure TEinstellungen_Form.ImageMagickClick(Sender: TObject);
@@ -1120,7 +1086,6 @@ begin
       WriteString('Files', 'PDFtk', Edit5.Text);
       WriteString('Files', 'XPDF-Tools', Edit6.Text);
       WriteString('Files', 'Editor', Edit2.Text);
-      WriteString('Files', 'PDF-Reader', Edit3.Text);
       WriteString('Files', 'ImageMagick', Edit7.Text);
       WriteString('Files', 'ExifTool', Edit8.Text);
       WriteInteger('Compatibility', 'Level', PDFLevel.ItemIndex);

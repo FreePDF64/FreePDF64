@@ -665,7 +665,7 @@ var
   // Globale Variablen
   Left, Top, Width, Height: Integer;
   AP4, AP5, AP6, Editor, Ghostscript, ViewJPEG, QPDF, STA1, STA2, Auswahl,
-    PDFReader, ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel, AP3,
+    ImageMagick, ExifTool, GE, Versch3, Versch5, A_S, B_Z, Ziel, AP3,
     MERGEDATEI, Ziel2, MonitoringFile, StartFolder, Text_FormatBtn, PDFA_1,
     PDFX_1, XPDF_Images, XPDF_ToHTML, XPDF_Detach, XPDF_Fonts: String;
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
@@ -1112,6 +1112,7 @@ var
   F: TextFile;
   WZST, WZST2, Zeile: String;
   ProcID: Cardinal;
+  PDFForm: TPDFBrowserForm;
 begin
   FavClose;
 
@@ -1230,24 +1231,20 @@ begin
                 ExtractFileName(AP3)))));
               Closefile(F);
 
-              // Mit einem PDF-Anzeiger anzeigen
+              // Mit der PDFForm anzeigen
               if Einstellungen_Form.AnzeigenCB.Checked then
               begin
-                if PDFReader = '' then
-                  ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-                ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                  PChar('"' + (IncludeTrailingBackslash
-                  (Wasserzeichen_Form.Edit2.Text) +
-                  WZST2 + ExtractFileName(AP3)) + '"'), NIL, SW_SHOWNORMAL);
+                PDFForm := TPDFBrowserForm.Create(Self);
+                PDFForm.PDFFileName := IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3);
+                PDFForm.Show;
+                Application.ProcessMessages;
               end;
             end;
             // Ende von FreePDF64Log.txt
             ProgressBar1.Position := 100;
           end;
           if Einstellungen_Form.SystemklangCB.Checked then
-            PlaySoundFile(ExtractFilePath(Application.ExeName) +
-              'sounds\confirmation.wav');
+            PlaySoundFile(ExtractFilePath(Application.ExeName) + 'sounds\confirmation.wav');
         end;
     end;
     // LMDShellList1.ClearSelection;
@@ -1351,6 +1348,7 @@ var
   PDFDatei, Zieldatei, Anlage, Zeile, Beschreibung: String;
   ProcID: Cardinal;
   F: TextFile;
+  PDFForm: TPDFBrowserForm;
 
   function GetSelectedPDF: string;
   var
@@ -1460,11 +1458,10 @@ begin
   // PDF anzeigen
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
-    if PDFReader = '' then
-      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-      PChar('"' + Zieldatei + '"'), nil, SW_SHOWNORMAL);
+    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm.PDFFileName := Zieldatei;
+    PDFForm.Show;
+    Application.ProcessMessages;
   end;
 end;
 
@@ -1485,6 +1482,7 @@ var
   ProcID: Cardinal;
   F: TextFile;
   j: Integer;
+  PDFForm: TPDFBrowserForm;
 
   function ActiveList: TLMDShellList;
   begin
@@ -1634,11 +1632,10 @@ begin
   // PDF anzeigen
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
-    if PDFReader = '' then
-      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                 PChar('"' + Zieldatei + '"'), nil, SW_SHOWNORMAL);
+    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm.PDFFileName := Zieldatei;
+    PDFForm.Show;
+    Application.ProcessMessages;
   end;
 end;
 
@@ -1855,7 +1852,7 @@ begin
     + #13 + '(128-Bit RC4/AES oder 256-Bit AES), mit Wasserzeichen oder Stempel versehen, uvm.'
     + #13 + #13 +
     'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF/DOCX-Erstellung:'
-    + #13 + '- Drucken aus allen Programm auf den FreePDF64 Postscript-Drucker'
+    + #13 + '- Drucken aus allen Programmen auf den FreePDF64 Postscript-Drucker'
     + #13 + '- Alle benötigten Programme sind schon im Installationspaket enthalten'
     + #13 + '- Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!'
     + #13 + '- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker... Fertig!'
@@ -2141,7 +2138,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '06.10.2026';
+  Datum := '07.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3105,6 +3102,7 @@ var
   PDFDatei, Zeile, Zeile2, EndPDF, Ziel, s: String;
   ProcID: Cardinal;
   F: TextFile;
+  PDFForm: TPDFBrowserForm;
 
   function ActiveList: TLMDShellList;
   begin
@@ -3136,11 +3134,10 @@ var
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       Sleep(1000);
-      if PDFReader = '' then
-        ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                   PChar('"' + FileName + '"'), nil, SW_SHOWNORMAL);
+      PDFForm := TPDFBrowserForm.Create(Self);
+      PDFForm.PDFFileName := FileName;
+      PDFForm.Show;
+      Application.ProcessMessages;
     end;
   end;
 
@@ -3248,6 +3245,7 @@ var
   ProcID: Cardinal;
   F: TextFile;
   Komprimierung: Integer;
+  PDFForm: TPDFBrowserForm;
 
   function ActiveList: TLMDShellList;
   begin
@@ -3279,11 +3277,10 @@ var
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       Sleep(1000);
-      if PDFReader = '' then
-        ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-      ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-                   PChar('"' + FileName + '"'), nil, SW_SHOWNORMAL);
+      PDFForm := TPDFBrowserForm.Create(Self);
+      PDFForm.PDFFileName := Filename;
+      PDFForm.Show;
+      Application.ProcessMessages;
     end;
   end;
 
@@ -3719,9 +3716,6 @@ var
   S: TStringList;
   PDFForm: TPDFBrowserForm;
 begin
-  if PDFReader = '' then
-    ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
   if (LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True then
     Auswahl := LMDShellList1.SelectedItem.PathName
   else if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
@@ -5127,10 +5121,6 @@ begin
     XPDF_Detach := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
     XPDF_Fonts := IncludeTrailingBackslash(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
 
-    // PDF-Anzeiger
-    Einstellungen_Form.Edit3.Text := BasePath + 'SumatraPDF\SumatraPDF-3.6.1-64.exe';
-    PDFReader := Einstellungen_Form.Edit3.Text;
-
     LMDShellFolder1.RootFolder := BasePath + 'Quellverzeichnis';
     LMDShellFolder2.RootFolder := BasePath + 'Zielverzeichnis';
 
@@ -5307,13 +5297,6 @@ begin
         Counter := 0
       else
         Counter := ReadInteger('Start', 'Counter', Counter);
-
-      if ValueExists('Files', 'PDF-Reader') then
-        PDFReader := ReadString('Files', 'PDF-Reader', PDFReader)
-      else
-      begin
-        PDFReader := BasePath + 'SumatraPDF\SumatraPDF-3.6.1-64.exe'
-      end;
 
       Vol1 := Einstellungen_Form.SoundSpin.Value;
       if (Vol1 < 0) or (Vol1 > 65535) then
@@ -7141,7 +7124,7 @@ var
   A1, p, s, AP1, AP1_1, AP1_2, AP1_3, AP1_4, AP1_5, VonSpin, BisSpin, Files,
     files2, NZiel, PZiel, QPDFZiel, QPDF_Zeile, DokuSicherheit, DS1, DS2, DS3,
     DS4, DS5, AX: String;
-  I, j, R, dpi, DP, DP1, Level, PDFALevel: Integer;
+  I, j, R, dpi, DP, DP1, Level, PDFALevel, BaseOffset: Integer;
   Res: Boolean;
   StartUp: TStartupInfo;
   Process: TProcessInformation;
@@ -7149,6 +7132,7 @@ var
   fExitCode: Cardinal;
   F: TextFile;
   NewItem: TListItem;
+  PDFForm: TPDFBrowserForm;
 begin
   Memo1.Clear;
   s := '.pdf';
@@ -7576,17 +7560,18 @@ begin
   if Formatverz.Checked or Formatverz_Date.Checked then
     s := IncludeTrailingBackslash(Ziel) + s;
 
+  // Grundversatz bei 100 % DPI
+  BaseOffset := 20;
+
   // Zusammenfügen-PDF-Datei mit dem PDF-Anzeiger anzeigen
   // Wenn Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   if ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) and // PDF
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
   begin
-    if PDFReader = '' then
-      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader),
-      PChar('"' + IncludeTrailingBackslash(Ziel) + ExtractFileName(s) + '"'),
-      NIL, SW_SHOWNORMAL);
+    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm.PDFFileName := IncludeTrailingBackslash(Ziel) + ExtractFileName(s);
+    PDFForm.Show;
+    Application.ProcessMessages;
   end;
 
   ProgressBar1.Position := 100;
@@ -7794,6 +7779,7 @@ end;
 procedure TFreePDF64_Form.FreePDFHowTo1Click(Sender: TObject);
 var
   s: String;
+  PDFForm: TPDFBrowserForm;
 begin
   s := IncludeTrailingBackslash(ExtractFilePath(Application.ExeName)) +
     'FreePDF64-HowTo.pdf';
@@ -7802,20 +7788,10 @@ begin
       ''' scheint nicht vorhanden zu sein! Bitte FreePDF64 nochmals neu downloaden.')
   else
   begin
-    if PDFReader = '' then
-    begin
-      ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-      Exit;
-    end;
-
-    if not FileExists(PDFReader) then
-    begin
-      ShowMessage('Der hinterlegte PDF-Anzeiger wurde nicht gefunden:' + sLineBreak + PDFReader);
-      Exit;
-    end;
-
-    ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + s + '"'),
-                 nil, SW_SHOWNORMAL);
+    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm.PDFFileName := s;
+    PDFForm.Show;
+    Application.ProcessMessages;
   end;
 end;
 
@@ -7859,6 +7835,7 @@ var
     PZiel, NZiel, QPDFZiel, QPDF_Zeile, z, JV, Endzielname, Datei_Vorne,
     QPDF_ExtractFile, Datei_Hinten, DateiEndung, Buttontext: String;
   F: TextFile;
+  PDFForm: TPDFBrowserForm;
 const
   PDFLevels : array[0..3] of string = ('1.4', '1.5', '1.6', '1.7');
   DPIs:       array[0..5] of string = ('72', '96', '150', '300', '600', '720');
@@ -9307,18 +9284,28 @@ begin
             // Pause von 1 sec. einbauen...
             Sleep(1000);
 
-            if PDFReader = '' then
-              ShowMessage('Bitte hinterlege einen PDF-Anzeiger in den Einstellungen!');
-
+            // Anzeigen in der PDFForm
             if Encrypt_Form.EncryptCombo.ItemIndex = 1 then
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
-            else
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Zielanz + '"'), NIL, SW_SHOWNORMAL);
-          end
-          else
+            begin
+              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm.PDFFileName := Ziel;
+              PDFForm.Show;
+              Application.ProcessMessages;
+            end else
+            begin
+              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm.PDFFileName := Zielanz;
+              PDFForm.Show;
+              Application.ProcessMessages;
+            end;
+          end else
             if Einstellungen_Form.AuswahlRG.ItemIndex in [10, 12, 13] then // BMP/PNG/TIFF
-              ShellExecute(Application.Handle, 'open', PChar(PDFReader), PChar('"' + Ziel + '"'), NIL, SW_SHOWNORMAL)
-            else
+            begin
+              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm.PDFFileName := Ziel;
+              PDFForm.Show;
+              Application.ProcessMessages;
+            end else
               if Einstellungen_Form.AuswahlRG.ItemIndex in [1, 3] then // PS/DOCX/TXT
               begin
                 if Einstellungen_Form.Edit2.Text = '' then

@@ -91,7 +91,7 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>7</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=7.0.1.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=7.0.1;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=7.1.0.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=7.1.0;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
         <Icon_MainIcon>FreePDF64.ico</Icon_MainIcon>
         <BRCC_CodePage>0</BRCC_CodePage>
         <DCC_TSAware>false</DCC_TSAware>
@@ -99,7 +99,7 @@
         <DCC_ImportedDataReferences>false</DCC_ImportedDataReferences>
         <DCC_Inlining>off</DCC_Inlining>
         <DCC_UnitSearchPath>D:\Delphi\WebView4Delphi-main\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
-        <VerInfo_Release>1</VerInfo_Release>
+        <VerInfo_MinorVer>1</VerInfo_MinorVer>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
