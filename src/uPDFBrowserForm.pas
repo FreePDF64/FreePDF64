@@ -9,11 +9,11 @@ interface
 {$I ..\..\WebView4Delphi-main\source\webview2.inc}
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.Dialogs, IniFiles,
-  uWVBrowser, uWVWinControl, uWVWindowParent, uWVTypes, uWVConstants, uWVTypeLibrary,
-  uWVLibFunctions, uWVLoader, uWVInterfaces, uWVCoreWebView2Args,
-  uWVBrowserBase, Menus;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.Dialogs,
+  IniFiles, uWVBrowser, uWVWinControl, uWVWindowParent, uWVTypes,
+  uWVConstants, uWVTypeLibrary, uWVLibFunctions, uWVLoader,
+  uWVInterfaces, uWVCoreWebView2Args, uWVBrowserBase, Menus;
 
 type
   TPDFBrowserForm = class(TForm)
@@ -34,9 +34,12 @@ type
     procedure WMMove(var aMessage: TWMMove); message WM_MOVE;
     procedure WMMoving(var aMessage: TMessage); message WM_MOVING;
 
+    function IsShortCut(var Message: TWMKey): Boolean; override;
+
   private
     FBrowserCreateStarted: Boolean;
     FBrowserCreated: Boolean;
+    FClosing: Boolean;
 
     procedure StartBrowser;
 
@@ -57,6 +60,7 @@ begin
 
   FBrowserCreateStarted := False;
   FBrowserCreated := False;
+  FClosing := False;
 
   IniDat := TIniFile.Create(
     ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
@@ -73,17 +77,26 @@ end;
 
 procedure TPDFBrowserForm.FormShow(Sender: TObject);
 begin
-  // WICHTIG:
-  // Hier NICHT Visible verändern.
-  // Das verursacht in Delphi den Fehler:
-  // "Eigenschaft Visible kann in OnShow oder OnHide nicht verändert werden."
+  // Dateiname inklusive Verzeichnis in der Titelleiste anzeigen
+  Caption := PDFFileName;
+
+  // Formular wird angezeigt -> noch nicht im Schließvorgang.
+  FClosing := False;
 
   StartBrowser;
+
+  // PDF-Fenster aktiv nach vorne holen.
+  BringToFront;
+  SetForegroundWindow(Handle);
 end;
 
 
 procedure TPDFBrowserForm.StartBrowser;
 begin
+  // Formular befindet sich bereits im Schließvorgang.
+  if FClosing then
+    Exit;
+
   // Pro Formular darf CreateBrowser nur einmal gestartet werden.
   if FBrowserCreateStarted then
     Exit;
@@ -96,7 +109,8 @@ begin
 
   if GlobalWebView2Loader.Initialized then
   begin
-    // VOR CreateBrowser setzen.
+    // WICHTIG:
+    // Vor CreateBrowser setzen.
     // Dadurch kann FormShow/TimerPDFTimer nicht nochmals
     // CreateBrowser für dasselbe Formular ausführen.
     FBrowserCreateStarted := True;
@@ -113,6 +127,10 @@ end;
 procedure TPDFBrowserForm.TimerPDFTimer(Sender: TObject);
 begin
   TimerPDF.Enabled := False;
+
+  // Formular wurde inzwischen geschlossen.
+  if FClosing then
+    Exit;
 
   if FBrowserCreateStarted then
     Exit;
@@ -134,52 +152,99 @@ procedure TPDFBrowserForm.WVBrowserPDFAfterCreated(Sender: TObject);
 var
   URL: string;
 begin
+  // Sehr wichtig:
+  // Falls CreateBrowser noch abgeschlossen wurde, nachdem
+  // der Benutzer das PDF-Fenster bereits geschlossen hat,
+  // darf hier nichts mehr mit dem Formular gemacht werden.
+  if FClosing then
+    Exit;
+
   FBrowserCreated := True;
 
   WVWindowParentPDF.UpdateSize;
-
-  // KEIN SetFocus hier.
-  //
-  // Bei mehreren gleichzeitig geöffneten PDF-Formularen wird dadurch
-  // verhindert, dass jedes neu erstellte WebView2-Fenster sofort den
-  // Eingabefokus an sich zieht.
 
   URL := 'file:///' +
     StringReplace(PDFFileName, '\', '/', [rfReplaceAll]);
 
   WVBrowserPDF.Navigate(URL);
+
+  // Das PDF-Fenster soll aktiv sein.
+  BringToFront;
+  SetForegroundWindow(Handle);
+
+  // Tastaturfokus auf das WebView2-Parent-Fenster.
+  if WVWindowParentPDF.HandleAllocated then
+    Winapi.Windows.SetFocus(WVWindowParentPDF.Handle);
 end;
 
 
-procedure TPDFBrowserForm.WVBrowserPDFInitializationError(Sender: TObject;
-  aErrorCode: HRESULT; const aErrorMessage: wvstring);
+function TPDFBrowserForm.IsShortCut(var Message: TWMKey): Boolean;
 begin
-  // CreateBrowser wurde zwar gestartet, aber WebView2 konnte nicht
-  // initialisiert werden. Ein erneuter automatischer CreateBrowser-
-  // Versuch wird hier bewusst nicht ausgelöst.
+  // Solange die PDFForm aktiv ist, dürfen Shortcuts der Hauptform
+  // nicht von der Anwendung verarbeitet werden.
+  //
+  // Die Tastatur wird anschließend von WebView2 verarbeitet.
+  Result := True;
+end;
+
+
+procedure TPDFBrowserForm.WVBrowserPDFInitializationError(
+  Sender: TObject; aErrorCode: HRESULT;
+  const aErrorMessage: wvstring);
+begin
+  // Formular befindet sich bereits im Schließvorgang.
+  if FClosing then
+    Exit;
+
   FBrowserCreated := False;
 
   ShowMessage(aErrorMessage);
 end;
 
 
-procedure TPDFBrowserForm.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TPDFBrowserForm.FormClose(
+  Sender: TObject; var Action: TCloseAction);
 var
   IniDat: TIniFile;
 begin
+  // Ab jetzt dürfen keine weiteren Timer-/AfterCreated-Aktionen
+  // mehr mit diesem Formular arbeiten.
+  FClosing := True;
+
   TimerPDF.Enabled := False;
 
   IniDat := TIniFile.Create(
     ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
   try
-    IniDat.WriteInteger('Position', 'PDFBrowserForm_Left', Left);
-    IniDat.WriteInteger('Position', 'PDFBrowserForm_Top', Top);
-    IniDat.WriteInteger('Position', 'PDFBrowserForm_Width', Width);
-    IniDat.WriteInteger('Position', 'PDFBrowserForm_Height', Height);
+    IniDat.WriteInteger(
+      'Position',
+      'PDFBrowserForm_Left',
+      Left);
+
+    IniDat.WriteInteger(
+      'Position',
+      'PDFBrowserForm_Top',
+      Top);
+
+    IniDat.WriteInteger(
+      'Position',
+      'PDFBrowserForm_Width',
+      Width);
+
+    IniDat.WriteInteger(
+      'Position',
+      'PDFBrowserForm_Height',
+      Height);
   finally
     IniDat.Free;
   end;
 
+  // Die Form selbst wird freigegeben.
+  //
+  // Dabei werden die darin enthaltenen VCL-Komponenten
+  // einschließlich WVBrowserPDF und WVWindowParentPDF
+  // über den normalen Delphi-Komponenten-Lebenszyklus
+  // ebenfalls freigegeben.
   Action := caFree;
 end;
 
@@ -188,7 +253,7 @@ procedure TPDFBrowserForm.WMMove(var aMessage: TWMMove);
 begin
   inherited;
 
-  if WVBrowserPDF <> nil then
+  if (WVBrowserPDF <> nil) and not FClosing then
     WVBrowserPDF.NotifyParentWindowPositionChanged;
 end;
 
@@ -197,15 +262,17 @@ procedure TPDFBrowserForm.WMMoving(var aMessage: TMessage);
 begin
   inherited;
 
-  if WVBrowserPDF <> nil then
+  if (WVBrowserPDF <> nil) and not FClosing then
     WVBrowserPDF.NotifyParentWindowPositionChanged;
 end;
 
 
 initialization
   GlobalWebView2Loader := TWVLoader.Create(nil);
+
   GlobalWebView2Loader.UserDataFolder :=
     ExtractFileDir(Application.ExeName) + '\CustomCache';
+
   GlobalWebView2Loader.StartWebView2;
 
 end.

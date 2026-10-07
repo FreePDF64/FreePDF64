@@ -1,8 +1,8 @@
 ﻿[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjRfVW5pdC5wYXM=]
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 CursorX=1
-CursorY=1827
-TopLine=1
+CursorY=7790
+TopLine=7755
 LeftCol=1
 Elisions=
 Bookmarks={0,3768,2}{1,7570,5}
@@ -77,4 +77,14 @@ LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=
+
+[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFx1UERGQnJvd3NlckZvcm0ucGFz]
+Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+CursorX=1
+CursorY=236
+TopLine=76
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
