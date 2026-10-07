@@ -141,7 +141,16 @@ type
       BrowseHook: HHOOK;
       FLastPersistent: string;
       FWaitForm: TForm;
+      FSearchResults: TStringList;
+      FSearchResultsLower: TStringList;
       SearchStopwatch: TStopwatch;
+      procedure ListBox1Data(Control: TWinControl; Index: Integer; var Data: string);
+      function ListBox1DataFind(Control: TWinControl; FindString: string): Integer;
+      procedure DeleteSelectedResults;
+      procedure ShowSearchWait;
+      procedure HideSearchWait;
+      procedure PumpSearchMessages;
+      procedure RebuildSearchLowerCache;
       function IsShortCut(var Message: TWMKey): Boolean; override;
     end;
 
@@ -262,6 +271,14 @@ begin
   ListBox1.ItemHeight := Round(18 * Scale);
   // ---------------------------------------------------------------------------
 
+  FSearchResults := TStringList.Create;
+  FSearchResultsLower := TStringList.Create;
+
+  // Virtuelle Ergebnisliste: Die Treffer werden nicht ein zweites Mal
+  // im Windows-ListBox-Control gespeichert.
+  ListBox1.Style := lbVirtualOwnerDraw;
+  ListBox1.OnData := ListBox1Data;
+  ListBox1.OnDataFind := ListBox1DataFind;
   ListBox1.OnDrawItem := ListBox1DrawItem;
 
     // Suche_Form zusätzlich in der Taskbar anzeigen lassen
@@ -335,12 +352,9 @@ begin
   StopSuche             := True;
 
   // Suchergebnisse beim Schließen freigeben, Form selbst bleibt erhalten
-  ListBox1.Items.BeginUpdate;
-  try
-    ListBox1.Items.Clear;
-  finally
-    ListBox1.Items.EndUpdate;
-  end;
+  FSearchResults.Clear;
+  FSearchResultsLower.Clear;
+  ListBox1.Count := 0;
 
   // Horizontaler Scrollbalken wird wieder entfernt
   flbHorzScrollWidth := 0;
@@ -547,7 +561,7 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
 
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if Pos('[', s) <> 0 then
@@ -558,7 +572,7 @@ begin
 
       DeleteFiles(s)
     end;
-  ListBox1.DeleteSelected;
+  DeleteSelectedResults;
   if ListBox1.Count > 0 then
     ListBox1.Selected[0] := True;
 end;
@@ -596,7 +610,7 @@ begin
   begin
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if (Length(s) > 0) and (s[1] = '[') then
         Delete(s, 1, 1);
@@ -754,7 +768,7 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if Pos('[', s) <> 0 then
         Delete(s, 1, 1);
@@ -830,11 +844,88 @@ begin
   end;
 end;
 
+procedure TSuche_Form.RebuildSearchLowerCache;
+var
+  I: Integer;
+begin
+  FSearchResultsLower.BeginUpdate;
+  try
+    FSearchResultsLower.Clear;
+    FSearchResultsLower.Capacity := FSearchResults.Count;
+    for I := 0 to FSearchResults.Count - 1 do
+      FSearchResultsLower.Add(LowerCase(FSearchResults[I]));
+  finally
+    FSearchResultsLower.EndUpdate;
+  end;
+end;
+
+procedure TSuche_Form.ShowSearchWait;
+var
+  WaitLabel: TLabel;
+begin
+  // Das Wartefenster wird nur einmal erzeugt und danach wiederverwendet.
+  if not Assigned(FWaitForm) then
+  begin
+    FWaitForm := TForm.Create(Self);
+    FWaitForm.BorderStyle := bsToolWindow;
+    FWaitForm.BorderIcons := [];
+    FWaitForm.FormStyle := fsStayOnTop;
+    FWaitForm.Position := poScreenCenter;
+    FWaitForm.Width := 480;
+    FWaitForm.Height := 80;
+    FWaitForm.Caption := 'Suchergebnis wird vorbereitet...';
+
+    WaitLabel := TLabel.Create(FWaitForm);
+    WaitLabel.Parent := FWaitForm;
+    WaitLabel.Align := alClient;
+    WaitLabel.Alignment := taCenter;
+    WaitLabel.Layout := tlCenter;
+    WaitLabel.Caption := 'Bitte warten...';
+  end;
+
+  FWaitForm.Show;
+  FWaitForm.BringToFront;
+  FWaitForm.Update;
+  FWaitForm.Repaint;
+
+  // Nur einmal verarbeiten, damit das Fenster sichtbar wird.
+  // Keine ProcessMessages-Schleife während der eigentlichen Suche.
+  Application.ProcessMessages;
+end;
+
+procedure TSuche_Form.HideSearchWait;
+begin
+  if Assigned(FWaitForm) then
+    FWaitForm.Hide;
+end;
+
+procedure TSuche_Form.PumpSearchMessages;
+begin
+  // Während langer Suchvorgänge muss die VCL ihre Paint-/Fenster-
+  // Nachrichten weiterhin verarbeiten. Die Abfrage wird nur periodisch
+  // aufgerufen, damit die Suche selbst nicht durch ProcessMessages
+  // ausgebremst wird.
+  Application.ProcessMessages;
+end;
+
 procedure TSuche_Form.AnzeigenPanelClick(Sender: TObject);
 begin
-  LockWindowUpdate(ListBox1.Handle);
-  MoveSelectedItemsToTop(ListBox1);
-  LockWindowUpdate(0);
+  // Wie in der Originalversion: bei der Verarbeitung der
+  // Suchergebnisse den Hinweis "Bitte warten..." anzeigen.
+  try
+    ShowSearchWait;
+
+    SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
+    try
+      MoveSelectedItemsToTop(ListBox1);
+    finally
+      SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
+      ListBox1.Invalidate;
+      ListBox1.Update;
+    end;
+  finally
+    HideSearchWait;
+  end;
 end;
 
 procedure TSuche_Form.Editor1Click(Sender: TObject);
@@ -845,27 +936,30 @@ end;
 
 procedure TSuche_Form.MoveSelectedItemsToTop(ListBox: TListBox);
 var
-  i: Integer;
   SelectedItems: TStringList;
+  I: Integer;
 begin
   SelectedItems := TStringList.Create;
   try
-    // Sammeln der ausgewählten Elemente
-    for i := ListBox.Items.Count - 1 downto 0 do
-    begin
-      if ListBox.Selected[i] then
-      begin
-        SelectedItems.AddObject(ListBox.Items[i], ListBox.Items.Objects[i]);
-        ListBox.Items.Delete(i);
-      end;
-    end;
+    for I := 0 to ListBox.Count - 1 do
+      if ListBox.Selected[I] then
+        SelectedItems.Add(FSearchResults[I]);
 
-    // Einfügen der ausgewählten Elemente an den Anfang
-    for i := 0 to SelectedItems.Count - 1 do
-    begin
-      ListBox.Items.InsertObject(i, SelectedItems[i], SelectedItems.Objects[i]);
-      ListBox.Selected[i] := True;
-    end;
+    if SelectedItems.Count = 0 then
+      Exit;
+
+    for I := ListBox.Count - 1 downto 0 do
+      if ListBox.Selected[I] then
+        FSearchResults.Delete(I);
+
+    for I := SelectedItems.Count - 1 downto 0 do
+      FSearchResults.Insert(0, SelectedItems[I]);
+
+    ListBox.Count := FSearchResults.Count;
+    ListBox.ClearSelection;
+    for I := 0 to SelectedItems.Count - 1 do
+      ListBox.Selected[I] := True;
+    ListBox.Invalidate;
   finally
     SelectedItems.Free;
   end;
@@ -877,56 +971,70 @@ var
   I: Integer;
   SearchText: string;
   FirstMatch: Integer;
+  ShowWait: Boolean;
+  LastMessageTick: Cardinal;
 begin
   SucheEdit.Color     := clWhite;
   AnzeigenPanel.Color := clWhite;
 
-  SearchText := Trim(SucheEdit.Text);
+  SearchText := LowerCase(Trim(SucheEdit.Text));
   FirstMatch := -1;
 
-  // Zeichnen während der Suche abschalten -> kein Flackern
-  SendMessage(ListBox1.Handle, WM_SETREDRAW, WPARAM(False), 0);
-  ListBox1.Items.BeginUpdate;
-  try
-    // Vorherige Markierungen entfernen
-    ListBox1.ClearSelection;
-
-    // Nur suchen, wenn tatsächlich ein Suchtext vorhanden ist
-    if SearchText <> '' then
-    begin
-      SearchText := LowerCase(SearchText);
-
-      for I := 0 to ListBox1.Items.Count - 1 do
-      begin
-        // Im kompletten angezeigten ListBox-Eintrag suchen
-        if Pos(SearchText, LowerCase(ListBox1.Items[I])) > 0 then
-        begin
-          ListBox1.Selected[I] := True;
-
-          // Position des ersten Treffers merken
-          if FirstMatch = -1 then
-            FirstMatch := I;
-        end;
-      end;
-    end;
-
-    // Nur einmal zum ersten Treffer springen
-    if FirstMatch >= 0 then
-      ListBox1.TopIndex := FirstMatch;
-
-  finally
-    ListBox1.Items.EndUpdate;
-
-    // Zeichnen wieder einschalten
-    SendMessage(ListBox1.Handle, WM_SETREDRAW, WPARAM(True), 0);
-
-    // ListBox sofort neu zeichnen
-    ListBox1.Invalidate;
-    ListBox1.Update;
+  if FSearchResults.Count = 0 then
+  begin
+    StatusBar1.Panels[1].Text := 'Markiert: 0';
+    Exit;
   end;
 
-  // Anzahl der gefundenen/markierten Einträge anzeigen
-  StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
+  ShowWait := (SearchText <> '') and (FSearchResults.Count > 1000);
+
+  if ShowWait then
+    ShowSearchWait;
+
+  LastMessageTick := GetTickCount;
+
+  try
+    // Die Windows-ListBox bekommt während der gesamten Auswahländerung
+    // keine Neuzeichnungen. LB_SETSEL ist deutlich schneller als
+    // wiederholte Zugriffe über ListBox1.Selected[].
+    SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
+    try
+      SendMessage(ListBox1.Handle, LB_SETSEL, 0, LPARAM(-1));
+
+      if SearchText <> '' then
+        for I := 0 to FSearchResultsLower.Count - 1 do
+        begin
+          if Pos(SearchText, FSearchResultsLower[I]) > 0 then
+          begin
+            SendMessage(ListBox1.Handle, LB_SETSEL, 1, LPARAM(I));
+            if FirstMatch = -1 then
+              FirstMatch := I;
+          end;
+
+          // Alle ca. 50 ms die Nachrichtenwarteschlange bearbeiten.
+          // Damit bleibt das Suchfenster vollständig zeichnungsfähig
+          // und Windows meldet nicht "Keine Rückmeldung".
+          if (GetTickCount - LastMessageTick >= 50) then
+          begin
+            PumpSearchMessages;
+            LastMessageTick := GetTickCount;
+          end;
+        end;
+
+      if FirstMatch >= 0 then
+        ListBox1.TopIndex := FirstMatch;
+    finally
+      SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
+      ListBox1.Invalidate;
+      ListBox1.Update;
+    end;
+  finally
+    if ShowWait then
+      HideSearchWait;
+  end;
+
+  StatusBar1.Panels[1].Text :=
+    'Markiert: ' + IntToStr(ListBox1.SelCount);
 end;
 
 procedure TSuche_Form.FormKeyPress(Sender: TObject; var Key: Char);
@@ -1015,7 +1123,9 @@ begin
   DTP.Date := Date;
   DTP.Time := Time;
 
-  ListBox1.Clear;
+  FSearchResults.Clear;
+  FSearchResultsLower.Clear;
+  ListBox1.Count := 0;
   FilesFoldersCB.ItemIndex := 1; // Zeige Dateien
   FileSizeCombo.ItemIndex  := 1;
   FileSize.Value           := 1;
@@ -1206,7 +1316,7 @@ begin
   begin
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if Pos('[', s) <> 0 then
         Delete(s, 1, 1);
@@ -1266,7 +1376,7 @@ begin
     begin
       if ListBox1.Selected[i] then
       begin
-        s := ListBox1.Items.Strings[i];
+        s := FSearchResults[i];
         // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
         if Pos('[', s) <> 0 then
           Delete(s, 1, 1);
@@ -1342,7 +1452,7 @@ begin
 
   for i := 0 to ListBox1.Count - 1 do
   begin
-    tmp := ListBox1.Items.Strings[i];
+    tmp := FSearchResults[i];
     WriteLn(f, tmp);
   end;
 
@@ -1386,7 +1496,7 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if Pos('[', s) <> 0 then
         Delete(s, 1, 1);
@@ -1526,17 +1636,17 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      if FileExists(ListBox1.Items.Strings[i]) then
+      if FileExists(FSearchResults[i]) then
       begin
-        d := GetFileLastWriteTime(ListBox1.Items.Strings[i]);
+        d := GetFileLastWriteTime(FSearchResults[i]);
 
         // Größenausgabe formatieren
-        s := FloatToStrF(GetFileSize(ListBox1.Items.Strings[i]),
+        s := FloatToStrF(GetFileSize(FSearchResults[i]),
                          ffNumber, 15, 0) + ' Bytes';
 
         if HiddenCheckBox.State = cbGrayed then
         begin
-          fa := GetFileAttributes(ListBox1.Items.Strings[i]);
+          fa := GetFileAttributes(FSearchResults[i]);
 
           at := '';
           if ReadOnly  in fa then at := at + 'R';
@@ -1560,15 +1670,15 @@ begin
             FormatDateTime('dd.mm.yyyy hh:mm:ss', d) +
             ', ' + s;
       end
-      else if DirectoryExists(RemoveFirstAndLastChar(ListBox1.Items.Strings[i])) then
+      else if DirectoryExists(RemoveFirstAndLastChar(FSearchResults[i])) then
       begin
         d := GetFileLastWriteTime(
-               RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+               RemoveFirstAndLastChar(FSearchResults[i]));
 
         if HiddenCheckBox.State = cbGrayed then
         begin
           fa := GetFileAttributes(
-                  RemoveFirstAndLastChar(ListBox1.Items.Strings[i]));
+                  RemoveFirstAndLastChar(FSearchResults[i]));
 
           at := '';
           if ReadOnly  in fa then at := at + 'R';
@@ -1616,7 +1726,7 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items.Strings[i];
+      s := FSearchResults[i];
       // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
       if Pos('[', s) <> 0 then
         Delete(s, 1, 1);
@@ -1630,7 +1740,7 @@ begin
           MoveFileEx(s, IncludeTrailingBackslash(s1) + ExtractFileName(s), True)
         else
           MoveFileEx(s, IncludeTrailingBackslash(s1) + ExtractFileName(s), False);
-        ListBox1.DeleteSelected;
+        DeleteSelectedResults;
         ListBox1.ClearSelection;
         if ListBox1.Count > 0 then
           ListBox1.Selected[0] := True;
@@ -1643,7 +1753,7 @@ begin
       StatusBar1.Panels[0].Text := 'Bewegenvorgang durchgeführt...';
     end;
 
-  ListBox1.DeleteSelected;
+  DeleteSelectedResults;
   ListBox1.ClearSelection;
   if ListBox1.Count > 0 then
     ListBox1.Selected[0] := True;
@@ -2022,6 +2132,9 @@ var
     Inc(FirstResultsShown);
 
     List.Add(S);
+
+    if Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+      Suche_Form.ListBox1.Count := List.Count;
 
     Application.ProcessMessages;
 
@@ -2491,6 +2604,9 @@ var
     Inc(FirstResultsShown);
 
     List.Add(S);
+
+    if Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+      Suche_Form.ListBox1.Count := List.Count;
 
     Application.ProcessMessages;
 
@@ -3016,6 +3132,9 @@ var
 
     List.Add(S);
 
+    if Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+      Suche_Form.ListBox1.Count := List.Count;
+
     Application.ProcessMessages;
 
     if StopSuche then
@@ -3463,7 +3582,9 @@ begin
   StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
 
   Zaehler := 0;
-  ListBox1.Clear;
+  FSearchResults.Clear;
+  FSearchResultsLower.Clear;
+  ListBox1.Count := 0;
   FreePDF64_Form.Memo1.Clear;
   StatusBar1.Panels[1].Text := '';
 
@@ -3626,7 +3747,7 @@ begin
         GetFilesInDirectory_Age(
           Path,
           Mask,
-          ListBox1.Items,
+          FSearchResults,
           MinMaxFileSize,
           DirCheckbox.Checked,
           True
@@ -3642,7 +3763,7 @@ begin
         GetFilesInDirectory_DateSize(
           Path,
           Mask,
-          ListBox1.Items,
+          FSearchResults,
           MinMaxFileSize,
           DirCheckbox.Checked,
           True
@@ -3657,7 +3778,7 @@ begin
         GetFilesInDirectory(
           Path,
           Mask,
-          ListBox1.Items,
+          FSearchResults,
           DirCheckbox.Checked,
           True
         );
@@ -3667,6 +3788,11 @@ begin
       // -------------------------------------------------------
       // Suche beendet
       // -------------------------------------------------------
+      // Die Kleinbuchstaben-Versionen werden einmalig erzeugt.
+      // Dadurch muss SucheEditChange nicht bei jedem Tastendruck
+      // für jeden Treffer erneut LowerCase() ausführen.
+      RebuildSearchLowerCache;
+      ListBox1.Count := FSearchResults.Count;
       StartSearchButton.Enabled := True;
       StopSearchButton.Caption  := 'Abbrechen';
 
@@ -3927,7 +4053,7 @@ begin
 
   if Button = MBRight then
   begin
-    s := ListBox1.Items[ListBox1.ItemIndex];
+    s := FSearchResults[ListBox1.ItemIndex];
     // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
     if Pos('[', s) <> 0 then
       Delete(s, 1, 1);
@@ -3958,7 +4084,7 @@ begin
   // ALT + Linksklick → Datei direkt öffnen
   if AltLeftDown then
   begin
-    s := ListBox1.Items[ListBox1.ItemIndex];
+    s := FSearchResults[ListBox1.ItemIndex];
 
     if FileExists(s) then
       ShellExecute(Handle, 'open', PChar(s), nil, nil, SW_SHOWNORMAL);
@@ -3975,7 +4101,7 @@ begin
   for i := 0 to ListBox1.Count - 1 do
     if ListBox1.Selected[i] then
     begin
-      s := ListBox1.Items[i];
+      s := FSearchResults[i];
       Break;
     end;
 
@@ -4102,6 +4228,39 @@ begin
   Close;
 end;
 
+procedure TSuche_Form.ListBox1Data(Control: TWinControl; Index: Integer;
+  var Data: string);
+begin
+  if (Index >= 0) and (Index < FSearchResults.Count) then
+    Data := FSearchResults[Index]
+  else
+    Data := '';
+end;
+
+function TSuche_Form.ListBox1DataFind(Control: TWinControl; FindString: string): Integer;
+var
+  I: Integer;
+begin
+  Result := -1;
+  for I := 0 to FSearchResults.Count - 1 do
+    if SameText(FSearchResults[I], FindString) then
+      Exit(I);
+end;
+
+procedure TSuche_Form.DeleteSelectedResults;
+var
+  I: Integer;
+begin
+  for I := ListBox1.Count - 1 downto 0 do
+    if ListBox1.Selected[I] then
+      FSearchResults.Delete(I);
+
+  RebuildSearchLowerCache;
+  ListBox1.Count := FSearchResults.Count;
+  ListBox1.ClearSelection;
+  ListBox1.Invalidate;
+end;
+
 procedure TSuche_Form.ListBox1DrawItem(Control: TWinControl; Index: Integer;
   Rect: TRect; State: TOwnerDrawState);
 var
@@ -4112,7 +4271,7 @@ var
   TextPx: Integer;
   Len: Integer;
 begin
-  S := ListBox1.Items[Index];
+  S := FSearchResults[Index];
   Scale := ListBox1.CurrentPPI / 96;
 
   with ListBox1.Canvas do

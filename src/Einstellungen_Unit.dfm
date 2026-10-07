@@ -4,7 +4,7 @@ object Einstellungen_Form: TEinstellungen_Form
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Einstellungen f'#252'r '#220'berwachung und manuelle Erstellung'
-  ClientHeight = 696
+  ClientHeight = 702
   ClientWidth = 954
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -169,7 +169,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label8: TLabel
     Left = 840
-    Top = 443
+    Top = 448
     Width = 27
     Height = 20
     Margins.Left = 4
@@ -180,7 +180,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Label9: TLabel
     Left = 830
-    Top = 404
+    Top = 409
     Width = 37
     Height = 20
     Margins.Left = 4
@@ -290,7 +290,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object DistParam: TRadioGroup
     Left = 481
-    Top = 221
+    Top = 225
     Width = 222
     Height = 155
     Margins.Left = 4
@@ -318,7 +318,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object SchriftParams: TRadioGroup
     Left = 278
-    Top = 355
+    Top = 360
     Width = 188
     Height = 213
     Margins.Left = 4
@@ -345,7 +345,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFLevel: TRadioGroup
     Left = 278
-    Top = 221
+    Top = 225
     Width = 188
     Height = 126
     Margins.Left = 4
@@ -370,7 +370,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object OKBitBtn1: TBitBtn
     Left = 278
-    Top = 644
+    Top = 649
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -490,7 +490,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object AuswahlRG: TRadioGroup
     Left = 14
-    Top = 220
+    Top = 225
     Width = 249
     Height = 408
     Margins.Left = 4
@@ -528,7 +528,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object AusgabeRG: TGroupBox
     Left = 481
-    Top = 384
+    Top = 389
     Width = 222
     Height = 70
     Margins.Left = 4
@@ -603,7 +603,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object AnzeigenCB: TCheckBox
     Left = 720
-    Top = 486
+    Top = 491
     Width = 220
     Height = 26
     Hint = 
@@ -628,7 +628,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object EncryptBt: TBitBtn
     Left = 278
-    Top = 585
+    Top = 590
     Width = 188
     Height = 43
     Hint = 'PDF-Dateien verschl'#252'sseln mit 128-Bit RC4/AES oder 256-Bit AES'
@@ -654,7 +654,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object AutoRP: TRadioGroup
     Left = 720
-    Top = 221
+    Top = 225
     Width = 220
     Height = 105
     Hint = 
@@ -686,7 +686,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFMark: TBitBtn
     Left = 14
-    Top = 644
+    Top = 649
     Width = 249
     Height = 44
     Hint = 
@@ -714,7 +714,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object CancelBitBtn1: TBitBtn
     Left = 459
-    Top = 644
+    Top = 649
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -834,7 +834,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object SeitenBt: TBitBtn
     Left = 481
-    Top = 470
+    Top = 475
     Width = 222
     Height = 43
     Hint = 
@@ -862,7 +862,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFA: TRadioGroup
     Left = 720
-    Top = 364
+    Top = 369
     Width = 102
     Height = 114
     Margins.Left = 4
@@ -886,7 +886,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFA_CB: TCheckBox
     Left = 720
-    Top = 334
+    Top = 339
     Width = 74
     Height = 21
     Hint = 'PDF/A-1 bis PDF/A-3 ist ein Dateiformat zur Langzeitarchivierung'
@@ -902,7 +902,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Info: TButton
     Left = 871
-    Top = 644
+    Top = 649
     Width = 69
     Height = 44
     Hint = 'Hilfe zu den Einstellungen'
@@ -923,7 +923,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object FastCB: TCheckBox
     Left = 720
-    Top = 546
+    Top = 551
     Width = 220
     Height = 26
     Hint = 'PDF-Datei wird optimiert f'#252'r schnelle Webanzeige'
@@ -944,7 +944,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object UeberwachungBtn: TBitBtn
     Left = 637
-    Top = 644
+    Top = 649
     Width = 220
     Height = 44
     Hint = #220'berwachungseinstellungen'
@@ -1046,7 +1046,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDF_Shrink: TCheckBox
     Left = 720
-    Top = 576
+    Top = 581
     Width = 220
     Height = 26
     Hint = 
@@ -1109,7 +1109,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Zusatz: TBitBtn
     Left = 573
-    Top = 585
+    Top = 590
     Width = 130
     Height = 43
     Hint = 
@@ -1127,7 +1127,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object ZusatzAnAus: TCheckBox
     Left = 494
-    Top = 596
+    Top = 601
     Width = 72
     Height = 21
     Hint = 'Entfernung der Zeichenketten ein-/ausschalten'
@@ -1145,7 +1145,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object SystemklangCB: TCheckBox
     Left = 720
-    Top = 516
+    Top = 521
     Width = 220
     Height = 26
     Hint = 'Ein Systemklang wird nach der Erstellung abgespielt'
@@ -1166,7 +1166,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Dateianlage: TBitBtn
     Left = 481
-    Top = 525
+    Top = 530
     Width = 222
     Height = 43
     Hint = 
@@ -1184,7 +1184,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFX: TCheckBox
     Left = 830
-    Top = 333
+    Top = 338
     Width = 80
     Height = 23
     Hint = 'PDF/X-3 ist f'#252'r den Austausch digitaler Druckvorlagen'
@@ -1239,7 +1239,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object HeightSpin: TSpinEdit
     Left = 871
-    Top = 399
+    Top = 404
     Width = 47
     Height = 31
     Hint = 
@@ -1260,7 +1260,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object SoundSpin: TSpinEdit
     Left = 871
-    Top = 438
+    Top = 443
     Width = 69
     Height = 31
     Hint = 
@@ -1281,7 +1281,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDF_Shrink2: TCheckBox
     Left = 720
-    Top = 606
+    Top = 611
     Width = 190
     Height = 26
     Hint = 'Komprimiert die PDF-Datei beim Erstellen nochmals mittels QPDF'
@@ -1342,7 +1342,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object FontCB: TCheckBox
     Left = 922
-    Top = 404
+    Top = 409
     Width = 18
     Height = 21
     Hint = 
@@ -1362,7 +1362,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFX4: TCheckBox
     Left = 830
-    Top = 359
+    Top = 364
     Width = 95
     Height = 23
     Hint = 
@@ -1380,7 +1380,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Shrink2CB: TCheckBox
     Left = 910
-    Top = 610
+    Top = 615
     Width = 18
     Height = 21
     Hint = 'Nur komprimierte Datei erzeugen (ohne K_ am Anfang)'
