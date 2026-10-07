@@ -3,7 +3,7 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Diagnostics,
+  Winapi.Windows, Winapi.PsAPI, Winapi.Messages, System.SysUtils, System.Variants, System.Diagnostics,
   System.Classes, Vcl.Graphics, Vcl.Controls, System.IOUtils,
   Vcl.StdCtrls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.ComCtrls,
   Vcl.Buttons, Vcl.ImgList, Vcl.FileCtrl, IniFiles, Vcl.Menus, System.DateUtils,
@@ -415,6 +415,9 @@ begin
   except
     Showmessage('Fehler festgestellt!');
   end;
+
+  // Nicht mehr benötigte Speicherseiten aus dem Working Set entfernen.
+  EmptyWorkingSet(GetCurrentProcess);
 
 end;
 
@@ -1794,6 +1797,7 @@ begin
   // ENDGÜLTIGE STATUSANZEIGE
   // =========================================================
   StatusBar1.Panels[0].Text := StatusText;
+
 end;
 
 function StrAlloc1(Size: Cardinal): PAnsiChar;
@@ -1916,10 +1920,28 @@ var
   procedure PublishResults;
   var
     I: Integer;
+    TotalCount: Integer;
+    EstimatedBytes: NativeInt;
   begin
+    TotalCount := DirectoryResults.Count + FileResults.Count;
+    EstimatedBytes := 0;
+
+    // Grobe Schätzung des benötigten Textspeichers für die ListBox.
+    // Die Suchlogik und die Reihenfolge der Ergebnisse bleiben unverändert.
+    for I := 0 to DirectoryResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(DirectoryResults[I])) * SizeOf(Char));
+
+    for I := 0 to FileResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(FileResults[I])) * SizeOf(Char));
+
     List.BeginUpdate;
     try
       List.Clear;
+
+      // Windows vorab über die ungefähre Anzahl und Speichergröße informieren.
+      // List ist TStrings; deshalb wird die Windows-Nachricht direkt an die ListBox gesendet.
+      if (TotalCount > 0) and Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+        Suche_Form.ListBox1.Perform(LB_INITSTORAGE, TotalCount, EstimatedBytes);
 
       for I := 0 to DirectoryResults.Count - 1 do
         List.Add(DirectoryResults[I]);
@@ -2336,10 +2358,28 @@ var
   procedure PublishResults;
   var
     I: Integer;
+    TotalCount: Integer;
+    EstimatedBytes: NativeInt;
   begin
+    TotalCount := DirectoryResults.Count + FileResults.Count;
+    EstimatedBytes := 0;
+
+    // Grobe Schätzung des benötigten Textspeichers für die ListBox.
+    // Die Suchlogik und die Reihenfolge der Ergebnisse bleiben unverändert.
+    for I := 0 to DirectoryResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(DirectoryResults[I])) * SizeOf(Char));
+
+    for I := 0 to FileResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(FileResults[I])) * SizeOf(Char));
+
     List.BeginUpdate;
     try
       List.Clear;
+
+      // Windows vorab über die ungefähre Anzahl und Speichergröße informieren.
+      // List ist TStrings; deshalb wird die Windows-Nachricht direkt an die ListBox gesendet.
+      if (TotalCount > 0) and Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+        Suche_Form.ListBox1.Perform(LB_INITSTORAGE, TotalCount, EstimatedBytes);
 
       for I := 0 to DirectoryResults.Count - 1 do
         List.Add(DirectoryResults[I]);
@@ -2887,10 +2927,28 @@ var
   procedure PublishResults;
   var
     I: Integer;
+    TotalCount: Integer;
+    EstimatedBytes: NativeInt;
   begin
+    TotalCount := DirectoryResults.Count + FileResults.Count;
+    EstimatedBytes := 0;
+
+    // Grobe Schätzung des benötigten Textspeichers für die ListBox.
+    // Die Suchlogik und die Reihenfolge der Ergebnisse bleiben unverändert.
+    for I := 0 to DirectoryResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(DirectoryResults[I])) * SizeOf(Char));
+
+    for I := 0 to FileResults.Count - 1 do
+      Inc(EstimatedBytes, NativeInt(Length(FileResults[I])) * SizeOf(Char));
+
     List.BeginUpdate;
     try
       List.Clear;
+
+      // Windows vorab über die ungefähre Anzahl und Speichergröße informieren.
+      // List ist TStrings; deshalb wird die Windows-Nachricht direkt an die ListBox gesendet.
+      if (TotalCount > 0) and Assigned(Suche_Form) and Assigned(Suche_Form.ListBox1) then
+        Suche_Form.ListBox1.Perform(LB_INITSTORAGE, TotalCount, EstimatedBytes);
 
       for I := 0 to DirectoryResults.Count - 1 do
         List.Add(DirectoryResults[I]);
@@ -4119,5 +4177,4 @@ begin
 end;
 
 end.
-
 

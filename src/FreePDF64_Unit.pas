@@ -3727,14 +3727,20 @@ begin
   if Image1.Visible then
   begin
     Image1.Visible := False;
-    Image1.Picture := NIL;
+
+    // Geladene Grafik vollständig freigeben
+    Image1.Picture.Graphic := nil;
+
     LMDShellList2.Visible := True;
     Exit;
   end
   else if Image2.Visible then
   begin
     Image2.Visible := False;
-    Image2.Picture := NIL;
+
+    // Geladene Grafik vollständig freigeben
+    Image2.Picture.Graphic := nil;
+
     LMDShellList1.Visible := True;
     Exit;
   end
@@ -3752,6 +3758,7 @@ begin
         Image1.Picture.LoadFromFile(Auswahl);
         Exit;
       end;
+
   if (LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True then
     if (Uppercase(ExtractFileExt(Auswahl)) = ('.JPG')) or
       (Uppercase(ExtractFileExt(Auswahl)) = ('.JPEG')) or
@@ -3766,9 +3773,8 @@ begin
     end;
 
   PDFCount := 0;
-  // Grundversatz bei 100 % DPI
   BaseOffset := 20;
-  // PDF anzeigen im integrierten PDF-Anzeiger
+
   if UpperCase(ExtractFileExt(Auswahl)) = '.PDF' then
   begin
     if LMDShellList1.Focused then
@@ -3777,16 +3783,19 @@ begin
       begin
         PDFForm := TPDFBrowserForm.Create(Self);
         PDFForm.PDFFileName := LMDShellList1.SelectedItems[I].PathName;
-        // DPI-skalierter Versatz
+
         Offset := MulDiv(
           (PDFCount mod 8) * BaseOffset,
           PDFForm.CurrentPPI,
           96
         );
+
         PDFForm.Left := PDFForm.Left + Offset;
         PDFForm.Top := PDFForm.Top + Offset;
+
         PDFForm.Show;
         Application.ProcessMessages;
+
         Inc(PDFCount);
       end;
     end
@@ -3796,53 +3805,63 @@ begin
       begin
         PDFForm := TPDFBrowserForm.Create(Self);
         PDFForm.PDFFileName := LMDShellList2.SelectedItems[I].PathName;
-        // DPI-skalierter Versatz
+
         Offset := MulDiv(
           (PDFCount mod 8) * BaseOffset,
           PDFForm.CurrentPPI,
           96
         );
+
         PDFForm.Left := PDFForm.Left + Offset;
         PDFForm.Top := PDFForm.Top + Offset;
+
         PDFForm.Show;
         Application.ProcessMessages;
+
         Inc(PDFCount);
       end;
     end;
+
     Exit;
   end;
 
   if (Uppercase(ExtractFileExt(Auswahl)) = ('.PRN')) or
     (Uppercase(ExtractFileExt(Auswahl)) = ('.PS')) then
-  // Ghostscript aufrufen...
   begin
     Ghostscript := Einstellungen_Form.Edit1.Text;
-    // Wenn eine Datei ausgewählt ist, dann...
+
     if ((LMDShellList1.Focused and Assigned(LMDShellList1.Selected)) = True) or
       ((LMDShellList2.Focused and Assigned(LMDShellList2.Selected)) = True) then
     begin
       Param := '-dSAFER -dBATCH -r120 -dAutoRotatePages=/PageByPage "' +
         Auswahl + '"';
-      ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar(Param),
-        '', SW_HIDE);
+
+      ShellExecute(
+        Application.Handle,
+        'open',
+        PChar(Ghostscript),
+        PChar(Param),
+        '',
+        SW_HIDE
+      );
+
       MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
       KillTask(Ghostscript);
     end;
-  end else
-  // Alles andere im unteren Progammfenster anzeigen
+  end
+  else
   begin
     S := TStringList.Create;
     try
       try
-        // Erster Versuch: UTF‑8
         S.LoadFromFile(Auswahl, TEncoding.UTF8);
       except
         on E: Exception do
         begin
-          // Wenn UTF‑8 fehlschlägt → ANSI verwenden
           S.LoadFromFile(Auswahl, TEncoding.ANSI);
         end;
       end;
+
       Memo1.Lines.Assign(S);
     finally
       S.Free;
@@ -3860,15 +3879,14 @@ begin
       PDFPanel.Height := ClientHeight - ToolBar1.Height;
       PDFPanel.BringToFront;
 
-      // Buttons unsichtbar machen...
       PDF_Erstellung.Visible := False;
       FormatBtn.Visible      := False;
       PanelBottom.Visible    := False;
 
       MemoBtn.Visible := True;
-    end else
+    end
+    else
     begin
-      // Wenn das Panel schon auf ist, wieder schließen...
       if PDFPanel.Height > PDFPanelH then
       begin
         Memo1.Clear;
