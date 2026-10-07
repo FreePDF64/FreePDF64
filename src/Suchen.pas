@@ -143,6 +143,7 @@ type
       FWaitForm: TForm;
       FSearchResults: TStringList;
       FSearchResultsLower: TStringList;
+      FSearchEditBusy: Boolean;
       SearchStopwatch: TStopwatch;
       procedure ListBox1Data(Control: TWinControl; Index: Integer; var Data: string);
       function ListBox1DataFind(Control: TWinControl; FindString: string): Integer;
@@ -490,7 +491,7 @@ var
 begin
   s := SearchField.Text;
 
-  LMDShellSysBrowseDialog1.SelectedPath := '';
+  LMDShellSysBrowseDialog1.SelectedPath := s;
   LMDShellSysBrowseDialog1.Caption := 'Laufwerk oder Verzeichnis auswählen';
   LMDShellSysBrowseDialog1.InstructionText := 'Bitte das gewünschte Laufwerk oder Verzeichnis auswählen:';
 
@@ -955,6 +956,10 @@ begin
     for I := SelectedItems.Count - 1 downto 0 do
       FSearchResults.Insert(0, SelectedItems[I]);
 
+    // FSearchResults wurde durch Delete/Insert verändert.
+    // Deshalb muss der Suchcache exakt dieselbe Reihenfolge haben.
+    RebuildSearchLowerCache;
+
     ListBox.Count := FSearchResults.Count;
     ListBox.ClearSelection;
     for I := 0 to SelectedItems.Count - 1 do
@@ -971,70 +976,103 @@ var
   I: Integer;
   SearchText: string;
   FirstMatch: Integer;
+  MarkedCount: Integer;
   ShowWait: Boolean;
-  LastMessageTick: Cardinal;
+  SavedOnClick: TNotifyEvent;
 begin
-  SucheEdit.Color     := clWhite;
-  AnzeigenPanel.Color := clWhite;
-
-  SearchText := LowerCase(Trim(SucheEdit.Text));
-  FirstMatch := -1;
-
-  if FSearchResults.Count = 0 then
-  begin
-    StatusBar1.Panels[1].Text := 'Markiert: 0';
+  // Keine verschachtelten Suchläufe zulassen
+  if FSearchEditBusy then
     Exit;
-  end;
 
-  ShowWait := (SearchText <> '') and (FSearchResults.Count > 1000);
-
-  if ShowWait then
-    ShowSearchWait;
-
-  LastMessageTick := GetTickCount;
-
+  FSearchEditBusy := True;
   try
-    // Die Windows-ListBox bekommt während der gesamten Auswahländerung
-    // keine Neuzeichnungen. LB_SETSEL ist deutlich schneller als
-    // wiederholte Zugriffe über ListBox1.Selected[].
-    SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
+    SucheEdit.Color     := clWhite;
+    AnzeigenPanel.Color := clWhite;
+
+    SearchText := LowerCase(Trim(SucheEdit.Text));
+    FirstMatch := -1;
+    MarkedCount := 0;
+
+    // Keine Suchergebnisse vorhanden
+    if FSearchResults.Count = 0 then
+    begin
+      StatusBar1.Panels[1].Text := 'Markiert: 0';
+      Exit;
+    end;
+
+    ShowWait := (SearchText <> '') and (FSearchResults.Count > 1000);
+
+    if ShowWait then
+      ShowSearchWait;
+
+    // OnClick während der Massenauswahl deaktivieren.
+    SavedOnClick := ListBox1.OnClick;
+    ListBox1.OnClick := nil;
+
     try
-      SendMessage(ListBox1.Handle, LB_SETSEL, 0, LPARAM(-1));
+      SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
 
-      if SearchText <> '' then
-        for I := 0 to FSearchResultsLower.Count - 1 do
+      try
+        // Zuerst ALLE bisherigen Markierungen entfernen
+        ListBox1.ClearSelection;
+
+        // -------------------------------------------------------
+        // Suchbegriff leer:
+        // Keine Einträge markieren.
+        // -------------------------------------------------------
+        if SearchText <> '' then
         begin
-          if Pos(SearchText, FSearchResultsLower[I]) > 0 then
+          // -----------------------------------------------------
+          // Jeder ListBox-Eintrag wird genau einmal geprüft.
+          // Der Treffer wird sofort markiert.
+          // -----------------------------------------------------
+          for I := 0 to FSearchResults.Count - 1 do
           begin
-            SendMessage(ListBox1.Handle, LB_SETSEL, 1, LPARAM(I));
-            if FirstMatch = -1 then
-              FirstMatch := I;
-          end;
+            if Pos(SearchText, LowerCase(FSearchResults[I])) > 0 then
+            begin
+              ListBox1.Selected[I] := True;
+              Inc(MarkedCount);
 
-          // Alle ca. 50 ms die Nachrichtenwarteschlange bearbeiten.
-          // Damit bleibt das Suchfenster vollständig zeichnungsfähig
-          // und Windows meldet nicht "Keine Rückmeldung".
-          if (GetTickCount - LastMessageTick >= 50) then
-          begin
-            PumpSearchMessages;
-            LastMessageTick := GetTickCount;
+              if FirstMatch = -1 then
+                FirstMatch := I;
+            end;
           end;
         end;
 
-      if FirstMatch >= 0 then
-        ListBox1.TopIndex := FirstMatch;
-    finally
-      SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
-      ListBox1.Invalidate;
-      ListBox1.Update;
-    end;
-  finally
-    if ShowWait then
-      HideSearchWait;
-  end;
+        // Zum ersten Treffer springen
+        if FirstMatch >= 0 then
+          ListBox1.TopIndex := FirstMatch;
 
-  StatusBar1.Panels[1].Text :=
-    'Markiert: ' + IntToStr(ListBox1.SelCount);
+      finally
+        SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
+
+        ListBox1.Invalidate;
+        ListBox1.Update;
+      end;
+
+    finally
+      ListBox1.OnClick := SavedOnClick;
+
+      if ShowWait then
+        HideSearchWait;
+    end;
+
+    // -----------------------------------------------------------
+    // Die Statuszeile zeigt ausschließlich die Anzahl der
+    // tatsächlich aufgrund des Suchbegriffs markierten Einträge.
+    // -----------------------------------------------------------
+    StatusBar1.Panels[1].Text :=
+      'Markiert: ' + IntToStr(MarkedCount);
+
+    StatusBar1.Canvas.Font := StatusBar1.Font;
+
+    StatusBar1.Panels[0].Width :=
+      ListBox1.Width -
+      (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+
+  finally
+    FSearchEditBusy := False;
+  end;
 end;
 
 procedure TSuche_Form.FormKeyPress(Sender: TObject; var Key: Char);
@@ -3566,10 +3604,11 @@ begin
 
   Suche_Form.Constraints.MaxHeight := 0;
 
-  PanelBottom.Visible   := True;
-  StatusBar1.Visible    := True;
-  SucheEdit.Visible     := False;
-  AnzeigenPanel.Visible := False;
+  PanelBottom.Visible    := True;
+  StatusBar1.Visible     := True;
+  SucheEdit.Visible      := False;
+  SuchergebnisCB.Checked := False;
+  AnzeigenPanel.Visible  := False;
 
   // PanelBottom mit den Buttons soll immer über der StatusBar erscheinen
   StatusBar1.Top := PanelBottom.Top + PanelBottom.Height + 1;
