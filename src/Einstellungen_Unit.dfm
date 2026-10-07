@@ -4,7 +4,7 @@ object Einstellungen_Form: TEinstellungen_Form
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'Einstellungen f'#252'r '#220'berwachung und manuelle Erstellung'
-  ClientHeight = 706
+  ClientHeight = 696
   ClientWidth = 954
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -320,7 +320,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Left = 278
     Top = 355
     Width = 188
-    Height = 214
+    Height = 213
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -370,7 +370,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object OKBitBtn1: TBitBtn
     Left = 278
-    Top = 650
+    Top = 644
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -492,7 +492,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Left = 14
     Top = 220
     Width = 249
-    Height = 405
+    Height = 408
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -686,7 +686,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object PDFMark: TBitBtn
     Left = 14
-    Top = 650
+    Top = 644
     Width = 249
     Height = 44
     Hint = 
@@ -714,7 +714,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object CancelBitBtn1: TBitBtn
     Left = 459
-    Top = 650
+    Top = 644
     Width = 163
     Height = 44
     Margins.Left = 4
@@ -902,7 +902,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object Info: TButton
     Left = 871
-    Top = 650
+    Top = 644
     Width = 69
     Height = 44
     Hint = 'Hilfe zu den Einstellungen'
@@ -944,7 +944,7 @@ object Einstellungen_Form: TEinstellungen_Form
   end
   object UeberwachungBtn: TBitBtn
     Left = 637
-    Top = 650
+    Top = 644
     Width = 220
     Height = 44
     Hint = #220'berwachungseinstellungen'
@@ -1126,7 +1126,7 @@ object Einstellungen_Form: TEinstellungen_Form
     OnClick = ZusatzClick
   end
   object ZusatzAnAus: TCheckBox
-    Left = 490
+    Left = 494
     Top = 596
     Width = 72
     Height = 21
