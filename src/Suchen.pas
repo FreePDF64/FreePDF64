@@ -1,4 +1,4 @@
-﻿unit Suchen;
+﻿                                          unit Suchen;
 
 interface
 
@@ -1147,8 +1147,8 @@ end;
 procedure TSuche_Form.ExecuteResultSearch;
 var
   I: Integer;
+  CandidatePos: Integer;
   SearchText: string;
-  FirstMatch: Integer;
   MarkedCount: Integer;
   FileCount: Integer;
   DirectoryCount: Integer;
@@ -1159,16 +1159,17 @@ var
   LastPumpTick: UInt64;
   CurrentTick: UInt64;
   RestartSearch: Boolean;
+  SavedTopIndex: Integer;
 begin
   if FSearchEditBusy then
     Exit;
 
   FSearchEditBusy := True;
   RestartSearch := False;
+  SavedTopIndex := 0;
 
   try
     SearchText := LowerCase(Trim(FPendingSearchText));
-    FirstMatch := -1;
     MarkedCount := 0;
     FileCount := 0;
     DirectoryCount := 0;
@@ -1188,6 +1189,10 @@ begin
     ListBox1.OnClick := nil;
 
     try
+      // Aktuelle Scrollposition sichern.
+      SavedTopIndex := ListBox1.TopIndex;
+
+      // Während der Suche nicht neu zeichnen.
       SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
       try
         // Alte Auswahl in EINEM Windows-Aufruf löschen.
@@ -1199,10 +1204,8 @@ begin
         end
         else
         begin
-          // Wenn der Benutzer während einer laufenden Suche weiter tippt,
-          // wird diese Suche nach dem nächsten ProcessMessages sofort
-          // abgebrochen. Es wird danach ausschließlich der neue Suchtext
-          // verarbeitet.
+          // Bereits gefundene Kandidaten weiterverwenden, wenn der
+          // neue Suchtext nur verlängert wurde.
           UseCandidates :=
             (FSearchLastText <> '') and
             (Length(SearchText) > Length(FSearchLastText)) and
@@ -1210,6 +1213,7 @@ begin
             (Length(FSearchCandidates) > 0);
 
           CandidateCount := 0;
+
           if UseCandidates then
             SetLength(NewCandidates, Length(FSearchCandidates))
           else
@@ -1221,19 +1225,22 @@ begin
           begin
             for I := 0 to High(FSearchCandidates) do
             begin
-              if Pos(SearchText, FSearchResultsLower[FSearchCandidates[I]]) > 0 then
+              if Pos(
+                   SearchText,
+                   FSearchResultsLower[FSearchCandidates[I]]
+                 ) > 0 then
               begin
                 NewCandidates[CandidateCount] := FSearchCandidates[I];
                 Inc(CandidateCount);
               end;
 
               CurrentTick := GetTickCount64;
+
               if CurrentTick - LastPumpTick >= 40 then
               begin
                 PumpSearchMessages;
                 LastPumpTick := CurrentTick;
 
-                // Während der Suche wurde ein neuer Buchstabe eingegeben.
                 if FPendingSearchText <> SearchText then
                 begin
                   RestartSearch := True;
@@ -1253,12 +1260,12 @@ begin
               end;
 
               CurrentTick := GetTickCount64;
+
               if CurrentTick - LastPumpTick >= 40 then
               begin
                 PumpSearchMessages;
                 LastPumpTick := CurrentTick;
 
-                // Neuer Suchtext: aktuelle Suche sofort abbrechen.
                 if FPendingSearchText <> SearchText then
                 begin
                   RestartSearch := True;
@@ -1274,53 +1281,100 @@ begin
             FSearchCandidates := NewCandidates;
             FSearchLastText := SearchText;
 
-            // Erst jetzt, nachdem die Treffer feststehen, werden sie
-            // in der ListBox markiert.
-            LastPumpTick := GetTickCount64;
+            // ---------------------------------------------------------
+            // SCHNELLERE MARKIERUNG
+            //
+            // Bisher wurde fuer JEDEN Treffer ein eigenes LB_SETSEL
+            // gesendet. Bei 100.000 Treffern waren das 100.000
+            // Windows-Aufrufe.
+            //
+            // Jetzt wird die guenstigere Variante verwendet:
+            //
+            // - alle Treffer -> 1 Aufruf: "alle markieren"
+            // - mehr Treffer als Nichttreffer -> erst alle markieren,
+            //   danach nur die Nichttreffer abwaehlen
+            // - wenige Treffer -> nur die Treffer markieren
+            //
+            // Dadurch wird besonders die Suche nach haeufigen
+            // Buchstaben erheblich schneller.
+            // ---------------------------------------------------------
+            CandidatePos := 0;
 
-            for I := 0 to High(FSearchCandidates) do
+            if CandidateCount = FSearchResults.Count then
             begin
+              // Jeder Eintrag ist ein Treffer: EIN Windows-Aufruf.
               SendMessage(
                 ListBox1.Handle,
                 LB_SETSEL,
                 1,
-                LPARAM(FSearchCandidates[I])
+                LPARAM(-1)
+              );
+            end
+            else if CandidateCount > (FSearchResults.Count div 2) then
+            begin
+              // Die Mehrheit sind Treffer:
+              // zuerst alles markieren und danach nur die wenigen
+              // Nichttreffer wieder abwaehlen.
+              SendMessage(
+                ListBox1.Handle,
+                LB_SETSEL,
+                1,
+                LPARAM(-1)
               );
 
-              Inc(MarkedCount);
+              for I := 0 to FSearchResults.Count - 1 do
+              begin
+                if (CandidatePos < CandidateCount) and
+                   (FSearchCandidates[CandidatePos] = I) then
+                begin
+                  Inc(CandidatePos);
+                end
+                else
+                begin
+                  SendMessage(
+                    ListBox1.Handle,
+                    LB_SETSEL,
+                    0,
+                    LPARAM(I)
+                  );
+                end;
+              end;
+            end
+            else
+            begin
+              // Weniger als die Haelfte sind Treffer:
+              // nur die Treffer markieren.
+              for I := 0 to CandidateCount - 1 do
+              begin
+                SendMessage(
+                  ListBox1.Handle,
+                  LB_SETSEL,
+                  1,
+                  LPARAM(FSearchCandidates[I])
+                );
+              end;
+            end;
 
-              // Eintr䧥, die mit '[' beginnen, sind in dieser Unit
-              // als Verzeichnisse gekennzeichnet; alle anderen sind Dateien.
+            MarkedCount := CandidateCount;
+
+            // Dateianzahl / Verzeichnisanzahl berechnen.
+            for I := 0 to CandidateCount - 1 do
+            begin
               if (Length(FSearchResults[FSearchCandidates[I]]) > 0) and
                  (FSearchResults[FSearchCandidates[I]][1] = '[') then
                 Inc(DirectoryCount)
               else
                 Inc(FileCount);
-
-              if FirstMatch = -1 then
-                FirstMatch := FSearchCandidates[I];
-
-              CurrentTick := GetTickCount64;
-              if CurrentTick - LastPumpTick >= 40 then
-              begin
-                PumpSearchMessages;
-                LastPumpTick := CurrentTick;
-
-                // Auch während des Markierens kann der Benutzer weiter
-                // tippen. Dann nicht die alte Suche zu Ende markieren.
-                if FPendingSearchText <> SearchText then
-                begin
-                  RestartSearch := True;
-                  Break;
-                end;
-              end;
             end;
-
-            if (not RestartSearch) and (FirstMatch >= 0) then
-              ListBox1.TopIndex := FirstMatch;
           end;
         end;
       finally
+        // Die ListBox darf durch LB_SETSEL intern scrollen.
+        // Noch bevor die Anzeige wieder freigegeben wird,
+        // die urspruengliche Position wiederherstellen.
+        if SavedTopIndex >= 0 then
+          ListBox1.TopIndex := SavedTopIndex;
+
         SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
         ListBox1.Invalidate;
         ListBox1.Update;
@@ -1331,8 +1385,6 @@ begin
 
     if not RestartSearch then
     begin
-      // Statusbar zeigt jetzt das tats䣨liche Suchergebnis getrennt
-      // nach Dateien und Verzeichnissen an.
       if SearchText = '' then
       begin
         FileCount := 0;
@@ -1364,14 +1416,9 @@ begin
 
     if RestartSearch then
     begin
-      // Der Timer für den alten Suchtext darf nicht noch zusätzlich
-      // eine zweite Suche starten.
       if Assigned(FSearchDebounceTimer) then
         FSearchDebounceTimer.Enabled := False;
 
-      // Wartemeldung bleibt sichtbar.
-      // Jetzt wird ausschließlich der zuletzt eingegebene Suchtext
-      // verarbeitet.
       ExecuteResultSearch;
     end
     else
@@ -4688,4 +4735,5 @@ begin
 end;
 
 end.
+
 
