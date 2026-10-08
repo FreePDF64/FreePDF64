@@ -145,13 +145,23 @@ type
       FSearchResultsLower: TStringList;
       FSearchEditBusy: Boolean;
       SearchStopwatch: TStopwatch;
+      // Kandidaten der letzten Suche. Bei erweitertem Suchtext
+      // wird nur diese verkleinerte Menge weiter geprüft.
+      FSearchLastText: string;
+      FSearchCandidates: TArray<Integer>;
+      FSearchDebounceTimer: TTimer;
+      FPendingSearchText: string;
+      procedure ExecuteResultSearch;
+      procedure SearchDebounceTimer(Sender: TObject);
       procedure ListBox1Data(Control: TWinControl; Index: Integer; var Data: string);
       function ListBox1DataFind(Control: TWinControl; FindString: string): Integer;
       procedure DeleteSelectedResults;
       procedure ShowSearchWait;
       procedure HideSearchWait;
+      procedure CenterSearchWait;
       procedure PumpSearchMessages;
       procedure RebuildSearchLowerCache;
+      procedure ResetResultSearchCache;
       function IsShortCut(var Message: TWMKey): Boolean; override;
     end;
 
@@ -160,6 +170,7 @@ var
   // Globale Variablen
   StopSuche, Links, Rechts: Boolean;
   Zaehler, SFHStart, SFHResize: Integer;
+  SuchZaehler: Int64;
   Anzeige: String;
   AltLeftDown: Boolean;
 
@@ -274,13 +285,30 @@ begin
 
   FSearchResults := TStringList.Create;
   FSearchResultsLower := TStringList.Create;
+  ResetResultSearchCache;
+
+  // Kurze Entprellung für die Suche im Suchergebnis.
+  // Dadurch wird beim schnellen Tippen nicht für jeden einzelnen
+  // Buchstaben sofort eine komplette 400.000er-Suche gestartet.
+  FSearchDebounceTimer := TTimer.Create(Self);
+  FSearchDebounceTimer.Enabled := False;
+  FSearchDebounceTimer.Interval := 120;
+  FSearchDebounceTimer.OnTimer := SearchDebounceTimer;
 
   // Virtuelle Ergebnisliste: Die Treffer werden nicht ein zweites Mal
   // im Windows-ListBox-Control gespeichert.
   ListBox1.Style := lbVirtualOwnerDraw;
+  // Mehrfachauswahl ist für LB_SETSEL erforderlich.
+  // Damit funktioniert die schnelle Markierung der Treffer auch
+  // bei sehr großen virtuellen Listen.
+  ListBox1.MultiSelect := True;
   ListBox1.OnData := ListBox1Data;
   ListBox1.OnDataFind := ListBox1DataFind;
   ListBox1.OnDrawItem := ListBox1DrawItem;
+
+  // Sicherheitshalber direkt verbinden, damit jeder Tastendruck in
+  // SucheEdit sofort die Suche im aktuellen Ergebnis auslöst.
+  SucheEdit.OnChange := SucheEditChange;
 
     // Suche_Form zusätzlich in der Taskbar anzeigen lassen
   SetWindowLong(Handle, GWL_EXSTYLE, GetWindowLong(Handle, GWL_EXSTYLE) or
@@ -355,6 +383,7 @@ begin
   // Suchergebnisse beim Schließen freigeben, Form selbst bleibt erhalten
   FSearchResults.Clear;
   FSearchResultsLower.Clear;
+  ResetResultSearchCache;
   ListBox1.Count := 0;
 
   // Horizontaler Scrollbalken wird wieder entfernt
@@ -433,7 +462,6 @@ begin
 
   // Nicht mehr benötigte Speicherseiten aus dem Working Set entfernen.
   EmptyWorkingSet(GetCurrentProcess);
-
 end;
 
 procedure TSuche_Form.Bewegen1Click(Sender: TObject);
@@ -860,6 +888,31 @@ begin
   end;
 end;
 
+procedure TSuche_Form.ResetResultSearchCache;
+begin
+  FSearchLastText := '';
+  SetLength(FSearchCandidates, 0);
+end;
+
+procedure TSuche_Form.CenterSearchWait;
+var
+  R: TRect;
+begin
+  if not Assigned(FWaitForm) then
+    Exit;
+
+  // Das Wartefenster immer exakt über dem Suchergebnis zentrieren.
+  if not IsWindow(ListBox1.Handle) then
+    Exit;
+
+  GetWindowRect(ListBox1.Handle, R);
+
+  FWaitForm.Left :=
+    R.Left + ((R.Right - R.Left) - FWaitForm.Width) div 2;
+  FWaitForm.Top :=
+    R.Top + ((R.Bottom - R.Top) - FWaitForm.Height) div 2;
+end;
+
 procedure TSuche_Form.ShowSearchWait;
 var
   WaitLabel: TLabel;
@@ -871,26 +924,26 @@ begin
     FWaitForm.BorderStyle := bsToolWindow;
     FWaitForm.BorderIcons := [];
     FWaitForm.FormStyle := fsStayOnTop;
-    FWaitForm.Position := poScreenCenter;
+    FWaitForm.Position := poDesigned;
     FWaitForm.Width := 480;
     FWaitForm.Height := 80;
-    FWaitForm.Caption := 'Suchergebnis wird vorbereitet...';
+    FWaitForm.Caption := 'Suche';
 
     WaitLabel := TLabel.Create(FWaitForm);
     WaitLabel.Parent := FWaitForm;
     WaitLabel.Align := alClient;
     WaitLabel.Alignment := taCenter;
     WaitLabel.Layout := tlCenter;
-    WaitLabel.Caption := 'Bitte warten...';
+    WaitLabel.Caption := 'Suchergebnis wird vorbereitet...';
   end;
 
+  CenterSearchWait;
   FWaitForm.Show;
   FWaitForm.BringToFront;
   FWaitForm.Update;
   FWaitForm.Repaint;
 
-  // Nur einmal verarbeiten, damit das Fenster sichtbar wird.
-  // Keine ProcessMessages-Schleife während der eigentlichen Suche.
+  // Das Fenster einmal zeichnen lassen, bevor die Suche weiterläuft.
   Application.ProcessMessages;
 end;
 
@@ -959,6 +1012,7 @@ begin
     // FSearchResults wurde durch Delete/Insert verändert.
     // Deshalb muss der Suchcache exakt dieselbe Reihenfolge haben.
     RebuildSearchLowerCache;
+    ResetResultSearchCache;
 
     ListBox.Count := FSearchResults.Count;
     ListBox.ClearSelection;
@@ -972,106 +1026,240 @@ end;
 
 // Suche den Inhalt von SucheEdit.Text im Suchergebnis der ListBox
 procedure TSuche_Form.SucheEditChange(Sender: TObject);
+begin
+  if FSearchEditBusy then
+    Exit;
+
+  // Nur den zuletzt eingegebenen Text übernehmen.
+  // Die eigentliche 400.000er-Suche erfolgt einmal nach einer
+  // kurzen Pause, wenn der Benutzer aufgehört hat zu tippen.
+  FPendingSearchText := SucheEdit.Text;
+
+  // Die Meldung sofort anzeigen, damit der Benutzer direkt sieht,
+  // dass die Eingabe verarbeitet wird.
+  if FSearchResults.Count > 0 then
+  begin
+    ShowSearchWait;
+    SucheEdit.Color := clWhite;
+    AnzeigenPanel.Color := clWhite;
+  end;
+
+  if Assigned(FSearchDebounceTimer) then
+  begin
+    FSearchDebounceTimer.Enabled := False;
+    FSearchDebounceTimer.Enabled := True;
+  end
+  else
+    ExecuteResultSearch;
+end;
+
+procedure TSuche_Form.SearchDebounceTimer(Sender: TObject);
+begin
+  FSearchDebounceTimer.Enabled := False;
+  ExecuteResultSearch;
+end;
+
+procedure TSuche_Form.ExecuteResultSearch;
 var
   I: Integer;
   SearchText: string;
   FirstMatch: Integer;
   MarkedCount: Integer;
-  ShowWait: Boolean;
   SavedOnClick: TNotifyEvent;
+  UseCandidates: Boolean;
+  CandidateCount: Integer;
+  NewCandidates: TArray<Integer>;
+  LastPumpTick: UInt64;
+  CurrentTick: UInt64;
+  RestartSearch: Boolean;
 begin
-  // Keine verschachtelten Suchläufe zulassen
   if FSearchEditBusy then
     Exit;
 
   FSearchEditBusy := True;
-  try
-    SucheEdit.Color     := clWhite;
-    AnzeigenPanel.Color := clWhite;
+  RestartSearch := False;
 
-    SearchText := LowerCase(Trim(SucheEdit.Text));
+  try
+    SearchText := LowerCase(Trim(FPendingSearchText));
     FirstMatch := -1;
     MarkedCount := 0;
 
-    // Keine Suchergebnisse vorhanden
     if FSearchResults.Count = 0 then
     begin
+      ResetResultSearchCache;
       StatusBar1.Panels[1].Text := 'Markiert: 0';
+      HideSearchWait;
       Exit;
     end;
 
-    ShowWait := (SearchText <> '') and (FSearchResults.Count > 1000);
+    if FSearchResultsLower.Count <> FSearchResults.Count then
+      RebuildSearchLowerCache;
 
-    if ShowWait then
-      ShowSearchWait;
-
-    // OnClick während der Massenauswahl deaktivieren.
     SavedOnClick := ListBox1.OnClick;
     ListBox1.OnClick := nil;
 
     try
       SendMessage(ListBox1.Handle, WM_SETREDRAW, 0, 0);
-
       try
-        // Zuerst ALLE bisherigen Markierungen entfernen
-        ListBox1.ClearSelection;
+        // Alte Auswahl in EINEM Windows-Aufruf löschen.
+        SendMessage(ListBox1.Handle, LB_SETSEL, 0, LPARAM(-1));
 
-        // -------------------------------------------------------
-        // Suchbegriff leer:
-        // Keine Einträge markieren.
-        // -------------------------------------------------------
-        if SearchText <> '' then
+        if SearchText = '' then
         begin
-          // -----------------------------------------------------
-          // Jeder ListBox-Eintrag wird genau einmal geprüft.
-          // Der Treffer wird sofort markiert.
-          // -----------------------------------------------------
-          for I := 0 to FSearchResults.Count - 1 do
+          ResetResultSearchCache;
+        end
+        else
+        begin
+          // Wenn der Benutzer während einer laufenden Suche weiter tippt,
+          // wird diese Suche nach dem nächsten ProcessMessages sofort
+          // abgebrochen. Es wird danach ausschließlich der neue Suchtext
+          // verarbeitet.
+          UseCandidates :=
+            (FSearchLastText <> '') and
+            (Length(SearchText) > Length(FSearchLastText)) and
+            (Copy(SearchText, 1, Length(FSearchLastText)) = FSearchLastText) and
+            (Length(FSearchCandidates) > 0);
+
+          CandidateCount := 0;
+          if UseCandidates then
+            SetLength(NewCandidates, Length(FSearchCandidates))
+          else
+            SetLength(NewCandidates, FSearchResults.Count);
+
+          LastPumpTick := GetTickCount64;
+
+          if UseCandidates then
           begin
-            if Pos(SearchText, LowerCase(FSearchResults[I])) > 0 then
+            for I := 0 to High(FSearchCandidates) do
             begin
-              ListBox1.Selected[I] := True;
+              if Pos(SearchText, FSearchResultsLower[FSearchCandidates[I]]) > 0 then
+              begin
+                NewCandidates[CandidateCount] := FSearchCandidates[I];
+                Inc(CandidateCount);
+              end;
+
+              CurrentTick := GetTickCount64;
+              if CurrentTick - LastPumpTick >= 40 then
+              begin
+                PumpSearchMessages;
+                LastPumpTick := CurrentTick;
+
+                // Während der Suche wurde ein neuer Buchstabe eingegeben.
+                if FPendingSearchText <> SearchText then
+                begin
+                  RestartSearch := True;
+                  Break;
+                end;
+              end;
+            end;
+          end
+          else
+          begin
+            for I := 0 to FSearchResults.Count - 1 do
+            begin
+              if Pos(SearchText, FSearchResultsLower[I]) > 0 then
+              begin
+                NewCandidates[CandidateCount] := I;
+                Inc(CandidateCount);
+              end;
+
+              CurrentTick := GetTickCount64;
+              if CurrentTick - LastPumpTick >= 40 then
+              begin
+                PumpSearchMessages;
+                LastPumpTick := CurrentTick;
+
+                // Neuer Suchtext: aktuelle Suche sofort abbrechen.
+                if FPendingSearchText <> SearchText then
+                begin
+                  RestartSearch := True;
+                  Break;
+                end;
+              end;
+            end;
+          end;
+
+          if not RestartSearch then
+          begin
+            SetLength(NewCandidates, CandidateCount);
+            FSearchCandidates := NewCandidates;
+            FSearchLastText := SearchText;
+
+            // Erst jetzt, nachdem die Treffer feststehen, werden sie
+            // in der ListBox markiert.
+            LastPumpTick := GetTickCount64;
+
+            for I := 0 to High(FSearchCandidates) do
+            begin
+              SendMessage(
+                ListBox1.Handle,
+                LB_SETSEL,
+                1,
+                LPARAM(FSearchCandidates[I])
+              );
+
               Inc(MarkedCount);
 
               if FirstMatch = -1 then
-                FirstMatch := I;
+                FirstMatch := FSearchCandidates[I];
+
+              CurrentTick := GetTickCount64;
+              if CurrentTick - LastPumpTick >= 40 then
+              begin
+                PumpSearchMessages;
+                LastPumpTick := CurrentTick;
+
+                // Auch während des Markierens kann der Benutzer weiter
+                // tippen. Dann nicht die alte Suche zu Ende markieren.
+                if FPendingSearchText <> SearchText then
+                begin
+                  RestartSearch := True;
+                  Break;
+                end;
+              end;
             end;
+
+            if (not RestartSearch) and (FirstMatch >= 0) then
+              ListBox1.TopIndex := FirstMatch;
           end;
         end;
-
-        // Zum ersten Treffer springen
-        if FirstMatch >= 0 then
-          ListBox1.TopIndex := FirstMatch;
-
       finally
         SendMessage(ListBox1.Handle, WM_SETREDRAW, 1, 0);
-
         ListBox1.Invalidate;
         ListBox1.Update;
       end;
-
     finally
       ListBox1.OnClick := SavedOnClick;
-
-      if ShowWait then
-        HideSearchWait;
     end;
 
-    // -----------------------------------------------------------
-    // Die Statuszeile zeigt ausschließlich die Anzahl der
-    // tatsächlich aufgrund des Suchbegriffs markierten Einträge.
-    // -----------------------------------------------------------
-    StatusBar1.Panels[1].Text :=
-      'Markiert: ' + IntToStr(MarkedCount);
+    if not RestartSearch then
+    begin
+      StatusBar1.Panels[1].Text :=
+        'Markiert: ' + IntToStr(MarkedCount);
 
-    StatusBar1.Canvas.Font := StatusBar1.Font;
-
-    StatusBar1.Panels[0].Width :=
-      ListBox1.Width -
-      (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+      StatusBar1.Canvas.Font := StatusBar1.Font;
+      StatusBar1.Panels[0].Width :=
+        ListBox1.Width -
+        (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+    end;
 
   finally
     FSearchEditBusy := False;
+
+    if RestartSearch then
+    begin
+      // Der Timer für den alten Suchtext darf nicht noch zusätzlich
+      // eine zweite Suche starten.
+      if Assigned(FSearchDebounceTimer) then
+        FSearchDebounceTimer.Enabled := False;
+
+      // Wartemeldung bleibt sichtbar.
+      // Jetzt wird ausschließlich der zuletzt eingegebene Suchtext
+      // verarbeitet.
+      ExecuteResultSearch;
+    end
+    else
+      HideSearchWait;
   end;
 end;
 
@@ -1163,6 +1351,7 @@ begin
 
   FSearchResults.Clear;
   FSearchResultsLower.Clear;
+  ResetResultSearchCache;
   ListBox1.Count := 0;
   FilesFoldersCB.ItemIndex := 1; // Zeige Dateien
   FileSizeCombo.ItemIndex  := 1;
@@ -2057,9 +2246,6 @@ end;
 // ============================================================================
 // SUCHE OHNE DATUMS- UND GRÖSSENABFRAGE
 // ============================================================================
-// ============================================================================
-// SUCHE OHNE DATUMS- UND GRÖSSENABFRAGE
-// ============================================================================
 procedure GetFilesInDirectory(Directory: string; const Mask: string;
   List: TStrings; WithSubDirs, ClearList: Boolean);
 var
@@ -2275,6 +2461,8 @@ var
         if (NameStr <> '.') and
            (NameStr <> '..') then
         begin
+          Inc(SuchZaehler);
+
           IsDir :=
             (fd.dwFileAttributes and
              FILE_ATTRIBUTE_DIRECTORY) <> 0;
@@ -2495,6 +2683,11 @@ begin
   finally
     DirectoryResults.Free;
     FileResults.Free;
+
+    // Erst nach Freigabe der temporären Suchlisten
+    // nicht mehr benötigte Speicherseiten aus dem
+    // Working Set entfernen.
+    EmptyWorkingSet(GetCurrentProcess);
   end;
 end;
 
@@ -2768,6 +2961,8 @@ var
         if (NameStr = '.') or
            (NameStr = '..') then
           Continue;
+
+        Inc(SuchZaehler);
 
         IsDir :=
           (fd.dwFileAttributes and
@@ -3067,6 +3262,11 @@ begin
   finally
     DirectoryResults.Free;
     FileResults.Free;
+
+    // Erst nach Freigabe der temporären Suchlisten
+    // nicht mehr benötigte Speicherseiten aus dem
+    // Working Set entfernen.
+    EmptyWorkingSet(GetCurrentProcess);
   end;
 end;
 
@@ -3301,6 +3501,8 @@ const
           if (SR.Name = '.') or
              (SR.Name = '..') then
             Continue;
+
+          Inc(SuchZaehler);
 
           FullPath :=
             CurrentDirectory +
@@ -3564,6 +3766,11 @@ begin
   finally
     DirectoryResults.Free;
     FileResults.Free;
+
+    // Erst nach Freigabe der temporären Suchlisten
+    // nicht mehr benötigte Speicherseiten aus dem
+    // Working Set entfernen.
+    EmptyWorkingSet(GetCurrentProcess);
   end;
 end;
 
@@ -3628,8 +3835,10 @@ begin
   StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
 
   Zaehler := 0;
+  SuchZaehler := 0;
   FSearchResults.Clear;
   FSearchResultsLower.Clear;
+  ResetResultSearchCache;
   ListBox1.Count := 0;
   FreePDF64_Form.Memo1.Clear;
   StatusBar1.Panels[1].Text := '';
@@ -3743,6 +3952,10 @@ begin
   // =========================================================
   if Path <> '' then
   begin
+    // Die eigentliche Dateisuche läuft zunächst ohne Wartehinweis.
+    // Der Hinweis wird erst nach Abschluss der Dateisuche bei der
+    // Aufbereitung und Anzeige des Suchergebnisses eingeblendet.
+
     if Mask = '' then
       Mask := '*.*';
 
@@ -3750,7 +3963,6 @@ begin
       Mask := '*';
 
     Zaehler := 0;
-
     try
       // -------------------------------------------------------
       // Suche nach Alter
@@ -3832,20 +4044,23 @@ begin
 
     finally
       // -------------------------------------------------------
-      // Suche beendet
+      // Dateisuche beendet
       // -------------------------------------------------------
-      // Die Kleinbuchstaben-Versionen werden einmalig erzeugt.
-      // Dadurch muss SucheEditChange nicht bei jedem Tastendruck
-      // für jeden Treffer erneut LowerCase() ausführen.
-      RebuildSearchLowerCache;
-      ListBox1.Count := FSearchResults.Count;
-      StartSearchButton.Enabled := True;
-      StopSearchButton.Caption  := 'Abbrechen';
-
-      if Assigned(FWaitForm) then
-      begin
-        FWaitForm.Close;
-        FreeAndNil(FWaitForm);
+      // Erst jetzt darf der Hinweis erscheinen. Die eigentliche
+      // Dateisuche ist bereits abgeschlossen; der Hinweis gilt nur
+      // noch für die Aufbereitung und Anzeige des Ergebnisses.
+      ShowSearchWait;
+      try
+        // Die Kleinbuchstaben-Versionen werden einmalig erzeugt.
+        // Dadurch muss SucheEditChange nicht bei jedem Tastendruck
+        // für jeden Treffer erneut LowerCase() ausführen.
+        RebuildSearchLowerCache;
+        ListBox1.Count := FSearchResults.Count;
+        ListBox1.Update;
+        StartSearchButton.Enabled := True;
+        StopSearchButton.Caption  := 'Abbrechen';
+      finally
+        HideSearchWait;
       end;
     end;
   end
@@ -3913,11 +4128,12 @@ begin
   if ListBox1.SelCount > 0 then
     StatusBar1.Panels[1].Text :=
       'Markiert: ' + IntToStr(ListBox1.SelCount);
+
+  // Nicht mehr benötigte Speicherseiten aus dem Working Set entfernen.
+  EmptyWorkingSet(GetCurrentProcess);
 end;
 
 procedure TSuche_Form.StopSearchButtonClick(Sender: TObject);
-var
-  WaitLabel: TLabel;
 begin
   if StartSearchButton.Enabled then
   begin
@@ -3927,38 +4143,11 @@ begin
     Exit;
   end;
 
-  // Abbruch anfordern
+  // Abbruch anfordern. Die Suchroutine verarbeitet Windows-Nachrichten
+  // weiter und beendet sich dadurch sauber, ohne dass die Anwendung
+  // als "Keine Rückmeldung" erscheint.
   StopSuche := True;
-
   StopSearchButton.Caption := 'Warten...';
-
-  // Wartefenster nur einmal erzeugen
-  if not Assigned(FWaitForm) then
-  begin
-    FWaitForm := TForm.Create(Self);
-
-    FWaitForm.BorderStyle := bsDialog;
-    FWaitForm.BorderIcons := [];
-    FWaitForm.Position    := poScreenCenter;
-    FWaitForm.Width       := 480;
-    FWaitForm.Height      := 80;
-    FWaitForm.Caption     := 'Suchergebnis wird vorbereitet...';
-
-    WaitLabel := TLabel.Create(FWaitForm);
-    WaitLabel.Parent    := FWaitForm;
-    WaitLabel.Align     := alClient;
-    WaitLabel.Alignment := taCenter;
-    WaitLabel.Layout    := tlCenter;
-    WaitLabel.Caption   := 'Bitte warten...';
-  end;
-
-  // Nicht modal anzeigen!
-  FWaitForm.Show;
-  FWaitForm.Update;
-
-  // Nur Nachrichten verarbeiten und sofort zurückkehren.
-  // KEINE while-Schleife!
-  Application.ProcessMessages;
 end;
 
 procedure TSuche_Form.SearchFieldDropDown(Sender: TObject);
@@ -4302,6 +4491,7 @@ begin
       FSearchResults.Delete(I);
 
   RebuildSearchLowerCache;
+  ResetResultSearchCache;
   ListBox1.Count := FSearchResults.Count;
   ListBox1.ClearSelection;
   ListBox1.Invalidate;
