@@ -579,29 +579,114 @@ procedure TSuche_Form.Btn_4Click(Sender: TObject);
 var
   i: Integer;
   s, Msg: String;
+  FileCount, DirectoryCount: Integer;
 begin
+  // Nichts markiert
   if ListBox1.SelCount = 0 then
     Exit;
 
-  Msg := 'Soll(en) die Datei(en)/Verzeichnis(se) wirklich gelöscht werden?';
-  if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrNo then
-    Exit;
+  FileCount := 0;
+  DirectoryCount := 0;
 
+  // Ermitteln, wie viele Dateien und Verzeichnisse markiert sind
   for i := 0 to ListBox1.Count - 1 do
+  begin
     if ListBox1.Selected[i] then
     begin
       s := FSearchResults[i];
 
-      // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
-      if Pos('[', s) <> 0 then
-        Delete(s, 1, 1);
-      // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
-      if s[Length(s)] = ']' then
-        Delete(s, Length(s), 1);
-
-      DeleteFiles(s)
+      // Verzeichnis: [Pfad]
+      if (Length(s) >= 2) and
+         (s[1] = '[') and
+         (s[Length(s)] = ']') then
+        Inc(DirectoryCount)
+      else
+        Inc(FileCount);
     end;
+  end;
+
+  // Passenden Hinweistext erzeugen
+  if (FileCount = 1) and (DirectoryCount = 0) then
+  begin
+    Msg :=
+      'Soll die Datei wirklich gelöscht werden?';
+  end
+  else
+  if (FileCount > 1) and (DirectoryCount = 0) then
+  begin
+    Msg :=
+      'Sollen ' + IntToStr(FileCount) +
+      ' Dateien wirklich gelöscht werden?';
+  end
+  else
+  if (FileCount = 0) and (DirectoryCount = 1) then
+  begin
+    Msg :=
+      'Soll das Verzeichnis wirklich gelöscht werden?' +
+      sLineBreak + sLineBreak +
+      'ACHTUNG: Das komplette Verzeichnis einschließlich' +
+      sLineBreak +
+      'aller Unterverzeichnisse und Dateien wird gelöscht.';
+  end
+  else
+  if (FileCount = 0) and (DirectoryCount > 1) then
+  begin
+    Msg :=
+      'Sollen ' + IntToStr(DirectoryCount) +
+      ' Verzeichnisse wirklich gelöscht werden?' +
+      sLineBreak + sLineBreak +
+      'ACHTUNG: Die kompletten Verzeichnisse einschließlich' +
+      sLineBreak +
+      'aller Unterverzeichnisse und Dateien werden gelöscht.';
+  end
+  else
+  begin
+    // Dateien und Verzeichnisse gemischt
+    Msg :=
+      'Sollen ' + IntToStr(FileCount) +
+      ' Dateien und ' +
+      IntToStr(DirectoryCount) +
+      ' Verzeichnisse wirklich gelöscht werden?' +
+      sLineBreak + sLineBreak +
+      'ACHTUNG: Die ausgewählten Verzeichnisse werden' +
+      sLineBreak +
+      'einschließlich aller Unterverzeichnisse und Dateien gelöscht.';
+  end;
+
+  // Sicherheitsabfrage
+  if MessageDlgCenter(
+       Msg,
+       mtWarning,
+       [mbYes, mbNo]
+     ) = mrNo then
+    Exit;
+
+  // Von hinten nach vorne löschen.
+  // Dadurch bleiben die Indizes stabil.
+  for i := ListBox1.Count - 1 downto 0 do
+  begin
+    if ListBox1.Selected[i] then
+    begin
+      s := FSearchResults[i];
+
+      // Bei Verzeichnissen [ und ] entfernen
+      if (Length(s) >= 2) and
+         (s[1] = '[') and
+         (s[Length(s)] = ']') then
+      begin
+        Delete(s, 1, 1);
+        Delete(s, Length(s), 1);
+      end;
+
+      DeleteFiles(s);
+    end;
+  end;
+
+  // Gelöschte Einträge aus den Suchergebnissen entfernen
   DeleteSelectedResults;
+
+  // Falls noch Einträge vorhanden sind,
+  // ersten Eintrag auswählen
   if ListBox1.Count > 0 then
     ListBox1.Selected[0] := True;
 end;
@@ -1065,6 +1150,8 @@ var
   SearchText: string;
   FirstMatch: Integer;
   MarkedCount: Integer;
+  FileCount: Integer;
+  DirectoryCount: Integer;
   SavedOnClick: TNotifyEvent;
   UseCandidates: Boolean;
   CandidateCount: Integer;
@@ -1083,6 +1170,8 @@ begin
     SearchText := LowerCase(Trim(FPendingSearchText));
     FirstMatch := -1;
     MarkedCount := 0;
+    FileCount := 0;
+    DirectoryCount := 0;
 
     if FSearchResults.Count = 0 then
     begin
@@ -1200,6 +1289,14 @@ begin
 
               Inc(MarkedCount);
 
+              // Eintr䧥, die mit '[' beginnen, sind in dieser Unit
+              // als Verzeichnisse gekennzeichnet; alle anderen sind Dateien.
+              if (Length(FSearchResults[FSearchCandidates[I]]) > 0) and
+                 (FSearchResults[FSearchCandidates[I]][1] = '[') then
+                Inc(DirectoryCount)
+              else
+                Inc(FileCount);
+
               if FirstMatch = -1 then
                 FirstMatch := FSearchCandidates[I];
 
@@ -1234,8 +1331,27 @@ begin
 
     if not RestartSearch then
     begin
+      // Statusbar zeigt jetzt das tats䣨liche Suchergebnis getrennt
+      // nach Dateien und Verzeichnissen an.
+      if SearchText = '' then
+      begin
+        FileCount := 0;
+        DirectoryCount := 0;
+
+        for I := 0 to FSearchResults.Count - 1 do
+        begin
+          if (Length(FSearchResults[I]) > 0) and
+             (FSearchResults[I][1] = '[') then
+            Inc(DirectoryCount)
+          else
+            Inc(FileCount);
+        end;
+      end;
+
       StatusBar1.Panels[1].Text :=
-        'Markiert: ' + IntToStr(MarkedCount);
+        'Dateien: ' + IntToStr(FileCount) +
+        ' | Verzeichnisse: ' + IntToStr(DirectoryCount) +
+        ' | Gesamt: ' + IntToStr(FileCount + DirectoryCount);
 
       StatusBar1.Canvas.Font := StatusBar1.Font;
       StatusBar1.Panels[0].Width :=
