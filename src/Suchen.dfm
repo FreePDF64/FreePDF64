@@ -892,6 +892,8 @@ object Suche_Form: TSuche_Form
       OnDblClick = ListBox1DblClick
       OnDrawItem = ListBox1DrawItem
       OnMouseDown = ListBox1MouseDown
+      ExplicitTop = 75
+      ExplicitHeight = 323
     end
   end
   object StatusBar1: TStatusBar

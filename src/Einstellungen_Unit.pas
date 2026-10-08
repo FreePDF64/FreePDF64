@@ -992,7 +992,11 @@ end;
 procedure TEinstellungen_Form.InfoClick(Sender: TObject);
 begin
   // Form soll mittig angezeigt werden.
-  Einstellungen_Hilfe_Form.Position := poMainFormCenter;
+//  Einstellungen_Hilfe_Form.Position := poMainFormCenter;
+  Einstellungen_Hilfe_Form.Position := poDesigned;
+  Einstellungen_Hilfe_Form.Left     := Self.Left + (Self.Width - Einstellungen_Hilfe_Form.Width) div 2;
+  Einstellungen_Hilfe_Form.Top      := Self.Top + (Self.Height - Einstellungen_Hilfe_Form.Height) div 2;
+
   Einstellungen_Hilfe_Form.ShowModal;
 end;
 

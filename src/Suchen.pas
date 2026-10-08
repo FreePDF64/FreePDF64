@@ -1220,7 +1220,9 @@ end;
 // Fragezeichen: Hilfe für die Suchfunktionen
 procedure TSuche_Form.InfoClick(Sender: TObject);
 begin
-  Suche_Info.Position := poMainFormCenter;
+  Suche_Info.Position := poDesigned;
+  Suche_Info.Left     := Self.Left + (Self.Width - Suche_Info.Width)  div 2;
+  Suche_Info.Top      := Self.Top + (Panel_Oben.Height DIV 2);
   Suche_Info.Memo1.Lines.Text :=
     'Suchen nach:' + #13 +
     '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +

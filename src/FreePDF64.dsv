@@ -10,19 +10,19 @@ EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxTdWNoZW4ucGFz]
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=45
-CursorY=494
-TopLine=488
+CursorX=23
+CursorY=1226
+TopLine=1221
 LeftCol=1
 Elisions=
-Bookmarks={0,4370,1}
+Bookmarks={0,4378,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxJbmZvX1VuaXQucGFz]
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
 CursorX=15
 CursorY=103
-TopLine=75
+TopLine=60
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -30,9 +30,9 @@ EditViewName=D:\Delphi\FreePDF64\Info_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxFaW5zdGVsbHVuZ2VuX1VuaXQucGFz]
 Module=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-CursorX=42
-CursorY=1150
-TopLine=1115
+CursorX=1
+CursorY=997
+TopLine=992
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -87,4 +87,24 @@ LeftCol=1
 Elisions=
 Bookmarks=
 EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+
+[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxTdWNoZV9JbmZvX1VuaXQucGFz]
+Module=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=
+
+[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxFaW5zdGVsbHVuZ2VuX0hpbGZlX1VuaXQucGFz]
+Module=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
+CursorX=1
+CursorY=1
+TopLine=1
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Borland.FormDesignerView
 

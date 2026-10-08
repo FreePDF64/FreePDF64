@@ -1,40 +1,36 @@
 object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
   Left = 0
   Top = 0
-  Margins.Left = 6
-  Margins.Top = 6
-  Margins.Right = 6
-  Margins.Bottom = 6
   BorderIcons = [biSystemMenu]
   Caption = 'Hilfe zu den Einstellungen'
-  ClientHeight = 1630
-  ClientWidth = 2116
+  ClientHeight = 671
+  ClientWidth = 1063
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -28
+  Font.Height = -14
   Font.Name = 'Tahoma'
   Font.Style = []
   KeyPreview = True
   OnCreate = FormCreate
   OnKeyDown = FormKeyDown
-  PixelsPerInch = 240
-  TextHeight = 34
+  PixelsPerInch = 120
+  TextHeight = 17
   object Memo1: TMemo
     Left = 0
     Top = 0
-    Width = 2116
-    Height = 1558
-    Margins.Left = 8
-    Margins.Top = 8
-    Margins.Right = 8
-    Margins.Bottom = 8
+    Width = 1063
+    Height = 635
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alClient
     BevelOuter = bvNone
     Color = clBtnFace
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
-    Font.Height = -30
+    Font.Height = -15
     Font.Name = 'Segoe UI'
     Font.Style = []
     Lines.Strings = (
@@ -238,19 +234,23 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
     TabOrder = 0
     WantReturns = False
     WordWrap = False
+    ExplicitWidth = 1051
+    ExplicitHeight = 651
   end
   object Button1: TButton
     Left = 0
-    Top = 1558
-    Width = 2116
-    Height = 72
-    Margins.Left = 8
-    Margins.Top = 8
-    Margins.Right = 8
-    Margins.Bottom = 8
+    Top = 635
+    Width = 1063
+    Height = 36
+    Margins.Left = 4
+    Margins.Top = 4
+    Margins.Right = 4
+    Margins.Bottom = 4
     Align = alBottom
     Caption = 'Schlie'#223'en'
     TabOrder = 1
     OnClick = Button1Click
+    ExplicitTop = 651
+    ExplicitWidth = 1051
   end
 end
