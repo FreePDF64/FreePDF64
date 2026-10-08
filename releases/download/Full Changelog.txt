@@ -1,6 +1,7 @@
-07.10.2026 V7.1.0
+08.10.2026 V7.1.0
 Fix -> Aus Lizenzgründen ist der PDF-Anzeiger nun nicht mehr im Programm frei auswählbar: Es ist fest eingestellt der integrierte PDF-Anzeiger. 
 Fix -> Die Suche im Suchergebnis wurde vereinfacht.
+Fix -> Update auf neueste Version von WebView4Delphi.
 04.10.2026 V7.0.0
 Neu -> Endlich! FreePDF64 hat nun einen eigenen Drucker: Es wird bei der Installation von FreePDF64 ein neuer eigener Drucker "FreePDF64 Postscript" installiert (siehe auch FreePDF64-HowTo.pdf).
 Neu -> Neuen PDF-Viewer zum Anzeigen der PDF-Dateien mit F3, auch im Suchefenster, eingebaut.
