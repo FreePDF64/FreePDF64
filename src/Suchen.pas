@@ -1364,7 +1364,12 @@ begin
 
       Work := SearchField.Text;
       FreePDF64_Form.PanelOverPrgB.Visible := True;
-      FreePDF64_Form.PanelOverPrgB.Caption := s;
+
+      if DirectoryExists(s) then
+        FreePDF64_Form.PaneloverPrgB.Caption := '[' + s + ']'
+      else
+        FreePDF64_Form.PanelOverPrgB.Caption := s;
+
       Befehlszeile := ExifTool + ' -L ' + GE + ' -g1 -charset filename=cp1252 -a -All:All -e "' + s + '"';
     end;
   end;

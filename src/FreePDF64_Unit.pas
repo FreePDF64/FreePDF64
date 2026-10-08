@@ -2987,6 +2987,9 @@ begin
 
   // UI: Fortschrittsanzeige
   PaneloverPrgB.Visible := True;
+  if DirectoryExists(SelPath + SelFile) then
+    PaneloverPrgB.Caption := '[' + SelPath + SelFile + ']'
+  else
   PaneloverPrgB.Caption := SelPath + SelFile;
 
   // ExifTool-Befehlszeile

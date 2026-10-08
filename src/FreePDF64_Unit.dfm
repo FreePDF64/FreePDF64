@@ -1644,7 +1644,6 @@ object FreePDF64_Form: TFreePDF64_Form
       OnMouseDown = LMDShellList1MouseDown
       OnInfoTip = LMDShellList1InfoTip
       OnSelectItem = LMDShellList1SelectItem
-      ExplicitWidth = 270
     end
     object FavLbL: TListBox
       Left = 1379
