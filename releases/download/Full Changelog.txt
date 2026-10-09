@@ -1,3 +1,5 @@
+09.10.2026 V7.1.1
+Neu -> PDF-Dateien öffnen per Doppelklick im Explorer direkt im FreePDF64-PDF-Anzeiger.
 08.10.2026 V7.1.0
 Fix -> Aus Lizenzgründen ist der PDF-Anzeiger nun nicht mehr im Programm frei auswählbar: Es ist fest eingestellt der integrierte PDF-Anzeiger. 
 Fix -> Die Suche im Suchergebnis wurde vereinfacht.

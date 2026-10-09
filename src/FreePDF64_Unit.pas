@@ -395,6 +395,7 @@ type
     procedure Gitternetzlinien1Click(Sender: TObject);
     procedure VersteckteDateienanzeigen1Click(Sender: TObject);
     procedure Einstellungen1Click(Sender: TObject);
+    procedure PDFVerknuepfungClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PDF_ErstellungClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -2138,7 +2139,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '08.10.2026';
+  Datum := '09.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4612,7 +4613,13 @@ var
   Ini: TIniFile;
   IniPath, S: string;
   Entry: string;
+  PDFMenuItem: TMenuItem;
 begin
+  // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
+  PDFMenuItem := TMenuItem.Create(MainMenu1);
+  PDFMenuItem.Caption := 'PDF-Dateien mit FreePDF64 verknüpfen...';
+  PDFMenuItem.OnClick := PDFVerknuepfungClick;
+  WindowsIntegration1.Add(PDFMenuItem);
   Application.HintHidePause := 5000;
   UseLatestCommonDialogs := False;
   MsgDlgIcons[mtInformation] := TMsgDlgIcon.mdiInformation;
@@ -9427,6 +9434,258 @@ begin
   end;
 
   Überwachung_Erstellung := False;
+end;
+
+function ScaleForDPI(Value, PPI: Integer): Integer;
+begin
+  if PPI <= 0 then
+    PPI := 96;
+
+  Result := MulDiv(Value, PPI, 96);
+end;
+
+procedure ShowPDFVerknuepfungsDialog(SettingsGeoeffnet: Boolean);
+var
+  Dlg: TForm;
+  Kopf: TPanel;
+  Titel, Info, VorteileTitel, Vorteile, HinweisTitel, Hinweis: TLabel;
+  BtnOK: TButton;
+  PPI: Integer;
+  W, H: Integer;
+begin
+  Dlg := TForm.Create(nil);
+  try
+    Dlg.Caption := 'FreePDF64 - PDF-Verknüpfung';
+    Dlg.BorderStyle := bsDialog;
+    Dlg.BorderIcons := [biSystemMenu];
+    Dlg.Position := poScreenCenter;
+    Dlg.Font.Name := 'Segoe UI';
+    Dlg.Font.Size := 10;
+    Dlg.Color := clWindow;
+
+    PPI := Dlg.CurrentPPI;
+    if PPI <= 0 then
+      PPI := 96;
+
+    W := ScaleForDPI(580, PPI);
+    H := ScaleForDPI(520, PPI);
+
+    Dlg.ClientWidth := W;
+    Dlg.ClientHeight := H;
+
+    { Blauer Kopfbereich }
+    Kopf := TPanel.Create(Dlg);
+    Kopf.Parent := Dlg;
+    Kopf.SetBounds(
+      0,
+      0,
+      W,
+      ScaleForDPI(76, PPI)
+    );
+    Kopf.Anchors := [akLeft, akTop, akRight];
+    Kopf.BevelOuter := bvNone;
+    Kopf.ParentBackground := False;
+    Kopf.Color := $00B06020;
+    Kopf.ParentFont := False;
+
+    { Überschrift }
+    Titel := TLabel.Create(Dlg);
+    Titel.Parent := Kopf;
+    Titel.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(20, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(36, PPI)
+    );
+    Titel.AutoSize := False;
+    Titel.ParentFont := False;
+    Titel.Font.Name := 'Segoe UI';
+    Titel.Font.Size := 16;
+    Titel.Font.Style := [fsBold];
+    Titel.Font.Color := clWhite;
+    Titel.Transparent := True;
+    Titel.Caption := 'PDF-Verknüpfung vorbereitet';
+
+    { Einleitung }
+    Info := TLabel.Create(Dlg);
+    Info.Parent := Dlg;
+    Info.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(96, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(76, PPI)
+    );
+    Info.AutoSize := False;
+    Info.WordWrap := True;
+    Info.Caption :=
+      'FreePDF64 wurde bei Windows als PDF-Anwendung registriert.' +
+      sLineBreak +
+      'Mit dieser Zuordnung öffnen Sie PDF-Dateien direkt im' +
+      sLineBreak +
+      'PDF-Anzeiger.';
+
+    { Vorteile – Überschrift }
+    VorteileTitel := TLabel.Create(Dlg);
+    VorteileTitel.Parent := Dlg;
+    VorteileTitel.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(184, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(24, PPI)
+    );
+    VorteileTitel.AutoSize := False;
+    VorteileTitel.Font.Style := [fsBold];
+    VorteileTitel.Caption := 'Ihre Vorteile';
+
+    { Vorteile – Beschreibung }
+    Vorteile := TLabel.Create(Dlg);
+    Vorteile.Parent := Dlg;
+    Vorteile.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(212, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(100, PPI)
+    );
+    Vorteile.AutoSize := False;
+    Vorteile.WordWrap := True;
+    Vorteile.Caption :=
+      '- PDF-Dateien öffnen sich per Doppelklick im Explorer direkt' +
+      sLineBreak +
+      '  im FreePDF64-PDF-Anzeiger.' +
+      sLineBreak +
+      '- Das Hauptprogramm können Sie weiterhin normal starten' +
+      sLineBreak +
+      '  und parallel zum PDF-Anzeiger verwenden.';
+
+    { Hinweis – Überschrift }
+    HinweisTitel := TLabel.Create(Dlg);
+    HinweisTitel.Parent := Dlg;
+    HinweisTitel.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(328, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(24, PPI)
+    );
+    HinweisTitel.AutoSize := False;
+    HinweisTitel.Font.Style := [fsBold];
+
+    { Hinweis – Beschreibung }
+    Hinweis := TLabel.Create(Dlg);
+    Hinweis.Parent := Dlg;
+    Hinweis.SetBounds(
+      ScaleForDPI(24, PPI),
+      ScaleForDPI(356, PPI),
+      W - ScaleForDPI(48, PPI),
+      ScaleForDPI(76, PPI)
+    );
+    Hinweis.AutoSize := False;
+    Hinweis.WordWrap := True;
+
+    if SettingsGeoeffnet then
+    begin
+      HinweisTitel.Caption := 'Noch ein Schritt';
+      Hinweis.Caption :=
+        'Wählen Sie in den geöffneten Windows-Einstellungen' +
+        sLineBreak +
+        'FreePDF64 als Standard-App für PDF-Dateien (.pdf) aus.' +
+        sLineBreak +
+        'Windows verlangt diese Bestätigung aus Sicherheitsgründen.';
+    end
+    else
+    begin
+      HinweisTitel.Caption := 'Standard-App manuell auswählen';
+      Hinweis.Caption :=
+        'Die Windows-Einstellungen konnten nicht automatisch' +
+        sLineBreak +
+        'geöffnet werden. Öffnen Sie Einstellungen > Apps >' +
+        sLineBreak +
+        'Standard-Apps und wählen Sie FreePDF64 für .pdf aus.';
+    end;
+
+    { OK-Schaltfläche }
+    BtnOK := TButton.Create(Dlg);
+    BtnOK.Parent := Dlg;
+    BtnOK.Caption := 'OK';
+    BtnOK.ModalResult := mrOk;
+    BtnOK.SetBounds(
+      W - ScaleForDPI(124, PPI),
+      H - ScaleForDPI(50, PPI),
+      ScaleForDPI(96, PPI),
+      ScaleForDPI(30, PPI)
+    );
+    BtnOK.Anchors := [akRight, akBottom];
+    BtnOK.Default := True;
+    BtnOK.Cancel := True;
+
+    Dlg.ActiveControl := BtnOK;
+    Dlg.ShowModal;
+  finally
+    Dlg.Free;
+  end;
+end;
+
+procedure TFreePDF64_Form.PDFVerknuepfungClick(Sender: TObject);
+var
+  Reg: TRegistry;
+  ExePath, ExeName, CommandLine: string;
+  RegisteredAppsPath: string;
+begin
+  ExePath := ExpandFileName(Application.ExeName);
+  ExeName := ExtractFileName(ExePath);
+  CommandLine := '"' + ExePath + '" "%1"';
+  RegisteredAppsPath := 'Software\FreePDF64\Capabilities';
+
+  // Registrierung nur für den aktuellen Benutzer; keine Adminrechte nötig.
+  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+
+    if Reg.OpenKey('Software\Classes\FreePDF64.PDF\DefaultIcon', True) then
+    begin
+      Reg.WriteString('', ExePath + ',0');
+      Reg.CloseKey;
+    end;
+
+    if Reg.OpenKey('Software\Classes\FreePDF64.PDF\shell\open\command', True) then
+    begin
+      Reg.WriteString('', CommandLine);
+      Reg.CloseKey;
+    end;
+
+    if Reg.OpenKey('Software\Classes\Applications\' + ExeName + '\SupportedTypes', True) then
+    begin
+      Reg.WriteString('.pdf', '');
+      Reg.CloseKey;
+    end;
+
+    if Reg.OpenKey(RegisteredAppsPath, True) then
+    begin
+      Reg.WriteString('ApplicationName', 'FreePDF64');
+      Reg.WriteString('ApplicationDescription', 'PDF-Dateien mit FreePDF64 anzeigen');
+      Reg.WriteString('ApplicationIcon', ExePath + ',0');
+      Reg.CloseKey;
+    end;
+
+    if Reg.OpenKey(RegisteredAppsPath + '\FileAssociations', True) then
+    begin
+      Reg.WriteString('.pdf', 'FreePDF64.PDF');
+      Reg.CloseKey;
+    end;
+
+    if Reg.OpenKey('Software\RegisteredApplications', True) then
+    begin
+      Reg.WriteString('FreePDF64', RegisteredAppsPath);
+      Reg.CloseKey;
+    end;
+  finally
+    Reg.Free;
+  end;
+
+  // Windows verlangt eine Bestätigung der Standard-App durch den Benutzer.
+  if ShellExecute(Handle, 'open', 'ms-settings:defaultapps', nil, nil, SW_SHOWNORMAL) <= 32 then
+    ShowPDFVerknuepfungsDialog(False)
+  else
+    ShowPDFVerknuepfungsDialog(True);
 end;
 
 end.

@@ -1,8 +1,8 @@
 ﻿[Closed Files]
-File_0=TSourceModule,'D:\Delphi\FreePDF64\Zusatz_Unit.pas',0,1,35,1,37,0,0,,
-File_1=TSourceModule,'D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas',0,1,1,1,1,0,0,,
-File_2=TSourceModule,'D:\Delphi\FreePDF64\Suche_Info_Unit.pas',0,1,1,1,1,0,0,,
-File_3=TSourceModule,'D:\Delphi\FreePDF64\Info_Unit.pas',0,1,60,15,103,0,0,,
+File_0=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64Resource.rc',0,1,1,13,1,0,0,,
+File_1=TSourceModule,'D:\Delphi\FreePDF64\Zusatz_Unit.pas',0,1,35,1,37,0,0,,
+File_2=TSourceModule,'D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas',0,1,1,1,1,0,0,,
+File_3=TSourceModule,'D:\Delphi\FreePDF64\Suche_Info_Unit.pas',0,1,1,1,1,0,0,,
 File_4=TSourceModule,'D:\Delphi\FreePDF64\Status_Unit.pas',0,1,1,1,1,0,0,,
 File_5=TSourceModule,'D:\Compiler\Delphi\FreePDF64_PostScriptPrinter\Source\FreePDF64PortMonitorUnit.pas',0,1,1,6,1,0,0,,
 File_6=TSourceModule,'D:\Compiler\Delphi\FreePDF64\Anleitung_Unit.pas',0,1,16,1,36,0,0,,
@@ -16,20 +16,24 @@ File_13=TSourceModule,'D:\Temp\Suchen_.pas',0,1,1602,25,1623,0,0,,
 File_14=TSourceModule,'D:\Delphi\FreePDF64\FreePDF64_2.ico',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\Suchen.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-Module3=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-Module4=D:\Delphi\FreePDF64\Anleitung_Unit.pas
-Module5=D:\Delphi\FreePDF64\Auswahl_Unit.pas
-Module6=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
-Count=7
+Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module1=D:\Delphi\FreePDF64\Info_Unit.pas
+Module2=D:\Delphi\FreePDF64\Suchen.pas
+Module3=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module4=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module5=D:\Delphi\FreePDF64\Anleitung_Unit.pas
+Module6=D:\Delphi\FreePDF64\Auswahl_Unit.pas
+Module7=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
+Count=8
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\Suchen.pas]
+[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
+[D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
@@ -48,8 +52,8 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [EditWindow0]
-ViewCount=7
-CurrentEditView=D:\Delphi\FreePDF64\Suchen.pas
+ViewCount=8
+CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -57,6 +61,7 @@ View3=3
 View4=4
 View5=5
 View6=6
+View7=7
 PercentageSizes=1
 Create=1
 Visible=1
@@ -93,9 +98,9 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=1
-CursorY=3941
-TopLine=3939
+CursorX=10
+CursorY=9647
+TopLine=9641
 LeftCol=1
 Elisions=
 Bookmarks={0,2993,2}{1,7591,5}
@@ -150,13 +155,24 @@ CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
 CursorX=1
 CursorY=4739
-TopLine=4698
+TopLine=4659
 LeftCol=1
 Elisions=
 Bookmarks={0,4739,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
 [View6]
+CustomEditViewType=TEditView
+Module=D:\Delphi\FreePDF64\Info_Unit.pas
+CursorX=15
+CursorY=103
+TopLine=60
+LeftCol=1
+Elisions=
+Bookmarks=
+EditViewName=Borland.FormDesignerView
+
+[View7]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 CursorX=1
@@ -296,6 +312,11 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Name,
+ExpandedItems=Images=0,LiveBindings-Designer=0,MenuAnimation=0,Images.ImageCollection=0,Images.LiveBindings-Designer=0,PopupMenu=0
 
 [frmDesignPreview]
 PercentageSizes=1

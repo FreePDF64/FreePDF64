@@ -1,4 +1,4 @@
-﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{E2F279FD-27B3-4791-BCBA-B62E22DDD523}</ProjectGuid>
         <ProjectVersion>20.3</ProjectVersion>
@@ -50,7 +50,7 @@
         <DCC_F>false</DCC_F>
         <DCC_K>false</DCC_K>
         <DCC_Namespace>System;Xml;Data;Datasnap;Web;Soap;Vcl;Vcl.Imaging;Vcl.Touch;Vcl.Samples;Vcl.Shell;$(DCC_Namespace)</DCC_Namespace>
-        <Icon_MainIcon>$(BDS)\bin\delphi_PROJECTICON.ico</Icon_MainIcon>
+        <Icon_MainIcon>FreePDF64_Modern.ico</Icon_MainIcon>
         <UWP_DelphiLogo44>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png</UWP_DelphiLogo44>
         <UWP_DelphiLogo150>$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_150.png</UWP_DelphiLogo150>
         <SanitizedProjectName>FreePDF64</SanitizedProjectName>
@@ -91,8 +91,8 @@
         <AppDPIAwarenessMode>PerMonitor</AppDPIAwarenessMode>
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>7</VerInfo_MajorVer>
-        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=7.1.0.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=7.1.0;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
-        <Icon_MainIcon>FreePDF64.ico</Icon_MainIcon>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=7.1.1.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=7.1.1;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
+        <Icon_MainIcon>FreePDF64_Modern.ico</Icon_MainIcon>
         <BRCC_CodePage>0</BRCC_CodePage>
         <DCC_TSAware>false</DCC_TSAware>
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
@@ -100,6 +100,7 @@
         <DCC_Inlining>off</DCC_Inlining>
         <DCC_UnitSearchPath>D:\Delphi\WebView4Delphi-main\source;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <VerInfo_MinorVer>1</VerInfo_MinorVer>
+        <VerInfo_Release>1</VerInfo_Release>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">
@@ -190,14 +191,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\FreePDF64_PostScriptPrinter\Source\FreePDF64PrinterConfig.pas"/>
-        <RcItem Include="FreePDF64_1.ico">
-            <ResourceType>ICON</ResourceType>
-            <ResourceId>Icon_1</ResourceId>
-        </RcItem>
-        <RcItem Include="FreePDF64_2.ico">
-            <ResourceType>ICON</ResourceType>
-            <ResourceId>Icon_2</ResourceId>
-        </RcItem>
         <None Include="FreePDF64.dpr"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -222,22 +215,6 @@
                 <DeployFile LocalName="$(BDS)\bin\Artwork\Windows\UWP\delphi_UwpDefault_44.png" Configuration="Debug" Class="UWP_DelphiLogo44"/>
                 <DeployFile LocalName="FreePDF64.dpr" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="FreePDF64.dpr" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win64">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="FreePDF64_1.ico" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="FreePDF64_1.ico" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="FreePDF64_1.ico" Configuration="Release" Class="ProjectFile">
-                    <Platform Name="Win64">
-                        <RemoteDir>.\</RemoteDir>
-                        <Overwrite>true</Overwrite>
-                    </Platform>
-                </DeployFile>
-                <DeployFile LocalName="FreePDF64_2.ico" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="FreePDF64_2.ico" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="FreePDF64_2.ico" Configuration="Release" Class="ProjectFile">
                     <Platform Name="Win64">
                         <RemoteDir>.\</RemoteDir>
                         <Overwrite>true</Overwrite>

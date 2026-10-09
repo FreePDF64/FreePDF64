@@ -1,7 +1,5 @@
 ﻿program FreePDF64;
 
-{$R *.dres}
-
 uses
   Winapi.Windows,
   System.SysUtils,
@@ -32,50 +30,87 @@ uses
   uPDFBrowserForm in 'uPDFBrowserForm.pas' {PDFBrowserForm},
   FreePDF64PrinterConfig in '..\FreePDF64_PostScriptPrinter\Source\FreePDF64PrinterConfig.pas';
 
-{$R *.RES}
-
 var
   hMutex: THandle;
   MutexName: string;
+  PDFDatei: string;
+  PDFBrowserForm: TPDFBrowserForm;
+  PDFModus: Boolean;
 begin
-  MutexName := 'Mutex_' + ExtractFileName(ParamStr(0));
-  hMutex := CreateMutex(nil, True, PChar(MutexName));
+  // Wurde FreePDF64 mit einem PDF-Dateipfad gestartet
+  // (z. B. durch Doppelklick im Windows-Explorer)?
+  PDFDatei := '';
+  PDFModus := False;
 
-  if (hMutex = 0) or (GetLastError = ERROR_ALREADY_EXISTS) then
+  if ParamCount > 0 then
   begin
-    MessageBox(0,
-      'FreePDF64 läuft bereits!',
-      'Hinweis',
-      MB_ICONINFORMATION or MB_OK);
-    Halt;
+    PDFDatei := ExpandFileName(ParamStr(1));
+    PDFModus :=
+      SameText(ExtractFileExt(PDFDatei), '.pdf') and
+      FileExists(PDFDatei);
   end;
-  
+
+  // Nur der normale FreePDF64-Start verwendet den Mutex.
+  // Das separate PDF-Anzeigefenster blockiert dadurch
+  // den normalen Programmstart nicht.
+  hMutex := 0;
+
+  if not PDFModus then
+  begin
+    MutexName := 'Mutex_' + ExtractFileName(ParamStr(0));
+    hMutex := CreateMutex(nil, True, PChar(MutexName));
+
+    if (hMutex = 0) or (GetLastError = ERROR_ALREADY_EXISTS) then
+    begin
+      if hMutex <> 0 then
+        CloseHandle(hMutex);
+
+      MessageBox(0,
+        'FreePDF64 läuft bereits!',
+        'Hinweis',
+        MB_ICONINFORMATION or MB_OK);
+      Halt;
+    end;
+  end;
+
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'FreePDF64';
-  Application.CreateForm(TFreePDF64_Form, FreePDF64_Form);
-  Application.CreateForm(TEinstellungen_Form, Einstellungen_Form);
-  Application.CreateForm(TAuswahl_Form, Auswahl_Form);
-  Application.CreateForm(TEncrypt_Form, Encrypt_Form);
-  Application.CreateForm(TDokuInfo_Form, DokuInfo_Form);
-  Application.CreateForm(TSeiten_Form, Seiten_Form);
-  Application.CreateForm(TFavoriten_Form, Favoriten_Form);
-  Application.CreateForm(TInfo_Form, Info_Form);
-  Application.CreateForm(TFreePDF64_Notify, FreePDF64_Notify);
-  Application.CreateForm(TEinstellungen_Hilfe_Form, Einstellungen_Hilfe_Form);
-  Application.CreateForm(TFavoriten2_Form, Favoriten2_Form);
-  Application.CreateForm(TFilter_Form, Filter_Form);
-  Application.CreateForm(TWasserzeichen_Form, Wasserzeichen_Form);
-  Application.CreateForm(TZusatz_Form, Zusatz_Form);
-  Application.CreateForm(TSplashscreen_Form, Splashscreen_Form);
-  Application.CreateForm(TDateianlage_Form, Dateianlage_Form);
-  Application.CreateForm(TStatus_Form, Status_Form);
-  Application.CreateForm(TSuche_Form, Suche_Form);
-  Application.CreateForm(TAuswahl_Form, Auswahl_Form);
-  Application.CreateForm(TAnleitung_Form, Anleitung_Form);
-  Application.CreateForm(TSuche_Info, Suche_Info);
-  Application.Run;
-  
-  CloseHandle(hMutex);
-end.
 
+  if PDFModus then
+  begin
+    // PDF separat anzeigen, ohne den Mutex der Hauptanwendung zu belegen.
+    Application.CreateForm(TPDFBrowserForm, PDFBrowserForm);
+    PDFBrowserForm.PDFFileName := PDFDatei;
+  end
+  else
+  begin
+    // Regulärer Start von FreePDF64
+    Application.CreateForm(TFreePDF64_Form, FreePDF64_Form);
+    Application.CreateForm(TEinstellungen_Form, Einstellungen_Form);
+    Application.CreateForm(TAuswahl_Form, Auswahl_Form);
+    Application.CreateForm(TEncrypt_Form, Encrypt_Form);
+    Application.CreateForm(TDokuInfo_Form, DokuInfo_Form);
+    Application.CreateForm(TSeiten_Form, Seiten_Form);
+    Application.CreateForm(TFavoriten_Form, Favoriten_Form);
+    Application.CreateForm(TInfo_Form, Info_Form);
+    Application.CreateForm(TFreePDF64_Notify, FreePDF64_Notify);
+    Application.CreateForm(TEinstellungen_Hilfe_Form, Einstellungen_Hilfe_Form);
+    Application.CreateForm(TFavoriten2_Form, Favoriten2_Form);
+    Application.CreateForm(TFilter_Form, Filter_Form);
+    Application.CreateForm(TWasserzeichen_Form, Wasserzeichen_Form);
+    Application.CreateForm(TZusatz_Form, Zusatz_Form);
+    Application.CreateForm(TSplashscreen_Form, Splashscreen_Form);
+    Application.CreateForm(TDateianlage_Form, Dateianlage_Form);
+    Application.CreateForm(TStatus_Form, Status_Form);
+    Application.CreateForm(TSuche_Form, Suche_Form);
+    Application.CreateForm(TAuswahl_Form, Auswahl_Form);
+    Application.CreateForm(TAnleitung_Form, Anleitung_Form);
+    Application.CreateForm(TSuche_Info, Suche_Info);
+  end;
+
+  Application.Run;
+
+  if hMutex <> 0 then
+    CloseHandle(hMutex);
+end.
