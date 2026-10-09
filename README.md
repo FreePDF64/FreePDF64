@@ -17,6 +17,7 @@ Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitH
 ##### Das beste Goodie ist: Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung inkl. direkter Anzeige danach (PDF-Datei)! Ermöglicht wird dies durch die ständige Überwachung eines ausgewählten Verzeichnisses auf neue eingehende Dateien.
 
 - Bei der Installation von FreePDF64 wird ein Windows-Druckertreiber (der FreePDF64 Postscript-Drucker) angelegt. Dadurch können PDF-Dateien direkt aus allen Anwendung erstellt werden, die eine Druckfunktion bereitstellen.
+- PDF-Dateien direkt im FreePDF64-PDF-Anzeiger öffnen per Doppelklick im Windows-Datei-Explorer. Kein weiterer PDF-Reader mehr nötig!
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
 - Bearbeite vorhandene PDF-Dateien mit den umfangreichen Funktionen von FreePDF64!
