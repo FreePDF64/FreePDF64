@@ -745,6 +745,9 @@ object FreePDF64_Form: TFreePDF64_Form
       Panels = <
         item
           Width = 63
+        end
+        item
+          Width = 50
         end>
       ParentShowHint = False
       ShowHint = False
@@ -25867,5 +25870,10 @@ object FreePDF64_Form: TFreePDF64_Form
     Height = 19
     Left = 693
     Top = 274
+  end
+  object Timer3: TTimer
+    OnTimer = Timer3Timer
+    Left = 703
+    Top = 263
   end
 end

@@ -89,7 +89,7 @@ uses
   ComObj, MMSystem, JPEG, GDIPAPI, GDIPOBJ,
   Vcl.VirtualImageList, Vcl.BaseImageCollection, Vcl.ImageCollection,
   Vcl.AppEvnts, System.Win.TaskbarCore, Vcl.Taskbar,
-  LMDVersionInfo, Vcl.OleCtrls, SHDocVw;
+  LMDVersionInfo, Vcl.OleCtrls, SHDocVw, Winapi.PsAPI;
 
 const
   WM_TASKBAREVENT = WM_USER + 1; // Taskbar message
@@ -101,6 +101,23 @@ const
   FOLDERID_UserProfiles: TGUID = '{0762D272-C50A-4BB0-A382-697DCD729B80}';
   FOLDERID_ProgramFiles: TGUID = '{905E63B6-CDF3-4F11-8E03-FFB7CFB0FCB3}';
   FOLDERID_ProgramFilesX86: TGUID = '{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}';
+
+type
+  TProcessMemoryCountersEx2 = record
+    cb: DWORD;
+    PageFaultCount: DWORD;
+    PeakWorkingSetSize: NativeUInt;
+    WorkingSetSize: NativeUInt;
+    QuotaPeakPagedPoolUsage: NativeUInt;
+    QuotaPagedPoolUsage: NativeUInt;
+    QuotaPeakNonPagedPoolUsage: NativeUInt;
+    QuotaNonPagedPoolUsage: NativeUInt;
+    PagefileUsage: NativeUInt;
+    PeakPagefileUsage: NativeUInt;
+    PrivateUsage: NativeUInt;
+    PrivateWorkingSetSize: NativeUInt;
+    SharedCommitUsage: NativeUInt;
+  end;
 
 type
   TExecuteWaitEvent = procedure(const ProcessInfo: TProcessInformation;
@@ -383,6 +400,7 @@ type
     WindowsIntegration1: TMenuItem;
     UPD: TMenuItem;
     PortMonitorLoglschen1: TMenuItem;
+    Timer3: TTimer;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -632,6 +650,7 @@ type
     procedure LMDShellTree1MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure PortMonitorLoglschen1Click(Sender: TObject);
+    procedure Timer3Timer(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -639,6 +658,8 @@ type
       FSortAscending, FSortAscending2: Boolean;
       FDirectoryNavigation1: Boolean;
       F2Pressed: Boolean;
+      function PrivaterArbeitsspeicher: UInt64;
+      procedure StatusBarAnpassen;
     public
       { Public-Deklarationen }
       PDF_UeberwachungsDatei: string;
@@ -702,6 +723,22 @@ begin
   FreePDF64_Form.Memo1.SelLength := 0;
   FreePDF64_Form.Memo1.SelText := S;
   FreePDF64_Form.Memo1.SelStart := P + Length(S);
+end;
+
+// Anzeige der Arbeitsspeicherbelegung von FreePDF64
+function TFreePDF64_Form.PrivaterArbeitsspeicher: UInt64;
+var
+  PMC: TProcessMemoryCountersEx2;
+begin
+  Result := 0;
+  FillChar(PMC, SizeOf(PMC), 0);
+  PMC.cb := SizeOf(PMC);
+
+  if GetProcessMemoryInfo(
+       GetCurrentProcess,
+       @PMC,
+       PMC.cb) then
+    Result := PMC.PrivateWorkingSetSize;
 end;
 
 // Klick auf Splitter2 registrieren
@@ -2752,6 +2789,27 @@ begin
     FreePDF64_Form.WindowState := wsMinimized;
     Timer2.Enabled := False;
   end;
+end;
+
+procedure TFreePDF64_Form.StatusBarAnpassen;
+var
+  TextBreite, Rand: Integer;
+  S: string;
+begin
+  Rand := ScaleValue(22);
+
+  S := StatusBar1.Panels[1].Text;
+
+  TextBreite := StatusBar1.Canvas.TextWidth(S) + Rand;
+
+  StatusBar1.Panels[1].Width := TextBreite;
+  StatusBar1.Panels[0].Width := StatusBar1.ClientWidth - TextBreite;
+end;
+
+procedure TFreePDF64_Form.Timer3Timer(Sender: TObject);
+begin
+  StatusBar1.Panels[1].Text := Format('RAM: %.1f MB', [PrivaterArbeitsspeicher / 1048576.0]);
+  StatusBarAnpassen;
 end;
 
 procedure TFreePDF64_Form.ToolButton6Click(Sender: TObject);
@@ -4850,6 +4908,9 @@ begin
   BtnEditor.Width := Laenge;
   Btn_View.Left := 7;
   Btn_View.Width := Laenge;
+
+  // Anzeige der Arbeitsspeicherbelegung anpassen
+  StatusBarAnpassen;
 end;
 
 procedure TFreePDF64_Form.HilfezudenEinstellungen1Click(Sender: TObject);
