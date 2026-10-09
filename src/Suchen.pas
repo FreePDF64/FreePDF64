@@ -75,12 +75,12 @@ type
     FileSize: TSpinEdit;
     DTP: TDateTimePicker;
     DateiCheckBox: TCheckBox;
-    SucheEdit: TEdit;
-    AnzeigenPanel: TPanel;
     Gehezu1: TMenuItem;
     Btn_8: TSpeedButton;
     PDFViewer1: TMenuItem;
     SuchergebnisCB: TCheckBox;
+    SucheEdit: TEdit;
+    AnzeigenPanel: TPanel;
     procedure ButtonHochClick(Sender: TObject);
     procedure BrowseClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -163,6 +163,7 @@ type
       procedure RebuildSearchLowerCache;
       procedure ResetResultSearchCache;
       function IsShortCut(var Message: TWMKey): Boolean; override;
+      procedure PositioniereSucheControls;
     end;
 
 var
@@ -180,6 +181,18 @@ implementation
 
 uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm;
 
+procedure TSuche_Form.PositioniereSucheControls;
+begin
+  // SucheEdit rechts unten in der ListBox
+  SucheEdit.Left := ListBox1.Left + ListBox1.Width - SucheEdit.Width - AnzeigenPanel.Width - 26;
+  SucheEdit.Top  := ListBox1.Top + ListBox1.Height - SucheEdit.Height - 5;
+
+  // AnzeigenPanel direkt rechts neben SucheEdit,
+  AnzeigenPanel.Left := SucheEdit.Left + SucheEdit.Width;
+  AnzeigenPanel.Top  := ListBox1.Top + ListBox1.Height - AnzeigenPanel.Height - 5;
+end;
+
+
 function TSuche_Form.IsShortCut(var Message: TWMKey): Boolean;
 begin
   if Message.CharCode = VK_F2 then
@@ -191,6 +204,8 @@ begin
       SucheEdit.Text        := '';
       SucheEdit.Visible     := True;
       AnzeigenPanel.Visible := True;
+
+      PositioniereSucheControls;
 
       SucheEdit.Color     := $00E8F1FF;
       AnzeigenPanel.Color := $00D6E8FF;
@@ -348,6 +363,8 @@ procedure TSuche_Form.FormResize(Sender: TObject);
 var
   Laenge: Integer;
 begin
+  PositioniereSucheControls;
+
   // Die Buttons werden dargestellt und ausgerichtet!
   Laenge := Suche_Form.Width div 8;
   Btn_5.Width := Laenge;

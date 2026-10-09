@@ -715,7 +715,7 @@ object Suche_Form: TSuche_Form
       Anchors = [akTop, akRight]
       BiDiMode = bdLeftToRight
       ImageAlignment = iaCenter
-      ImageIndex = 48
+      ImageIndex = 46
       ImageName = 'Item49'
       Images = FreePDF64_Form.VirtualImageList1
       ParentBiDiMode = False
@@ -892,6 +892,54 @@ object Suche_Form: TSuche_Form
       OnDblClick = ListBox1DblClick
       OnDrawItem = ListBox1DrawItem
       OnMouseDown = ListBox1MouseDown
+    end
+    object SucheEdit: TEdit
+      Left = 772
+      Top = 364
+      Width = 197
+      Height = 28
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      TabStop = False
+      BevelKind = bkTile
+      BevelOuter = bvRaised
+      TabOrder = 1
+      Visible = False
+      OnChange = SucheEditChange
+    end
+    object AnzeigenPanel: TPanel
+      Left = 969
+      Top = 366
+      Width = 105
+      Height = 26
+      Hint = 'Gefundene Eintr'#228'ge ganz oben im Suchergebnis anzeigen'
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      ParentCustomHint = False
+      BevelKind = bkFlat
+      BiDiMode = bdLeftToRight
+      Caption = 'Ergebnis...'
+      Ctl3D = True
+      DoubleBuffered = False
+      Font.Charset = ANSI_CHARSET
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Segoe UI Semibold'
+      Font.Style = [fsBold]
+      ParentBiDiMode = False
+      ParentBackground = False
+      ParentCtl3D = False
+      ParentDoubleBuffered = False
+      ParentFont = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 2
+      Visible = False
+      OnClick = AnzeigenPanelClick
     end
   end
   object StatusBar1: TStatusBar
@@ -1137,61 +1185,13 @@ object Suche_Form: TSuche_Form
       OnClick = Btn_8Click
       ExplicitHeight = 27
     end
-    object SucheEdit: TEdit
-      Left = 4
-      Top = 0
-      Width = 197
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      TabStop = False
-      BevelKind = bkTile
-      BevelOuter = bvRaised
-      TabOrder = 0
-      Visible = False
-      OnChange = SucheEditChange
-    end
-    object AnzeigenPanel: TPanel
-      Left = 201
-      Top = 2
-      Width = 105
-      Height = 26
-      Hint = 'Gefundene Eintr'#228'ge ganz oben im Suchergebnis anzeigen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      ParentCustomHint = False
-      BevelKind = bkFlat
-      BiDiMode = bdLeftToRight
-      Caption = 'Ergebnis...'
-      Ctl3D = True
-      DoubleBuffered = False
-      Font.Charset = ANSI_CHARSET
-      Font.Color = clWindowText
-      Font.Height = -15
-      Font.Name = 'Segoe UI Semibold'
-      Font.Style = [fsBold]
-      ParentBiDiMode = False
-      ParentBackground = False
-      ParentCtl3D = False
-      ParentDoubleBuffered = False
-      ParentFont = False
-      ParentShowHint = False
-      ShowHint = True
-      TabOrder = 1
-      Visible = False
-      OnClick = AnzeigenPanelClick
-    end
   end
   object LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog
     OwnerHandle = pwApplication
     RootFolder = 'sfMyComputer'
     Options = [boExpandDomains, boEnableOk, boNewGUI]
-    Left = 648
-    Top = 637
+    Left = 638
+    Top = 272
   end
   object Timer1: TTimer
     Enabled = False
