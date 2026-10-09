@@ -658,7 +658,7 @@ type
       FSortAscending, FSortAscending2: Boolean;
       FDirectoryNavigation1: Boolean;
       F2Pressed: Boolean;
-      function PrivaterArbeitsspeicher: UInt64;
+      function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
     public
       { Public-Deklarationen }
@@ -726,19 +726,70 @@ begin
 end;
 
 // Anzeige der Arbeitsspeicherbelegung von FreePDF64
-function TFreePDF64_Form.PrivaterArbeitsspeicher: UInt64;
+function TFreePDF64_Form.FreePDF64Speicher: UInt64;
+type
+  TProcessMemoryCountersEx2 = record
+    cb: DWORD;
+    PageFaultCount: DWORD;
+    PeakWorkingSetSize: NativeUInt;
+    WorkingSetSize: NativeUInt;
+    QuotaPeakPagedPoolUsage: NativeUInt;
+    QuotaPagedPoolUsage: NativeUInt;
+    QuotaPeakNonPagedPoolUsage: NativeUInt;
+    QuotaNonPagedPoolUsage: NativeUInt;
+    PagefileUsage: NativeUInt;
+    PeakPagefileUsage: NativeUInt;
+    PrivateUsage: NativeUInt;
+    PrivateWorkingSetSize: NativeUInt;
+    SharedCommitUsage: NativeUInt;
+  end;
+
 var
+  Snapshot: THandle;
+  ProcEntry: TProcessEntry32;
+  ProcessHandle: THandle;
   PMC: TProcessMemoryCountersEx2;
 begin
   Result := 0;
-  FillChar(PMC, SizeOf(PMC), 0);
-  PMC.cb := SizeOf(PMC);
 
-  if GetProcessMemoryInfo(
-       GetCurrentProcess,
-       @PMC,
-       PMC.cb) then
-    Result := PMC.PrivateWorkingSetSize;
+  Snapshot := CreateToolhelp32Snapshot(
+    TH32CS_SNAPPROCESS, 0);
+
+  if Snapshot = INVALID_HANDLE_VALUE then
+    Exit;
+
+  try
+    ProcEntry.dwSize := SizeOf(ProcEntry);
+
+    if Process32First(Snapshot, ProcEntry) then
+    repeat
+      if SameText(
+        ExtractFileName(ProcEntry.szExeFile),
+        'FreePDF64.exe') then
+      begin
+        ProcessHandle := OpenProcess(
+          PROCESS_QUERY_INFORMATION or PROCESS_VM_READ,
+          False,
+          ProcEntry.th32ProcessID);
+
+        if ProcessHandle <> 0 then
+        try
+          FillChar(PMC, SizeOf(PMC), 0);
+          PMC.cb := SizeOf(PMC);
+
+          if GetProcessMemoryInfo(
+            ProcessHandle,
+            @PMC,
+            PMC.cb) then
+            Inc(Result, PMC.PrivateWorkingSetSize);
+        finally
+          CloseHandle(ProcessHandle);
+        end;
+      end;
+    until not Process32Next(Snapshot, ProcEntry);
+  finally
+    CloseHandle(Snapshot);
+  end;
 end;
 
 // Klick auf Splitter2 registrieren
@@ -2807,8 +2858,11 @@ begin
 end;
 
 procedure TFreePDF64_Form.Timer3Timer(Sender: TObject);
+var
+  MB: Double;
 begin
-  StatusBar1.Panels[1].Text := Format('RAM: %.1f MB', [PrivaterArbeitsspeicher / 1048576.0]);
+  MB := FreePDF64Speicher / 1048576.0;
+  StatusBar1.Panels[1].Text := Format('FreePDF-RAM: %.1f MB', [MB]);
   StatusBarAnpassen;
 end;
 

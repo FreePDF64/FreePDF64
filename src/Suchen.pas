@@ -1,4 +1,4 @@
-﻿                                          unit Suchen;
+﻿unit Suchen;
 
 interface
 
@@ -210,9 +210,9 @@ begin
       SucheEdit.Color     := $00E8F1FF;
       AnzeigenPanel.Color := $00D6E8FF;
 
-      SucheEdit.SetFocus;
-    end
-    else
+      if SucheEdit.CanFocus then
+        SucheEdit.SetFocus;
+    end else
     begin
       SucheEdit.Visible     := False;
       AnzeigenPanel.Visible := False;
@@ -802,9 +802,7 @@ begin
   end;
 
   StatusBar1.Canvas.Font := StatusBar1.Font;
-  StatusBar1.Panels[0].Width :=
-    ListBox1.Width -
-    (StatusBar1.Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+  StatusBar1.Panels[0].Width := ListBox1.Width - (StatusBar1.Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
 
   // Zum obersten Eintrag gehen
   ListBox1.ItemIndex := 0;
@@ -924,8 +922,7 @@ begin
         CopyFileEx(pchar(s),
           pchar(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text)
           + ExtractFileName(s)), False);
-      StatusBar1.Panels[0].Text :=
-        'Datei(en) kopiert ins Überwachungs-Quellverzeichnis...'
+      StatusBar1.Panels[0].Text := 'Datei(en) kopiert ins Überwachungs-Quellverzeichnis...'
     end;
 //  ListBox1.ClearSelection;
 end;
@@ -4297,12 +4294,19 @@ begin
   // =========================================================
   // FOKUS NACH ENDE DER SUCHE
   // =========================================================
-  if ListBox1.Count = 0 then
-    FileField.SetFocus
-  else
+  if Active and Visible and Enabled then
   begin
-    ListBox1.Selected[0] := True;
-    ListBox1.SetFocus;
+    if ListBox1.Count = 0 then
+    begin
+      if FileField.CanFocus then
+        FileField.SetFocus;
+    end else
+    begin
+      ListBox1.Selected[0] := True;
+
+      if ListBox1.CanFocus then
+        ListBox1.SetFocus;
+    end;
   end;
 
   if ListBox1.SelCount > 0 then
