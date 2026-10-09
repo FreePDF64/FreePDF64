@@ -2862,7 +2862,7 @@ var
   MB: Double;
 begin
   MB := FreePDF64Speicher / 1048576.0;
-  StatusBar1.Panels[1].Text := Format('FreePDF-RAM: %.1f MB', [MB]);
+  StatusBar1.Panels[1].Text := Format('FreePDF64-RAM: %.1f MB', [MB]);
   StatusBarAnpassen;
 end;
 
