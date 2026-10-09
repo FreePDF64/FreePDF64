@@ -130,7 +130,7 @@ begin
   // Drucker
   Edit1.Text := Printer.Printers[Printer.Printerindex];
   // Überwachung An/Aus
-  if  FreePDF64_Form.MonitorBtn.ImageIndex = 57 then
+  if  FreePDF64_Form.MonitorBtn.ImageIndex = 54 then
   begin
     Edit20.Text  := 'An';
     Edit20.Color := clLime;

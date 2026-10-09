@@ -598,14 +598,14 @@ begin
   if LMDShellNotify.Active = True then
   begin
     Einstellungen_Form.UeberwachungBtn.Caption    := 'Überwachung ist AN';
-    Einstellungen_Form.UeberwachungBtn.ImageIndex := 57;
-    FreePDF64_Form.MonitorBtn.ImageIndex          := 57;
+    Einstellungen_Form.UeberwachungBtn.ImageIndex := 54;
+    FreePDF64_Form.MonitorBtn.ImageIndex          := 54;
     FreePDF64_Form.MonitorBtn.Caption             := '  AN';
   end else
   begin
     Einstellungen_Form.UeberwachungBtn.Caption    := 'Überwachung ist AUS';
-    Einstellungen_Form.UeberwachungBtn.ImageIndex := 58;
-    FreePDF64_Form.MonitorBtn.ImageIndex          := 58;
+    Einstellungen_Form.UeberwachungBtn.ImageIndex := 55;
+    FreePDF64_Form.MonitorBtn.ImageIndex          := 55;
     FreePDF64_Form.MonitorBtn.Caption             := '  AUS';
   end;
   Close;
@@ -647,12 +647,12 @@ begin
   begin
     btnStart.Enabled := False;
     btnStop.Enabled  := True;
-    FreePDF64_Form.MonitorBtn.ImageIndex := 57;
+    FreePDF64_Form.MonitorBtn.ImageIndex := 54;
   end else
   begin
     btnStart.Enabled := True;
     btnStop.Enabled  := False;
-    FreePDF64_Form.MonitorBtn.ImageIndex := 58;
+    FreePDF64_Form.MonitorBtn.ImageIndex := 55;
   end;
 
   MonitoringBtn.SetFocus;
@@ -670,11 +670,11 @@ begin
   btnStart.Enabled := False;
   LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(MonitoringFolder.Text));
   LMDShellNotify.Active := True;
-  FreePDF64_Form.MonitorBtn.ImageIndex := 57;
+  FreePDF64_Form.MonitorBtn.ImageIndex := 54;
   FreePDF64_Form.MonitorBtn.Caption := '  AN';
   btnStop.Enabled := True;
   Einstellungen_Form.UeberwachungBtn.Caption := 'Überwachung ist AN';
-  Einstellungen_Form.UeberwachungBtn.ImageIndex := 57;
+  Einstellungen_Form.UeberwachungBtn.ImageIndex := 54;
 end;
 
 procedure TFreePDF64_Notify.btnStopClick(Sender: TObject);
@@ -686,12 +686,12 @@ begin
   PDF_Ueberwachung_GroesseAlt := -1;
   PDF_Ueberwachung_StableCount := 0;
   PDF_Ueberwachung_StartTick := 0;
-  FreePDF64_Form.MonitorBtn.ImageIndex := 58;
+  FreePDF64_Form.MonitorBtn.ImageIndex := 55;
   FreePDF64_Form.MonitorBtn.Caption := '  AUS';
   btnStart.Enabled := True;
   btnStop.Enabled := False;
   Einstellungen_Form.UeberwachungBtn.Caption := 'Überwachung ist AUS';
-  Einstellungen_Form.UeberwachungBtn.ImageIndex := 58;
+  Einstellungen_Form.UeberwachungBtn.ImageIndex := 55;
 end;
 
 end.

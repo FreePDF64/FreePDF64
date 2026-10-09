@@ -457,7 +457,9 @@ object Status_Form: TStatus_Form
     Width = 215
     Height = 17
     Cursor = crHandPoint
-    Hint = 'Men'#252'punkt: Optionen - Ins Unterverzeichnis beim Erstellen'
+    Hint = 
+      'Men'#252'punkt: Optionen - PDF-Erstellung - Dateien im Unterverzeichn' +
+      'is erstellen'
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4

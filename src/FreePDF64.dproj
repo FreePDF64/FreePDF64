@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
         <ProjectGuid>{E2F279FD-27B3-4791-BCBA-B62E22DDD523}</ProjectGuid>
         <ProjectVersion>20.3</ProjectVersion>
@@ -145,10 +145,6 @@
         </DCCReference>
         <DCCReference Include="Favoriten2_Unit.pas">
             <Form>Favoriten2_Form</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
-        <DCCReference Include="Filter_Unit.pas">
-            <Form>Filter_Form</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="Wasserzeichen_Unit.pas">

@@ -174,10 +174,6 @@ begin
   FreePDF64_Form.Einstellungen1.Click;
 
   FreePDF64_Form.StatusBar1.SimpleText := 'Drucker: ' + printer.printers[printer.printerindex];
-  if FreePDF64_Form.FilterTB.ImageIndex = 69 then
-    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | Dateifilter: AN'
-  else
-    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | Dateifilter: AUS';
   if FreePDF64_Notify.LMDShellNotify.Active then
     FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | Überwachung: AN'
   else

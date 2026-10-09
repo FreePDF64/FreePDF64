@@ -968,12 +968,12 @@ begin
   if FreePDF64_Notify.LMDShellNotify.Active = True then
   begin
     UeberwachungBtn.Caption := s + ' ist AN';
-    UeberwachungBtn.ImageIndex := 57;
+    UeberwachungBtn.ImageIndex := 54;
   end
   else
   begin
     UeberwachungBtn.Caption := s + ' ist AUS';
-    UeberwachungBtn.ImageIndex := 58;
+    UeberwachungBtn.ImageIndex := 55;
   end;
   ImageMagick.Cursor := crHandPoint;
   ExifTool.Cursor := crHandPoint;

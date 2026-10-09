@@ -17,7 +17,6 @@ uses
   FreePDF64_Notify_Unit in 'FreePDF64_Notify_Unit.pas' {FreePDF64_Notify},
   Einstellungen_Hilfe_Unit in 'Einstellungen_Hilfe_Unit.pas' {Einstellungen_Hilfe_Form},
   Favoriten2_Unit in 'Favoriten2_Unit.pas' {Favoriten2_Form},
-  Filter_Unit in 'Filter_Unit.pas' {Filter_Form},
   Wasserzeichen_Unit in 'Wasserzeichen_Unit.pas' {Wasserzeichen_Form},
   Zusatz_Unit in 'Zusatz_Unit.pas' {Zusatz_Form},
   Splashscreen_Unit in 'Splashscreen_Unit.pas' {Splashscreen_Form},
@@ -82,8 +81,7 @@ begin
     // PDF separat anzeigen, ohne den Mutex der Hauptanwendung zu belegen.
     Application.CreateForm(TPDFBrowserForm, PDFBrowserForm);
     PDFBrowserForm.PDFFileName := PDFDatei;
-  end
-  else
+  end else
   begin
     // Regulärer Start von FreePDF64
     Application.CreateForm(TFreePDF64_Form, FreePDF64_Form);
@@ -97,7 +95,6 @@ begin
     Application.CreateForm(TFreePDF64_Notify, FreePDF64_Notify);
     Application.CreateForm(TEinstellungen_Hilfe_Form, Einstellungen_Hilfe_Form);
     Application.CreateForm(TFavoriten2_Form, Favoriten2_Form);
-    Application.CreateForm(TFilter_Form, Filter_Form);
     Application.CreateForm(TWasserzeichen_Form, Wasserzeichen_Form);
     Application.CreateForm(TZusatz_Form, Zusatz_Form);
     Application.CreateForm(TSplashscreen_Form, Splashscreen_Form);

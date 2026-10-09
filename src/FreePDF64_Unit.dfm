@@ -132,7 +132,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Right = 4
         Margins.Bottom = 4
         Caption = 'RefreshBt'
-        ImageIndex = 78
+        ImageIndex = 77
         ImageName = 'Item82'
         Visible = False
         OnClick = RefreshBtClick
@@ -206,23 +206,8 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item66'
         OnClick = AngleichenTBClick
       end
-      object FilterTB: TToolButton
-        Left = 276
-        Top = 0
-        Hint = 'Dateifilter festlegen'
-        Margins.Left = 4
-        Margins.Top = 4
-        Margins.Right = 4
-        Margins.Bottom = 4
-        Caption = 'Dateifilter'
-        ImageIndex = 65
-        ImageName = 'Item69'
-        ParentShowHint = False
-        ShowHint = True
-        OnClick = FilterTBClick
-      end
       object PropertiesBtn: TToolButton
-        Left = 314
+        Left = 276
         Top = 0
         Hint = 'Eigenschaften anzeigen [LEERTASTE]'
         Margins.Left = 4
@@ -237,7 +222,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PropertiesBtnClick
       end
       object MailBtn: TToolButton
-        Left = 352
+        Left = 314
         Top = 0
         Hint = 'Markierte Datei(en) versenden (Senden an > E-Mail-Empf'#228'nger)'
         Margins.Left = 4
@@ -250,7 +235,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = Sendenan1Click
       end
       object ToolButton4: TToolButton
-        Left = 390
+        Left = 352
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -263,7 +248,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object VerbindenBt: TToolButton
-        Left = 395
+        Left = 357
         Top = 0
         Hint = 'PS/PDF zusammenf'#252'gen'
         Margins.Left = 4
@@ -276,7 +261,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = VerbindenBtClick
       end
       object WZSTTB: TToolButton
-        Left = 433
+        Left = 395
         Top = 0
         Hint = 'PDF Wasserzeichen/Stempel einf'#252'gen'
         Margins.Left = 4
@@ -284,12 +269,12 @@ object FreePDF64_Form: TFreePDF64_Form
         Margins.Right = 4
         Margins.Bottom = 4
         Caption = 'PDF Wasserzeichen/Stempel'
-        ImageIndex = 79
+        ImageIndex = 78
         ImageName = 'Item83'
         OnClick = WZSTTBClick
       end
       object AnlagenBtn: TToolButton
-        Left = 471
+        Left = 433
         Top = 0
         Hint = 'PDF Anlage hinzuf'#252'gen'
         Caption = 'Anlage(n) hinzuf'#252'gen'
@@ -298,19 +283,19 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = AnlagenBtnClick
       end
       object PDFRemove: TToolButton
-        Left = 509
+        Left = 471
         Top = 0
         Hint = 
           'PDF Anlage extrahieren/entfernen:'#13#10'1. Es werden alle Anlagen im ' +
           'unteren Fenster angezeigt'#13#10'2. Nummer der Anlage angeben, welche ' +
           'extrahiert/entfernt werden soll'
         Caption = 'PDFRemove'
-        ImageIndex = 77
+        ImageIndex = 76
         ImageName = 'Item81'
         OnClick = PDFRemoveClick
       end
       object PDFAttachment: TToolButton
-        Left = 547
+        Left = 509
         Top = 0
         Hint = 'PDF Anlage(n) anzeigen und extrahieren'
         Caption = 'PDFAttachment'
@@ -319,7 +304,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFAttachmentClick
       end
       object ToolButton2: TToolButton
-        Left = 585
+        Left = 547
         Top = 0
         Width = 5
         Caption = 'ToolButton2'
@@ -328,7 +313,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object ExtractBtn: TToolButton
-        Left = 590
+        Left = 552
         Top = 0
         Hint = 'PDF Bilder extrahieren'
         Margins.Left = 4
@@ -341,7 +326,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = ExtractBtnClick
       end
       object HTMLBtn: TToolButton
-        Left = 628
+        Left = 590
         Top = 0
         Hint = 'PDF zu HTML'
         Caption = 'PDF zu HTML'
@@ -350,7 +335,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = HTMLBtnClick
       end
       object PDFdecrypt: TToolButton
-        Left = 666
+        Left = 628
         Top = 0
         Hint = 'PDF Passwortschutz entfernen'
         Caption = 'PDF entschl'#252'sseln'
@@ -359,7 +344,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFdecryptClick
       end
       object PDF_Kompress: TToolButton
-        Left = 704
+        Left = 666
         Top = 0
         Hint = 'PDF komprimieren'
         Caption = 'PDF_Kompress'
@@ -368,7 +353,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDF_KompressClick
       end
       object PDFFontsBtn: TToolButton
-        Left = 742
+        Left = 704
         Top = 0
         Hint = 'PDF Schriftarten auflisten'
         Caption = 'PDFFonts'
@@ -377,7 +362,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFFontsBtnClick
       end
       object ToolButton5: TToolButton
-        Left = 780
+        Left = 742
         Top = 0
         Width = 5
         Margins.Left = 4
@@ -390,7 +375,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object SearchBtn: TToolButton
-        Left = 785
+        Left = 747
         Top = 0
         Hint = 'Suchen...'
         Caption = 'SearchBtn'
@@ -399,7 +384,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = SearchBtnClick
       end
       object PDFInfoBtn: TToolButton
-        Left = 823
+        Left = 785
         Top = 0
         Hint = 
           'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'RM' +
@@ -410,7 +395,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = PDFInfoBtnClick
       end
       object ToolButton7: TToolButton
-        Left = 861
+        Left = 823
         Top = 0
         Width = 5
         Caption = 'ToolButton7'
@@ -419,7 +404,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 866
+        Left = 828
         Top = 0
         Margins.Left = 4
         Margins.Top = 4
@@ -431,7 +416,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnMouseDown = LogBtMouseDown
       end
       object MemoBtn: TToolButton
-        Left = 904
+        Left = 866
         Top = 0
         Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         ImageIndex = 73
@@ -2256,14 +2241,6 @@ object FreePDF64_Form: TFreePDF64_Form
         OnClick = ShowFolders1Click
       end
       object N2: TMenuItem
-        Caption = '-'
-      end
-      object Filter1: TMenuItem
-        Caption = 'Dateifilter...'
-        Hint = 'Dateifilter'
-        OnClick = Filter1Click
-      end
-      object N11: TMenuItem
         Caption = '-'
       end
       object Aktualisieren1: TMenuItem
@@ -5309,121 +5286,6 @@ object FreePDF64_Form: TFreePDF64_Form
           end>
       end
       item
-        Name = 'Item58'
-        SourceImages = <
-          item
-            Image.Data = {
-              89504E470D0A1A0A0000000D494844520000001E0000001E08060000003B30AE
-              A2000006714944415478DAAD97094C544718C7FFEFED2EBB8042B44041811204
-              A5E2510E7105AF7AD558DB98D4A5C6C6A6060F4AAA56255A2FAA584B6DF0B68A
-              07B1D6682A5B13D3AAA95A887820224845B1889420A220D0A228B0CBEEBED799
-              79BB8F7D6029B69D6478CB9BF9BEDFFCBFF9E6DB594E84889EB67D19FBC4C4C4
-              C4178E6564646061E242AEA7BEB89E80393ACDD1FAE880F7C380C15ED2FF771A
-              81E3654093499E427CFEE302BA05CB402F5768D6C782E7E83B112EBC1AE3FD23
-              D8D0859A62B40B56F2968340665BD6E7018D6DD0E9746833B5712F0D66501E70
-              DB3D8100457CA15F8060CFFE4C4F676FA2DDA2F2E943ACCDDF4F16C0A13529A7
-              5BF55DC0F18678D16834C263D758A8B53CD2E3964813ED6AFF4E82685F926877
-              977C7907ACED029A175D84C1604096318BEB164C957A1D180715195915954080
-              12CC199C34EC2385CD9E926F1560F699084D2BCA848D3C1BE7E77651AE0053A8
-              EFDE38A6347148BCB4A752C4ED70696E72E4620538FDC64E49B5C8316F02EDA2
-              B4888CDB59B09A05D47D7C450197C18E3D0D3E140743C854062DA8CC47DC8091
-              926A27C5EB623E578037166C502A26FE2D02C1732A9670C68A9F5139F70A5B91
-              03AE00871E8EC5E4C058B8A8542CA1B68CDE8C909D83113F623A833AB23A559F
-              AE00A7E427CB594D9F59D74FA3627129D9E7952CD4ED361BCE3FC8C3BD0FF394
-              600AD5F86831685B04C6F84543C593FD8D58837E1E7ECCF1801DA1308C984402
-              2229DF342A43015E73359129158827E3F56CFCBEA49CBD7FD45C8BB4E24DB009
-              1C2ED516E2EED26258EACD0C2E83871FD343C30B78C33B1C56AB1987A61C951D
-              AFCE9B0FAB68B22B06D2628F28C0ABF2E6487B4BFEA8391DBE8C3D208FCD3D37
-              1B1AB50EC50DA524FC3C6ECECE97C0A4D4B132A8CF1A012F5D6FF8B8F545E644
-              A36C78ECEE4E1435E4902C8713F86427F00C194C7BA4F704CC1ED49180F3B20D
-              78DCDA84465333F2E3AFB3F24AFD885A6F17E83386C2DFDD175A3508F8946CB4
-              ECD25B24F46061E6195C24A13EDF29D49359DC6C82146EFADC3AE6AC3C9E90FD
-              36CC560E352D75C84FBC057343BB041EB63604BE511E78D5AD0F492C11072766
-              CB46C997A5334DBB039CAABFDC29B94633204D649A4CB4A78FCE75523C912418
-              87C76D4DA82B6A46C9C60A093CE56404A9BF223C5D5CE1A3F5C3D6F12798414E
-              CD77387BFF1B09CC8BF6708B4889295480530BA2D9B9B59130D344A2E0CD71D7
-              E4F1E517DE43BDB9164FDADB485DE7706E46B1047EF7A7E144A9C0E0513EA3B0
-              2C623F33385CBA1A15CF4E13A0C0A0144E557F16755B01FEAA6888B4BFC4A995
-              C2451E1BF537E5F16DC50B50587F9541DB6D3C7E7CE7A6041E931A8480985ED0
-              12B8BB46855DE34A9841697D094E54C533C56A27C581BD63E49A4D93AAFA5901
-              0353A556BBE294983219BC2877185A2C3602E6515DF01C97D6554960771F0D0C
-              47430958848EC0B78FED304A2B0A6150B51DCEF699E29CC882BD7858996209BE
-              2AAA42F6B1F46218DA6C92DAAC0FEEA1A5DE02F9382DC8799D29A6E0AFE3CA3B
-              12272F005EEEBC0CE7ED49C6D9C1A2E838461DD03F5A046C887D20FB58716520
-              4C046A267DFF84DFA4E3E428208B7207C9E0F0BEE3306B60A66C78B0D49F8005
-              45B89D43ED482CA69884735E788D6C7BBC3C01A57FE612C51278D7B8BBCACAE5
-              D95F832463205CD5025BC08AC82A45027D5FEE6B078BEC5C73F61A2F3A1D230B
-              01CF1A58A7B0FBFA461003B65979EC3554E3C9434B0798360A4FC90F96C1B427
-              0D7DA070929AEF89183F8D1C6EA023CC05B516A4E89F2AE6EFB915C0A00E70AA
-              BEB2EBB793ABCE5534994CD872239041DDD43C027A476352C009746E56C182CD
-              45C9ECF3CAA87412094D9739C7CA0359B56A2365CC44A0CB23AB15F7B02E1781
-              2DD7FAA3971BD85E7B687B91278FA9AF95E165DAD9FB6168B50A786679CEA0CF
-              5B392C1F59F3E28B80333CB3B41F7424E4AF6869EDA6B74AF2ADE59505374D58
-              B7C0564B197E6D8C6785A2D522924AD5C0C009E18FBABFFAD0E6B8EC1DB9E503
-              4F7701DEAEE12CF414EE4216A1E5DDE1E796018D2A98CDB70895A86B49845968
-              61A1A545829ED7C7AD77D04C94CE195A8F993367C2F883B17BB0B3725E05FC52
-              D587259CA74B10097D28F9CE96CE332D9FB4D9EC45836674B3F91E9EB657B133
-              FBA67F933DEB7B78BDED0CA74FFF200E670ADD49C2D9E0AAB291F04B759D361A
-              569AB526AB0A2DA44F8B6E414D95F8EF2FF42F5A005B4420B07D378FE9D3A457
-              A7CE70F8F4130135D51DF3FFF34F98CEEDFFFCD1F617F3A739A89983B5A40000
-              000049454E44AE426082}
-          end>
-      end
-      item
-        Name = 'Item59'
-        SourceImages = <
-          item
-            Image.Data = {
-              89504E470D0A1A0A0000000D494844520000001E0000001E08060000003B30AE
-              A20000059A4944415478DAAD977F6C144514C7BF73FB836B81160B08C44293F6
-              422A81144350F98380FCAC422491B601248180B1551254346244F803C448A2F8
-              93D86A30601A203DAAC180968AFC08893F50620988487AC402066A0BD82BA5D7
-              DBDB1BDFCCECEDDED2E6A8E224EF76EF76F67DE6FBE6CD9B39C6C1D1DF56535D
-              C3ABAAAAFA7C565D5D8DCAAA4AD65F5FAC3F6026BA39AD80EC23B2479DEF5F93
-              3D43D692D69F7CDE710019C129601159B3267F50661AC0233354A7238781B805
-              E9862C640311BA0D0683E88E75B37F0D1650C14A98F41120DBBC854610CA2C23
-              D20CAC5B0B24E9FD7866F5BDC015E5153C1C0EA32B0BC822207B679BA7540C24
-              D683A6DDFB70ABFDBAFC9E3D2C0F258B17C0080E4891A4F11756214603C8EE06
-              CACBCB5117AE6319C1426972309320B67EA30B3DB5FF284A0E1FCA28F8D48C59
-              28993FDD836FDA20AF814EDE4BB90F2CA05DB9A454A33EABD6A81053B356AF83
-              9977CF9DF245B6F8F51B30DEDFECC2B16D2B62364776873FEC2E3835A7D6707A
-              B6789954F9F3F15F31F9E4893E013CDAA1DECBC9EDF379CFB34B618A2414EE77
-              EF84D1C661A7CDB90F9C1C41BF95CE57592B425D53EF87D57F0A1C3BD0B7D469
-              F3C016AEF0F7AF5CA8C022EB1BF623D0CAFD60012D22B9E747D1DDB49932C4D6
-              BB75BEF0262B4BC989ED2659EF10086F1A02350DFEB03F5F21B39C1FFB1663AF
-              70446CA5DA05DBA3C9A388F5A48791A45B3DFC9D075D3ED5839245ABDEF33173
-              AA9FF3E654C0771C779F59E553C82DBD74F2075A1284B8A454332A75B20CDA45
-              2473681E306224025F9EF6A03BB68037D4AA4473C05AED691FD85E3AC10393B1
-              B94F22B0FC15CFC7E3F4FCAF56A0FD1AB448529657E18A17E8C0851079CE1F03
-              6E06A01D88784ECB420A9802D355DBD5EC072F092968D231BAD7F67A7DEC7954
-              FBE249B0CB1751D89C444B42B9E207F219E60E61522D68105AC39FEE4B8927F2
-              15344DB1BEE7B20F9C5894EF2976E0FAE75E1FBBF43E1966B45EC5C10E8E7997
-              B80227C6072410398381013AB4C676952F375A61AF18AFE6DE076EBB0D3CDC0F
-              A674D0BFF0FAD87386D1FA2272B4530E403F9374C00F386002F0C103A13746D5
-              5A6C6B875655E82AE60155D18C5D1D3EB0B52457CD6D927B8AEBA3DEC0E6E480
-              7576C90149F02F0E78FF5886D23CE191816799D00FDEF29C9665D3801410CE0E
-              65D476F9C14B072AB5B6A39A2A95B1D7F391989B0DD64DBB4682E3E0350AF579
-              27D405B403451ED4C0A96E08E57A63C2735A11F4429D02EF8CF9C1CB821ED809
-              B551174B039353AA218CACE8848D161A83BB9CACE99A0A37C1F5AF3C70F31B5B
-              50F0DB7A172CEA8EB93DEE03C7579A6AE776C02DF76F42E8D5B51EF831051661
-              368EDA6A39A50A88354B9350615C6730EA2DF7C5EF274EC0A4C9E79CB966D0D7
-              7CE34FAEADB309A8E6F7E44FC598D2E4AD736BA1014621966032E390EDAF5C85
-              B4FFFE3E93C26D3215EE4FAED00630CC75707CFC443C34FDAC7F69212D93E9FA
-              E39171987AA6C97D8777B623F1D428A994C5398A0FDB88DC4A2B9980DA24E20B
-              48B50316667C66F99489B00FBFB411C141960F1CBB69A06DF4065F78D5DC1B6E
-              884160739FDD7B77CA0A66F1582C86F8225D853B481F54C5CC0F6FE2BFB4F8AA
-              4104A465D36D49B8B927E13B87F53A08441769D481A90CCF1DA294BF760E6CE0
-              D07E0179D73558AF172BA5D1BFE5B527C691B3C7EEFB20900EEF59A9CB35CDEE
-              CD77979830F3A50B9955BE55A8C22AAC8752BCFD0A8139066C4F643EFA88963A
-              EC753CAD23984D7D0B4A1CB09A7B9E5AD3CEB12855A9985395449190D73F4E21
-              D6CD91FB710265656508EF0D6706A72B1705ABEB6531D7F4C38810D8C8625544
-              52676C27B9E4FA151BFC555A72ADCD32BCC1372DE7713F8FB7B7C3C5B5900E22
-              675F3469A9C1B7D6659F944291E83DC0B8B7E3B870E32E0EF47D0D40B4317456
-              F860898ED91335F9BDB1C9C6EA5D095CBC9E966077FB17E6F6F67FFE69FB0769
-              347799830DBC880000000049454E44AE426082}
-          end>
-      end
-      item
         Name = 'Item60'
         SourceImages = <
           item
@@ -8286,6 +8148,121 @@ object FreePDF64_Form: TFreePDF64_Form
               D8B5007C28224EB5C4148BC3F8A80A13E5F8F69A0110C124EAAD2750444D5044
               9C6A89091687F151159252BF5DCAF73E5B0C8A889342A15028140A8542A1500C
               89FF03CAA630306520CF870000000049454E44AE426082}
+          end>
+      end
+      item
+        Name = 'Item57'
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D494844520000001E0000001E08060000003B30AE
+              A20000059A4944415478DAAD977F6C144514C7BF73FB836B81160B08C44293F6
+              422A81144350F98380FCAC422491B601248180B1551254346244F803C448A2F8
+              93D86A30601A203DAAC180968AFC08893F50620988487AC402066A0BD82BA5D7
+              DBDB1BDFCCECEDDED2E6A8E224EF76EF76F67DE6FBE6CD9B39C6C1D1DF56535D
+              C3ABAAAAFA7C565D5D8DCAAA4AD65F5FAC3F6026BA39AD80EC23B2479DEF5F93
+              3D43D692D69F7CDE710019C129601159B3267F50661AC0233354A7238781B805
+              E9862C640311BA0D0683E88E75B37F0D1650C14A98F41120DBBC854610CA2C23
+              D20CAC5B0B24E9FD7866F5BDC015E5153C1C0EA32B0BC822207B679BA7540C24
+              D683A6DDFB70ABFDBAFC9E3D2C0F258B17C0080E4891A4F11756214603C8EE06
+              CACBCB5117AE6319C1426972309320B67EA30B3DB5FF284A0E1FCA28F8D48C59
+              28993FDD836FDA20AF814EDE4BB90F2CA05DB9A454A33EABD6A81053B356AF83
+              9977CF9DF245B6F8F51B30DEDFECC2B16D2B62364776873FEC2E3835A7D6707A
+              B6789954F9F3F15F31F9E4893E013CDAA1DECBC9EDF379CFB34B618A2414EE77
+              EF84D1C661A7CDB90F9C1C41BF95CE57592B425D53EF87D57F0A1C3BD0B7D469
+              F3C016AEF0F7AF5CA8C022EB1BF623D0CAFD60012D22B9E747D1DDB49932C4D6
+              BB75BEF0262B4BC989ED2659EF10086F1A02350DFEB03F5F21B39C1FFB1663AF
+              70446CA5DA05DBA3C9A388F5A48791A45B3DFC9D075D3ED5839245ABDEF33173
+              AA9FF3E654C0771C779F59E553C82DBD74F2075A1284B8A454332A75B20CDA45
+              2473681E306224025F9EF6A03BB68037D4AA4473C05AED691FD85E3AC10393B1
+              B94F22B0FC15CFC7E3F4FCAF56A0FD1AB448529657E18A17E8C0851079CE1F03
+              6E06A01D88784ECB420A9802D355DBD5EC072F092968D231BAD7F67A7DEC7954
+              FBE249B0CB1751D89C444B42B9E207F219E60E61522D68105AC39FEE4B8927F2
+              15344DB1BEE7B20F9C5894EF2976E0FAE75E1FBBF43E1966B45EC5C10E8E7997
+              B80227C6072410398381013AB4C676952F375A61AF18AFE6DE076EBB0D3CDC0F
+              A674D0BFF0FAD87386D1FA2272B4530E403F9374C00F386002F0C103A13746D5
+              5A6C6B875655E82AE60155D18C5D1D3EB0B52457CD6D927B8AEBA3DEC0E6E480
+              7576C90149F02F0E78FF5886D23CE191816799D00FDEF29C9665D3801410CE0E
+              65D476F9C14B072AB5B6A39A2A95B1D7F391989B0DD64DBB4682E3E0350AF579
+              27D405B403451ED4C0A96E08E57A63C2735A11F4429D02EF8CF9C1CB821ED809
+              B551174B039353AA218CACE8848D161A83BB9CACE99A0A37C1F5AF3C70F31B5B
+              50F0DB7A172CEA8EB93DEE03C7579A6AE776C02DF76F42E8D5B51EF831051661
+              368EDA6A39A50A88354B9350615C6730EA2DF7C5EF274EC0A4C9E79CB966D0D7
+              7CE34FAEADB309A8E6F7E44FC598D2E4AD736BA1014621966032E390EDAF5C85
+              B4FFFE3E93C26D3215EE4FAED00630CC75707CFC443C34FDAC7F69212D93E9FA
+              E39171987AA6C97D8777B623F1D428A994C5398A0FDB88DC4A2B9980DA24E20B
+              48B50316667C66F99489B00FBFB411C141960F1CBB69A06DF4065F78D5DC1B6E
+              884160739FDD7B77CA0A66F1582C86F8225D853B481F54C5CC0F6FE2BFB4F8AA
+              4104A465D36D49B8B927E13B87F53A08441769D481A90CCF1DA294BF760E6CE0
+              D07E0179D73558AF172BA5D1BFE5B527C691B3C7EEFB20900EEF59A9CB35CDEE
+              CD77979830F3A50B9955BE55A8C22AAC8752BCFD0A8139066C4F643EFA88963A
+              EC753CAD23984D7D0B4A1CB09A7B9E5AD3CEB12855A9985395449190D73F4E21
+              D6CD91FB710265656508EF0D6706A72B1705ABEB6531D7F4C38810D8C8625544
+              52676C27B9E4FA151BFC555A72ADCD32BCC1372DE7713F8FB7B7C3C5B5900E22
+              675F3469A9C1B7D6659F944291E83DC0B8B7E3B870E32E0EF47D0D40B4317456
+              F860898ED91335F9BDB1C9C6EA5D095CBC9E966077FB17E6F6F67FFE69FB0769
+              347799830DBC880000000049454E44AE426082}
+          end>
+      end
+      item
+        Name = 'Item58'
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D494844520000001E0000001E08060000003B30AE
+              A2000006714944415478DAAD97094C544718C7FFEFED2EBB8042B44041811204
+              A5E2510E7105AF7AD558DB98D4A5C6C6A6060F4AAA56255A2FAA584B6DF0B68A
+              07B1D6682A5B13D3AAA95A887820224845B1889420A220D0A228B0CBEEBED799
+              79BB8F7D6029B69D6478CB9BF9BEDFFCBFF9E6DB594E84889EB67D19FBC4C4C4
+              C4178E6564646061E242AEA7BEB89E80393ACDD1FAE880F7C380C15ED2FF771A
+              81E3654093499E427CFEE302BA05CB402F5768D6C782E7E83B112EBC1AE3FD23
+              D8D0859A62B40B56F2968340665BD6E7018D6DD0E9746833B5712F0D66501E70
+              DB3D8100457CA15F8060CFFE4C4F676FA2DDA2F2E943ACCDDF4F16C0A13529A7
+              5BF55DC0F18678D16834C263D758A8B53CD2E3964813ED6AFF4E82685F926877
+              977C7907ACED029A175D84C1604096318BEB164C957A1D180715195915954080
+              12CC199C34EC2385CD9E926F1560F699084D2BCA848D3C1BE7E77651AE0053A8
+              EFDE38A6347148BCB4A752C4ED70696E72E4620538FDC64E49B5C8316F02EDA2
+              B4888CDB59B09A05D47D7C450197C18E3D0D3E140743C854062DA8CC47DC8091
+              926A27C5EB623E578037166C502A26FE2D02C1732A9670C68A9F5139F70A5B91
+              03AE00871E8EC5E4C058B8A8542CA1B68CDE8C909D83113F623A833AB23A559F
+              AE00A7E427CB594D9F59D74FA3627129D9E7952CD4ED361BCE3FC8C3BD0FF394
+              600AD5F86831685B04C6F84543C593FD8D58837E1E7ECCF1801DA1308C984402
+              2229DF342A43015E73359129158827E3F56CFCBEA49CBD7FD45C8BB4E24DB009
+              1C2ED516E2EED26258EACD0C2E83871FD343C30B78C33B1C56AB1987A61C951D
+              AFCE9B0FAB68B22B06D2628F28C0ABF2E6487B4BFEA8391DBE8C3D208FCD3D37
+              1B1AB50EC50DA524FC3C6ECECE97C0A4D4B132A8CF1A012F5D6FF8B8F545E644
+              A36C78ECEE4E1435E4902C8713F86427F00C194C7BA4F704CC1ED49180F3B20D
+              78DCDA84465333F2E3AFB3F24AFD885A6F17E83386C2DFDD175A3508F8946CB4
+              ECD25B24F46061E6195C24A13EDF29D49359DC6C82146EFADC3AE6AC3C9E90FD
+              36CC560E352D75C84FBC057343BB041EB63604BE511E78D5AD0F492C11072766
+              CB46C997A5334DBB039CAABFDC29B94633204D649A4CB4A78FCE75523C912418
+              87C76D4DA82B6A46C9C60A093CE56404A9BF223C5D5CE1A3F5C3D6F12798414E
+              CD77387BFF1B09CC8BF6708B4889295480530BA2D9B9B59130D344A2E0CD71D7
+              E4F1E517DE43BDB9164FDADB485DE7706E46B1047EF7A7E144A9C0E0513EA3B0
+              2C623F33385CBA1A15CF4E13A0C0A0144E557F16755B01FEAA6888B4BFC4A995
+              C2451E1BF537E5F16DC50B50587F9541DB6D3C7E7CE7A6041E931A8480985ED0
+              12B8BB46855DE34A9841697D094E54C533C56A27C581BD63E49A4D93AAFA5901
+              0353A556BBE294983219BC2877185A2C3602E6515DF01C97D6554960771F0D0C
+              47430958848EC0B78FED304A2B0A6150B51DCEF699E29CC882BD7858996209BE
+              2AAA42F6B1F46218DA6C92DAAC0FEEA1A5DE02F9382DC8799D29A6E0AFE3CA3B
+              12272F005EEEBC0CE7ED49C6D9C1A2E838461DD03F5A046C887D20FB58716520
+              4C046A267DFF84DFA4E3E428208B7207C9E0F0BEE3306B60A66C78B0D49F8005
+              45B89D43ED482CA69884735E788D6C7BBC3C01A57FE612C51278D7B8BBCACAE5
+              D95F832463205CD5025BC08AC82A45027D5FEE6B078BEC5C73F61A2F3A1D230B
+              01CF1A58A7B0FBFA461003B65979EC3554E3C9434B0798360A4FC90F96C1B427
+              0D7DA070929AEF89183F8D1C6EA023CC05B516A4E89F2AE6EFB915C0A00E70AA
+              BEB2EBB793ABCE5534994CD872239041DDD43C027A476352C009746E56C182CD
+              45C9ECF3CAA87412094D9739C7CA0359B56A2365CC44A0CB23AB15F7B02E1781
+              2DD7FAA3971BD85E7B687B91278FA9AF95E165DAD9FB6168B50A786679CEA0CF
+              5B392C1F59F3E28B80333CB3B41F7424E4AF6869EDA6B74AF2ADE59505374D58
+              B7C0564B197E6D8C6785A2D522924AD5C0C009E18FBABFFAD0E6B8EC1DB9E503
+              4F7701DEAEE12CF414EE4216A1E5DDE1E796018D2A98CDB70895A86B49845968
+              61A1A545829ED7C7AD77D04C94CE195A8F993367C2F883B17BB0B3725E05FC52
+              D587259CA74B10097D28F9CE96CE332D9FB4D9EC45836674B3F91E9EB657B133
+              FBA67F933DEB7B78BDED0CA74FFF200E670ADD49C2D9E0AAB291F04B759D361A
+              569AB526AB0A2DA44F8B6E414D95F8EF2FF42F5A005B4420B07D378FE9D3A457
+              A7CE70F8F4130135D51DF3FFF34F98CEEDFFFCD1F617F3A739A89983B5A40000
+              000049454E44AE426082}
           end>
       end
       item
@@ -21191,7 +21168,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'Item36'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 55
         CollectionName = 'Item58'
         Name = 'Item38'
       end
@@ -21226,7 +21203,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'Item44'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 55
         CollectionName = 'Item58'
         Name = 'Item46'
       end
@@ -21246,12 +21223,12 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'Item49'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 27
         CollectionName = 'Item60'
         Name = 'Item50'
       end
       item
-        CollectionIndex = 30
+        CollectionIndex = 28
         CollectionName = 'Item61'
         Name = 'Item51'
       end
@@ -21266,179 +21243,174 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'Item54'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 55
         CollectionName = 'Item58'
         Name = 'Item55'
       end
       item
-        CollectionIndex = 32
+        CollectionIndex = 30
         CollectionName = 'Item64'
         Name = 'Item56'
       end
       item
-        CollectionIndex = 33
+        CollectionIndex = 31
         CollectionName = 'Item65'
         Name = 'Item57'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 55
         CollectionName = 'Item58'
         Name = 'Item58'
       end
       item
-        CollectionIndex = 28
-        CollectionName = 'Item59'
+        CollectionIndex = 54
+        CollectionName = 'Item57'
         Name = 'Item59'
       end
       item
-        CollectionIndex = 29
+        CollectionIndex = 27
         CollectionName = 'Item60'
         Name = 'Item60'
       end
       item
-        CollectionIndex = 30
+        CollectionIndex = 28
         CollectionName = 'Item61'
         Name = 'Item61'
       end
       item
-        CollectionIndex = 41
+        CollectionIndex = 39
         CollectionName = 'Item73'
         Name = 'Item62'
       end
       item
-        CollectionIndex = 31
+        CollectionIndex = 29
         CollectionName = 'Item63'
         Name = 'Item63'
       end
       item
-        CollectionIndex = 32
+        CollectionIndex = 30
         CollectionName = 'Item64'
         Name = 'Item64'
       end
       item
-        CollectionIndex = 33
+        CollectionIndex = 31
         CollectionName = 'Item65'
         Name = 'Item65'
       end
       item
-        CollectionIndex = 34
+        CollectionIndex = 32
         CollectionName = 'Item66'
         Name = 'Item66'
       end
       item
-        CollectionIndex = 35
+        CollectionIndex = 33
         CollectionName = 'Item67'
         Name = 'Item67'
       end
       item
-        CollectionIndex = 36
+        CollectionIndex = 34
         CollectionName = 'Item68'
         Name = 'Item68'
       end
       item
-        CollectionIndex = 37
+        CollectionIndex = 35
         CollectionName = 'Item69'
         Name = 'Item69'
       end
       item
-        CollectionIndex = 38
+        CollectionIndex = 36
         CollectionName = 'Item70'
         Name = 'Item70'
       end
       item
-        CollectionIndex = 39
+        CollectionIndex = 37
         CollectionName = 'Item71'
         Name = 'Item71'
       end
       item
-        CollectionIndex = 40
+        CollectionIndex = 38
         CollectionName = 'Item72'
         Name = 'Item72'
       end
       item
-        CollectionIndex = 41
+        CollectionIndex = 39
         CollectionName = 'Item73'
         Name = 'Item73'
       end
       item
-        CollectionIndex = 49
+        CollectionIndex = 47
         CollectionName = 'Item82'
         Name = 'Item74'
       end
       item
-        CollectionIndex = 42
+        CollectionIndex = 40
         CollectionName = 'Item75'
         Name = 'Item75'
       end
       item
-        CollectionIndex = 43
+        CollectionIndex = 41
         CollectionName = 'Item76'
         Name = 'Item76'
       end
       item
-        CollectionIndex = 44
+        CollectionIndex = 42
         CollectionName = 'Item77'
         Name = 'Item77'
       end
       item
-        CollectionIndex = 45
+        CollectionIndex = 43
         CollectionName = 'Item78'
         Name = 'Item78'
       end
       item
-        CollectionIndex = 46
+        CollectionIndex = 44
         CollectionName = 'Item79'
         Name = 'Item79'
       end
       item
-        CollectionIndex = 47
-        CollectionName = 'Item80'
-        Name = 'Item80'
-      end
-      item
-        CollectionIndex = 48
+        CollectionIndex = 46
         CollectionName = 'Item81'
         Name = 'Item81'
       end
       item
-        CollectionIndex = 49
+        CollectionIndex = 47
         CollectionName = 'Item82'
         Name = 'Item82'
       end
       item
-        CollectionIndex = 50
+        CollectionIndex = 48
         CollectionName = 'Item83'
         Name = 'Item83'
       end
       item
-        CollectionIndex = 51
+        CollectionIndex = 45
+        CollectionName = 'Item80'
+        Name = 'Item80'
+      end
+      item
+        CollectionIndex = 49
         CollectionName = 'Item84'
         Name = 'Item84'
       end
       item
-        CollectionIndex = 52
+        CollectionIndex = 50
         CollectionName = 'Item85'
         Name = 'Item85'
       end
       item
-        CollectionIndex = 53
+        CollectionIndex = 51
         CollectionName = 'Item86'
         Name = 'Item86'
       end
       item
-        CollectionIndex = 54
+        CollectionIndex = 52
         CollectionName = 'Key'
         Name = 'Key'
       end
       item
-        CollectionIndex = 55
+        CollectionIndex = 53
         CollectionName = 'Write'
         Name = 'Write'
-      end
-      item
-        CollectionIndex = 56
-        CollectionName = 'trashcan'
-        Name = 'trashcan'
       end
       item
         CollectionIndex = 57
@@ -21454,6 +21426,11 @@ object FreePDF64_Form: TFreePDF64_Form
         CollectionIndex = 59
         CollectionName = '103296_full_up_arrow_icon'
         Name = '103296_full_up_arrow_icon'
+      end
+      item
+        CollectionIndex = 56
+        CollectionName = 'trashcan'
+        Name = 'trashcan'
       end
       item
         CollectionIndex = 60
@@ -25851,17 +25828,17 @@ object FreePDF64_Form: TFreePDF64_Form
         Name = 'FreePDF64_Modern'
       end
       item
-        CollectionIndex = 27
+        CollectionIndex = 55
         CollectionName = 'Item58'
         Name = 'Item58'
       end
       item
-        CollectionIndex = 28
-        CollectionName = 'Item59'
+        CollectionIndex = 54
+        CollectionName = 'Item57'
         Name = 'Item59'
       end
       item
-        CollectionIndex = 45
+        CollectionIndex = 43
         CollectionName = 'Item78'
         Name = 'Item78'
       end

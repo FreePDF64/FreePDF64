@@ -185,7 +185,6 @@ type
     Aktualisieren1: TMenuItem;
     Ansicht1: TMenuItem;
     N2: TMenuItem;
-    Filter1: TMenuItem;
     ShowFolders1: TMenuItem;
     Btn_Rename: TSpeedButton;
     Umbenennen1: TMenuItem;
@@ -202,7 +201,6 @@ type
     Logdateiansehen1: TMenuItem;
     N8: TMenuItem;
     PropertiesBtn: TToolButton;
-    FilterTB: TToolButton;
     FavPopUp: TPopupMenu;
     MarkEntf: TMenuItem;
     Allelschen1: TMenuItem;
@@ -267,7 +265,6 @@ type
     ProgressBar1: TProgressBar;
     StatusBar_Right: TStatusBar;
     AutoSpalte: TMenuItem;
-    N11: TMenuItem;
     WZSTTB: TToolButton;
     Wasserzeichen1: TMenuItem;
     CopyTo: TMenuItem;
@@ -406,7 +403,6 @@ type
     procedure LogdateiClick(Sender: TObject);
     procedure Logdateiansehen1Click(Sender: TObject);
     procedure FormResize(Sender: TObject);
-    procedure FilterTBClick(Sender: TObject);
     procedure EditorClick(Sender: TObject);
     procedure FavSpLClick(Sender: TObject);
     procedure FavLinksClick(Sender: TObject);
@@ -462,7 +458,6 @@ type
     procedure ComboBoxLDropDown(Sender: TObject);
     procedure ComboBoxRDropDown(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
-    procedure Filter1Click(Sender: TObject);
     procedure LMDShellList1Enter(Sender: TObject);
     procedure LMDShellList2Enter(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -685,7 +680,7 @@ uses
   Einstellungen_Unit, Encrypt_Unit, DokuInfo_Unit,
   Seiten_Unit, Favoriten_Unit, Favoriten2_Unit, Auswahl_Unit,
   Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit,
-  Filter_Unit, Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
+  Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
   Dateianlage_Unit, Status_Unit, Anleitung_Unit, Suchen, uPDFBrowserForm,
   FreePDF64PrinterConfig;
 
@@ -786,7 +781,7 @@ var
 begin
   s := 'Quelle - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
   if (FreePDF64_Form.Quelllabel.Caption = s) and
-    (FreePDF64_Form.MonitorBtn.ImageIndex = 57) then
+    (FreePDF64_Form.MonitorBtn.ImageIndex = 54) then
     FreePDF64_Form.Quelllabel.Font.Color := clRed
   else
     FreePDF64_Form.Quelllabel.Font.Color := clWindowText
@@ -798,7 +793,7 @@ var
 begin
   s := 'Ziel - ' + FreePDF64_Notify.MonitoringFolder.Text + '*.*';
   if (FreePDF64_Form.Ziellabel.Caption = s) and
-    (FreePDF64_Form.MonitorBtn.ImageIndex = 57) then
+    (FreePDF64_Form.MonitorBtn.ImageIndex = 54) then
     FreePDF64_Form.Ziellabel.Font.Color := clRed
   else
     FreePDF64_Form.Ziellabel.Font.Color := clWindowText
@@ -1952,8 +1947,6 @@ end;
 procedure TFreePDF64_Form.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  if Key = VK_ADD then
-    Filter1.Click;
 end;
 
 // List all files in a directory: Ergebnis ist in RESULT
@@ -2539,13 +2532,6 @@ begin
     WriteInteger('Start', 'Counter', Counter);
     WriteInteger('Start', 'ViewStyle_Left', Ord(LMDShellList1.ViewStyle));
     WriteInteger('Start', 'ViewStyle_Right', Ord(LMDShellList2.ViewStyle));
-
-    // Filter schreiben
-    IniDat.EraseSection('Filter');
-    if Filter_Form.FilterCB.Items.Count > 0 then
-      for I := 1 to Filter_Form.FilterCB.Items.Count do
-        WriteString('Filter', 'Filter' + IntToStr(I - 1),
-          Filter_Form.FilterCB.Items[I - 1]);
   end;
   // Speicher wird wieder freigeben
   IniDat.Free;
@@ -3426,7 +3412,7 @@ begin
   // Normales Rechtsklick → PopupMenu öffnen mit richtigen Verzeichnisse
   if Button = mbRight then
   begin
-    if MonitorBtn.ImageIndex = 57 then
+    if MonitorBtn.ImageIndex = 54 then
       PopupMenu3.Items.Items[0].ImageIndex := 4
     else
       PopupMenu3.Items.Items[0].ImageIndex := 5;
@@ -4445,41 +4431,6 @@ begin
     '?subject=Feedback zu FreePDF64', NIL, NIL, SW_SHOWNORMAL);
 end;
 
-procedure TFreePDF64_Form.FilterTBClick(Sender: TObject);
-begin
-  FavClose;
-
-  // Was war die letzte aktive Komponente?
-  if wcActive.Name = 'LMDShellList1' then
-    LMDShellList1.SetFocus
-  else if wcActive.Name = 'LMDShellList2' then
-    LMDShellList2.SetFocus;
-
-  Filter1.Click;
-end;
-
-// Dateifilter definieren
-procedure TFreePDF64_Form.Filter1Click(Sender: TObject);
-begin
-  if LMDShellList1.Focused then
-  begin
-    Links := True;
-    Rechts := False;
-  end
-  else
-  begin
-    Links := False;
-    Rechts := True;
-  end;
-  // Form soll mittig angezeigt werden.
-  Filter_Form.Position := poMainFormCenter;
-  Filter_Form.ShowModal;
-
-  StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
-    [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
-    IntToStr(Counter);
-end;
-
 procedure TFreePDF64_Form.FormatBtnClick(Sender: TObject);
 begin
   FavClose;
@@ -5162,7 +5113,7 @@ begin
     // Splitter mittig
     PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
 
-    MonitorBtn.ImageIndex := 57;
+    MonitorBtn.ImageIndex := 54;
     MonitorBtn.Caption := '  AN';
     MHA := 80;
 
@@ -5391,15 +5342,6 @@ begin
         Suche_Form.TextCB.Items.Insert(I, iec[I]);
       end;
 
-      // Filter lesen
-      for ie1 := 0 to 9 do
-      begin
-        iec[ie1] := ReadString('Filter', 'Filter' + IntToStr(ie1), ies);
-        if iec[ie1] = '' then
-          Break;
-        Filter_Form.FilterCB.Items.Insert(ie1, iec[ie1]);
-      end;
-
       // Zusatz lesen
       Zusatz_Form.ZusatzCB.Items.Clear;
       for ie1 := 0 to 19 do
@@ -5576,12 +5518,12 @@ begin
     FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
     if FreePDF64_Notify.LMDShellNotify.Active then
     begin
-      MonitorBtn.ImageIndex := 57;
+      MonitorBtn.ImageIndex := 54;
       MonitorBtn.Caption := '  AN';
     end
     else
     begin
-      MonitorBtn.ImageIndex := 58;
+      MonitorBtn.ImageIndex := 55;
       MonitorBtn.Caption := '  AUS';
     end;
 
@@ -6281,11 +6223,6 @@ begin
   if (LMDShellList1.Items.Count > 0) and (LMDShellList1.SelCount = 0) then
     LMDShellList1.ItemFocused;
 
-  if LMDShellList1.FileFilter <> '*.*' then
-    FilterTB.ImageIndex := 69
-  else
-    FilterTB.ImageIndex := 68;
-
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
     IntToStr(Counter);
@@ -6589,11 +6526,6 @@ begin
 
   if (LMDShellList2.Items.Count > 0) and (LMDShellList2.SelCount = 0) then
     LMDShellList2.ItemIndex := 0;
-
-  if LMDShellList2.FileFilter <> '*.*' then
-    FilterTB.ImageIndex := 69
-  else
-    FilterTB.ImageIndex := 68;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
@@ -7700,12 +7632,12 @@ begin
   if FreePDF64_Notify.LMDShellNotify.Active = True then
   begin
     MonitorBtn.Caption := '  AN';
-    MonitorBtn.ImageIndex := 57;
+    MonitorBtn.ImageIndex := 54;
   end
   else
   begin
     MonitorBtn.Caption := '  AUS';
-    MonitorBtn.ImageIndex := 58;
+    MonitorBtn.ImageIndex := 55;
   end;
 end;
 
@@ -7716,12 +7648,12 @@ begin
 
   if FreePDF64_Notify.LMDShellNotify.Active then
   begin
-    MonitorBtn.ImageIndex := 57;
+    MonitorBtn.ImageIndex := 54;
     MonitorBtn.Caption := '  AN';
   end
   else
   begin
-    MonitorBtn.ImageIndex := 58;
+    MonitorBtn.ImageIndex := 55;
     MonitorBtn.Caption := '  AUS';
   end;
 end;
