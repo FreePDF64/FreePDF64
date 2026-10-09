@@ -17,13 +17,13 @@ File_14=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0
 
 [Modules]
 Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64.dproj
-Module2=D:\Delphi\FreePDF64\Suchen.pas
+Module1=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module2=D:\Delphi\FreePDF64\FreePDF64.dproj
 Module3=D:\Delphi\FreePDF64\Info_Unit.pas
-Module4=D:\Delphi\FreePDF64\Encrypt_Unit.pas
-Module5=D:\Delphi\FreePDF64\Status_Unit.pas
-Module6=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
-Module7=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module4=D:\Delphi\FreePDF64\Suchen.pas
+Module5=D:\Delphi\FreePDF64\Encrypt_Unit.pas
+Module6=D:\Delphi\FreePDF64\Status_Unit.pas
+Module7=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module8=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Count=9
 EditWindowCount=1
@@ -31,13 +31,16 @@ EditWindowCount=1
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
+[D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64.dproj]
 ModuleType=TBaseProject
 
-[D:\Delphi\FreePDF64\Suchen.pas]
+[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\Info_Unit.pas]
+[D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Encrypt_Unit.pas]
@@ -47,9 +50,6 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
@@ -89,7 +89,7 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1895
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000980F00000000000001670700000000000001000000005A0E000009000000446F636B53697465330100000000B91B00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000980F00000000000001670700000000000001000000007C0E000009000000446F636B53697465330100000000B91B00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1996
 RightPanelClients=DockSite2,DockSite4
 RightPanelData=00000800010100000000980F00000000000001CC0700000000000001000000004912000009000000446F636B53697465320100000000B91B000009000000446F636B5369746534FFFFFFFF
@@ -105,11 +105,11 @@ CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 CursorX=49
 CursorY=2865
-TopLine=2830
+TopLine=2731
 LeftCol=1
 Elisions=
 Bookmarks={0,794,1}{1,7639,5}{2,2860,6}
-EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+EditViewName=Borland.FormDesignerView
 
 [View1]
 CustomEditViewType=TEditView
@@ -164,7 +164,7 @@ TopLine=949
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+EditViewName=Borland.FormDesignerView
 
 [View6]
 CustomEditViewType=TEditView
@@ -314,13 +314,13 @@ Visible=1
 Docked=1
 State=0
 Left=0
-Top=565
+Top=570
 Width=1895
-Height=3312
+Height=3275
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3312
+ClientHeight=3275
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=9014
@@ -328,6 +328,11 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Caption,
+ExpandedItems=Anchors=0,Constraints=0,Font=0,Images=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0,CustomTitleBar=0,GlassFrame=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -607,11 +612,11 @@ State=0
 Left=0
 Top=0
 Width=1895
-Height=3500
+Height=3536
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3500
+ClientHeight=3536
 TBDockHeight=3681
 LRDockWidth=1895
 Dockable=1
@@ -728,11 +733,11 @@ State=0
 Left=0
 Top=36
 Width=1895
-Height=3500
+Height=3536
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3500
+ClientHeight=3536
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=9014

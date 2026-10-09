@@ -642,7 +642,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Font.Height = -15
     Font.Name = 'Segoe UI'
     Font.Style = []
-    ImageIndex = 86
+    ImageIndex = 83
     ImageName = 'Key'
     Images = FreePDF64_Form.VirtualImageList1
     NumGlyphs = 2
@@ -702,7 +702,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Font.Height = -15
     Font.Name = 'Segoe UI'
     Font.Style = []
-    ImageIndex = 87
+    ImageIndex = 84
     ImageName = 'Write'
     Images = FreePDF64_Form.VirtualImageList1
     NumGlyphs = 2
@@ -850,7 +850,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Font.Height = -15
     Font.Name = 'Segoe UI'
     Font.Style = []
-    ImageIndex = 97
+    ImageIndex = 94
     ImageName = '2530841_document_general_letter_note_office_icon'
     Images = FreePDF64_Form.VirtualImageList1
     NumGlyphs = 2
@@ -912,7 +912,7 @@ object Einstellungen_Form: TEinstellungen_Form
     Margins.Bottom = 4
     BiDiMode = bdLeftToRight
     ImageAlignment = iaCenter
-    ImageIndex = 48
+    ImageIndex = 46
     ImageName = 'Item49'
     Images = FreePDF64_Form.VirtualImageList1
     ParentBiDiMode = False

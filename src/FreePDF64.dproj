@@ -92,7 +92,7 @@
         <VerInfo_IncludeVerInfo>true</VerInfo_IncludeVerInfo>
         <VerInfo_MajorVer>7</VerInfo_MajorVer>
         <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=7.1.1.0;InternalName=FreePDF64;LegalCopyright=FreePDF64@outlook.com;LegalTrademarks=;OriginalFilename=FreePDF64.exe;ProgramID=com.embarcadero.$(MSBuildProjectName);ProductName=$(MSBuildProjectName);ProductVersion=7.1.1;Comments=FreePDF64 - PDF Tools</VerInfo_Keys>
-        <Icon_MainIcon>FreePDF64_Modern.ico</Icon_MainIcon>
+        <Icon_MainIcon>FreePDF64_Icon.ico</Icon_MainIcon>
         <BRCC_CodePage>0</BRCC_CodePage>
         <DCC_TSAware>false</DCC_TSAware>
         <DCC_AssertionsAtRuntime>false</DCC_AssertionsAtRuntime>
