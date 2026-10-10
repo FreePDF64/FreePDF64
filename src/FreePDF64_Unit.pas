@@ -902,10 +902,10 @@ begin
       SL := TStringList.Create;
       try
         try
-          SL.LoadFromFile(LogPath);
+          SL.LoadFromFile(LogPath, TEncoding.UTF8);
           ToolResult.OutputText := SL.Text;
         except
-          ToolResult.OutputText := '(Protokoll konnte nicht gelesen werden.)';
+         ToolResult.OutputText := '(Protokoll konnte nicht gelesen werden.)';
         end;
       finally
         SL.Free;
