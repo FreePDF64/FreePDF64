@@ -57,7 +57,6 @@ type
     Btn_0: TSpeedButton;
     Timer1: TTimer;
     SuchergebnisBtn: TBitBtn;
-    TextLabel: TLabel;
     TextCB: TComboBox;
     LabelTextCB: TLabel;
     DateigroesseLabel: TLabel;
@@ -81,6 +80,8 @@ type
     SuchergebnisCB: TCheckBox;
     SucheEdit: TEdit;
     AnzeigenPanel: TPanel;
+    TextLb: TLabel;
+    PDFCB: TCheckBox;
     procedure ButtonHochClick(Sender: TObject);
     procedure BrowseClick(Sender: TObject);
     procedure FormKeyPress(Sender: TObject; var Key: Char);
@@ -753,6 +754,8 @@ begin
       begin
         PDFForm := TPDFBrowserForm.Create(Self);
         PDFForm.PDFFileName := s;
+        PDFForm.StartPage := 1; // Die Suchergebnisliste enthält aktuell keine Seitenzahl.
+        PDFForm.SearchTerm := Trim(TextCB.Text);
         // DPI-skalierter Versatz
         // 100 % = 30 Pixel
         // 125 % = 38 Pixel
@@ -1523,6 +1526,7 @@ begin
   SuchergebnisBtn.Enabled := False;
   SucheEdit.Visible       := False;
   AnzeigenPanel.Visible   := False;
+  PDFCB.Checked           := False;
   DTP.Date := Date;
   DTP.Time := Time;
 
@@ -1543,7 +1547,8 @@ begin
   TextCB.Enabled           := True;
   TextCB.Text              := '';
   FileField.Text           := '';
-  TextLabel.Enabled        := True;
+  TextLb.Enabled           := True;
+  PDFCB.Enabled            := True;
   DirCheckbox.Checked      := True;
   HiddenCheckbox.State     := cbChecked;
   DatumCheckBox.Checked    := False;
@@ -1606,7 +1611,8 @@ begin
     '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 +
     '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 +#13 +
     'Text suchen:' + #13 +
-    '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 + #13 +
+    '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 +
+    '- Bei Auswahl werden auch PDF-Dateien durchsucht' + #13 + #13 +
     'Suchergebnis:' + #13 +
     '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
     '- Zur Suche die Checkbox "Suche im Suchergebnis" anklicken (oder F2) und dann einfach' + #13 +
@@ -1877,7 +1883,7 @@ begin
                'FreePDF64-Suchergebnis.txt' + '"'), NIL, SW_SHOWNORMAL);
 end;
 
-procedure TSuche_Form.SuchpanelResize(Sender: TObject);
+Procedure TSuche_Form.SuchpanelResize(Sender: TObject);
 begin
   StatusBar1.Canvas.Font := StatusBar1.Font;
   StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
@@ -2329,6 +2335,95 @@ begin
   Inc(Result, SizeOf(Cardinal));      // Den Pointer (PChar) hinter die Größenangabe verschieben
 end;
 
+// PDF-Text aus pdftotext.exe extrahieren und den Suchbegriff darin suchen.
+// Bei Nicht-PDF-Dateien bleibt die bisherige Byte-Suche erhalten.
+function SearchPdfTextWithPdftotext(const FileName, ForString: string;
+  CaseSensitive: Boolean): Longint;
+var
+  ExePath, TempPath, TempFile, CommandLine: string;
+  StartupInfo: TStartupInfo;
+  ProcessInfo: TProcessInformation;
+  ExitCode: Cardinal;
+  PdfText, SearchFor: string;
+  Cmd: array[0..32767] of Char;
+  TempBuffer: array[0..MAX_PATH] of Char;
+  TempDirBuffer: array[0..MAX_PATH] of Char;
+  Created: Boolean;
+begin
+  Result := -1;
+  ExePath := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
+    'xpdf\bin64\pdftotext.exe';
+
+  if not FileExists(ExePath) then
+    Exit;
+
+  if GetTempPath(Length(TempDirBuffer), TempDirBuffer) = 0 then
+    Exit;
+  TempPath := IncludeTrailingPathDelimiter(string(TempDirBuffer));
+  if GetTempFileName(PChar(TempPath), 'fp6', 0, TempBuffer) = 0 then
+    Exit;
+  TempFile := string(TempBuffer);
+
+  try
+    // pdftotext erwartet eine Ausgabedatei. Die von GetTempFileName
+    // angelegte leere Datei wird deshalb vor dem Start entfernt.
+    DeleteFile(TempFile);
+
+    // -enc UTF-8 sorgt für eine einheitliche Kodierung der Textausgabe.
+    // -q unterdrückt unnötige Meldungen; Pfade werden in Anführungszeichen gesetzt.
+    CommandLine := '"' + ExePath + '" -q -enc UTF-8 "' + FileName +
+      '" "' + TempFile + '"';
+    StrPLCopy(Cmd, CommandLine, Length(Cmd) - 1);
+
+    FillChar(StartupInfo, SizeOf(StartupInfo), 0);
+    StartupInfo.cb := SizeOf(StartupInfo);
+    StartupInfo.dwFlags := STARTF_USESHOWWINDOW;
+    StartupInfo.wShowWindow := SW_HIDE;
+    FillChar(ProcessInfo, SizeOf(ProcessInfo), 0);
+
+    Created := CreateProcess(nil, Cmd, nil, nil, False, CREATE_NO_WINDOW,
+      nil, PChar(ExtractFilePath(ExePath)), StartupInfo, ProcessInfo);
+    if not Created then
+      Exit;
+
+    try
+      WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+      if not GetExitCodeProcess(ProcessInfo.hProcess, ExitCode) then
+        Exit;
+      if ExitCode <> 0 then
+        Exit;
+    finally
+      CloseHandle(ProcessInfo.hThread);
+      CloseHandle(ProcessInfo.hProcess);
+    end;
+
+    if not FileExists(TempFile) then
+      Exit;
+
+    try
+      PdfText := TFile.ReadAllText(TempFile, TEncoding.UTF8);
+    except
+      Exit;
+    end;
+
+    if CaseSensitive then
+    begin
+      SearchFor := ForString;
+    end
+    else
+    begin
+      PdfText := UpperCase(PdfText);
+      SearchFor := UpperCase(ForString);
+    end;
+
+    if Pos(SearchFor, PdfText) > 0 then
+      Result := 0;
+  finally
+    if FileExists(TempFile) then
+      DeleteFile(TempFile);
+  end;
+end;
+
 // Textsuche in Datei(en)
 function ScanFile(const FileName, forString: string; caseSensitive: Boolean): Longint;
 const
@@ -2341,11 +2436,21 @@ var
   Haystack: string;
   PosFound: Integer;
   Overlap: Integer;
+  Ext: string;
 begin
   Result := -1;
 
   if (forString = '') or (FileName = '') then
     Exit;
+
+  // PDFs müssen als PDF-Text extrahiert werden. Die Suche in den rohen
+  // PDF-Bytes findet komprimierten oder kodierten Text nicht zuverlässig.
+  if Suche_Form.PDFCB.Checked then
+  begin
+    Ext := LowerCase(ExtractFileExt(FileName));
+    if Ext = '.pdf' then
+      Exit(SearchPdfTextWithPdftotext(FileName, forString, caseSensitive));
+  end;
 
   // Suchstring vorbereiten
   if caseSensitive then
@@ -2386,9 +2491,7 @@ begin
           F.Position := F.Position - Overlap;
       end;
     except
-      // Datei kann nicht gelesen werden (z.B. Zugriff verweigert,
-      // Datei inzwischen gelöscht/gesperrt oder Lesefehler):
-      // Datei einfach überspringen und Suche fortsetzen.
+      // Datei kann nicht gelesen werden: Datei überspringen.
       Result := -1;
     end;
   finally
@@ -4416,7 +4519,7 @@ begin
       TextCB.Items.Delete(i);
 end;
 
-procedure TSuche_Form.FilesFoldersCBChange(Sender: TObject);
+Procedure TSuche_Form.FilesFoldersCBChange(Sender: TObject);
 begin
   if FilesFoldersCB.ItemIndex <> 1 then
   begin
@@ -4425,15 +4528,18 @@ begin
     SizeAuswahl.Enabled   := False;
     TextCB.Enabled        := False;
     TextCB.Text           := '';
-    TextLabel.Enabled     := False;
+    TextLb.Enabled        := False;
+    PDFCB.Enabled         := False;
+    PDFCB.Checked         := False;
   end else
   begin
     DateiCheckBox.Enabled := True;
     if not DatumCheckBox.Checked then
     begin
-      TextCB.Enabled    := True;
-      TextCB.Text       := '';
-      TextLabel.Enabled := True;
+      TextCB.Enabled := True;
+      TextCB.Text    := '';
+      TextLb.Enabled := True;
+      PDFCB.Enabled  := True;
     end;
   end;
 

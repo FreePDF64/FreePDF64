@@ -25,7 +25,7 @@ object Suche_Form: TSuche_Form
     Left = 0
     Top = 0
     Width = 1078
-    Height = 225
+    Height = 241
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -35,7 +35,7 @@ object Suche_Form: TSuche_Form
     OnEnter = Panel_obenEnter
     DesignSize = (
       1078
-      225)
+      241)
     object Label1: TLabel
       Left = 14
       Top = 19
@@ -60,7 +60,7 @@ object Suche_Form: TSuche_Form
     end
     object Label4: TLabel
       Left = 256
-      Top = 156
+      Top = 172
       Width = 25
       Height = 20
       Margins.Left = 4
@@ -77,7 +77,7 @@ object Suche_Form: TSuche_Form
     end
     object Clear: TSpeedButton
       Left = 388
-      Top = 187
+      Top = 203
       Width = 29
       Height = 27
       Hint = 'Auswahl Dateigr'#246#223'e zur'#252'cksetzen'
@@ -92,17 +92,6 @@ object Suche_Form: TSuche_Form
       ParentShowHint = False
       ShowHint = True
       OnClick = ClearClick
-    end
-    object TextLabel: TLabel
-      Left = 14
-      Top = 121
-      Width = 79
-      Height = 20
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      Caption = 'Text suchen:'
     end
     object LabelTextCB: TLabel
       Left = 105
@@ -137,10 +126,21 @@ object Suche_Form: TSuche_Form
       ParentShowHint = False
       ShowHint = True
     end
+    object TextLb: TLabel
+      Left = 14
+      Top = 115
+      Width = 79
+      Height = 20
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      Caption = 'Text suchen:'
+    end
     object DirCheckbox: TCheckBox
-      Left = 359
-      Top = 89
-      Width = 246
+      Left = 392
+      Top = 87
+      Width = 177
       Height = 21
       Margins.Left = 4
       Margins.Top = 4
@@ -479,8 +479,8 @@ object Suche_Form: TSuche_Form
       OnClick = StartSearchButtonClick
     end
     object HiddenCheckbox: TCheckBox
-      Left = 537
-      Top = 89
+      Left = 577
+      Top = 87
       Width = 145
       Height = 21
       Margins.Left = 4
@@ -497,7 +497,7 @@ object Suche_Form: TSuche_Form
     end
     object SearchMaxDate: TDateTimePicker
       Left = 286
-      Top = 153
+      Top = 169
       Width = 98
       Height = 28
       Margins.Left = 4
@@ -517,7 +517,7 @@ object Suche_Form: TSuche_Form
     end
     object SearchMinDate: TDateTimePicker
       Left = 153
-      Top = 153
+      Top = 169
       Width = 98
       Height = 28
       Margins.Left = 4
@@ -537,7 +537,7 @@ object Suche_Form: TSuche_Form
     end
     object DatumCheckBox: TCheckBox
       Left = 14
-      Top = 156
+      Top = 172
       Width = 137
       Height = 21
       Margins.Left = 4
@@ -570,7 +570,7 @@ object Suche_Form: TSuche_Form
     object FilesFoldersCB: TComboBox
       Left = 105
       Top = 84
-      Width = 246
+      Width = 279
       Height = 28
       Margins.Left = 4
       Margins.Top = 4
@@ -590,7 +590,7 @@ object Suche_Form: TSuche_Form
     end
     object FileSizeCombo: TComboBox
       Left = 153
-      Top = 187
+      Top = 203
       Width = 40
       Height = 28
       Margins.Left = 4
@@ -614,7 +614,7 @@ object Suche_Form: TSuche_Form
     end
     object SizeAuswahl: TComboBox
       Left = 324
-      Top = 187
+      Top = 203
       Width = 60
       Height = 28
       Margins.Left = 4
@@ -639,8 +639,8 @@ object Suche_Form: TSuche_Form
     end
     object UmbenennenCB: TCheckBox
       Left = 392
-      Top = 121
-      Width = 333
+      Top = 127
+      Width = 316
       Height = 21
       Hint = 
         'Beim Kopieren/Bewegen wird nicht nachgefragt, bevor eine Datei a' +
@@ -649,14 +649,14 @@ object Suche_Form: TSuche_Form
       Margins.Top = 4
       Margins.Right = 4
       Margins.Bottom = 4
-      Caption = 'Beim Kopieren/Bewegen autom. umbenennen'
+      Caption = 'Bei Kopieren/Bewegen autom. umbenennen'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 9
     end
     object SuchergebnisBtn: TBitBtn
       Left = 912
-      Top = 188
+      Top = 204
       Width = 156
       Height = 26
       Hint = 'Suchergebnis speichern und anzeigen'
@@ -682,7 +682,7 @@ object Suche_Form: TSuche_Form
     end
     object TextCB: TComboBox
       Left = 105
-      Top = 118
+      Top = 123
       Width = 279
       Height = 28
       Hint = 'Suche geht nur bei "Zeige nur Dateien" und ohne "Datumssuche"'
@@ -726,7 +726,7 @@ object Suche_Form: TSuche_Form
     end
     object AlterCB: TCheckBox
       Left = 392
-      Top = 156
+      Top = 172
       Width = 119
       Height = 21
       Margins.Left = 4
@@ -739,7 +739,7 @@ object Suche_Form: TSuche_Form
     end
     object AgeAuswahl: TComboBox
       Left = 573
-      Top = 153
+      Top = 169
       Width = 93
       Height = 28
       Margins.Left = 4
@@ -766,7 +766,7 @@ object Suche_Form: TSuche_Form
     end
     object AgeSizeEdit: TSpinEdit
       Left = 514
-      Top = 151
+      Top = 167
       Width = 51
       Height = 31
       Margins.Left = 4
@@ -781,7 +781,7 @@ object Suche_Form: TSuche_Form
     end
     object FileSize: TSpinEdit
       Left = 201
-      Top = 186
+      Top = 202
       Width = 116
       Height = 31
       Margins.Left = 4
@@ -814,7 +814,7 @@ object Suche_Form: TSuche_Form
     end
     object DateiCheckBox: TCheckBox
       Left = 14
-      Top = 190
+      Top = 206
       Width = 121
       Height = 21
       Margins.Left = 4
@@ -827,7 +827,7 @@ object Suche_Form: TSuche_Form
     end
     object SuchergebnisCB: TCheckBox
       Left = 697
-      Top = 190
+      Top = 206
       Width = 204
       Height = 21
       Margins.Left = 4
@@ -841,12 +841,27 @@ object Suche_Form: TSuche_Form
       TabOrder = 25
       OnClick = SuchergebnisCBClick
     end
+    object PDFCB: TCheckBox
+      Left = 14
+      Top = 136
+      Width = 85
+      Height = 21
+      Hint = 'Auch PDF-Dateien durchsuchen'
+      Margins.Left = 4
+      Margins.Top = 4
+      Margins.Right = 4
+      Margins.Bottom = 4
+      Caption = 'inkl. PDF'
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 26
+    end
   end
   object Suchpanel: TPanel
     Left = 0
-    Top = 225
+    Top = 241
     Width = 1078
-    Height = 399
+    Height = 383
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
@@ -857,7 +872,7 @@ object Suche_Form: TSuche_Form
     object Splitter1: TSplitter
       Left = 1
       Top = 1
-      Height = 397
+      Height = 381
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -868,7 +883,7 @@ object Suche_Form: TSuche_Form
       Left = 4
       Top = 1
       Width = 1073
-      Height = 397
+      Height = 381
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
@@ -895,7 +910,7 @@ object Suche_Form: TSuche_Form
     end
     object SucheEdit: TEdit
       Left = 772
-      Top = 364
+      Top = 347
       Width = 197
       Height = 28
       Margins.Left = 4
@@ -911,7 +926,7 @@ object Suche_Form: TSuche_Form
     end
     object AnzeigenPanel: TPanel
       Left = 969
-      Top = 366
+      Top = 349
       Width = 105
       Height = 26
       Hint = 'Gefundene Eintr'#228'ge ganz oben im Suchergebnis anzeigen'

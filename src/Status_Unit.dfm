@@ -4,7 +4,7 @@ object Status_Form: TStatus_Form
   BorderStyle = bsDialog
   Caption = 'FreePDF64 - Statusinformationen'
   ClientHeight = 647
-  ClientWidth = 653
+  ClientWidth = 656
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
   Font.Color = clWindowText

@@ -1962,7 +1962,7 @@ begin
     '17: Hinzufügen eines Wasserzeichens oder Stempels zu einer PDF-Datei' + #13 +
     '18: Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei' + #13 +
     '19: Bilder extrahieren aus PDF-Dateien oder Anlagen zur PDF-Datei hinzufügen/extrahieren' + #13 +
-    '20: Umfangreichste Suchfunktionen' + #13 +
+    '20: Umfangreichste Suchfunktionen, auch in PDF-Dateien' + #13 +
     '21: E-Mailversand der markierten Datei(en)' + #13 +
     '22: Automatische Überwachung auf neue eingehende Dateien' + #13 +
     '... uvm.' + #13 + #13 +
@@ -2221,7 +2221,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '09.10.2026';
+  Datum := '10.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +

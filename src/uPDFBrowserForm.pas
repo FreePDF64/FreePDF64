@@ -11,6 +11,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.Dialogs,
+  Vcl.StdCtrls, Vcl.Clipbrd, Math,
   IniFiles, uWVBrowser, uWVWinControl, uWVWindowParent, uWVTypes,
   uWVConstants, uWVTypeLibrary, uWVLibFunctions, uWVLoader,
   uWVInterfaces, uWVCoreWebView2Args, uWVBrowserBase, Menus;
@@ -40,11 +41,26 @@ type
     FBrowserCreateStarted: Boolean;
     FBrowserCreated: Boolean;
     FClosing: Boolean;
+    FToolbar: TPanel;
+    FPageLabel: TLabel;
+    FPageEdit: TEdit;
+    FGoPageButton: TButton;
+    FFindButton: TButton;
+    FPageNavigationTimer: TTimer;
+    FSearchTerm: string;
+    FStartPage: Integer;
 
     procedure StartBrowser;
+    procedure BuildNavigationToolbar;
+    procedure GoToPageClick(Sender: TObject);
+    procedure FindTermClick(Sender: TObject);
+    procedure PageNavigationTimerTimer(Sender: TObject);
+    function BuildPdfUrl(const APage: Integer): string;
 
   public
     PDFFileName: string;
+    property SearchTerm: string read FSearchTerm write FSearchTerm;
+    property StartPage: Integer read FStartPage write FStartPage;
   end;
 
 implementation
@@ -61,6 +77,9 @@ begin
   FBrowserCreateStarted := False;
   FBrowserCreated := False;
   FClosing := False;
+  FStartPage := 1;
+  FSearchTerm := '';
+  BuildNavigationToolbar;
 
   IniDat := TIniFile.Create(
     ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
@@ -72,6 +91,143 @@ begin
   finally
     IniDat.Free;
   end;
+end;
+
+
+procedure TPDFBrowserForm.BuildNavigationToolbar;
+begin
+  // Die vorhandene PDF-Ansicht bleibt in einem eigenen Fenster.
+  // Diese kleine Leiste ergänzt nur Seitensteuerung und die PDF-Suche.
+  FToolbar := TPanel.Create(Self);
+  FToolbar.Name := 'PDFNavigationToolbar';
+  FToolbar.Caption := 'PDF-Anzeiger';
+  FToolbar.Parent := Self;
+  FToolbar.Align := alTop;
+  FToolbar.Height := 38;
+  FToolbar.BevelOuter := bvNone;
+
+  FPageLabel := TLabel.Create(Self);
+  FPageLabel.Parent := FToolbar;
+  FPageLabel.Caption := 'Seite:';
+  FPageLabel.Left := 8;
+  FPageLabel.Top := 12;
+
+  FPageEdit := TEdit.Create(Self);
+  FPageEdit.Parent := FToolbar;
+  FPageEdit.Name := 'PDFPageNumberEdit';
+  FPageEdit.Left := 48;
+  FPageEdit.Top := 6;
+  FPageEdit.Width := 58;
+  FPageEdit.Text := '1';
+  FPageEdit.NumbersOnly := True;
+
+  FGoPageButton := TButton.Create(Self);
+  FGoPageButton.Parent := FToolbar;
+  FGoPageButton.Caption := 'Gehe zu Seite';
+  FGoPageButton.Left := 112;
+  FGoPageButton.Top := 5;
+  FGoPageButton.Width := 105;
+  FGoPageButton.Height := 27;
+  FGoPageButton.OnClick := GoToPageClick;
+
+  FFindButton := TButton.Create(Self);
+  FFindButton.Parent := FToolbar;
+  FFindButton.Caption := 'Suchbegriff suchen';
+  FFindButton.Left := 225;
+  FFindButton.Top := 5;
+  FFindButton.Width := 135;
+  FFindButton.Height := 27;
+  FFindButton.OnClick := FindTermClick;
+
+  FPageNavigationTimer := TTimer.Create(Self);
+  FPageNavigationTimer.Enabled := False;
+  FPageNavigationTimer.Interval := 180;
+  FPageNavigationTimer.OnTimer := PageNavigationTimerTimer;
+
+  // Sicherstellen, dass die vorhandene WebView den restlichen Platz nutzt.
+  WVWindowParentPDF.Align := alClient;
+  WVWindowParentPDF.SendToBack;
+end;
+
+
+function TPDFBrowserForm.BuildPdfUrl(const APage: Integer): string;
+var
+  LPath: string;
+begin
+  LPath := StringReplace(ExpandFileName(PDFFileName), '\', '/', [rfReplaceAll]);
+  // URL-Kodierung der Leerzeichen verhindert fehlerhafte file-URLs.
+  LPath := StringReplace(LPath, ' ', '%20', [rfReplaceAll]);
+  Result := 'file:///' + LPath + '#page=' + IntToStr(Max(1, APage));
+end;
+
+
+procedure TPDFBrowserForm.GoToPageClick(Sender: TObject);
+var
+  LPage: Integer;
+begin
+  if not TryStrToInt(Trim(FPageEdit.Text), LPage) or (LPage < 1) then
+  begin
+    MessageDlg('Bitte eine gültige Seitenzahl ab 1 eingeben.', mtInformation, [mbOK], 0);
+    FPageEdit.SetFocus;
+    Exit;
+  end;
+
+  FStartPage := LPage;
+  if FBrowserCreated and not FClosing then
+  begin
+    // Ein Zwischenaufruf verhindert, dass WebView2 eine reine Fragment-
+    // Änderung bei derselben PDF-Datei ignoriert.
+    FPageNavigationTimer.Enabled := False;
+    WVBrowserPDF.Navigate('about:blank');
+    FPageNavigationTimer.Enabled := True;
+  end;
+end;
+
+
+procedure TPDFBrowserForm.PageNavigationTimerTimer(Sender: TObject);
+begin
+  FPageNavigationTimer.Enabled := False;
+  if FBrowserCreated and not FClosing then
+    WVBrowserPDF.Navigate(BuildPdfUrl(FStartPage));
+end;
+
+
+procedure TPDFBrowserForm.FindTermClick(Sender: TObject);
+begin
+  if Trim(FSearchTerm) = '' then
+  begin
+    MessageDlg('In der Suchmaske [Text suchen] ist kein Suchbegriff eingetragen.', mtInformation, [mbOK], 0);
+    Exit;
+  end;
+
+  // Der Edge-PDF-Viewer besitzt eine eigene Suche (Strg+F).
+  // WebView2 bietet keine stabile öffentliche API, um interne PDF-Treffer
+  // direkt zu markieren. Deshalb wird die integrierte Suchoberfläche geöffnet.
+  Clipboard.AsText := FSearchTerm;
+
+  // Den Fokus möglichst direkt an die WebView geben, nicht nur an
+  // deren Parent-Window. Die Suche selbst wird vom Edge-PDF-Viewer
+  // über Strg+F bereitgestellt.
+  BringToFront;
+  SetForegroundWindow(Handle);
+  if WVWindowParentPDF.HandleAllocated then
+    Winapi.Windows.SetFocus(WVWindowParentPDF.Handle)
+  else
+    WVBrowserPDF.SetFocus;
+
+  // Erst die Edge-Suchleiste öffnen. Die verzögerte Eingabe verhindert,
+  // dass Strg+V gesendet wird, bevor die Suchleiste bereit ist.
+  keybd_event(VK_CONTROL, 0, 0, 0);
+  keybd_event(Ord('F'), 0, 0, 0);
+  keybd_event(Ord('F'), 0, KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+
+  Sleep(250);
+
+  keybd_event(VK_CONTROL, 0, 0, 0);
+  keybd_event(Ord('V'), 0, 0, 0);
+  keybd_event(Ord('V'), 0, KEYEVENTF_KEYUP, 0);
+  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
 end;
 
 
@@ -149,8 +305,6 @@ end;
 
 
 procedure TPDFBrowserForm.WVBrowserPDFAfterCreated(Sender: TObject);
-var
-  URL: string;
 begin
   // Sehr wichtig:
   // Falls CreateBrowser noch abgeschlossen wurde, nachdem
@@ -163,10 +317,10 @@ begin
 
   WVWindowParentPDF.UpdateSize;
 
-  URL := 'file:///' +
-    StringReplace(PDFFileName, '\', '/', [rfReplaceAll]);
-
-  WVBrowserPDF.Navigate(URL);
+  if FStartPage < 1 then
+    FStartPage := 1;
+  FPageEdit.Text := IntToStr(FStartPage);
+  WVBrowserPDF.Navigate(BuildPdfUrl(FStartPage));
 
   // Das PDF-Fenster soll aktiv sein.
   BringToFront;
@@ -180,11 +334,9 @@ end;
 
 function TPDFBrowserForm.IsShortCut(var Message: TWMKey): Boolean;
 begin
-  // Solange die PDFForm aktiv ist, dürfen Shortcuts der Hauptform
-  // nicht von der Anwendung verarbeitet werden.
-  //
-  // Die Tastatur wird anschließend von WebView2 verarbeitet.
-  Result := True;
+  // Keine Tastenkombinationen pauschal verschlucken.
+  // Insbesondere muss Strg+F an den Edge-PDF-Viewer gelangen können.
+  Result := inherited IsShortCut(Message);
 end;
 
 
@@ -212,6 +364,8 @@ begin
   FClosing := True;
 
   TimerPDF.Enabled := False;
+  if Assigned(FPageNavigationTimer) then
+    FPageNavigationTimer.Enabled := False;
 
   IniDat := TIniFile.Create(
     ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
