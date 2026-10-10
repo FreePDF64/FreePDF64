@@ -46,8 +46,9 @@ Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitH
 20. Bilder extrahieren aus PDF-Dateien
 21. Konvertieren von PDF zu HTML
 22. E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
-23.  Umfangreiche Suchfunktionen
-24. Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
+23. Umfangreiche Suchfunktionen, auch in PDF-Dateien
+24. Erstellung eines PDF-Prüfberichts
+25. Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
 ...und vieles mehr.
 
 
