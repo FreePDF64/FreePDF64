@@ -33,7 +33,8 @@ Funktionen:
 21: Konvertieren von PDF zu HTML
 22: E-Mailversand der markierten Datei(en) - gleich der Windows-Funktion "Senden an"
 23: Umfangreiche Suchfunktionen, auch in PDF-Dateien
-24: Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
+24: Erstellung eines PDF-Prüfberichts
+25: Automatische Überwachung auf neue eingehende Dateien (z.B. Drucken auf den FreePDF64-Drucker) mit sofortiger Erstellung ins gewünschte Format! 
 
 ...und vieles mehr.
 

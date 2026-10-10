@@ -1,5 +1,6 @@
 10.10.2026 V7.1.2
 Neu -> Textsuche im Suche-Fenster durchsucht nun auch PDF-Dateien.
+Neu -> Erstellung eines PDF-Prüfberichts: PDF-Datei auswählen, Prüfbericht-Button klicken...
 09.10.2026 V7.1.1
 Neu -> PDF-Dateien direkt im FreePDF64-PDF-Anzeiger öffnen per Doppelklick im Windows-Datei-Explorer. Kein weiterer PDF-Reader mehr nötig!
 08.10.2026 V7.1.0

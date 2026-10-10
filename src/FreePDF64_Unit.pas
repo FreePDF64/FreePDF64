@@ -401,6 +401,12 @@ type
     UPD: TMenuItem;
     PortMonitorLoglschen1: TMenuItem;
     Timer3: TTimer;
+    LetztenPDFPrfberichtanzeigen1: TMenuItem;
+    N11: TMenuItem;
+    N17: TMenuItem;
+    PDFPrfberichtPDFprfen1: TMenuItem;
+    N22: TMenuItem;
+    PrüfBtn: TToolButton;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -608,6 +614,8 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure AbfrageaufeinneuesUpdate1Click(Sender: TObject);
     procedure PDF_KompressClick(Sender: TObject);
+    procedure PDFFuehrerscheinClick(Sender: TObject);
+    procedure PDFLetztenPruefberichtClick(Sender: TObject);
     procedure Memo1KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure LogBtMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -651,6 +659,9 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure PortMonitorLoglschen1Click(Sender: TObject);
     procedure Timer3Timer(Sender: TObject);
+    procedure LetztenPDFPrfberichtanzeigen1Click(Sender: TObject);
+    procedure PDFPrfberichtPDFprfen1Click(Sender: TObject);
+    procedure PrüfBtnClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -694,6 +705,8 @@ var
   Hochkommata: String[1];
   KnownNetworkDrives: array['A'..'Z'] of string;
   HinweisAutoFormat: Boolean = True;
+  // Verhindert, dass Auswahl-/Tastaturereignisse den PDF-Prüfbericht schließen.
+  PDFReportActive: Boolean = False;
 
 implementation
 
@@ -707,6 +720,12 @@ uses
 
 {$R *.DFM}
 {$R FreePDF64.res}
+
+// Dauerhafter Speicherort für den zuletzt erstellten PDF-Prüfbericht.
+function PdfLastReportFileName: string;
+begin
+  Result := ExtractFilePath(Application.ExeName) + 'Letzter_PDF_Pruefbericht.txt';
+end;
 
 // Schnelles Anhängen an das Memo.
 // AppendMemoText(... kopiert bei jedem Aufruf
@@ -723,6 +742,198 @@ begin
   FreePDF64_Form.Memo1.SelLength := 0;
   FreePDF64_Form.Memo1.SelText := S;
   FreePDF64_Form.Memo1.SelStart := P + Length(S);
+end;
+
+
+type
+  TPdfToolResult = record
+    Started: Boolean;
+    ExitCode: Cardinal;
+    OutputText: string;
+    ErrorText: string;
+  end;
+
+// Quotiert genau ein Argument für die Windows-CreateProcess-Kommandozeile.
+function PdfQuoteArg(const Value: string): string;
+var
+  I, SlashCount: Integer;
+  C: Char;
+begin
+  Result := '"';
+  SlashCount := 0;
+  for I := 1 to Length(Value) do
+  begin
+    C := Value[I];
+    if C = '\' then
+      Inc(SlashCount)
+    else
+    begin
+      if C = '"' then
+        Result := Result + StringOfChar('\', SlashCount * 2 + 1) + '"'
+      else
+        Result := Result + StringOfChar('\', SlashCount) + C;
+      SlashCount := 0;
+    end;
+  end;
+  Result := Result + StringOfChar('\', SlashCount * 2) + '"';
+end;
+
+// Startet ein Hilfsprogramm, protokolliert stdout/stderr und wartet maximal 60 s.
+// Args muss bereits korrekt quotierte Kommandozeilenargumente enthalten.
+function RunPdfTool(const ExePath, Args: string;
+  out ToolResult: TPdfToolResult): Boolean;
+var
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  SA: TSecurityAttributes;
+  LogHandle, NullHandle: THandle;
+  TempPathBuf: array[0..MAX_PATH] of Char;
+  TempFileBuf: array[0..MAX_PATH] of Char;
+  CmdLine, LogPath: string;
+  WaitRes: DWORD;
+  Err: DWORD;
+  SL: TStringList;
+begin
+  Result := False;
+  ToolResult.Started := False;
+  ToolResult.ExitCode := Cardinal(-1);
+  ToolResult.OutputText := '';
+  ToolResult.ErrorText := '';
+
+  if not FileExists(ExePath) then
+  begin
+    ToolResult.ErrorText := 'Programm nicht gefunden: ' + ExePath;
+    Exit;
+  end;
+
+  if GetTempPath(Length(TempPathBuf), PChar(@TempPathBuf[0])) = 0 then
+  begin
+    ToolResult.ErrorText := 'Temporäres Verzeichnis konnte nicht ermittelt werden.';
+    Exit;
+  end;
+
+  if GetTempFileName(PChar(@TempPathBuf[0]), 'FP6', 0, PChar(@TempFileBuf[0])) = 0 then
+  begin
+    ToolResult.ErrorText := 'Temporäre Protokolldatei konnte nicht erstellt werden.';
+    Exit;
+  end;
+
+  LogPath := string(PChar(@TempFileBuf[0]));
+  LogHandle := INVALID_HANDLE_VALUE;
+  NullHandle := INVALID_HANDLE_VALUE;
+  try
+    FillChar(SA, SizeOf(SA), 0);
+    SA.nLength := SizeOf(SA);
+    SA.bInheritHandle := True;
+
+    LogHandle := CreateFile(PChar(LogPath), GENERIC_WRITE,
+      FILE_SHARE_READ or FILE_SHARE_WRITE, @SA, CREATE_ALWAYS,
+      FILE_ATTRIBUTE_TEMPORARY, 0);
+    if LogHandle = INVALID_HANDLE_VALUE then
+    begin
+      ToolResult.ErrorText := 'Protokolldatei konnte nicht geöffnet werden.';
+      Exit;
+    end;
+
+    NullHandle := CreateFile('NUL', GENERIC_READ,
+      FILE_SHARE_READ or FILE_SHARE_WRITE, @SA, OPEN_EXISTING,
+      FILE_ATTRIBUTE_NORMAL, 0);
+    if NullHandle = INVALID_HANDLE_VALUE then
+    begin
+      ToolResult.ErrorText := 'NUL-Eingabe konnte nicht geöffnet werden.';
+      Exit;
+    end;
+
+    FillChar(SI, SizeOf(SI), 0);
+    FillChar(PI, SizeOf(PI), 0);
+    SI.cb := SizeOf(SI);
+    SI.dwFlags := STARTF_USESTDHANDLES;
+    SI.hStdInput := NullHandle;
+    SI.hStdOutput := LogHandle;
+    SI.hStdError := LogHandle;
+
+    CmdLine := PdfQuoteArg(ExePath);
+    if Args <> '' then
+      CmdLine := CmdLine + ' ' + Args;
+    UniqueString(CmdLine);
+
+    if not CreateProcess(PChar(ExePath), PChar(CmdLine), nil, nil, True,
+      CREATE_NO_WINDOW, nil, PChar(ExtractFilePath(ExePath)), SI, PI) then
+    begin
+      Err := GetLastError;
+      ToolResult.ErrorText := 'Programmstart fehlgeschlagen: ' +
+        SysErrorMessage(Err);
+      Exit;
+    end;
+
+    ToolResult.Started := True;
+    try
+      WaitRes := WaitForSingleObject(PI.hProcess, 60000);
+      if WaitRes = WAIT_TIMEOUT then
+      begin
+        TerminateProcess(PI.hProcess, 124);
+        WaitForSingleObject(PI.hProcess, 5000);
+        ToolResult.ErrorText := 'Zeitüberschreitung (60 Sekunden).';
+        ToolResult.ExitCode := 124;
+      end
+      else if WaitRes = WAIT_OBJECT_0 then
+      begin
+        if not GetExitCodeProcess(PI.hProcess, ToolResult.ExitCode) then
+        begin
+          Err := GetLastError;
+          ToolResult.ErrorText := 'Exitcode nicht lesbar: ' +
+            SysErrorMessage(Err);
+        end;
+      end
+      else
+      begin
+        ToolResult.ErrorText := 'Fehler beim Warten auf das Hilfsprogramm.';
+      end;
+    finally
+      CloseHandle(PI.hThread);
+      CloseHandle(PI.hProcess);
+    end;
+  finally
+    if NullHandle <> INVALID_HANDLE_VALUE then CloseHandle(NullHandle);
+    if LogHandle <> INVALID_HANDLE_VALUE then CloseHandle(LogHandle);
+
+    if FileExists(LogPath) then
+    begin
+      SL := TStringList.Create;
+      try
+        try
+          SL.LoadFromFile(LogPath);
+          ToolResult.OutputText := SL.Text;
+        except
+          ToolResult.OutputText := '(Protokoll konnte nicht gelesen werden.)';
+        end;
+      finally
+        SL.Free;
+      end;
+      DeleteFile(LogPath);
+    end;
+  end;
+
+  Result := ToolResult.Started and (ToolResult.ErrorText = '');
+end;
+
+function PdfFindInfoValue(const Lines: TStrings; const Key: string): string;
+var
+  I, P: Integer;
+  L, K: string;
+begin
+  Result := '';
+  K := LowerCase(Key);
+  for I := 0 to Lines.Count - 1 do
+  begin
+    L := Lines[I];
+    P := Pos(':', L);
+    if (P > 0) and (LowerCase(Trim(Copy(L, 1, P - 1))) = K) then
+    begin
+      Result := Trim(Copy(L, P + 1, MaxInt));
+      Exit;
+    end;
+  end;
 end;
 
 // Anzeige der Arbeitsspeicherbelegung von FreePDF64
@@ -1288,8 +1499,7 @@ begin
             if Logdatei.Checked then
             begin
               // Logdatei (FreePDF64Log.txt) öffnen/beschreiben etc.
-              AssignFile(F, PChar(ExtractFilePath(Application.ExeName) +
-                'FreePDF64Log.txt'));
+              AssignFile(F, PChar(ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt'));
               try
                 Append(F);
               except
@@ -1948,23 +2158,25 @@ begin
     '03: Erstellen von BMP/JPEG/PNG/TIFF zu PDF-Dateien' + #13 +
     '04: PDF-Dateien vor und auch nach der Erstellung verschlüsseln (128-Bit RC4/AES oder 256-Bit AES)' + #13 +
     '05: PDF-Passwortschutz entfernen' + #13 +
-    '06: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung' + #13 +
-    '07: Erstellen von PDF/X-3 sowie PDF/X-4a: Ein Dateiformat für den Austausch digitaler Druckvorlagen' + #13 +
-    '08: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung' + #13 +
-    '09: Zusammenfügen von mehreren PS/PDF-Dateien zu einer PDF-Datei' + #13 +
-    '10: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)' + #13 +
-    '11: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen' + #13 +
-    '12: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen' + #13 +
-    '13: Ausgewählte Seiten entnehmen aus allen Formaten' + #13 +
-    '14: Schnelle Webanzeige (Optimierung der PDF-Datei)' + #13 +
-    '15: Komprimierung der PDF-Datei(en)' + #13 +
-    '16: Konvertieren von PDF zu HTML' + #13 +
-    '17: Hinzufügen eines Wasserzeichens oder Stempels zu einer PDF-Datei' + #13 +
-    '18: Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei' + #13 +
-    '19: Bilder extrahieren aus PDF-Dateien oder Anlagen zur PDF-Datei hinzufügen/extrahieren' + #13 +
-    '20: Umfangreichste Suchfunktionen, auch in PDF-Dateien' + #13 +
-    '21: E-Mailversand der markierten Datei(en)' + #13 +
-    '22: Automatische Überwachung auf neue eingehende Dateien' + #13 +
+  	'06: Informationen und Schriftarten einer PDF-Datei anzeigen' + #13 +
+    '07: Erstellen von PDF/A-1b bis PDF/A-3b: Ein Dateiformat zur Langzeitarchivierung' + #13 +
+    '08: Erstellen von PDF/X-3 sowie PDF/X-4a: Ein Dateiformat für den Austausch digitaler Druckvorlagen' + #13 +
+    '09: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung' + #13 +
+    '10: Zusammenfügen von mehreren PS/PDF-Dateien zu einer PDF-Datei' + #13 +
+    '11: Distiller Parameter anpassen (Acrobat 5-8 kompatibel)' + #13 +
+    '12: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen' + #13 +
+    '13: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen' + #13 +
+    '14: Ausgewählte Seiten entnehmen aus allen Formaten' + #13 +
+    '15: Schnelle Webanzeige (Optimierung der PDF-Datei)' + #13 +
+    '16: Komprimierung der PDF-Datei(en)' + #13 +
+    '17: Konvertieren von PDF zu HTML' + #13 +
+    '18: Hinzufügen eines Wasserzeichens oder Stempels zu einer PDF-Datei' + #13 +
+    '19: Anfügen einer PS- oder PDF-Datei vorne/hinten an die zu erstellende PDF-Datei' + #13 +
+    '20: Bilder extrahieren aus PDF-Dateien oder Anlagen zur PDF-Datei hinzufügen/extrahieren' + #13 +
+    '21: Umfangreichste Suchfunktionen, auch in PDF-Dateien' + #13 +
+    '22: Erstellung eines PDF-Prüfberichts' + #13 +
+  	'23: E-Mailversand der markierten Datei(en)' + #13 +
+ 	  '24: Automatische Überwachung auf neue eingehende Dateien mit sofortiger Erstellung!' + #13 +
     '... uvm.' + #13 + #13 +
     'Weitere Informationen unter: Hilfe - FreePDF64-HowTo';
 
@@ -2676,6 +2888,11 @@ begin
     LMDShellList2.ShowProperties;
 end;
 
+procedure TFreePDF64_Form.PrüfBtnClick(Sender: TObject);
+begin
+  PDFFuehrerscheinClick(Sender);
+end;
+
 procedure TFreePDF64_Form.QuelllabelClick(Sender: TObject);
 begin
   ParentFolderL.Click;
@@ -3341,7 +3558,435 @@ begin
   end;
 end;
 
-// Komprimierung einer PDF-Datei mittels QPDF
+procedure TFreePDF64_Form.PDFFuehrerscheinClick(Sender: TObject);
+var
+  ShellList: TLMDShellList;
+  ShellFolder: TLMDShellFolder;
+  PdfFile, QpdfExe, PdfInfoExe, PdfToTextExe, PdfTkExe, GhostscriptExe: string;
+  TempDir, TextFileName, InfoFileName, OptimizedDir, OptimizedFile: string;
+  QRes, InfoRes, TextRes, TkRes, GSRes, VerifyRes: TPdfToolResult;
+  InfoLines, TkLines: TStringList;
+  Report: TStringList;
+  PageCount, I: Integer;
+  TextExtracted: Boolean;
+  QStatus, InfoStatus, TextStatus, TkStatus: string;
+  Args: string;
+  SourceSize, OutputSize: Int64;
+  Answer: Integer;
+
+  function ActiveList: TLMDShellList;
+  begin
+    if LMDShellList1.Focused then Result := LMDShellList1
+    else Result := LMDShellList2;
+  end;
+
+  function ActiveFolder: TLMDShellFolder;
+  begin
+    if LMDShellList1.Focused then Result := LMDShellFolder1
+    else Result := LMDShellFolder2;
+  end;
+
+  function MakeTempDir: string;
+  begin
+    Result := IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP')) +
+      'FreePDF64_PDFCheck_' + IntToStr(GetTickCount64);
+    if not ForceDirectories(Result) then
+      Result := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) +
+        'FreePDF64_PDFCheck_' + IntToStr(GetTickCount64);
+    ForceDirectories(Result);
+  end;
+
+  procedure AddToolResult(const ToolName: string; const R: TPdfToolResult);
+  begin
+    Report.Add('');
+    Report.Add('--- ' + ToolName + ' ---');
+    if not R.Started then
+      Report.Add('Status: konnte nicht gestartet werden')
+    else
+      Report.Add('Exitcode: ' + UIntToStr(R.ExitCode));
+    if R.ErrorText <> '' then
+      Report.Add('Hinweis: ' + R.ErrorText);
+    if Trim(R.OutputText) <> '' then
+      Report.Add(TrimRight(R.OutputText));
+  end;
+
+begin
+  FavClose;
+
+  // Den zuvor aktiven Dateibereich wieder fokussieren.
+  if Assigned(wcActive) then
+  begin
+    if wcActive.Name = 'LMDShellList1' then LMDShellList1.SetFocus
+    else if wcActive.Name = 'LMDShellList2' then LMDShellList2.SetFocus;
+  end;
+
+  if (ActiveList.SelCount <> 1) or not Assigned(ActiveList.Selected) then
+  begin
+    MessageDlgCenter(
+      'PDF-Prüfbericht: Bitte genau eine PDF-Datei auswählen.',
+      mtInformation, [mbOK]);
+    Exit;
+  end;
+
+  PdfFile := IncludeTrailingPathDelimiter(ActiveFolder.ActiveFolder.PathName) +
+    ActiveList.Selected.Caption;
+  if not SameText(ExtractFileExt(PdfFile), '.pdf') or not FileExists(PdfFile) then
+  begin
+    MessageDlgCenter('PDF-Prüfbericht: Bitte eine PDF-Datei auswählen.',
+      mtInformation, [mbOK]);
+    Exit;
+  end;
+
+  // Werkzeugpfade aus den vorhandenen FreePDF64-Einstellungen übernehmen.
+  QpdfExe        := Einstellungen_Form.Edit4.Text;
+  PdfTkExe       := Einstellungen_Form.Edit5.Text;
+  PdfInfoExe     := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
+  PdfToTextExe   := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdftotext.exe';
+  GhostscriptExe := Einstellungen_Form.Edit1.Text;
+
+  // Bei einer relativen Einstellung den Anwendungsordner als Basis verwenden.
+  if (QpdfExe <> '') and not FileExists(QpdfExe) and
+    not (ExtractFilePath(QpdfExe) <> '') then
+    QpdfExe := ExtractFilePath(Application.ExeName) + QpdfExe;
+  if (PdfTkExe <> '') and not FileExists(PdfTkExe) and
+    not (ExtractFilePath(PdfTkExe) <> '') then
+    PdfTkExe := ExtractFilePath(Application.ExeName) + PdfTkExe;
+
+  TempDir := MakeTempDir;
+  TextFileName := IncludeTrailingPathDelimiter(TempDir) + 'extracted.txt';
+  InfoFileName := IncludeTrailingPathDelimiter(TempDir) + 'pdfinfo.txt';
+
+  Report := TStringList.Create;
+  InfoLines := TStringList.Create;
+  TkLines := TStringList.Create;
+  try
+    Report.Add('FreePDF64 – PDF-Prüfbericht');
+    Report.Add('Prüfdatum: ' + DateTimeToStr(Now));
+    Report.Add('Datei: ' + PdfFile);
+    Report.Add('Dateigröße: ' + FormatByteString(MyFileSize(PdfFile)));
+    Report.Add('');
+    Report.Add('Hinweis: Die Prüfung erkennt typische technische Auffälligkeiten,');
+    Report.Add('ist aber keine Garantie für vollständige Fehlerfreiheit oder Sicherheit.');
+
+    // 1. qpdf: PDF-Struktur prüfen.
+    if FileExists(QpdfExe) then
+    begin
+      RunPdfTool(QpdfExe, '--check ' + PdfQuoteArg(PdfFile), QRes);
+      if not QRes.Started or (QRes.ErrorText <> '') then
+        QStatus := 'NICHT GEPRÜFT'
+      else
+        case QRes.ExitCode of
+          0: QStatus := 'OK – qpdf meldet keine Fehler/Warnungen';
+          2: QStatus := 'FEHLER – qpdf meldet einen Struktur-/Verarbeitungsfehler';
+          3: QStatus := 'WARNUNG – qpdf meldet Warnungen';
+        else
+          QStatus := 'UNBEKANNT – Exitcode ' + UIntToStr(QRes.ExitCode);
+        end;
+    end
+    else
+    begin
+      QRes.Started := False;
+      QRes.ExitCode := Cardinal(-1);
+      QRes.OutputText := '';
+      QRes.ErrorText := 'qpdf.exe nicht gefunden: ' + QpdfExe;
+      QStatus := 'NICHT GEPRÜFT';
+    end;
+    Report.Add('1. PDF-Struktur: ' + QStatus);
+    if QRes.ErrorText <> '' then Report.Add('   ' + QRes.ErrorText);
+    if Trim(QRes.OutputText) <> '' then
+    begin
+      Report.Add('   qpdf-Ausgabe:');
+      Report.Add('   ' + Trim(QRes.OutputText).Replace(#13#10, #13#10 + '   '));
+    end;
+
+    // 2. Xpdf pdfinfo: Seitenzahl und Dokumenteigenschaften.
+    if FileExists(PdfInfoExe) then
+    begin
+      RunPdfTool(PdfInfoExe, PdfQuoteArg(PdfFile), InfoRes);
+      if InfoRes.Started and (InfoRes.ErrorText = '') and (InfoRes.ExitCode = 0) then
+      begin
+        InfoLines.Text := InfoRes.OutputText;
+        InfoStatus := 'OK';
+        PageCount := 0;
+        if TryStrToInt(PdfFindInfoValue(InfoLines, 'Pages'), PageCount) then
+          Report.Add('2. Seitenzahl: ' + IntToStr(PageCount))
+        else
+          Report.Add('2. Seitenzahl: nicht zuverlässig ermittelt');
+        Report.Add('   Seitengröße: ' + PdfFindInfoValue(InfoLines, 'Page size'));
+        Report.Add('   Verschlüsselt: ' + PdfFindInfoValue(InfoLines, 'Encrypted'));
+        Report.Add('   PDF-Version: ' + PdfFindInfoValue(InfoLines, 'PDF version'));
+        Report.Add('   Titel: ' + PdfFindInfoValue(InfoLines, 'Title'));
+        Report.Add('   Autor: ' + PdfFindInfoValue(InfoLines, 'Author'));
+      end
+      else
+      begin
+        InfoStatus := 'FEHLER';
+        Report.Add('2. Dokumentinformationen: ' + InfoStatus);
+        if InfoRes.ErrorText <> '' then Report.Add('   ' + InfoRes.ErrorText);
+        if Trim(InfoRes.OutputText) <> '' then Report.Add('   ' + Trim(InfoRes.OutputText));
+      end;
+    end
+    else
+    begin
+      InfoStatus := 'NICHT VERFÜGBAR – pdfinfo.exe fehlt';
+      Report.Add('2. Dokumentinformationen: ' + InfoStatus);
+    end;
+
+    // 3. Xpdf pdftotext: feststellen, ob Text extrahiert werden kann.
+    if FileExists(PdfToTextExe) then
+    begin
+      RunPdfTool(PdfToTextExe,
+        '-enc UTF-8 -layout ' + PdfQuoteArg(PdfFile) + ' ' + PdfQuoteArg(TextFileName),
+        TextRes);
+      TextExtracted := False;
+      if TextRes.Started and (TextRes.ErrorText = '') and
+        (TextRes.ExitCode = 0) and FileExists(TextFileName) then
+      begin
+        try
+          InfoLines.LoadFromFile(TextFileName, TEncoding.UTF8);
+          for I := 0 to InfoLines.Count - 1 do
+            if Trim(InfoLines[I]) <> '' then
+            begin
+              TextExtracted := True;
+              Break;
+            end;
+        except
+          TextExtracted := False;
+        end;
+        if TextExtracted then
+          TextStatus := 'Text extrahierbar'
+        else
+          TextStatus := 'Kein verwertbarer Text extrahiert – Scan oder Sonderfall möglich';
+      end
+      else
+      begin
+        TextStatus := 'Prüfung fehlgeschlagen oder nicht möglich';
+        if TextRes.ErrorText <> '' then
+          Report.Add('   pdftotext-Hinweis: ' + TextRes.ErrorText);
+      end;
+      Report.Add('3. Textebene: ' + TextStatus);
+    end
+    else
+      Report.Add('3. Textebene: NICHT GEPRÜFT – pdftotext.exe fehlt');
+
+    // 4. pdftk: Dokumentdaten lesen, ohne die Originaldatei zu verändern.
+    if FileExists(PdfTkExe) then
+    begin
+      RunPdfTool(PdfTkExe,
+        PdfQuoteArg(PdfFile) + ' dump_data_utf8 output ' + PdfQuoteArg(InfoFileName),
+        TkRes);
+      if TkRes.Started and (TkRes.ErrorText = '') and (TkRes.ExitCode = 0) and
+        FileExists(InfoFileName) then
+      begin
+        TkLines.LoadFromFile(InfoFileName);
+        TkStatus := 'OK – Dokumentdaten ausgelesen';
+      end
+      else
+      begin
+        TkStatus := 'WARNUNG – Dokumentdaten konnten nicht zuverlässig ausgelesen werden';
+      end;
+      Report.Add('4. Dokumentdaten: ' + TkStatus);
+      if TkRes.ErrorText <> '' then Report.Add('   ' + TkRes.ErrorText);
+    end
+    else
+    begin
+      TkStatus := 'NICHT VERFÜGBAR – pdftk.exe fehlt';
+      Report.Add('4. Dokumentdaten: ' + TkStatus);
+    end;
+
+    Report.Add('');
+    Report.Add('Empfehlung: Warnungen im Kontext bewerten. Ein erfolgreicher Strukturcheck');
+    Report.Add('beweist weder Barrierefreiheit noch PDF/A-Konformität oder Virenfreiheit.');
+    Report.Add('Metadaten, Signaturen und sichtbare Inhalte werden nicht automatisch entfernt.');
+
+    PaneloverPrgB.Visible := True;
+    PaneloverPrgB.Caption := 'PDF-Prüfbericht';
+    Memo1.Lines.Assign(Report);
+    PDFReportActive := True;
+    Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
+    PDFPanel.Parent := Self;
+    PDFPanel.Left := 0;
+    PDFPanel.Top := 0;
+    PDFPanel.Width := ClientWidth;
+    PDFPanel.Height := ClientHeight - ToolBar1.Height;
+    // Das Memofenster ausdrücklich sichtbar lassen. Es wird am Ende der
+    // Prüfung nicht automatisch ausgeblendet oder geleert.
+    PDFPanel.Visible := True;
+    PDFPanel.BringToFront;
+    PDF_Erstellung.Visible := False;
+    FormatBtn.Visible := False;
+    PanelBottom.Visible := False;
+    MemoBtn.Visible := True;
+
+    // Ghostscript-Optimierung als separate, ausdrücklich bestätigte Aktion.
+    if FileExists(GhostscriptExe) then
+    begin
+      Answer := MessageDlg(
+        'Prüfung abgeschlossen!' + sLineBreak + sLineBreak +
+        'Möchtest du zusätzlich eine optimierte KOPIE mit Ghostscript erstellen?' + sLineBreak +
+        'Die Originaldatei bleibt unverändert. Die Ausgabe kann je nach PDF' + sLineBreak +
+        'größer sein oder bestimmte Dokumentfunktionen verändern.',
+        mtConfirmation, [mbYes, mbNo], 0);
+      if Answer = mrYes then
+      begin
+        OptimizedDir := IncludeTrailingPathDelimiter(ExtractFilePath(PdfFile)) +
+          'FreePDF64_Optimiert';
+        if not ForceDirectories(OptimizedDir) then
+        begin
+          AppendMemoText(#13#10#13#10 + 'Ghostscript-Optimierung abgebrochen: ' +
+            'Ausgabeordner konnte nicht erstellt werden: ' + OptimizedDir);
+          Exit;
+        end;
+        OptimizedFile := IncludeTrailingPathDelimiter(OptimizedDir) +
+          ChangeFileExt(ExtractFileName(PdfFile), '') + '_optimiert.pdf';
+
+        // Eine alte Ausgabe entfernen, damit niemals ein veraltetes Ergebnis
+        // fälschlich als frisch optimiert und nachgeprüft gemeldet wird.
+        if FileExists(OptimizedFile) and not DeleteFile(OptimizedFile) then
+        begin
+          AppendMemoText(#13#10#13#10 + 'Ghostscript-Optimierung abgebrochen: ' +
+            'Vorhandene Ausgabedatei kann nicht überschrieben werden: ' + OptimizedFile);
+          Exit;
+        end;
+
+        RunPdfTool(GhostscriptExe,
+          '-sDEVICE=pdfwrite -dCompatibilityLevel=1.4 -dPDFSETTINGS=/ebook ' +
+          '-dNOPAUSE -dBATCH -dSAFER -sOutputFile=' + PdfQuoteArg(OptimizedFile) +
+          ' ' + PdfQuoteArg(PdfFile), GSRes);
+
+        if GSRes.Started and (GSRes.ErrorText = '') and (GSRes.ExitCode = 0) and
+          FileExists(OptimizedFile) and (MyFileSize(OptimizedFile) > 0) then
+        begin
+          AppendMemoText(#13#10#13#10 + 'Ghostscript-Optimierung: ERFOLGREICH' +
+            #13#10 + 'Ausgabedatei: ' + OptimizedFile);
+
+          // qpdf-Nachprüfung wird nur auf der frisch erzeugten Ausgabedatei ausgeführt.
+          if FileExists(QpdfExe) then
+          begin
+            RunPdfTool(QpdfExe, '--check ' + PdfQuoteArg(OptimizedFile), VerifyRes);
+            AppendMemoText(#13#10#13#10 + 'qpdf-Nachprüfung der optimierten Datei: ');
+            if not VerifyRes.Started or (VerifyRes.ErrorText <> '') then
+              AppendMemoText('NICHT ERFOLGREICH AUSGEFÜHRT')
+            else
+              case VerifyRes.ExitCode of
+                0: AppendMemoText('BESTANDEN – qpdf meldet keine Fehler/Warnungen (Exitcode 0)');
+                2: AppendMemoText('FEHLGESCHLAGEN – qpdf meldet einen Fehler (Exitcode 2)');
+                3: AppendMemoText('WARNUNGEN – qpdf meldet Warnungen (Exitcode 3)');
+              else
+                AppendMemoText('UNBEKANNTES ERGEBNIS – Exitcode ' + UIntToStr(VerifyRes.ExitCode));
+              end;
+            if VerifyRes.ErrorText <> '' then
+              AppendMemoText(#13#10 + VerifyRes.ErrorText);
+            if Trim(VerifyRes.OutputText) <> '' then
+              AppendMemoText(#13#10 + Trim(VerifyRes.OutputText));
+          end
+          else
+            AppendMemoText(#13#10#13#10 +
+              'qpdf-Nachprüfung NICHT DURCHGEFÜHRT: qpdf.exe nicht gefunden: ' + QpdfExe);
+
+          SourceSize := MyFileSize(PdfFile);
+          OutputSize := MyFileSize(OptimizedFile);
+          AppendMemoText(#13#10#13#10 + 'Dateigrößenvergleich:' +
+            #13#10 + 'Original (unverändert): ' + FormatByteString(SourceSize) +
+            #13#10 + 'Optimierte Kopie: ' + FormatByteString(OutputSize));
+          if SourceSize > 0 then
+            AppendMemoText(#13#10 + 'Größenänderung: ' +
+              IntToStr(Round((SourceSize - OutputSize) * 100.0 / SourceSize)) + '%');
+          AppendMemoText(#13#10 +
+            'Hinweis: qpdf prüft die PDF-Struktur, garantiert aber keine vollständige PDF-Standardkonformität.');
+        end
+        else
+        begin
+          AppendMemoText(#13#10#13#10 + 'Ghostscript-Optimierung fehlgeschlagen.');
+          if GSRes.ErrorText <> '' then AppendMemoText(#13#10 + GSRes.ErrorText);
+          if Trim(GSRes.OutputText) <> '' then AppendMemoText(#13#10 + GSRes.OutputText);
+        end;
+      end;
+    end;
+
+    // Bericht dauerhaft sichern, damit er später über das Menü
+    // erneut zur Nachkontrolle geöffnet werden kann.
+    try
+      Memo1.Lines.SaveToFile(PdfLastReportFileName, TEncoding.UTF8);
+    except
+      AppendMemoText(#13#10#13#10 +
+        'Hinweis: Der Prüfbericht konnte nicht dauerhaft gespeichert werden.');
+    end;
+
+    Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count);
+    MessageDlgCenter('PDF-Prüfbericht abgeschlossen!', mtInformation, [mbOK]);
+  finally
+    Report.Free;
+    InfoLines.Free;
+    TkLines.Free;
+    // Temporäre Dateien/Ordner nach dem Bericht entfernen.
+    try
+      if FileExists(TextFileName) then DeleteFile(TextFileName);
+      if FileExists(InfoFileName) then DeleteFile(InfoFileName);
+      RemoveDir(TempDir);
+    except
+      // Temporäre Reste dürfen die Anwendung nicht beeinträchtigen.
+    end;
+  end;
+  Memo1.SetFocus;
+end;
+
+procedure TFreePDF64_Form.PDFLetztenPruefberichtClick(Sender: TObject);
+var
+  ReportFile: string;
+begin
+  ReportFile := PdfLastReportFileName;
+  if not FileExists(ReportFile) then
+  begin
+    MessageDlgCenter(
+      'Es wurde noch kein gespeicherter PDF-Prüfbericht gefunden.',
+      mtInformation, [mbOK]);
+    Exit;
+  end;
+
+  try
+    Memo1.Lines.LoadFromFile(ReportFile, TEncoding.UTF8);
+  except
+    on E: Exception do
+    begin
+      MessageDlgCenter('Der gespeicherte Prüfbericht konnte nicht gelesen werden:' +
+        sLineBreak + E.Message, mtError, [mbOK]);
+      Exit;
+    end;
+  end;
+
+  PDFReportActive := True;
+  PDFPanel.Parent := Self;
+  PDFPanel.Left := 0;
+  PDFPanel.Top := 0;
+  PDFPanel.Width := ClientWidth;
+  PDFPanel.Height := ClientHeight - ToolBar1.Height;
+  if PDFPanel.Height <= PDFPanelH then
+    PDFPanel.Height := PDFPanelH + 1;
+  PDFPanel.Visible := True;
+  PDFPanel.BringToFront;
+  MemoBtn.Visible := True;
+  PDF_Erstellung.Visible := False;
+  FormatBtn.Visible := False;
+  PanelBottom.Visible := False;
+
+  PaneloverPrgB.Visible := True;
+  PaneloverPrgB.Caption := ReportFile;
+
+  Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
+  Memo1.SetFocus;
+end;
+
+procedure TFreePDF64_Form.PDFPrfberichtPDFprfen1Click(Sender: TObject);
+begin
+  PDFFuehrerscheinClick(Sender);
+end;
+
+procedure TFreePDF64_Form.LetztenPDFPrfberichtanzeigen1Click(Sender: TObject);
+begin
+  PDFLetztenPruefberichtClick(Sender);
+end;
+
 procedure TFreePDF64_Form.PDF_KompressClick(Sender: TObject);
 var
   PDFDatei, QPDF_ExtractFile, Zeile, EndPDF, Ziel: String;
@@ -3514,14 +4159,14 @@ begin
   else
     MZiel := FreePDF64_Notify.ZielEdit.Text;
 
-  // MITTLERE MAUSTASTE → Suchefenster öffnen
+  // MITTLERE MAUSTASTE ? Suchefenster öffnen
   if Button = mbMiddle then
   begin
     SearchBtn.Click;
     Exit;
   end;
 
-  // Normales Rechtsklick → PopupMenu öffnen mit richtigen Verzeichnisse
+  // Normales Rechtsklick ? PopupMenu öffnen mit richtigen Verzeichnisse
   if Button = mbRight then
   begin
     if MonitorBtn.ImageIndex = 54 then
@@ -3722,7 +4367,7 @@ procedure TFreePDF64_Form.Btn_RenameMouseEnter(Sender: TObject);
 begin
   if not UPD.Checked then
     Btn_Rename.Hint := 'Umbenennen hiermit möglich, nicht per Doppelklick oder RMB-Kontextmenü!' + #13 +
-                       'Bei Bedarf kann die Funktion unter „Optionen → Oberfläche“ aktiviert werden'
+                       'Bei Bedarf kann die Funktion unter „Optionen ? Oberfläche“ aktiviert werden'
   else
     Btn_Rename.Hint := '';
 end;
@@ -4677,7 +5322,7 @@ var
   Ini: TIniFile;
   IniPath, S: string;
   Entry: string;
-  PDFMenuItem: TMenuItem;
+  PDFMenuItem, PDFCheckMenuItem, PDFLastReportMenuItem: TMenuItem;
 begin
   // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
   PDFMenuItem := TMenuItem.Create(MainMenu1);
@@ -6364,7 +7009,7 @@ begin
       // ftLastWriteTime IMMER als UTC interpretieren
       FileTimeToSystemTime(FileData.ftLastWriteTime, stUTC);
 
-      // UTC → lokale Zeit (Sommerzeit korrekt)
+      // UTC ? lokale Zeit (Sommerzeit korrekt)
       SystemTimeToTzSpecificLocalTime(nil, stUTC, stLocal);
 
       Result := SystemTimeToDateTime(stLocal);
@@ -6405,7 +7050,7 @@ const
     Key: string;
     Path: string;
   end = (
-    // Caption‑Mapping
+    // Caption?Mapping
     (Key: 'benutzer';            Path: 'KNOWN:UserProfiles'),
     (Key: 'users';               Path: 'KNOWN:UserProfiles'),
     (Key: 'programme';           Path: 'KNOWN:ProgramFiles'),
@@ -6414,7 +7059,7 @@ const
     (Key: 'program files (x86)'; Path: 'KNOWN:ProgramFilesX86'),
     (Key: 'perflogs';            Path: 'C:\PerfLogs'),
 
-    // Junction‑Mapping
+    // Junction?Mapping
     (Key: 'c:\programme';        Path: 'KNOWN:ProgramFiles'),
     (Key: 'c:\programme (x86)';  Path: 'KNOWN:ProgramFilesX86')
   );
@@ -6469,7 +7114,7 @@ begin
     end
     else
     begin
-      // ⭐ Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
+      // ? Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
       FreePDF64_Form.StatusBar_Left.SimpleText :=
         Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
       Exit;
@@ -6534,7 +7179,7 @@ begin
     end
     else
     begin
-      // ⭐ Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
+      // ? Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
       FreePDF64_Form.StatusBar_Right.SimpleText :=
         Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
       Exit;
@@ -6658,9 +7303,12 @@ end;
 procedure TFreePDF64_Form.LMDShellList1KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  MemoBtn.Click;
-  PDFPanel.Height := PDFPanelH;
+  // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
+  if not PDFReportActive then
+  begin
+    MemoBtn.Click;
+    PDFPanel.Height := PDFPanelH;
+  end;
 
   if (Key = VK_ESCAPE) then
   begin
@@ -6702,9 +7350,12 @@ end;
 procedure TFreePDF64_Form.LMDShellList2KeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  MemoBtn.Click;
-  PDFPanel.Height := PDFPanelH;
+  // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
+  if not PDFReportActive then
+  begin
+    MemoBtn.Click;
+    PDFPanel.Height := PDFPanelH;
+  end;
 
   if (Key = VK_ESCAPE) then
   begin
@@ -6746,9 +7397,12 @@ end;
 procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  MemoBtn.Click;
-  PDFPanel.Height := PDFPanelH;
+  // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
+  if not PDFReportActive then
+  begin
+    MemoBtn.Click;
+    PDFPanel.Height := PDFPanelH;
+  end;
 
   SB_Left;
 
@@ -6772,9 +7426,12 @@ end;
 procedure TFreePDF64_Form.LMDShellList2SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
-  // Wenn das Panel schon auf ist, wieder schließen...
-  MemoBtn.Click;
-  PDFPanel.Height := PDFPanelH;
+  // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
+  if not PDFReportActive then
+  begin
+    MemoBtn.Click;
+    PDFPanel.Height := PDFPanelH;
+  end;
 
   SB_Right;
 
@@ -6856,7 +7513,7 @@ begin
 
   LogFile := ExtractFilePath(Application.ExeName) + 'FreePDF64Log.txt';
 
-  // Linke Maustaste → Log anzeigen
+  // Linke Maustaste ? Log anzeigen
   if Button = mbLeft then
   begin
     Memo1.Lines.LoadFromFile(LogFile);
@@ -6883,10 +7540,10 @@ begin
     MemoBtn.Visible := True;
   end
 
-  // Rechte Maustaste → Panel schließen oder Log extern öffnen
+  // Rechte Maustaste ? Panel schließen oder Log extern öffnen
   else if Button = mbRight then
   begin
-    // Panel offen? → schließen
+    // Panel offen? ? schließen
     if PDFPanel.Height > PDFPanelH then
     begin
       PaneloverPrgB.Visible := False;
@@ -7147,7 +7804,6 @@ begin
       Suche_Form.WindowState := wsNormal;
   end;
 
-  // Wenn das Panel schon auf ist, wieder schließen...
   MemoBtn.Click;
 end;
 
@@ -7175,6 +7831,8 @@ end;
 
 procedure TFreePDF64_Form.MemoBtnClick(Sender: TObject);
 begin
+  // Dieser Handler wird durch die Bericht-Schaltfläche manuell ausgelöst.
+  PDFReportActive := False;
   if IsIconic(Suche_Form.Handle) then
     Suche_Form.WindowState := wsNormal;
 
@@ -7229,7 +7887,7 @@ begin
 
   if UniInputQuery(
      'PS/PDF zusammenfügen',
-     'Zielverzeichnis → siehe Hinweis beim Mauszeiger!' + #13#13 + 'Dateiname:',
+     'Zielverzeichnis ? siehe Hinweis beim Mauszeiger!' + #13#13 + 'Dateiname:',
      s,
      'Zielverzeichnis: ' + p + #13 +
      'Es ist gleich dem aktuellen Zielverzeichnis der Überwachung (siehe dort)',
@@ -9737,3 +10395,4 @@ begin
 end;
 
 end.
+

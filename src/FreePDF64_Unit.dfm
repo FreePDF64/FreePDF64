@@ -1,4 +1,4 @@
-object FreePDF64_Form: TFreePDF64_Form
+﻿object FreePDF64_Form: TFreePDF64_Form
   Left = 0
   Top = 0
   Caption = 'FreePDF64 - Die PDF-Toolsammlung'
@@ -74,7 +74,7 @@ object FreePDF64_Form: TFreePDF64_Form
     object ToolBar1: TToolBar
       Left = 1
       Top = 1
-      Width = 953
+      Width = 993
       Height = 45
       Margins.Left = 4
       Margins.Top = 4
@@ -82,7 +82,7 @@ object FreePDF64_Form: TFreePDF64_Form
       Margins.Bottom = 4
       Align = alClient
       ButtonHeight = 36
-      ButtonWidth = 37
+      ButtonWidth = 38
       Caption = 'ToolBar1'
       Images = VirtualImageList1
       List = True
@@ -90,6 +90,7 @@ object FreePDF64_Form: TFreePDF64_Form
       AllowTextButtons = True
       ShowHint = True
       TabOrder = 0
+      ExplicitWidth = 1003
       object AutoSize: TToolButton
         Left = 0
         Top = 0
@@ -394,8 +395,17 @@ object FreePDF64_Form: TFreePDF64_Form
         ImageName = 'Item63'
         OnClick = PDFInfoBtnClick
       end
-      object ToolButton7: TToolButton
+      object PrüfBtn: TToolButton
         Left = 823
+        Top = 0
+        Hint = 'PDF-Pr'#252'fbericht: PDF pr'#252'fen...'
+        Caption = 'PDF-Pr'#252'fbericht'
+        ImageIndex = 102
+        ImageName = 'Bericht'
+        OnClick = PrüfBtnClick
+      end
+      object ToolButton7: TToolButton
+        Left = 861
         Top = 0
         Width = 5
         Caption = 'ToolButton7'
@@ -404,7 +414,7 @@ object FreePDF64_Form: TFreePDF64_Form
         Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 828
+        Left = 866
         Top = 0
         Margins.Left = 4
         Margins.Top = 4
@@ -416,7 +426,7 @@ object FreePDF64_Form: TFreePDF64_Form
         OnMouseDown = LogBtMouseDown
       end
       object MemoBtn: TToolButton
-        Left = 866
+        Left = 904
         Top = 0
         Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         ImageIndex = 73
@@ -426,9 +436,9 @@ object FreePDF64_Form: TFreePDF64_Form
       end
     end
     object ConfigBtn: TButton
-      Left = 1081
+      Left = 1121
       Top = 1
-      Width = 200
+      Width = 160
       Height = 45
       Cursor = crHandPoint
       Hint = 
@@ -456,9 +466,10 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 1
       TabStop = False
       OnClick = ConfigBtnClick
+      ExplicitLeft = 1111
     end
     object MonitorBtn: TBitBtn
-      Left = 996
+      Left = 1036
       Top = 1
       Width = 85
       Height = 45
@@ -484,9 +495,10 @@ object FreePDF64_Form: TFreePDF64_Form
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
+      ExplicitLeft = 996
     end
     object StatusBitBtn: TBitBtn
-      Left = 954
+      Left = 994
       Top = 1
       Width = 42
       Height = 45
@@ -511,6 +523,7 @@ object FreePDF64_Form: TFreePDF64_Form
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
+      ExplicitLeft = 954
     end
   end
   object PanelBottom: TPanel
@@ -2152,6 +2165,13 @@ object FreePDF64_Form: TFreePDF64_Form
       end
       object PDFWerkzeuge1: TMenuItem
         Caption = 'PDF-Werkzeuge'
+        object PDFPrfberichtPDFprfen1: TMenuItem
+          Caption = 'PDF-Pr'#252'fbericht: PDF pr'#252'fen...'
+          OnClick = PDFPrfberichtPDFprfen1Click
+        end
+        object N22: TMenuItem
+          Caption = '-'
+        end
         object Merge: TMenuItem
           Caption = 'PS/PDF zusammenf'#252'gen'
           ShortCut = 32854
@@ -2268,6 +2288,9 @@ object FreePDF64_Form: TFreePDF64_Form
           Checked = True
           OnClick = LogdateiClick
         end
+        object N17: TMenuItem
+          Caption = '-'
+        end
         object Logdateiansehen1: TMenuItem
           Caption = 'Logdatei ansehen...'
           ShortCut = 16460
@@ -2277,6 +2300,15 @@ object FreePDF64_Form: TFreePDF64_Form
           Caption = 'PortMonitor.log ansehen...'
           ShortCut = 16464
           OnClick = PortMonitorlogansehen1Click
+        end
+        object LetztenPDFPrfberichtanzeigen1: TMenuItem
+          Caption = 'Letzten PDF-Pr'#252'fbericht anzeigen'
+          Hint = 'Den zuletzt gespeicherten PDF-Pr'#252'fbericht erneut '#246'ffnen'
+          ShortCut = 16450
+          OnClick = LetztenPDFPrfberichtanzeigen1Click
+        end
+        object N11: TMenuItem
+          Caption = '-'
         end
         object Status1: TMenuItem
           Caption = 'Statusinformationen'
@@ -21096,6 +21128,27 @@ object FreePDF64_Form: TFreePDF64_Form
               653ECCE807932B0D6903D09EE7A5BAF587A909D7BCACF03DDE1F5BFC4AA7B806
               E470FBFF034C0B4C136C5076CA0000000049454E44AE426082}
           end>
+      end
+      item
+        Name = 'Bericht'
+        SourceImages = <
+          item
+            Image.Data = {
+              89504E470D0A1A0A0000000D4948445200000020000000200806000000737A7A
+              F4000000097048597300000B1300000B1301009A9C180000016249444154789C
+              ED972F48044114C67FA2E2C10531193C040505B1584C4635980C56CBC1450D57
+              B4CB0483492E8ADD3FDD20825C3258340862DC603983088A787032F08465386F
+              BC79B3DE89F7E02BBB6FBEF9313BFBED2C74611581F3405580012D80011260B7
+              4D5D000DE0580B61806AC0B83250039EB41046017007CC09C82930D80900B410
+              2602800AC244020886300A807B60C4D122F0D2CEC6340A8086475B59028C034B
+              2D742BDE9901F8CA7AF600CC6F024C00D3B10186813D60DDE35100DE803A301B
+              1360535E276B9C6BE1B1227D1F3101C68007E0590036BE193F2A9FF393988FA0
+              20935F4BBA950462CDE9B3717B09DC0079E75E10401E38021E812BD9035FB503
+              BC020BA96B15390F4C36F10D02584EC5E8BCD3D7071CCA84337294ABCB186201
+              E48003601FE86FD26B97FC4CF6C5BB27EB33CB81D5D42A4D75026048B261DBD3
+              F7FFA2D8AD1E40F54F012401BF663E253F05282A7E4E7DB2DEDD559FB76DB098
+              3C906A750000000049454E44AE426082}
+          end>
       end>
     Left = 830
     Top = 353
@@ -21610,6 +21663,11 @@ object FreePDF64_Form: TFreePDF64_Form
         CollectionIndex = 70
         CollectionName = '9051666_warning_danger_attention_exclamation_error_icon'
         Name = '9051666_warning_danger_attention_exclamation_error_icon'
+      end
+      item
+        CollectionIndex = 74
+        CollectionName = 'Bericht'
+        Name = 'Bericht'
       end>
     ImageCollection = ImageCollection1
     Width = 30
