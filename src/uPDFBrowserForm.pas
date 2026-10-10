@@ -244,6 +244,10 @@ begin
   // PDF-Fenster aktiv nach vorne holen.
   BringToFront;
   SetForegroundWindow(Handle);
+
+  // Fokus auf das Formular selbst setzen
+  ActiveControl := nil;
+  SetFocus;
 end;
 
 
