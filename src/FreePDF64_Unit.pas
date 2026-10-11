@@ -10362,10 +10362,17 @@ procedure ShowPDFVerknuepfungsDialog(SettingsGeoeffnet: Boolean);
 var
   Dlg: TForm;
   Kopf: TPanel;
-  Titel, Info, VorteileTitel, Vorteile, HinweisTitel, Hinweis: TLabel;
+  Titel, Info, VorteileTitel, Vorteile,
+  HinweisTitel, Hinweis: TLabel;
   BtnOK: TButton;
   PPI: Integer;
   W, H: Integer;
+
+  function S(Value: Integer): Integer;
+  begin
+    Result := MulDiv(Value, PPI, 96);
+  end;
+
 begin
   Dlg := TForm.Create(nil);
   try
@@ -10373,16 +10380,20 @@ begin
     Dlg.BorderStyle := bsDialog;
     Dlg.BorderIcons := [biSystemMenu];
     Dlg.Position := poScreenCenter;
+    Dlg.Scaled := True;
     Dlg.Font.Name := 'Segoe UI';
     Dlg.Font.Size := 10;
     Dlg.Color := clWindow;
 
+    { DPI der aktuellen VCL-Umgebung ermitteln }
+    Dlg.HandleNeeded;
     PPI := Dlg.CurrentPPI;
     if PPI <= 0 then
       PPI := 96;
 
-    W := ScaleForDPI(580, PPI);
-    H := ScaleForDPI(520, PPI);
+    { Fenstergröße in logischen 96-DPI-Pixeln }
+    W := S(660);
+    H := S(460);
 
     Dlg.ClientWidth := W;
     Dlg.ClientHeight := H;
@@ -10390,12 +10401,7 @@ begin
     { Blauer Kopfbereich }
     Kopf := TPanel.Create(Dlg);
     Kopf.Parent := Dlg;
-    Kopf.SetBounds(
-      0,
-      0,
-      W,
-      ScaleForDPI(76, PPI)
-    );
+    Kopf.SetBounds(0, 0, W, S(76));
     Kopf.Anchors := [akLeft, akTop, akRight];
     Kopf.BevelOuter := bvNone;
     Kopf.ParentBackground := False;
@@ -10405,12 +10411,7 @@ begin
     { Überschrift }
     Titel := TLabel.Create(Dlg);
     Titel.Parent := Kopf;
-    Titel.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(20, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(36, PPI)
-    );
+    Titel.SetBounds(S(24), S(18), W - S(48), S(42));
     Titel.AutoSize := False;
     Titel.ParentFont := False;
     Titel.Font.Name := 'Segoe UI';
@@ -10423,75 +10424,47 @@ begin
     { Einleitung }
     Info := TLabel.Create(Dlg);
     Info.Parent := Dlg;
-    Info.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(96, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(76, PPI)
-    );
+    Info.SetBounds(S(24), S(96), W - S(48), S(36));
     Info.AutoSize := False;
     Info.WordWrap := True;
     Info.Caption :=
-      'FreePDF64 wurde bei Windows als PDF-Anwendung registriert.' +
-      sLineBreak +
-      'Mit dieser Zuordnung öffnen Sie PDF-Dateien direkt im' +
-      sLineBreak +
-      'PDF-Viewer.';
+      'FreePDF64 wurde bei Windows als PDF-Anwendung registriert.';
 
-    { Vorteile – Überschrift }
+    { Vorteile - Überschrift }
     VorteileTitel := TLabel.Create(Dlg);
     VorteileTitel.Parent := Dlg;
     VorteileTitel.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(184, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(24, PPI)
-    );
+      S(24), S(150), W - S(48), S(24));
     VorteileTitel.AutoSize := False;
     VorteileTitel.Font.Style := [fsBold];
     VorteileTitel.Caption := 'Ihre Vorteile';
 
-    { Vorteile – Beschreibung }
+    { Vorteile - Beschreibung }
     Vorteile := TLabel.Create(Dlg);
     Vorteile.Parent := Dlg;
     Vorteile.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(212, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(100, PPI)
-    );
+      S(24), S(178), W - S(48), S(104));
     Vorteile.AutoSize := False;
     Vorteile.WordWrap := True;
     Vorteile.Caption :=
-      '- PDF-Dateien öffnen sich per Doppelklick im Explorer direkt' +
-      sLineBreak +
-      '  im FreePDF64-PDF-Viewer.' +
-      sLineBreak +
-      '- Das Hauptprogramm können Sie weiterhin normal starten' +
-      sLineBreak +
-      '  und parallel zum PDF-Viewer verwenden.';
+      '- PDF-Dateien öffnen sich per Doppelklick im Explorer direkt ' +
+      'im FreePDF64-PDF-Viewer.' + sLineBreak +
+      '- Das Hauptprogramm können Sie weiterhin normal starten ' +
+      'und parallel zum PDF-Viewer verwenden.';
 
-    { Hinweis – Überschrift }
+    { Hinweis - Überschrift }
     HinweisTitel := TLabel.Create(Dlg);
     HinweisTitel.Parent := Dlg;
     HinweisTitel.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(328, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(24, PPI)
-    );
+      S(24), S(292), W - S(48), S(24));
     HinweisTitel.AutoSize := False;
     HinweisTitel.Font.Style := [fsBold];
 
-    { Hinweis – Beschreibung }
+    { Hinweis - Beschreibung }
     Hinweis := TLabel.Create(Dlg);
     Hinweis.Parent := Dlg;
     Hinweis.SetBounds(
-      ScaleForDPI(24, PPI),
-      ScaleForDPI(356, PPI),
-      W - ScaleForDPI(48, PPI),
-      ScaleForDPI(76, PPI)
-    );
+      S(24), S(320), W - S(48), S(88));
     Hinweis.AutoSize := False;
     Hinweis.WordWrap := True;
 
@@ -10499,8 +10472,7 @@ begin
     begin
       HinweisTitel.Caption := 'Noch ein Schritt';
       Hinweis.Caption :=
-        'Wählen Sie in den geöffneten Windows-Einstellungen' +
-        sLineBreak +
+        'Wählen Sie in den geöffneten Windows-Einstellungen ' +
         'FreePDF64 als Standard-App für PDF-Dateien (.pdf) aus.' +
         sLineBreak +
         'Windows verlangt diese Bestätigung aus Sicherheitsgründen.';
@@ -10509,10 +10481,8 @@ begin
     begin
       HinweisTitel.Caption := 'Standard-App manuell auswählen';
       Hinweis.Caption :=
-        'Die Windows-Einstellungen konnten nicht automatisch' +
-        sLineBreak +
-        'geöffnet werden. Öffnen Sie Einstellungen > Apps >' +
-        sLineBreak +
+        'Die Windows-Einstellungen konnten nicht automatisch ' +
+        'geöffnet werden. Öffnen Sie Einstellungen > Apps > ' +
         'Standard-Apps und wählen Sie FreePDF64 für .pdf aus.';
     end;
 
@@ -10522,10 +10492,10 @@ begin
     BtnOK.Caption := 'OK';
     BtnOK.ModalResult := mrOk;
     BtnOK.SetBounds(
-      W - ScaleForDPI(124, PPI),
-      H - ScaleForDPI(50, PPI),
-      ScaleForDPI(96, PPI),
-      ScaleForDPI(30, PPI)
+      W - S(120),
+      H - S(42),
+      S(96),
+      S(30)
     );
     BtnOK.Anchors := [akRight, akBottom];
     BtnOK.Default := True;
