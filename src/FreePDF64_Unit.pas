@@ -902,10 +902,22 @@ begin
       SL := TStringList.Create;
       try
         try
-          SL.LoadFromFile(LogPath, TEncoding.UTF8);
+          // ExifTool und andere Werkzeuge können je nach Version/Umgebung
+          // UTF-8 oder die Windows-Systemcodierung ausgeben. UTF-8 zuerst
+          // versuchen und bei einem Lese-/Codierungsfehler auf ANSI wechseln.
+          try
+            SL.LoadFromFile(LogPath, TEncoding.UTF8);
+          except
+            SL.Clear;
+            SL.LoadFromFile(LogPath, TEncoding.Default);
+          end;
           ToolResult.OutputText := SL.Text;
         except
-         ToolResult.OutputText := '(Protokoll konnte nicht gelesen werden.)';
+          ToolResult.OutputText := '';
+          if ToolResult.ErrorText <> '' then
+            ToolResult.ErrorText := ToolResult.ErrorText + sLineBreak;
+          ToolResult.ErrorText := ToolResult.ErrorText +
+            'Protokolldatei konnte nicht gelesen werden: ' + LogPath;
         end;
       finally
         SL.Free;
@@ -3573,10 +3585,10 @@ var
   ShellList: TLMDShellList;
   ShellFolder: TLMDShellFolder;
   PdfFile, QpdfExe, PdfInfoExe, PdfToTextExe, PdfTkExe, PdfDetachExe,
-    PdfFontsExe, GhostscriptExe: string;
+    PdfFontsExe, GhostscriptExe, ExifToolExe: string;
   TempDir, TextFileName, InfoFileName, OptimizedDir, OptimizedFile: string;
   QRes, InfoRes, TextRes, TkRes, AttachmentRes, FontsRes, GSRes,
-    VerifyRes: TPdfToolResult;
+    VerifyRes, ExifRes: TPdfToolResult;
   InfoLines, TkLines: TStringList;
   Report: TStringList;
   PageCount, I: Integer;
@@ -3657,6 +3669,12 @@ begin
   PdfDetachExe   := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
   PdfFontsExe    := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
   GhostscriptExe := Einstellungen_Form.Edit1.Text;
+  ExifToolExe    := ExifTool;
+  if (ExifToolExe = '') or not FileExists(ExifToolExe) then
+    ExifToolExe := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit8.Text) + 'exiftool.exe';
+  if (ExifToolExe <> '') and not FileExists(ExifToolExe) and
+    (ExtractFilePath(ExifToolExe) = '') then
+    ExifToolExe := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + ExifToolExe;
 
   // Bei einer relativen Einstellung den Anwendungsordner als Basis verwenden.
   if (QpdfExe <> '') and not FileExists(QpdfExe) and
@@ -3694,6 +3712,7 @@ begin
     Report.Add('Hinweis: Die Prüfung erkennt typische technische Auffälligkeiten,');
     Report.Add('ist aber keine Garantie für vollständige Fehlerfreiheit oder Sicherheit.');
 
+    Report.Add('');
     // 1. qpdf: PDF-Struktur prüfen.
     if FileExists(QpdfExe) then
     begin
@@ -3721,10 +3740,18 @@ begin
     if QRes.ErrorText <> '' then Report.Add('   ' + QRes.ErrorText);
     if Trim(QRes.OutputText) <> '' then
     begin
-      Report.Add('   qpdf-Ausgabe:');
-      Report.Add('   ' + Trim(QRes.OutputText).Replace(#13#10, #13#10 + '   '));
+      InfoLines.Text := TrimRight(QRes.OutputText);
+      for I := 0 to InfoLines.Count - 1 do
+      begin
+        if (Pos('WARNING:', UpperCase(InfoLines[I])) > 0) or
+          (Pos('ERROR:', UpperCase(InfoLines[I])) > 0) or
+          (Pos('operation succeeded with warnings', LowerCase(InfoLines[I])) > 0) or
+          (Pos('operation succeeded', LowerCase(InfoLines[I])) > 0) then
+          Report.Add('   ' + Trim(InfoLines[I]));
+      end;
     end;
 
+    Report.Add('');
     // 2. Xpdf pdfinfo: Seitenzahl und Dokumenteigenschaften.
     if FileExists(PdfInfoExe) then
     begin
@@ -3758,6 +3785,7 @@ begin
       Report.Add('2. Dokumentinformationen: ' + InfoStatus);
     end;
 
+    Report.Add('');
     // 3. Xpdf pdftotext: feststellen, ob Text extrahiert werden kann.
     if FileExists(PdfToTextExe) then
     begin
@@ -3795,34 +3823,10 @@ begin
     else
       Report.Add('3. Textebene: NICHT GEPRÜFT – pdftotext.exe fehlt');
 
-    // 4. pdftk: Dokumentdaten lesen, ohne die Originaldatei zu verändern.
-    if FileExists(PdfTkExe) then
-    begin
-      RunPdfTool(PdfTkExe,
-        PdfQuoteArg(PdfFile) + ' dump_data_utf8 output ' + PdfQuoteArg(InfoFileName),
-        TkRes);
-      if TkRes.Started and (TkRes.ErrorText = '') and (TkRes.ExitCode = 0) and
-        FileExists(InfoFileName) then
-      begin
-        TkLines.LoadFromFile(InfoFileName);
-        TkStatus := 'OK – Dokumentdaten ausgelesen';
-      end
-      else
-      begin
-        TkStatus := 'WARNUNG – Dokumentdaten konnten nicht zuverlässig ausgelesen werden';
-      end;
-      Report.Add('4. Dokumentdaten: ' + TkStatus);
-      if TkRes.ErrorText <> '' then Report.Add('   ' + TkRes.ErrorText);
-    end
-    else
-    begin
-      TkStatus := 'NICHT VERFÜGBAR – pdftk.exe fehlt';
-      Report.Add('4. Dokumentdaten: ' + TkStatus);
-    end;
-
-    // 5. Xpdf pdfdetach: eingebettete Dateianlagen der PDF auflisten.
+    // 4. Xpdf pdfdetach: eingebettete Dateianlagen der PDF auflisten.
     // pdfdetach -list liest nur die Anlagenliste; die Quelldatei wird nicht verändert.
-    Report.Add('5. Eingebettete Dateianlagen');
+    Report.Add('');
+    Report.Add('4. Eingebettete Dateianlagen');
 
     if FileExists(PdfDetachExe) then
     begin
@@ -3859,9 +3863,10 @@ begin
       Report.Add('Xpdf-Verzeichnis in den Einstellungen prüfen.');
     end;
 
-    // 6. Xpdf pdffonts: verwendete Schriftarten und Einbettungsstatus anzeigen.
+    // 5. Xpdf pdffonts: verwendete Schriftarten und Einbettungsstatus anzeigen.
     // Die PDF-Datei wird nur gelesen und nicht verändert.
-    Report.Add('6. PDF-Fonts (Schriftarten)');
+    Report.Add('');
+    Report.Add('5. PDF-Fonts (Schriftarten)');
 
     if FileExists(PdfFontsExe) then
     begin
@@ -3896,6 +3901,105 @@ begin
       Report.Add('NICHT GEPRÜFT: pdffonts.exe wurde nicht gefunden.');
       Report.Add('Gesuchter Pfad: ' + PdfFontsExe);
       Report.Add('Xpdf-Verzeichnis in den Einstellungen prüfen.');
+    end;
+
+    Report.Add('');
+    // 6. pdftk: Dokumentdaten lesen und wichtige Felder lesbar ausgeben.
+    // Die Quelldatei wird nicht veraendert.
+    if FileExists(PdfTkExe) then
+    begin
+      TkLines.Clear;
+      RunPdfTool(PdfTkExe,
+        PdfQuoteArg(PdfFile) + ' dump_data_utf8 output ' + PdfQuoteArg(InfoFileName),
+        TkRes);
+      if TkRes.Started and (TkRes.ExitCode = 0) and
+        FileExists(InfoFileName) then
+      begin
+        TkLines.LoadFromFile(InfoFileName, TEncoding.UTF8);
+        TkStatus := 'OK - Dokumentdaten ausgelesen';
+      end
+      else
+        TkStatus := 'WARNUNG - Dokumentdaten konnten nicht zuverlaessig ausgelesen werden';
+
+      Report.Add('6. Dokumentdaten - pdftk');
+      Report.Add('   Status: ' + TkStatus);
+      if TkStatus.StartsWith('OK') then
+      begin
+        Report.Add('   Ausgewertete Angaben:');
+        for I := 0 to TkLines.Count - 1 do
+        begin
+          if Copy(TkLines[I], 1, 8) = 'InfoKey:' then
+          begin
+            if I + 1 < TkLines.Count then
+              if Copy(TkLines[I + 1], 1, 10) = 'InfoValue:' then
+                if Trim(Copy(TkLines[I], 9, MaxInt)) <> '' then
+                  Report.Add('   ' + Trim(Copy(TkLines[I], 9, MaxInt)) + ': ' +
+                    Trim(Copy(TkLines[I + 1], 11, MaxInt)));
+          end
+          else if Copy(TkLines[I], 1, 14) = 'NumberOfPages:' then
+            Report.Add('   Seitenanzahl: ' + Trim(Copy(TkLines[I], 15, MaxInt)));
+        end;
+        if TkLines.Count = 0 then
+          Report.Add('   pdftk hat keine Dokumentdaten geliefert.');
+      end;
+      if TkRes.ErrorText <> '' then
+        Report.Add('   Technischer Hinweis: ' + TkRes.ErrorText);
+    end
+    else
+    begin
+      TkStatus := 'NICHT VERFUEGBAR - pdftk.exe fehlt';
+      Report.Add('6. Dokumentdaten - pdftk');
+      Report.Add('   Status: ' + TkStatus);
+    end;
+
+
+    // 7. ExifTool: PDF-Metadaten auslesen (nur lesender Zugriff auf die Quelldatei).
+    // -G1 zeigt die Metadatengruppe, -a auch doppelte Tags, -s die Tag-Namen
+    // und -u zus䴺lich unbekannte Tags. UTF-8 wird für die Ausgabe angefordert.
+    Report.Add('');
+    Report.Add('7. Metadaten (ExifTool)');
+    if FileExists(ExifToolExe) then
+    begin
+      // Same ExifTool options as the working PDFInfoBtnClick direct call.
+      // -L, -g1, cp1252 filename encoding, all metadata tags, duplicate tags,
+      // and no composite tags. PdfQuoteArg safely quotes the full file path.
+      RunPdfTool(ExifToolExe,
+        '-L -g1 -charset filename=cp1252 -a -All:All -e ' +
+        PdfQuoteArg(PdfFile), ExifRes);
+
+      if ExifRes.Started and (ExifRes.ErrorText = '') and
+        (ExifRes.ExitCode = 0) then
+      begin
+        if Trim(ExifRes.OutputText) <> '' then
+        begin
+          Report.Add('   Wesentliche Metadaten:');
+          InfoLines.Text := TrimRight(ExifRes.OutputText);
+          for I := 0 to InfoLines.Count - 1 do
+            Report.Add('   ' + InfoLines[I]);
+        end
+        else
+          Report.Add('ExifTool hat keine Metadaten ausgegeben.');
+      end
+      else
+      begin
+        Report.Add('Metadaten konnten nicht erfolgreich ausgelesen werden.');
+        if ExifRes.ErrorText <> '' then
+          Report.Add('Hinweis: ' + ExifRes.ErrorText);
+        if Trim(ExifRes.OutputText) <> '' then
+        begin
+          InfoLines.Text := TrimRight(ExifRes.OutputText);
+          for I := 0 to InfoLines.Count - 1 do
+            Report.Add('   ' + InfoLines[I]);
+        end;
+        if ExifRes.Started and (ExifRes.ExitCode <> 0) then
+          Report.Add('Exitcode: ' + UIntToStr(ExifRes.ExitCode));
+      end;
+    end
+    else
+    begin
+      Report.Add('NICHT GEPR܆T: exiftool.exe wurde nicht gefunden.');
+      Report.Add('Gesuchter Pfad: ' + ExifToolExe);
+      Report.Add('ExifTool-Verzeichnis in den Einstellungen prüfen.');
     end;
 
     Report.Add('');

@@ -98,12 +98,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=15
-CursorY=2436
-TopLine=2409
+CursorX=1
+CursorY=10606
+TopLine=10564
 LeftCol=1
 Elisions=
-Bookmarks={0,10502,1}{1,10502,1}{2,10502,1}{3,10502,1}{4,10502,1}
+Bookmarks={0,10606,1}{1,10606,1}{2,10606,1}{3,10606,1}{4,10606,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -131,8 +131,8 @@ EditViewName=Borland.FormDesignerView
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=23
-CursorY=1609
+CursorX=1
+CursorY=1594
 TopLine=1592
 LeftCol=1
 Elisions=
@@ -312,6 +312,11 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Caption,
+ExpandedItems=
 
 [frmDesignPreview]
 PercentageSizes=1
