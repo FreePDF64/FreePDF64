@@ -102,6 +102,12 @@ Ob einzelne Dokumente oder umfangreiche Dateisammlungen: FreePDF64 verbindet PDF
 Weitere Informationen findest du direkt im Programm unter:
 
 - **Hilfe → FreePDF64-HowTo**
+
+https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf
+  
+ 
+Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitHub!
+
 <!--
 **FreePDF64/FreePDF64** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
