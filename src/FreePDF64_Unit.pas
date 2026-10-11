@@ -3597,6 +3597,8 @@ var
   Args: string;
   SourceSize, OutputSize: Int64;
   Answer: Integer;
+  WaitForm: TForm;
+  WaitLabel: TLabel;
 
   function ActiveList: TLMDShellList;
   begin
@@ -3703,7 +3705,32 @@ begin
   Report := TStringList.Create;
   InfoLines := TStringList.Create;
   TkLines := TStringList.Create;
+  WaitForm := nil;
   try
+    // Temporäres Wartefenster direkt im Code erstellen – keine separate Form nötig.
+    WaitForm := TForm.CreateNew(Self);
+    WaitForm.Caption := 'Bitte warten';
+    WaitForm.BorderStyle := bsDialog;
+    WaitForm.Position := poScreenCenter;
+    WaitForm.ClientWidth := 400;
+    WaitForm.ClientHeight := 105;
+    WaitForm.BorderIcons := [];
+    WaitForm.FormStyle := fsStayOnTop;
+
+    WaitLabel := TLabel.Create(WaitForm);
+    WaitLabel.Parent := WaitForm;
+    WaitLabel.Caption :=
+      'Der PDF-Prüfbericht wird erstellt.' + sLineBreak +
+      'Bitte warten. Dieser Vorgang kann einige Zeit dauern.';
+    WaitLabel.Left := 16;
+    WaitLabel.Top := 20;
+    WaitLabel.AutoSize := True;
+
+    WaitForm.Show;
+    WaitForm.Update;
+    WaitLabel.Update;
+    Application.ProcessMessages;
+
     Report.Add('FreePDF64 – PDF-Prüfbericht');
     Report.Add('Prüfdatum: ' + DateTimeToStr(Now));
     Report.Add('Datei: ' + PdfFile);
@@ -4021,6 +4048,11 @@ begin
     // Prüfung nicht automatisch ausgeblendet oder geleert.
     PDFPanel.Visible := True;
     PDFPanel.BringToFront;
+
+    // Wartefenster schließen, sobald der Prüfbericht angezeigt wird.
+    if Assigned(WaitForm) then
+      WaitForm.Hide;
+
     PDF_Erstellung.Visible := False;
     FormatBtn.Visible := False;
     PanelBottom.Visible := False;
@@ -4029,12 +4061,20 @@ begin
     // Ghostscript-Optimierung als separate, ausdrücklich bestätigte Aktion.
     if FileExists(GhostscriptExe) then
     begin
+
       Answer := MessageDlg(
         'Prüfung abgeschlossen!' + sLineBreak + sLineBreak +
-        'Möchtest du zusätzlich eine optimierte KOPIE mit Ghostscript erstellen?' + sLineBreak +
-        'Die Originaldatei bleibt unverändert. Die Ausgabe kann je nach PDF' + sLineBreak +
-        'größer sein oder bestimmte Dokumentfunktionen verändern.',
-        mtConfirmation, [mbYes, mbNo], 0);
+        'Möchtest du zusätzlich eine optimierte KOPIE der PDF-Datei' + sLineBreak +
+        'mit Ghostscript erstellen?' + sLineBreak + sLineBreak +
+        'Dabei wird die PDF-Datei technisch neu aufbereitet. Je nach' + sLineBreak +
+        'Inhalt kann die Dateigröße reduziert und die interne PDF-Struktur' + sLineBreak +
+        'verbessert werden. Eine Behebung aller Prüfprobleme ist jedoch' + sLineBreak +
+        'nicht garantiert.' + sLineBreak + sLineBreak +
+        'Die Originaldatei bleibt unverändert. Beim Optimieren können' + sLineBreak +
+        'sich die Darstellung, die Druckqualität oder bestimmte PDF-' + sLineBreak +
+        'Funktionen verändern. Prüfe daher die erstellte Kopie anschließend.',
+           mtConfirmation, [mbYes, mbNo], 0);
+
       if Answer = mrYes then
       begin
         OptimizedDir := IncludeTrailingPathDelimiter(ExtractFilePath(PdfFile)) +
@@ -4124,6 +4164,8 @@ begin
     Memo1.Perform(EM_LineScroll, 0, Memo1.Lines.Count);
     MessageDlgCenter('PDF-Prüfbericht abgeschlossen!', mtInformation, [mbOK]);
   finally
+    if Assigned(WaitForm) then
+      WaitForm.Free;
     Report.Free;
     InfoLines.Free;
     TkLines.Free;

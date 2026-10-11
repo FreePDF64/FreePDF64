@@ -98,12 +98,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=1
-CursorY=10361
-TopLine=10462
+CursorX=56
+CursorY=4067
+TopLine=4046
 LeftCol=1
 Elisions=
-Bookmarks={0,10576,1}{1,10576,1}{2,10576,1}{3,10576,1}{4,10576,1}
+Bookmarks={0,4183,1}{1,10618,1}{2,10618,1}{3,10618,1}{4,10618,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -315,8 +315,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Name,
-ExpandedItems=LiveBindings-Designer=0
+SelectedItem=Caption,
+ExpandedItems=
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -355,8 +355,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=50
-Description=137
+Name=77
+Description=214
 filter=1
 
 [DebugLogView]
