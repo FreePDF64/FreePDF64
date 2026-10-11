@@ -3732,6 +3732,8 @@ begin
     Application.ProcessMessages;
 
     Report.Add('FreePDF64 – PDF-Prüfbericht');
+    Report.Add('===========================');
+    Report.Add('');
     Report.Add('Prüfdatum: ' + DateTimeToStr(Now));
     Report.Add('Datei: ' + PdfFile);
     Report.Add('Dateigröße: ' + FormatByteString(MyFileSize(PdfFile)));
