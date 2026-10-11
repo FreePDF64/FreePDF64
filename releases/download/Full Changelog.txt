@@ -4,7 +4,7 @@ Neu -> Erstellung eines PDF-Prüfberichts: PDF-Datei auswählen, Prüfbericht-Bu
 09.10.2026 V7.1.1
 Neu -> PDF-Dateien direkt im FreePDF64-PDF-Anzeiger öffnen per Doppelklick im Windows-Datei-Explorer. Kein weiterer PDF-Reader mehr nötig!
 08.10.2026 V7.1.0
-Fix -> Aus Lizenzgründen ist der PDF-Anzeiger nun nicht mehr im Programm frei auswählbar: Es ist fest eingestellt der integrierte PDF-Anzeiger. 
+Fix -> Aus Lizenzgründen ist der PDF-Anzeiger nun nicht mehr im Programm frei auswählbar: Es ist fest eingestellt der integrierte PDF-Viewer. 
 Fix -> Die Suche im Suchergebnis wurde vereinfacht.
 Fix -> Update auf neueste Version von WebView4Delphi.
 04.10.2026 V7.0.0
@@ -312,7 +312,7 @@ Neu -> PDF-Datei(en) komprimieren - zu finden in den Einstellungen: Bei der Erst
 30.11.2022, v3.2.1
 Neu -> Formatauswahl: JPEG zu PDF.
 25.11.2022, v3.2.0
-Neu -> Es ist nun möglich per Kommandozeile die Verbinden-Funktion von FreePDF64 zu nutzen (FreePDF64 darf aber nicht schon gestartet sein). Hier ein Beispielaufruf: "FreePDF64 C:\Temp\A.pdf C:\Temp\B.pdf". Nach Start wird direkt der Verbinden-Dateiname abgefragt und die Erstellung gestartet. Das Ergebnis wird sofort danach mit dem PDF-Anzeiger aufgerufen.
+Neu -> Es ist nun möglich per Kommandozeile die Verbinden-Funktion von FreePDF64 zu nutzen (FreePDF64 darf aber nicht schon gestartet sein). Hier ein Beispielaufruf: "FreePDF64 C:\Temp\A.pdf C:\Temp\B.pdf". Nach Start wird direkt der Verbinden-Dateiname abgefragt und die Erstellung gestartet. Das Ergebnis wird sofort danach mit dem PDF-Viewer aufgerufen.
 Fix -> Die Log-Datei PDFLog.txt wurde nun zu FreePDF64Log.txt umbenannt! Es kann ja nicht nur die PDF-Erstellung mitgeloggt werden, sondern auch die anderen Formate ;)
 Neu -> QPDF-Update auf Version 11.2.0.
 16.11.2022, v3.1.9
@@ -352,7 +352,7 @@ Neu -> Baumstruktur öffnet nun neben dem linken Explorerfenster nun auch das re
 Neu -> Funktion Überwachung: Möglichkeit, das aktuelle Zielverzeichnis "Fest" (unveränderbar) einzustellen.
 Neu -> Funktion Überwachung: Löschen der Datei in Papierkorb ja/nein. 
 Neu -> Dateifenster: Die Dateigrößen werden nun dynamisch angezeigt.
-Neu -> Neue Button hinzugekommen: In PDF-Anzeiger öffnen.
+Neu -> Neue Button hinzugekommen: In PDF-Viewer öffnen.
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Statusbarinformationen angepasst.
 13.10.2022, v3.0.0
@@ -487,7 +487,7 @@ Neu -> PDF-Datei(en) komprimieren - zu finden in den Einstellungen: Bei der Erst
 30.11.2022, v3.2.1
 Neu -> Formatauswahl: JPEG zu PDF.
 25.11.2022, v3.2.0
-Neu -> Es ist nun möglich per Kommandozeile die Verbinden-Funktion von FreePDF64 zu nutzen (FreePDF64 darf aber nicht schon gestartet sein). Hier ein Beispielaufruf: "FreePDF64 C:\Temp\A.pdf C:\Temp\B.pdf". Nach Start wird direkt der Verbinden-Dateiname abgefragt und die Erstellung gestartet. Das Ergebnis wird sofort danach mit dem PDF-Anzeiger aufgerufen.
+Neu -> Es ist nun möglich per Kommandozeile die Verbinden-Funktion von FreePDF64 zu nutzen (FreePDF64 darf aber nicht schon gestartet sein). Hier ein Beispielaufruf: "FreePDF64 C:\Temp\A.pdf C:\Temp\B.pdf". Nach Start wird direkt der Verbinden-Dateiname abgefragt und die Erstellung gestartet. Das Ergebnis wird sofort danach mit dem PDF-Viewer aufgerufen.
 Fix -> Die Log-Datei PDFLog.txt wurde nun zu FreePDF64Log.txt umbenannt! Es kann ja nicht nur die PDF-Erstellung mitgeloggt werden, sondern auch die anderen Formate ;)
 Neu -> QPDF-Update auf Version 11.2.0.
 16.11.2022, v3.1.9
@@ -527,7 +527,7 @@ Neu -> Baumstruktur öffnet nun neben dem linken Explorerfenster nun auch das re
 Neu -> Funktion Überwachung: Möglichkeit, das aktuelle Zielverzeichnis "Fest" (unveränderbar) einzustellen.
 Neu -> Funktion Überwachung: Löschen der Datei in Papierkorb ja/nein. 
 Neu -> Dateifenster: Die Dateigrößen werden nun dynamisch angezeigt.
-Neu -> Neue Button hinzugekommen: In PDF-Anzeiger öffnen.
+Neu -> Neue Button hinzugekommen: In PDF-Viewer öffnen.
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Statusbarinformationen angepasst.
 13.10.2022, v3.0.0

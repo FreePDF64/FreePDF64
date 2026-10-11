@@ -1,8 +1,8 @@
 ﻿[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjRfVW5pdC5wYXM=]
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=37
-CursorY=3823
-TopLine=3802
+CursorX=15
+CursorY=2436
+TopLine=2409
 LeftCol=1
 Elisions=
 Bookmarks={0,10502,1}{1,10502,1}{2,10502,1}{3,10502,1}{4,10502,1}
@@ -90,9 +90,9 @@ EditViewName=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxTdWNoZW4ucGFz]
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=1
-CursorY=1
-TopLine=1
+CursorX=23
+CursorY=1609
+TopLine=1592
 LeftCol=1
 Elisions=
 Bookmarks={0,2446,1}

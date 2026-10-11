@@ -100,7 +100,7 @@ begin
   // Diese kleine Leiste ergänzt nur Seitensteuerung und die PDF-Suche.
   FToolbar := TPanel.Create(Self);
   FToolbar.Name := 'PDFNavigationToolbar';
-  FToolbar.Caption := 'PDF-Anzeiger';
+  FToolbar.Caption := 'PDF-Viewer';
   FToolbar.Parent := Self;
   FToolbar.Align := alTop;
   FToolbar.Height := 38;

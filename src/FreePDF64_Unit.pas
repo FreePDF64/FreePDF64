@@ -2147,7 +2147,7 @@ begin
     + #13 + #13 +
     'Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF/DOCX-Erstellung:'
     + #13 + '- Drucken aus allen Programmen auf den FreePDF64 Postscript-Drucker'
-    + #13 + '- PDF-Dateien öffnen per Doppelklick im Explorer direkt im FreePDF64-PDF-Anzeiger'
+    + #13 + '- PDF-Dateien öffnen per Doppelklick im Explorer direkt im FreePDF64-PDF-Viewer'
     + #13 + '- Alle benötigten Programme sind schon im Installationspaket enthalten'
     + #13 + '- Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!'
     + #13 + '- Drucke nun aus jeder Windows-Anwendung heraus auf den erstellten FreePDF64-Drucker... Fertig!'
@@ -8401,7 +8401,7 @@ begin
   // Grundversatz bei 100 % DPI
   BaseOffset := 20;
 
-  // Zusammenfügen-PDF-Datei mit dem PDF-Anzeiger anzeigen
+  // Zusammenfügen-PDF-Datei mit dem PDF-Viewer anzeigen
   // Wenn Aufruf von FreePDF64-Zusammenfügen via Kontextmenü dann...
   if ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) and // PDF
     (Einstellungen_Form.AnzeigenCB.Checked)) or (ParamCount > 0) then
@@ -10332,7 +10332,7 @@ begin
       sLineBreak +
       'Mit dieser Zuordnung öffnen Sie PDF-Dateien direkt im' +
       sLineBreak +
-      'PDF-Anzeiger.';
+      'PDF-Viewer.';
 
     { Vorteile – Überschrift }
     VorteileTitel := TLabel.Create(Dlg);
@@ -10361,11 +10361,11 @@ begin
     Vorteile.Caption :=
       '- PDF-Dateien öffnen sich per Doppelklick im Explorer direkt' +
       sLineBreak +
-      '  im FreePDF64-PDF-Anzeiger.' +
+      '  im FreePDF64-PDF-Viewer.' +
       sLineBreak +
       '- Das Hauptprogramm können Sie weiterhin normal starten' +
       sLineBreak +
-      '  und parallel zum PDF-Anzeiger verwenden.';
+      '  und parallel zum PDF-Viewer verwenden.';
 
     { Hinweis – Überschrift }
     HinweisTitel := TLabel.Create(Dlg);

@@ -1606,7 +1606,7 @@ begin
     '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
     '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt, usw.' + #13 +
     '- Beispiel: *.pdf|*.prn findet alle Dateien mit der Endung pdf und prn.' + #13 + #13 +
-    'Versteckt+System' + #13 +
+    'Versteckt+System:' + #13 +
     '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Hidden (H) und System (S)' + #13 +
     '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 +
     '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 +#13 +

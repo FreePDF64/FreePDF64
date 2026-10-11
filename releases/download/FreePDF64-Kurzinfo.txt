@@ -22,7 +22,7 @@ Funktionen:
 10: Auswahl verschiedener TIFF-Formate. DPI für erzeugte BMP/JPEG/TIFF einstellen
 11: Ändern der PDF-Metadaten (PDFMarks: z.B. Titel, Verfasser, Thema, etc.) bei der Erstellung
 12: Verbinden von mehreren PS/PDF-Dateien zu einer PDF-Datei
-13: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem zugewiesenen Anzeiger öffnen
+13: PDF/PS/TXT/TIFF-Datei(en) direkt nach der Erstellung mit dem FreePDF64-Viewer öffnen
 14: Ausgewählte Seiten entnehmen aus allen Formaten
 15: Schnelle Webanzeige (Optimierung der PDF-Datei)
 16: PDF-Datei(en) komprimieren
