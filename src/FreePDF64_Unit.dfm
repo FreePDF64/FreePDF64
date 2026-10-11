@@ -90,7 +90,6 @@
       AllowTextButtons = True
       ShowHint = True
       TabOrder = 0
-      ExplicitWidth = 1003
       object AutoSize: TToolButton
         Left = 0
         Top = 0
@@ -466,7 +465,6 @@
       TabOrder = 1
       TabStop = False
       OnClick = ConfigBtnClick
-      ExplicitLeft = 1111
     end
     object MonitorBtn: TBitBtn
       Left = 1036
@@ -495,7 +493,6 @@
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
-      ExplicitLeft = 996
     end
     object StatusBitBtn: TBitBtn
       Left = 994
@@ -523,7 +520,6 @@
       TabOrder = 3
       TabStop = False
       OnClick = StatusBitBtnClick
-      ExplicitLeft = 954
     end
   end
   object PanelBottom: TPanel

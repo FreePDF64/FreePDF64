@@ -17,10 +17,10 @@ File_14=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0
 
 [Modules]
 Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-Module2=D:\Delphi\FreePDF64\Suchen.pas
-Module3=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
-Module4=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\Info_Unit.pas
+Module2=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module3=D:\Delphi\FreePDF64\Suchen.pas
+Module4=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module5=D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas
 Module6=D:\Delphi\FreePDF64\Anleitung_Unit.pas
 Module7=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
@@ -30,6 +30,9 @@ EditWindowCount=1
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
 ModuleType=TSourceModule
 
@@ -37,9 +40,6 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Hilfe_Unit.pas]
@@ -98,12 +98,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=4
-CursorY=913
-TopLine=859
+CursorX=37
+CursorY=3823
+TopLine=3802
 LeftCol=1
 Elisions=
-Bookmarks={0,3671,20}{1,10398,1}{2,10398,1}{3,724,18}{4,3802,10}
+Bookmarks={0,10502,1}{1,10502,1}{2,10502,1}{3,10502,1}{4,10502,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -131,9 +131,9 @@ EditViewName=Borland.FormDesignerView
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=21
-CursorY=772
-TopLine=750
+CursorX=1
+CursorY=1
+TopLine=1
 LeftCol=1
 Elisions=
 Bookmarks={0,2446,1}
@@ -142,8 +142,8 @@ EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 [View4]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=1
-CursorY=77
+CursorX=15
+CursorY=103
 TopLine=75
 LeftCol=1
 Elisions=
@@ -175,13 +175,13 @@ EditViewName=Borland.FormDesignerView
 [View7]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-CursorX=12
-CursorY=250
-TopLine=229
+CursorX=29
+CursorY=199
+TopLine=171
 LeftCol=1
 Elisions=
 Bookmarks=
-EditViewName=Borland.FormDesignerView
+EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
 [Watches]
 Count=1
@@ -307,11 +307,16 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
+
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Caption,Action
+ExpandedItems=LiveBindings=0,LiveBindings-Designer=0,Margins=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -322,11 +327,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=6464
+Height=8543
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=6464
+ClientHeight=8543
 TBDockHeight=5957
 LRDockWidth=2512
 Dockable=1
@@ -350,8 +355,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=77
-Description=214
+Name=96
+Description=267
 filter=1
 
 [DebugLogView]
@@ -462,11 +467,11 @@ State=0
 Left=0
 Top=0
 Width=2340
-Height=978
+Height=1210
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2340
-ClientHeight=978
+ClientHeight=1210
 TBDockHeight=2319
 LRDockWidth=2824
 Dockable=1
@@ -527,11 +532,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=6464
+Height=8543
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=6464
+ClientHeight=8543
 TBDockHeight=4884
 LRDockWidth=7148
 Dockable=1
@@ -693,7 +698,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -719,7 +724,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -745,7 +750,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0

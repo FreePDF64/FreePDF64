@@ -3404,13 +3404,23 @@ begin
   GetDosOutput(Memo1, Befehlszeile, Work);
   Memo1.Perform(EM_LineScroll, 0, -Memo1.Lines.Count - 1);
 
+  PaneloverPrgB.Visible := True;
+  PaneloverPrgB.Caption := PDFDatei;
+
   // Memo-Höhe anpassen
-  if Memo1.Lines.Count > 1 then
+  if Memo1.Lines.Count > 0 then
   begin
-    I := TextHoehe(Memo1.Font, Memo1.Text);
-    I := (I * Memo1.Lines.Count) + MHA;
-    if I >= Memo1.Parent.Height then
-      PDFPanel.Height := I;
+    PDFPanel.Parent := Self;
+    PDFPanel.Left   := 0;
+    PDFPanel.Top    := 0;
+    PDFPanel.Width  := ClientWidth;
+    PDFPanel.Height := ClientHeight - ToolBar1.Height;
+    PDFPanel.BringToFront;
+
+    // Buttons unsichtbar machen...
+    PDF_Erstellung.Visible := False;
+    FormatBtn.Visible      := False;
+    PanelBottom.Visible    := False;
   end;
 
   MemoBtn.Visible := True;
@@ -3562,9 +3572,11 @@ procedure TFreePDF64_Form.PDFFuehrerscheinClick(Sender: TObject);
 var
   ShellList: TLMDShellList;
   ShellFolder: TLMDShellFolder;
-  PdfFile, QpdfExe, PdfInfoExe, PdfToTextExe, PdfTkExe, GhostscriptExe: string;
+  PdfFile, QpdfExe, PdfInfoExe, PdfToTextExe, PdfTkExe, PdfDetachExe,
+    PdfFontsExe, GhostscriptExe: string;
   TempDir, TextFileName, InfoFileName, OptimizedDir, OptimizedFile: string;
-  QRes, InfoRes, TextRes, TkRes, GSRes, VerifyRes: TPdfToolResult;
+  QRes, InfoRes, TextRes, TkRes, AttachmentRes, FontsRes, GSRes,
+    VerifyRes: TPdfToolResult;
   InfoLines, TkLines: TStringList;
   Report: TStringList;
   PageCount, I: Integer;
@@ -3642,6 +3654,8 @@ begin
   PdfTkExe       := Einstellungen_Form.Edit5.Text;
   PdfInfoExe     := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdfinfo.exe';
   PdfToTextExe   := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdftotext.exe';
+  PdfDetachExe   := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdfdetach.exe';
+  PdfFontsExe    := IncludeTrailingPathDelimiter(Einstellungen_Form.Edit6.Text) + 'pdffonts.exe';
   GhostscriptExe := Einstellungen_Form.Edit1.Text;
 
   // Bei einer relativen Einstellung den Anwendungsordner als Basis verwenden.
@@ -3651,6 +3665,18 @@ begin
   if (PdfTkExe <> '') and not FileExists(PdfTkExe) and
     not (ExtractFilePath(PdfTkExe) <> '') then
     PdfTkExe := ExtractFilePath(Application.ExeName) + PdfTkExe;
+  if (PdfDetachExe <> '') and not FileExists(PdfDetachExe) then
+  begin
+    // Fallback: pdfdetach.exe direkt neben der Anwendung suchen.
+    if FileExists(IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'pdfdetach.exe') then
+      PdfDetachExe := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'pdfdetach.exe';
+  end;
+  if (PdfFontsExe <> '') and not FileExists(PdfFontsExe) then
+  begin
+    // Fallback: pdffonts.exe direkt neben der Anwendung suchen.
+    if FileExists(IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'pdffonts.exe') then
+      PdfFontsExe := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'pdffonts.exe';
+  end;
 
   TempDir := MakeTempDir;
   TextFileName := IncludeTrailingPathDelimiter(TempDir) + 'extracted.txt';
@@ -3792,6 +3818,84 @@ begin
     begin
       TkStatus := 'NICHT VERFÜGBAR – pdftk.exe fehlt';
       Report.Add('4. Dokumentdaten: ' + TkStatus);
+    end;
+
+    // 5. Xpdf pdfdetach: eingebettete Dateianlagen der PDF auflisten.
+    // pdfdetach -list liest nur die Anlagenliste; die Quelldatei wird nicht verändert.
+    Report.Add('5. Eingebettete Dateianlagen');
+
+    if FileExists(PdfDetachExe) then
+    begin
+      RunPdfTool(PdfDetachExe, '-list ' + PdfQuoteArg(PdfFile), AttachmentRes);
+
+      if AttachmentRes.Started and (AttachmentRes.ErrorText = '') and
+        (AttachmentRes.ExitCode = 0) then
+      begin
+        if Trim(AttachmentRes.OutputText) <> '' then
+        begin
+          Report.Add('Ausgabe von pdfdetach -list:');
+          InfoLines.Text := AttachmentRes.OutputText;
+          for I := 0 to InfoLines.Count - 1 do
+            Report.Add('   ' + InfoLines[I]);
+        end
+        else
+          Report.Add('pdfdetach hat keine Anlageninformationen ausgegeben.');
+      end
+      else
+      begin
+        Report.Add('Anlagenprüfung konnte nicht erfolgreich durchgeführt werden.');
+        if AttachmentRes.ErrorText <> '' then
+          Report.Add('Hinweis: ' + AttachmentRes.ErrorText);
+        if Trim(AttachmentRes.OutputText) <> '' then
+          Report.Add(TrimRight(AttachmentRes.OutputText));
+        if AttachmentRes.Started and (AttachmentRes.ExitCode <> 0) then
+          Report.Add('Exitcode: ' + UIntToStr(AttachmentRes.ExitCode));
+      end;
+    end
+    else
+    begin
+      Report.Add('NICHT GEPRÜFT: pdfdetach.exe wurde nicht gefunden.');
+      Report.Add('Gesuchter Pfad: ' + PdfDetachExe);
+      Report.Add('Xpdf-Verzeichnis in den Einstellungen prüfen.');
+    end;
+
+    // 6. Xpdf pdffonts: verwendete Schriftarten und Einbettungsstatus anzeigen.
+    // Die PDF-Datei wird nur gelesen und nicht verändert.
+    Report.Add('6. PDF-Fonts (Schriftarten)');
+
+    if FileExists(PdfFontsExe) then
+    begin
+      RunPdfTool(PdfFontsExe, PdfQuoteArg(PdfFile), FontsRes);
+
+      if FontsRes.Started and (FontsRes.ErrorText = '') and
+        (FontsRes.ExitCode = 0) then
+      begin
+        if Trim(FontsRes.OutputText) <> '' then
+        begin
+          InfoLines.Text := TrimRight(FontsRes.OutputText);
+          for I := 0 to InfoLines.Count - 1 do
+            Report.Add('   ' + InfoLines[I]);
+        end
+        else
+          Report.Add('pdffonts hat keine Schriftinformationen ausgegeben.');
+      end
+      else
+      begin
+        Report.Add('Font-Prüfung konnte nicht erfolgreich durchgeführt werden.');
+        if FontsRes.ErrorText <> '' then
+          Report.Add('   Hinweis: ' + FontsRes.ErrorText);
+        if Trim(FontsRes.OutputText) <> '' then
+          Report.Add('   ' + TrimRight(FontsRes.OutputText).Replace(
+            #13#10, #13#10 + '   '));
+        if FontsRes.Started and (FontsRes.ExitCode <> 0) then
+          Report.Add('   Exitcode: ' + UIntToStr(FontsRes.ExitCode));
+      end;
+    end
+    else
+    begin
+      Report.Add('NICHT GEPRÜFT: pdffonts.exe wurde nicht gefunden.');
+      Report.Add('Gesuchter Pfad: ' + PdfFontsExe);
+      Report.Add('Xpdf-Verzeichnis in den Einstellungen prüfen.');
     end;
 
     Report.Add('');
