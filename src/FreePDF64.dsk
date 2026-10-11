@@ -16,8 +16,8 @@ File_13=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
 File_14=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Suchen.pas
+Module0=D:\Delphi\FreePDF64\Suchen.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 Module2=D:\Delphi\FreePDF64\Info_Unit.pas
 Module3=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Module4=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
@@ -27,10 +27,10 @@ Module7=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Count=8
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
+[D:\Delphi\FreePDF64\Suchen.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\Suchen.pas]
+[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Info_Unit.pas]
@@ -53,7 +53,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=8
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Suchen.pas
 View0=0
 View1=1
 View2=2
@@ -131,12 +131,12 @@ EditViewName=Borland.FormDesignerView
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Suchen.pas
-CursorX=1
-CursorY=1594
-TopLine=1592
+CursorX=7
+CursorY=4415
+TopLine=4385
 LeftCol=1
 Elisions=
-Bookmarks={0,2446,1}
+Bookmarks={0,4411,1}
 EditViewName=D:\Delphi\FreePDF64\Suchen.pas
 
 [View4]
@@ -316,7 +316,7 @@ SplitPos=111
 [PropInspDesignerSelection]
 ArrangeBy=Name
 SelectedItem=Caption,
-ExpandedItems=
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -355,8 +355,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=77
-Description=214
+Name=62
+Description=171
 filter=1
 
 [DebugLogView]

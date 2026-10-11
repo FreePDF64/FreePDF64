@@ -2371,8 +2371,7 @@ begin
 
     // -enc UTF-8 sorgt für eine einheitliche Kodierung der Textausgabe.
     // -q unterdrückt unnötige Meldungen; Pfade werden in Anführungszeichen gesetzt.
-    CommandLine := '"' + ExePath + '" -q -enc UTF-8 "' + FileName +
-      '" "' + TempFile + '"';
+    CommandLine := '"' + ExePath + '" -q -enc UTF-8 "' + FileName + '" "' + TempFile + '"';
     StrPLCopy(Cmd, CommandLine, Length(Cmd) - 1);
 
     FillChar(StartupInfo, SizeOf(StartupInfo), 0);
@@ -4380,14 +4379,11 @@ begin
     SuchergebnisCB.Enabled  := True;
     SuchergebnisBtn.Enabled := True;
 
-    StatusBar1.Panels[1].Text :=
-      'Markiert: ' + IntToStr(ListBox1.SelCount);
+    StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
 
     StatusBar1.Canvas.Font := StatusBar1.Font;
 
-    StatusBar1.Panels[0].Width :=
-      ListBox1.Width -
-      (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+    StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
   end
   else begin
     SuchergebnisCB.Enabled  := False;
@@ -4413,8 +4409,10 @@ begin
   end;
 
   if ListBox1.SelCount > 0 then
-    StatusBar1.Panels[1].Text :=
-      'Markiert: ' + IntToStr(ListBox1.SelCount);
+  begin
+    StatusBar1.Panels[1].Text := 'Markiert: ' + IntToStr(ListBox1.SelCount);
+    StatusBar1.Panels[0].Width := ListBox1.Width - (Canvas.TextWidth(StatusBar1.Panels[1].Text) + 36);
+  end;
 
   // Nicht mehr benötigte Speicherseiten aus dem Working Set entfernen.
   EmptyWorkingSet(GetCurrentProcess);
