@@ -16,7 +16,7 @@ Mit dem integrierten FreePDF64-PostScript-Drucker verwandelst du Druckausgaben b
 
 Ob **PDF, BMP, JPEG, PNG oder TIFF**: Du druckst einfach auf den FreePDF64-Drucker und überlässt FreePDF64 die weitere Verarbeitung.
 
-Besonders praktisch ist die automatische Verzeichnisüberwachung: FreePDF64 erkennt neu eingehende Dateien (z.B. Drucken auf den FreePDF64 Postscript-Drucker) in einem vorausgewählten Ordner und verarbeitet sie entsprechend deinen Einstellungen. Das gewünschte Ausgabeformat kann automatisch erstellt werden. Auf Wunsch wird das Ergebnis anschließend direkt im FreePDF64-PDF-Viewer geöffnet.
+Besonders praktisch ist die automatische Verzeichnisüberwachung: FreePDF64 erkennt neu eingehende Dateien (z.B. Drucken auf den FreePDF64 Postscript-Drucker) in einem vorausgewählten Ordner und verarbeitet sie entsprechend deinen Einstellungen. Das gewünschte Ausgabeformat kann automatisch erstellt werden. Auf Wunsch wird das Ergebnis anschließend direkt im FreePDF64-Viewer geöffnet.
 
 **Weniger manuelle Arbeit, mehr Möglichkeiten – mit einem durchgängigen Workflow.**
 
