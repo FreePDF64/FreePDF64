@@ -299,7 +299,6 @@ type
     VirtualImageList1: TVirtualImageList;
     ZielverzeichnisimExplorerffnen1: TMenuItem;
     N15: TMenuItem;
-    Timer1: TTimer;
     Formatverz_Date: TMenuItem;
     InsUnterverzeichnisbeimErstellen1: TMenuItem;
     Splash1: TMenuItem;
@@ -525,8 +524,6 @@ type
     procedure QuellBtnMouseEnter(Sender: TObject);
     procedure ZielBtnMouseEnter(Sender: TObject);
     procedure ZielverzeichnisimExplorerffnen1Click(Sender: TObject);
-    procedure Timer1Timer(Sender: TObject);
-    procedure PDF_ErstellungMouseEnter(Sender: TObject);
     procedure PDF_ErstellungMouseLeave(Sender: TObject);
     procedure FeedbackClick(Sender: TObject);
     procedure Formatverz_DateClick(Sender: TObject);
@@ -2445,7 +2442,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '11.10.2026';
+  Datum := '12.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -3048,11 +3045,6 @@ begin
 
   SB_Left;
   SB_Right;
-end;
-
-procedure TFreePDF64_Form.Timer1Timer(Sender: TObject);
-begin
-  FormatBtn.Enabled := not FormatBtn.Enabled;
 end;
 
 // Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
@@ -8789,14 +8781,8 @@ begin
   Result := SystemTimeToDateTime(SystemTime);
 end;
 
-procedure TFreePDF64_Form.PDF_ErstellungMouseEnter(Sender: TObject);
-begin
-  Timer1.Enabled := True;
-end;
-
 procedure TFreePDF64_Form.PDF_ErstellungMouseLeave(Sender: TObject);
 begin
-  Timer1.Enabled := False;
   FormatBtn.Enabled := True;
 end;
 
@@ -8860,7 +8846,7 @@ begin
     end;
   end;
 
-  Timer1.Enabled    := False;
+
   FormatBtn.Enabled := True;
   // Ist der Pfad zum Ghostscript-Programm in den Einstellungen eingetragen?
   if not FileExists(Einstellungen_Form.Edit1.Text) then
@@ -9091,6 +9077,26 @@ begin
         if not UeberwachungsAufruf then
           LMDShellList1.Items[LMDShellList1.Selected.Index].Selected := False;
 
+        // Nicht unterstützte Dateiformate vor der Verarbeitung abfangen.
+        // Zulässig sind ausschließlich PS, PRN, PDF, BMP, JPEG, JPG,
+        // PNG und TIF (Groß-/Kleinschreibung wird ignoriert).
+        DateiEndung := UpperCase(ExtractFileExt(AP3));
+        if not ((DateiEndung = '.PS') or (DateiEndung = '.PRN') or
+          (DateiEndung = '.PDF') or (DateiEndung = '.BMP') or
+          (DateiEndung = '.JPEG') or (DateiEndung = '.JPG') or
+          (DateiEndung = '.PNG') or (DateiEndung = '.TIF') or (DateiEndung = '.TIFF')) then
+        begin
+          MessageDlgCenter(
+              'Dateiformat nicht unterstützt' + #13#13 +
+              'Die ausgewählte Datei "' + ExtractFileName(AP3) + '"' + #13 +
+              'kann nicht verarbeitet werden, da ihr Dateiformat' + #13 +
+              'nicht unterstützt wird.' + #13#13 +
+              'Bitte wähle eine Datei in einem der folgenden' + #13 +
+              'Formate aus: PDF, PRN, PS, BMP, JPEG, JPG, PNG, TIF oder TIFF.',
+          mtWarning, [mbOk]);
+          Continue;
+        end;
+
         if UeberwachungsAufruf or FreePDF64_Form.AutoFormat.Checked then
         begin
           HinweisAutoFormat := False;
@@ -9099,7 +9105,7 @@ begin
           { ---------------------------------------------------------- }
           DateiEndung := UpperCase(ExtractFileExt(AP3));
 
-          if (DateiEndung = '.PDF') or (DateiEndung = '.PS') or (DateiEndung = '') then
+          if (DateiEndung = '.PDF') or (DateiEndung = '.PS') or (DateiEndung = '.PRN') or (DateiEndung = '') then
           begin
             Einstellungen_Form.AuswahlRG.ItemIndex := 0;
             FormatBtn.Caption := 'Formatauswahl: PS/PDF zu PDF ';
@@ -9193,7 +9199,7 @@ begin
           Ziel := (IncludeTrailingBackslash(z) +
             ChangeFileExt(ExtractFileName(Endzielname), '_%03d.png'))
         else if (Einstellungen_Form.AuswahlRG.ItemIndex > 6) and
-          (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then // TIFF
+          (Einstellungen_Form.AuswahlRG.ItemIndex < 10) then // TIF
           Ziel := (IncludeTrailingBackslash(z) +
             ChangeFileExt(ExtractFileName(Endzielname), '.tif'));
 

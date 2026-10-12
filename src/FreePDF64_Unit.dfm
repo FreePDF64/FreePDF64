@@ -860,7 +860,6 @@
         TabOrder = 0
         TabStop = False
         OnClick = PDF_ErstellungClick
-        OnMouseEnter = PDF_ErstellungMouseEnter
         OnMouseLeave = PDF_ErstellungMouseLeave
       end
       object ProgressBar1: TProgressBar
@@ -21671,13 +21670,6 @@
     Left = 129
     Top = 899
   end
-  object Timer1: TTimer
-    Enabled = False
-    Interval = 600
-    OnTimer = Timer1Timer
-    Left = 415
-    Top = 129
-  end
   object TrayIcon1: TTrayIcon
     AnimateInterval = 300
     Hint = 
@@ -26039,7 +26031,7 @@
   end
   object Timer3: TTimer
     OnTimer = Timer3Timer
-    Left = 703
-    Top = 263
+    Left = 734
+    Top = 289
   end
 end
