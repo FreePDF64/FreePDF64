@@ -771,6 +771,7 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
         PDFForm.Show;
         Application.ProcessMessages;
+        ShowPDFEmbeddedAttachments(s);
         Inc(PDFCount);
       end;
     end;

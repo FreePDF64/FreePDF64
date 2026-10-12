@@ -45,6 +45,7 @@ uses
   System.SysUtils,
   System.Variants,
   System.Classes,
+  System.JSON,
   System.Types,
   Vcl.Graphics,
   Vcl.Controls,
@@ -629,7 +630,6 @@ type
       Shift: TShiftState; X, Y: Integer);
     procedure ZiellabelClick(Sender: TObject);
     procedure QuelllabelClick(Sender: TObject);
-    procedure ToolButton6Click(Sender: TObject);
     procedure Logdateiansehen2Click(Sender: TObject);
     procedure LMDShellList1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellList2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
@@ -705,6 +705,8 @@ var
   // Verhindert, dass Auswahl-/Tastaturereignisse den PDF-Prüfbericht schließen.
   PDFReportActive: Boolean = False;
 
+  procedure ShowPDFEmbeddedAttachments(const PDFFileName: string);
+
 implementation
 
 uses
@@ -714,6 +716,17 @@ uses
   Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
   Dateianlage_Unit, Status_Unit, Anleitung_Unit, Suchen, uPDFBrowserForm,
   FreePDF64PrinterConfig;
+
+type
+  // Nicht-modales Fenster für die Anlagenliste einer PDF-Datei.
+  TPDFAttachmentNoticeForm = class(TForm)
+  private
+    FAttachmentList: TListBox;
+    procedure NoticeFormClose(Sender: TObject; var Action: TCloseAction);
+    procedure CloseButtonClick(Sender: TObject);
+  public
+    constructor CreateNotice(AOwner: TComponent; const AttachmentNames: TStrings);
+  end;
 
 {$R *.DFM}
 {$R FreePDF64.res}
@@ -1409,6 +1422,156 @@ begin
     CloseHandle(ProcessInfo.hThread);
 end;
 
+
+constructor TPDFAttachmentNoticeForm.CreateNotice(AOwner: TComponent;
+  const AttachmentNames: TStrings);
+var
+  InfoLabel: TLabel;
+  BottomPanel: TPanel;
+  CloseButton: TButton;
+begin
+  inherited CreateNew(AOwner);
+  Caption := 'Eingebettete PDF-Anlagen';
+  BorderStyle := bsSizeable;
+  Position := poScreenCenter;
+  Width := 460;
+  Height := 340;
+  Constraints.MinWidth := 340;
+  Constraints.MinHeight := 220;
+  OnClose := NoticeFormClose;
+
+  InfoLabel := TLabel.Create(Self);
+  InfoLabel.Parent := Self;
+  InfoLabel.Align := alTop;
+  InfoLabel.AutoSize := False;
+  InfoLabel.Height := 42;
+  InfoLabel.Margins.SetBounds(10, 8, 10, 4);
+  InfoLabel.AlignWithMargins := True;
+  InfoLabel.Caption := 'Diese PDF-Datei enthält folgende eingebettete Anlagen:';
+  InfoLabel.WordWrap := True;
+
+  BottomPanel := TPanel.Create(Self);
+  BottomPanel.Parent := Self;
+  BottomPanel.Align := alBottom;
+  BottomPanel.Height := 48;
+  BottomPanel.BevelOuter := bvNone;
+
+  CloseButton := TButton.Create(Self);
+  CloseButton.Parent := BottomPanel;
+  CloseButton.Caption := 'Schließen';
+  CloseButton.Width := 90;
+  CloseButton.Height := 28;
+  CloseButton.Anchors := [akRight, akBottom];
+  CloseButton.Left := BottomPanel.ClientWidth - CloseButton.Width - 12;
+  CloseButton.Top := 8;
+  CloseButton.OnClick := CloseButtonClick;
+
+  FAttachmentList := TListBox.Create(Self);
+  FAttachmentList.Parent := Self;
+  FAttachmentList.Align := alClient;
+  FAttachmentList.Items.Assign(AttachmentNames);
+  FAttachmentList.ItemHeight := 20;
+
+  Position := poScreenCenter;
+end;
+
+procedure TPDFAttachmentNoticeForm.NoticeFormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := caFree;
+end;
+
+procedure TPDFAttachmentNoticeForm.CloseButtonClick(Sender: TObject);
+begin
+  Close;
+end;
+
+// Prüft eine PDF-Datei mit QPDF auf eingebettete Anlagen und zeigt
+// deren Namen in einem separaten, nicht-modalen Fenster an.
+// Die PDF-Datei kann parallel im PDFForm betrachtet werden.
+procedure ShowPDFEmbeddedAttachments(const PDFFileName: string);
+var
+  QpdfExe, TempFile, CmdLine, AttachmentName: string;
+  TempPath: array[0..MAX_PATH] of Char;
+  TempName: array[0..MAX_PATH] of Char;
+  ProcID: Cardinal;
+  ExitCode: Longword;
+  JsonText, AttachmentNames: TStringList;
+  JsonValue, AttachmentsValue, ItemValue, PreferredNameValue: TJSONValue;
+  AttachmentsObject: TJSONObject;
+  Pair: TJSONPair;
+  NoticeForm: TPDFAttachmentNoticeForm;
+begin
+  if (ExtractFileExt(PDFFileName).ToLower <> '.pdf') or
+     not FileExists(PDFFileName) then
+    Exit;
+
+  QpdfExe := Einstellungen_Form.Edit4.Text;
+  if (Trim(QpdfExe) = '') or not FileExists(QpdfExe) then
+    Exit;
+
+  if GetTempPath(MAX_PATH, TempPath) = 0 then
+    Exit;
+  if GetTempFileName(TempPath, 'PFA', 0, TempName) = 0 then
+    Exit;
+
+  TempFile := string(PChar(@TempName[0]));
+  JsonText := TStringList.Create;
+  AttachmentNames := TStringList.Create;
+  JsonValue := nil;
+  try
+    // QPDF liefert die Anlagen-Metadaten als JSON.
+    CmdLine := 'cmd.exe /C ""' + QpdfExe + '" --json "' +
+      PDFFileName + '" > "' + TempFile + '" 2>&1"';
+    ProcID := 0;
+    ExitCode := RunProcess(CmdLine, SW_HIDE, True, @ProcID);
+    if ExitCode <> 0 then
+      Exit;
+
+    JsonText.LoadFromFile(TempFile, TEncoding.UTF8);
+    JsonValue := TJSONObject.ParseJSONValue(JsonText.Text);
+    if not (JsonValue is TJSONObject) then
+      Exit;
+
+    AttachmentsValue := TJSONObject(JsonValue).GetValue('attachments');
+    if not (AttachmentsValue is TJSONObject) then
+      Exit;
+
+    AttachmentsObject := TJSONObject(AttachmentsValue);
+    for Pair in AttachmentsObject do
+    begin
+      AttachmentName := Pair.JsonString.Value;
+      ItemValue := Pair.JsonValue;
+      if ItemValue is TJSONObject then
+      begin
+        PreferredNameValue := TJSONObject(ItemValue).GetValue('preferredname');
+        if (PreferredNameValue <> nil) and (PreferredNameValue.Value <> '') then
+          AttachmentName := PreferredNameValue.Value;
+      end;
+
+      if AttachmentName <> '' then
+        AttachmentNames.Add(AttachmentName);
+    end;
+
+    if AttachmentNames.Count > 0 then
+    begin
+      // Das Fenster gehört der Anwendung und wird beim Schließen freigegeben.
+      // Show statt ShowModal ermöglicht die gleichzeitige Anzeige mit PDFForm.
+      NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(Application,
+        AttachmentNames);
+      NoticeForm.Show;
+      NoticeForm.FormStyle := fsStayOnTop;
+    end;
+  finally
+    JsonValue.Free;
+    AttachmentNames.Free;
+    JsonText.Free;
+    if FileExists(TempFile) then
+      DeleteFile(TempFile);
+  end;
+
+end;
+
 // Wasserzeichen/Stempel hinzufügen
 procedure TFreePDF64_Form.WZSTTBClick(Sender: TObject);
 var
@@ -1540,6 +1703,7 @@ begin
                 PDFForm := TPDFBrowserForm.Create(Self);
                 PDFForm.PDFFileName := IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3);
                 PDFForm.Show;
+                ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
                 Application.ProcessMessages;
               end;
             end;
@@ -1764,6 +1928,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := Zieldatei;
     PDFForm.Show;
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
     Application.ProcessMessages;
   end;
 end;
@@ -1938,6 +2103,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := Zieldatei;
     PDFForm.Show;
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
     Application.ProcessMessages;
   end;
 end;
@@ -3087,11 +3253,6 @@ begin
   StatusBarAnpassen;
 end;
 
-procedure TFreePDF64_Form.ToolButton6Click(Sender: TObject);
-begin
-  LMDShellList1.SetFocus;
-end;
-
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
 begin
   // Suchformular wurde noch nicht erzeugt bzw. nach dem letzten
@@ -3471,6 +3632,7 @@ var
       PDFForm := TPDFBrowserForm.Create(Self);
       PDFForm.PDFFileName := FileName;
       PDFForm.Show;
+      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
       Application.ProcessMessages;
     end;
   end;
@@ -4272,6 +4434,7 @@ var
       PDFForm := TPDFBrowserForm.Create(Self);
       PDFForm.PDFFileName := Filename;
       PDFForm.Show;
+      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
       Application.ProcessMessages;
     end;
   end;
@@ -4786,6 +4949,7 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
 
         PDFForm.Show;
+        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
         Application.ProcessMessages;
 
         Inc(PDFCount);
@@ -4808,6 +4972,7 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
 
         PDFForm.Show;
+        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
         Application.ProcessMessages;
 
         Inc(PDFCount);
@@ -8549,6 +8714,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := IncludeTrailingBackslash(Ziel) + ExtractFileName(s);
     PDFForm.Show;
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
     Application.ProcessMessages;
   end;
 
@@ -8769,6 +8935,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := s;
     PDFForm.Show;
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
     Application.ProcessMessages;
   end;
 end;
@@ -10282,12 +10449,14 @@ begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Ziel;
               PDFForm.Show;
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
               Application.ProcessMessages;
             end else
             begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Zielanz;
               PDFForm.Show;
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
               Application.ProcessMessages;
             end;
           end else
@@ -10296,6 +10465,7 @@ begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Ziel;
               PDFForm.Show;
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName);
               Application.ProcessMessages;
             end else
               if Einstellungen_Form.AuswahlRG.ItemIndex in [1, 3] then // PS/DOCX/TXT
