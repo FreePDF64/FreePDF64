@@ -174,11 +174,10 @@ type
 var
   Suche_Form: TSuche_Form;
   // Globale Variablen
-  StopSuche, Links, Rechts: Boolean;
+  StopSuche, Links, Rechts, ExactMatch, AltLeftDown: Boolean;
   Zaehler, SFHStart, SFHResize: Integer;
   SuchZaehler: Int64;
   Anzeige: String;
-  AltLeftDown: Boolean;
 
 implementation
 
@@ -1603,11 +1602,10 @@ begin
   Suche_Info.Memo1.Lines.Text :=
     'Suchen nach:' + #13 +
     '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +
-    '- Beispiel: Test* findet u.a.: Testlauf.docx, Test1.ini, Testdatei.prn, testhost.dll, usw.' + #13 +
-    '- Beispiel: *Test* findet u.a.: applatest.xml, Austesten.xls, TranslateString.dcu, usw.' + #13 +
-    '- Beispiel: Test ohne * findet nur: Test' + #13 + #13 +
+    '- Beispiel: Test oder *Test* findet alle Dateien und Verzeichnisse, die Test im Namen enthalten'  + #13 +
+    '- Beispiel: Test. findet nur den exakten Namen Test' + #13 + #13 +
     '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis' + #13 +
-    '- Beispiel: Test?.log findet u.a.: Test1.log, Test8.log, usw.' + #13 +
+    '- Beispiel: Test?.log findet u.a.: Test1.log", Test8.log, usw.' + #13 +
     '- Beispiel: Test??.log findet u.a.: Test1.log, Test8.log, TestA3.log, Test45.log, usw.' + #13 + #13 +
     '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
     '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt, usw.' + #13 +
@@ -2703,7 +2701,7 @@ var
     NameStr: string;
     FullPath: string;
 
-    IsDir: Boolean;
+    IsDir, MaskOK: Boolean;
     Maske: string;
 
     SubDirs: TStringList;
@@ -2784,11 +2782,13 @@ var
               if SearchShouldStop(Dir) then
                 Break;
 
-              if MatchesMask(NameStr, Maske) then
-              begin
-                DirectoryMatchesMask := True;
+              if ExactMatch then
+                DirectoryMatchesMask := SameText(NameStr, Maske)
+              else
+                DirectoryMatchesMask := MatchesMask(NameStr, Maske);
+
+              if DirectoryMatchesMask then
                 Break;
-              end;
             end;
 
             if DirectoryMatchesMask and
@@ -2811,7 +2811,15 @@ var
               if SearchShouldStop(Dir) then
                 Break;
 
-              if MatchesMask(NameStr, Maske) then
+
+              if ExactMatch then
+                MaskOK := SameText(NameStr, Maske)
+              else
+                MaskOK := MatchesMask(NameStr, Maske);
+
+              if not MaskOK then
+                Continue;
+
               begin
                 if not HasSearchText then
                 begin
@@ -3307,11 +3315,13 @@ var
                 if SearchShouldStop(Dir) then
                   Break;
 
-                if MatchesMask(NameStr, Maske) then
-                begin
-                  DirectoryMatchesMask := True;
+                if ExactMatch then
+                  DirectoryMatchesMask := SameText(NameStr, Maske)
+                else
+                  DirectoryMatchesMask := MatchesMask(NameStr, Maske);
+
+                if DirectoryMatchesMask then
                   Break;
-                end;
               end;
 
               if DirectoryMatchesMask and
@@ -3391,11 +3401,13 @@ var
             if SearchShouldStop(Dir) then
               Break;
 
-            if MatchesMask(NameStr, Maske) then
-            begin
-              MaskOK := True;
+            if ExactMatch then
+              MaskOK := SameText(NameStr, Maske)
+            else
+              MaskOK := MatchesMask(NameStr, Maske);
+
+            if MaskOK then
               Break;
-            end;
           end;
 
           if StopSuche then
@@ -3829,12 +3841,16 @@ const
                 if (r1 = 0) or
                    (r1 = 1) then
                 begin
-                  MaskOK :=
-                    MatchesMask(
-                      String(SR.FindData.cFileName),
-                      Maske
-                    );
-
+                if ExactMatch then
+                  MaskOK := SameText(
+                  String(SR.FindData.cFileName),
+                  Maske
+                  )
+               else
+                 MaskOK := MatchesMask(
+                 String(SR.FindData.cFileName),
+                 Maske
+                 );
                   if MaskOK and
                      not StopSuche then
                   begin
@@ -3892,11 +3908,17 @@ const
             if SearchShouldStop(CurrentDirectory) then
               Break;
 
-            MaskOK :=
-              MatchesMask(
-                String(SR.FindData.cFileName),
-                Maske
-              );
+            if ExactMatch then
+               MaskOK := SameText(
+               String(SR.FindData.cFileName),
+               Maske
+               )
+            else
+              MaskOK := MatchesMask(
+
+               String(SR.FindData.cFileName),
+               Maske
+             );
 
             if not MaskOK then
               Continue;
@@ -4133,7 +4155,21 @@ begin
 
   Application.ProcessMessages;
 
-  Mask := FileField.Text;
+  Mask := Trim(FileField.Text);
+  ExactMatch := False;
+
+  if (Mask <> '') and (Mask[Length(Mask)] = '.') then
+  begin
+    Delete(Mask, Length(Mask), 1);
+    ExactMatch := True;
+  end else
+  begin
+    if (Pos('*', Mask) = 0) and
+       (Pos('?', Mask) = 0) and
+       (Pos('|', Mask) = 0) then
+      Mask := '*' + Mask + '*';
+  end;
+
   Path := IncludeTrailingBackslash(SearchField.Text);
 
   StopSuche := False;
