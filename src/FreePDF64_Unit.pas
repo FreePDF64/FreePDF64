@@ -1425,25 +1425,36 @@ begin
     CloseHandle(ProcessInfo.hThread);
 end;
 
-constructor TPDFAttachmentNoticeForm.CreateNotice(AOwner: TComponent;
-  const AttachmentNames: TStrings; PDFForm: TForm; const PDFFileName: string);
+constructor TPDFAttachmentNoticeForm.CreateNotice(
+  AOwner: TComponent;
+  const AttachmentNames: TStrings;
+  PDFForm: TForm;
+  const PDFFileName: string);
 var
   InfoLabel: TLabel;
   BottomPanel: TPanel;
-  CloseButton, ExtractButton, AddButton, RemoveButton: TButton;
+  ExtractButton, AddButton, RemoveButton: TButton;
+  WorkArea: TRect;
+  AvailableHeight: Integer;
 begin
   inherited CreateNew(AOwner);
+
   FSourcePDF := PDFFileName;
+
   Caption := 'Eingebettete PDF-Anlagen';
   BorderStyle := bsSizeable;
   Position := poDesigned;
-  // Schmale, hohe Anlagenliste wie eine Leseliste am linken PDF-Rand.
-  Width := 340;
-  Height := 520;
-  Constraints.MinWidth := 220;
-  Constraints.MinHeight := 260;
+  DoubleBuffered := True;
+  FormStyle := fsStayOnTop;
   OnClose := NoticeFormClose;
 
+  Width := 360;
+  Height := 520;
+
+  Constraints.MinWidth := 350;
+  Constraints.MinHeight := 260;
+
+  // Informationsbereich oben.
   InfoLabel := TLabel.Create(Self);
   InfoLabel.Parent := Self;
   InfoLabel.Align := alTop;
@@ -1451,9 +1462,19 @@ begin
   InfoLabel.Height := 42;
   InfoLabel.Margins.SetBounds(10, 8, 10, 4);
   InfoLabel.AlignWithMargins := True;
-  InfoLabel.Caption := 'Eingebettete Anlagen dieser PDF-Datei: Anlagen extrahieren, hinzufügen, entfernen.';
   InfoLabel.WordWrap := True;
 
+  // Bei einer leeren Liste ausdrücklich darauf hinweisen,
+  // dass neue Anlagen hinzugefügt werden können.
+  if (AttachmentNames = nil) or (AttachmentNames.Count = 0) then
+    InfoLabel.Caption :=
+      'Diese PDF-Datei enthält keine eingebetteten Anlagen.'
+  else
+    InfoLabel.Caption :=
+      'Eingebettete Anlagen dieser PDF-Datei: ' +
+      'Anlagen extrahieren, hinzufügen oder entfernen.';
+
+  // Bedienleiste unten.
   BottomPanel := TPanel.Create(Self);
   BottomPanel.Parent := Self;
   BottomPanel.Align := alBottom;
@@ -1463,76 +1484,125 @@ begin
   ExtractButton := TButton.Create(Self);
   ExtractButton.Parent := BottomPanel;
   ExtractButton.Caption := 'Anlage extr.';
-  ExtractButton.Width := 100;
-  ExtractButton.Height := 28;
+  ExtractButton.SetBounds(8, 8, 100, 28);
   ExtractButton.Anchors := [akLeft, akTop];
-  ExtractButton.Left := 8;
-  ExtractButton.Top := 8;
   ExtractButton.OnClick := ExtractButtonClick;
 
   AddButton := TButton.Create(Self);
   AddButton.Parent := BottomPanel;
   AddButton.Caption := 'Anlage hinz.';
-  AddButton.Width := 100;
-  AddButton.Height := 28;
+  AddButton.SetBounds(116, 8, 100, 28);
   AddButton.Anchors := [akLeft, akTop];
-  AddButton.Left := 116;  // 8 Pixel Abstand
-  AddButton.Top := 8;
   AddButton.OnClick := AddButtonClick;
 
   RemoveButton := TButton.Create(Self);
   RemoveButton.Parent := BottomPanel;
   RemoveButton.Caption := 'Anlage entf.';
-  RemoveButton.Width := 100;
-  RemoveButton.Height := 28;
+  RemoveButton.SetBounds(224, 8, 100, 28);
   RemoveButton.Anchors := [akLeft, akTop];
-  RemoveButton.Left := 224;  // 8 Pixel Abstand
-  RemoveButton.Top := 8;
   RemoveButton.OnClick := RemoveButtonClick;
 
-  // Die Schaltflächen liegen nebeneinander; das Fenster kann bei Bedarf verbreitert werden.
-  BottomPanel.Height := 44;
-  Width := 350;
+  // Anlagenliste in der Mitte.
   FAttachmentList := TListBox.Create(Self);
   FAttachmentList.Parent := Self;
   FAttachmentList.Align := alClient;
-  FAttachmentList.Items.Assign(AttachmentNames);
   FAttachmentList.ItemHeight := 20;
-  ExtractButton.Enabled := FAttachmentList.Items.Count > 0;
+  BorderIcons := [biMinimize, biMaximize];
 
-  // Bei jeder neu geöffneten PDF links am Rand der PDFForm starten.
-  // Das Anlagenfenster bleibt ein eigenständiges, verschiebbares Fenster.
-  if Assigned(PDFForm) and PDFForm.HandleAllocated then
+  if AttachmentNames <> nil then
+    FAttachmentList.Items.Assign(AttachmentNames);
+
+  // Ausrichtung ausführen und anschließend Kopf- und Fußbereich
+  // ausdrücklich vor die alClient-Liste legen. Dadurch können die
+  // Liste und ihre Fensterfläche die Schaltflächen nicht überdecken.
+  Realign;
+  BottomPanel.BringToFront;
+  InfoLabel.BringToFront;
+  Realign;
+
+  // Extrahieren und Entfernen sind nur bei vorhandenen
+  // Listeneinträgen sinnvoll. Hinzufügen bleibt immer möglich.
+  ExtractButton.Enabled := FAttachmentList.Items.Count > 0;
+  RemoveButton.Enabled := FAttachmentList.Items.Count > 0;
+  AddButton.Enabled := True;
+
+  // Verfügbaren Bildschirmarbeitsbereich ermitteln.
+  if Assigned(PDFForm) then
+    WorkArea := Screen.MonitorFromWindow(
+      PDFForm.Handle).WorkareaRect
+  else
+    WorkArea := Screen.WorkAreaRect;
+
+  // Ausgangsposition links neben der PDF-Steuerung.
+  if Assigned(PDFForm) then
   begin
     Left := PDFForm.Left + 8;
-    // Unterhalb der Titelleiste und der oberen PDF-Steuerung beginnen,
-    // damit die Anlagenliste keine Buttons der PDFForm verdeckt.
     Top := PDFForm.Top + 125;
 
-    // Höhe an die PDFForm anpassen und den oberen Bedienbereich freilassen.
-    if PDFForm.Height > 180 then
-      Height := PDFForm.Height - 141;
+    AvailableHeight := WorkArea.Bottom - Top - 8;
+    if AvailableHeight > 0 then
+      Height := AvailableHeight;
   end
   else
   begin
-    Left := 8;
-    Top := 125;
-    Height := Screen.WorkAreaHeight - 141;
+    Left := WorkArea.Left + 8;
+    Top := WorkArea.Top + 125;
+
+    AvailableHeight := WorkArea.Bottom - Top - 8;
+    if AvailableHeight > 0 then
+      Height := AvailableHeight;
   end;
 
-  // Fenster innerhalb des sichtbaren Arbeitsbereichs halten.
-  if Left < 0 then Left := 0;
-  if Top < 0 then Top := 0;
-  if Height > Screen.WorkAreaHeight - Top then
-    Height := Screen.WorkAreaHeight - Top;
-  if Height < Constraints.MinHeight then
-    Height := Constraints.MinHeight;
+  // Fenstergröße auf den Arbeitsbereich begrenzen.
+  if Width > WorkArea.Right - WorkArea.Left then
+    Width := WorkArea.Right - WorkArea.Left;
+
+  if Height > WorkArea.Bottom - WorkArea.Top then
+    Height := WorkArea.Bottom - WorkArea.Top;
+
+  // Fensterposition innerhalb des Arbeitsbereichs halten.
+  if Left < WorkArea.Left then
+    Left := WorkArea.Left;
+
+  if Top < WorkArea.Top then
+    Top := WorkArea.Top;
+
+  if Left + Width > WorkArea.Right then
+    Left := WorkArea.Right - Width;
+
+  if Top + Height > WorkArea.Bottom then
+    Top := WorkArea.Bottom - Height;
+
+  // Robuste, explizite Layout-Geometrie statt VCL-alTop/alBottom/alClient.
+  // Damit ist die Anlagenliste unabhängig von der Align-Reihenfolge sichtbar.
+  InfoLabel.Align := alNone;
+  InfoLabel.AlignWithMargins := False;
+  InfoLabel.SetBounds(10, 10, ClientWidth - 20, 48);
+  InfoLabel.Anchors := [akLeft, akTop, akRight];
+
+  BottomPanel.Align := alNone;
+  BottomPanel.SetBounds(0, ClientHeight - 52, ClientWidth, 52);
+  BottomPanel.Anchors := [akLeft, akRight, akBottom];
+
+  FAttachmentList.Align := alNone;
+  FAttachmentList.SetBounds(
+    8, 64, ClientWidth - 16, ClientHeight - 124);
+  FAttachmentList.Anchors := [akLeft, akTop, akRight, akBottom];
+
+  // Nach den finalen Bounds das Layout aktualisieren.
+  InfoLabel.Visible := True;
+  BottomPanel.Visible := True;
+  FAttachmentList.Visible := True;
+  BottomPanel.Realign;
+  FAttachmentList.Realign;
+  Realign;
 end;
 
 procedure TPDFAttachmentNoticeForm.NoticeFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  Action := caFree;
+  // Das Fenster wird über den PDF-Button wieder eingeblendet.
+  Action := caHide;
 end;
 
 procedure TPDFAttachmentNoticeForm.ExtractButtonClick(Sender: TObject);
@@ -1751,7 +1821,10 @@ end;
 // Prüft eine PDF-Datei mit QPDF auf eingebettete Anlagen und zeigt
 // deren Namen in einem separaten, nicht-modalen Fenster an.
 // Die PDF-Datei kann parallel im PDFForm betrachtet werden.
-procedure ShowPDFEmbeddedAttachments(const PDFFileName: string; PDFForm: TForm; AttachmentsButton: TButton);
+procedure ShowPDFEmbeddedAttachments(
+  const PDFFileName: string;
+  PDFForm: TForm;
+  AttachmentsButton: TButton);
 var
   QpdfExe, TempFile, CmdLine, AttachmentName: string;
   TempPath: array[0..MAX_PATH] of Char;
@@ -1759,92 +1832,159 @@ var
   ProcID: Cardinal;
   ExitCode: Longword;
   JsonText, AttachmentNames: TStringList;
-  JsonValue, AttachmentsValue, ItemValue, PreferredNameValue: TJSONValue;
+  JsonValue, AttachmentsValue, ItemValue,
+    PreferredNameValue: TJSONValue;
   AttachmentsObject: TJSONObject;
   Pair: TJSONPair;
   NoticeForm: TPDFAttachmentNoticeForm;
 begin
+  // Nur bei einer existierenden PDF fortfahren.
   if (ExtractFileExt(PDFFileName).ToLower <> '.pdf') or
      not FileExists(PDFFileName) then
     Exit;
 
-  QpdfExe := Einstellungen_Form.Edit4.Text;
-  if (Trim(QpdfExe) = '') or not FileExists(QpdfExe) then
-    Exit;
-
-  if GetTempPath(MAX_PATH, TempPath) = 0 then
-    Exit;
-  if GetTempFileName(TempPath, 'PFA', 0, TempName) = 0 then
-    Exit;
-
-  TempFile := string(PChar(@TempName[0]));
   JsonText := TStringList.Create;
   AttachmentNames := TStringList.Create;
   JsonValue := nil;
+  TempFile := '';
+  NoticeForm := nil;
+
   try
-    // QPDF liefert die Anlagen-Metadaten als JSON.
-    CmdLine := 'cmd.exe /C ""' + QpdfExe + '" --json "' +
-      PDFFileName + '" > "' + TempFile + '" 2>&1"';
-    ProcID := 0;
-    ExitCode := RunProcess(CmdLine, SW_HIDE, True, @ProcID);
-    if ExitCode <> 0 then
-      Exit;
+    // Anlageninformationen nach Möglichkeit mit QPDF auslesen.
+    // Fehler beim Auslesen verhindern nicht die Anzeige des Formulars.
+    QpdfExe := Trim(Einstellungen_Form.Edit4.Text);
 
-    JsonText.LoadFromFile(TempFile, TEncoding.UTF8);
-    JsonValue := TJSONObject.ParseJSONValue(JsonText.Text);
-    if not (JsonValue is TJSONObject) then
-      Exit;
-
-    AttachmentsValue := TJSONObject(JsonValue).GetValue('attachments');
-    // PDFs ohne eingebettete Anlagen besitzen ggf. kein 'attachments'-Objekt.
-    // Das Fenster wird trotzdem geöffnet, damit jederzeit Anlagen hinzugefügt
-    // werden können.
-    if AttachmentsValue is TJSONObject then
+    if (QpdfExe <> '') and FileExists(QpdfExe) then
     begin
-      AttachmentsObject := TJSONObject(AttachmentsValue);
-      for Pair in AttachmentsObject do
+      if GetTempPath(MAX_PATH, TempPath) <> 0 then
       begin
-        AttachmentName := Pair.JsonString.Value;
-        ItemValue := Pair.JsonValue;
-        if ItemValue is TJSONObject then
+        if GetTempFileName(TempPath, 'PFA', 0, TempName) <> 0 then
         begin
-          PreferredNameValue := TJSONObject(ItemValue).GetValue('preferredname');
-          if (PreferredNameValue <> nil) and (PreferredNameValue.Value <> '') then
-            AttachmentName := PreferredNameValue.Value;
-        end;
+          TempFile := string(PChar(@TempName[0]));
 
-        if AttachmentName <> '' then
-          AttachmentNames.Add(AttachmentName);
+          try
+            CmdLine := 'cmd.exe /C ""' + QpdfExe +
+              '" --json "' + PDFFileName +
+              '" > "' + TempFile + '" 2>nul"';
+
+            ProcID := 0;
+            ExitCode := RunProcess(
+              CmdLine, SW_HIDE, True, @ProcID);
+
+            // QPDF kann bei Warnungen einen ExitCode ungleich 0 liefern,
+            // obwohl die JSON-Ausgabe gültig ist. Daher die Datei auswerten,
+            // sobald sie nicht leer ist.
+            if FileExists(TempFile) then
+            begin
+              JsonText.LoadFromFile(TempFile, TEncoding.UTF8);
+              JsonValue := TJSONObject.ParseJSONValue(JsonText.Text);
+
+              if JsonValue is TJSONObject then
+              begin
+                AttachmentsValue :=
+                  TJSONObject(JsonValue).GetValue('attachments');
+
+                if AttachmentsValue is TJSONObject then
+                begin
+                  AttachmentsObject := TJSONObject(AttachmentsValue);
+                  for Pair in AttachmentsObject do
+                  begin
+                    AttachmentName := Pair.JsonString.Value;
+                    ItemValue := Pair.JsonValue;
+
+                    if ItemValue is TJSONObject then
+                    begin
+                      PreferredNameValue :=
+                        TJSONObject(ItemValue).GetValue('preferredname');
+                      if (PreferredNameValue is TJSONString) and
+                         (Trim(PreferredNameValue.Value) <> '') then
+                        AttachmentName := PreferredNameValue.Value;
+                    end;
+
+                    if Trim(AttachmentName) <> '' then
+                      AttachmentNames.Add(AttachmentName);
+                  end;
+                end;
+              end;
+            end;
+          except
+            // Fehler beim Lesen oder Parsen der Metadaten ignorieren.
+            // Das Formular wird anschließend mit einer leeren Liste
+            // erstellt, sodass Anlagen hinzugefügt werden können.
+            AttachmentNames.Clear;
+          end;
+        end;
       end;
     end;
 
-      if Assigned(AttachmentsButton) then
-      begin
-        if AttachmentNames.Count > 0 then
-          AttachmentsButton.Caption := '-> Anlagen ein-/ausblenden'
-        else
-          AttachmentsButton.Caption := 'Anlagen ein-/ausblenden';
-      end;
-
-      // Das Anlagenfenster immer anzeigen, auch wenn die Liste leer ist.
-      // So ist "Anlage hinzufügen..." für jede geöffnete PDF verfügbar.
-      if Assigned(PDFForm) then
-        NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(PDFForm, AttachmentNames, PDFForm, PDFFileName)
+    // Buttontext passend zur Anzahl der erkannten Anlagen setzen.
+    if Assigned(AttachmentsButton) then
+    begin
+      if AttachmentNames.Count > 0 then
+        AttachmentsButton.Caption :=
+          '-> Anlagen ein-/ausblenden'
       else
-        NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(Application, AttachmentNames, PDFForm, PDFFileName);
+        AttachmentsButton.Caption :=
+          'Anlagen ein-/ausblenden';
+    end;
 
-      if AttachmentNames.Count = 0 then
-        NoticeForm.Caption := 'Keine eingebettete PDF-Anlagen...';
+    // Das Formular immer erzeugen, auch bei einer leeren Liste.
+    if Assigned(PDFForm) then
+      NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(
+        PDFForm,
+        AttachmentNames,
+        PDFForm,
+        PDFFileName)
+    else
+      NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(
+        Application,
+        AttachmentNames,
+        PDFForm,
+        PDFFileName);
 
-      NoticeForm.Show;
-      NoticeForm.Hide;
 
-      NoticeForm.FormStyle := fsStayOnTop;
-    finally
+    if NoticeForm <> nil then
+    begin
+      try
+        NoticeForm.Caption := 'Eingebettete PDF-Anlagen';
+        NoticeForm.DoubleBuffered := True;
+        NoticeForm.FormStyle := fsStayOnTop;
+        NoticeForm.WindowState := wsNormal;
+
+        // Formular-Handle anlegen.
+        NoticeForm.HandleNeeded;
+
+        // VCL-Initialisierung durch Show auslösen,
+        // ohne das Fenster sichtbar aufblitzen zu lassen.
+        NoticeForm.AlphaBlend := True;
+        NoticeForm.AlphaBlendValue := 0;
+
+        NoticeForm.Show;
+        NoticeForm.Update;
+        NoticeForm.Hide;
+
+        // Transparenz zurücksetzen, solange das Fenster verborgen ist.
+        NoticeForm.AlphaBlendValue := 255;
+        NoticeForm.AlphaBlend := False;
+        NoticeForm.Visible := False;
+
+        // Erst nach der Initialisierung dem Browser zuordnen.
+        if PDFForm is TPDFBrowserForm then
+          TPDFBrowserForm(PDFForm).AttachmentWindowHandle :=
+            NoticeForm.Handle;
+      except
+        NoticeForm.Free;
+        NoticeForm := nil;
+        raise;
+      end;
+    end;
+
+  finally
     JsonValue.Free;
     AttachmentNames.Free;
     JsonText.Free;
-    if FileExists(TempFile) then
+
+    if (TempFile <> '') and FileExists(TempFile) then
       DeleteFile(TempFile);
   end;
 end;

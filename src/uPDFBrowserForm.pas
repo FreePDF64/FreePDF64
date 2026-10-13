@@ -1,4 +1,4 @@
-﻿                     //
+﻿//
 // Programmname: FreePDF64
 //
 
@@ -49,6 +49,8 @@ type
     FPageNavigationTimer: TTimer;
     FSearchTerm: string;
     FStartPage: Integer;
+    FStandalonePDFMode: Boolean;
+    FStandaloneHintShown: Boolean;
 
     procedure StartBrowser;
     procedure BuildNavigationToolbar;
@@ -60,9 +62,13 @@ type
 
   public
     FAttachmentsButton: TButton;
+    // HWND des Anlagenfensters, das zu genau dieser PDF-Ansicht gehört.
+    AttachmentWindowHandle: HWND;
     PDFFileName: string;
     property SearchTerm: string read FSearchTerm write FSearchTerm;
     property StartPage: Integer read FStartPage write FStartPage;
+    // True, wenn die PDF direkt per Kommandozeile/Explorer gestartet wurde.
+    property StandalonePDFMode: Boolean read FStandalonePDFMode write FStandalonePDFMode;
   end;
 
 implementation
@@ -78,6 +84,9 @@ begin
   FBrowserCreateStarted := False;
   FBrowserCreated := False;
   FClosing := False;
+  FStandalonePDFMode := False;
+  FStandaloneHintShown := False;
+  AttachmentWindowHandle := 0;
   FStartPage := 1;
   FSearchTerm := '';
   BuildNavigationToolbar;
@@ -159,25 +168,35 @@ begin
 end;
 
 procedure TPDFBrowserForm.ToggleAttachmentsClick(Sender: TObject);
-var
-  AttachmentWindow: HWND;
 begin
-  AttachmentWindow := FindWindow(nil, 'Eingebettete PDF-Anlagen');
-  if AttachmentWindow = 0 then
-    AttachmentWindow := FindWindow(nil, 'PDF-Anlagen (keine eingebettet)');
-  if AttachmentWindow = 0 then
+  if FStandalonePDFMode then
   begin
-    MessageDlg('Für diese PDF-Datei ist kein Anlagenfenster verfügbar.',
+    MessageDlg(
+      'Die Anlagenliste kann über das Hauptprogramm FreePDF64 geöffnet werden.' +
+      sLineBreak + sLineBreak +
+      'Bitte starten Sie FreePDF64 und öffnen Sie die PDF dort, um Anlagen ' +
+      'anzuzeigen, zu extrahieren, hinzuzufügen oder zu entfernen.',
       mtInformation, [mbOK], 0);
     Exit;
   end;
 
-  if IsWindowVisible(AttachmentWindow) then
-    ShowWindow(AttachmentWindow, SW_HIDE)
+  // Nicht per Fenstertitel suchen: bei mehreren geöffneten PDFs würde
+  // FindWindow sonst leicht das Anlagenfenster einer anderen PDF treffen.
+  if (AttachmentWindowHandle = 0) or
+     not IsWindow(AttachmentWindowHandle) then
+  begin
+    MessageDlg(
+      'Das Anlagenfenster für diese PDF-Datei wurde noch nicht erstellt.',
+      mtInformation, [mbOK], 0);
+    Exit;
+  end;
+
+  if IsWindowVisible(AttachmentWindowHandle) then
+    ShowWindow(AttachmentWindowHandle, SW_HIDE)
   else
   begin
-    ShowWindow(AttachmentWindow, SW_SHOWNORMAL);
-    SetForegroundWindow(AttachmentWindow);
+    ShowWindow(AttachmentWindowHandle, SW_SHOWNORMAL);
+    SetForegroundWindow(AttachmentWindowHandle);
   end;
 end;
 

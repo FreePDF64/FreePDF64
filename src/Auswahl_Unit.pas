@@ -291,17 +291,25 @@ begin
       end else
       begin
         // PDFForm aufrufen...
-        PDFForm := TPDFBrowserForm.Create(Self);
-        PDFForm.PDFFileName := Auswahl;
-        // DPI-skalierter Versatz
-        Offset := MulDiv((i mod 8) * BaseOffset, PDFForm.CurrentPPI, 96);
-        PDFForm.Left := PDFForm.Left + Offset;
-        PDFForm.Top := PDFForm.Top + Offset;
-        PDFForm.FormStyle := fsStayOnTop;
-        PDFForm.Show;
-        Application.ProcessMessages;
-        FileList.Items[i].Selected := False;
-      end;
+       PDFForm := TPDFBrowserForm.Create(Self);
+       PDFForm.PDFFileName := Auswahl;
+
+       // DPI-skalierter Versatz
+       Offset := MulDiv((i mod 8) * BaseOffset, PDFForm.CurrentPPI, 96);
+
+       PDFForm.Left := PDFForm.Left + Offset;
+       PDFForm.Top := PDFForm.Top + Offset;
+       PDFForm.FormStyle := fsStayOnTop;
+
+       // PDF anzeigen
+       PDFForm.Show;
+
+       // Eingebettete PDF-Anlagen erkennen und Anlagenfenster erstellen
+       ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
+
+       Application.ProcessMessages;
+       FileList.Items[i].Selected := False;
+     end;
     end;
   end;
   Hinzufuegen.SetFocus;

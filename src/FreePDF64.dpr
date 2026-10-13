@@ -76,11 +76,12 @@ begin
   Application.MainFormOnTaskbar := True;
   Application.Title := 'FreePDF64';
 
+  // Öffnen einer PDF-Datei über z.B. den Datei-Explorer
   if PDFModus then
   begin
-    // PDF separat anzeigen, ohne den Mutex der Hauptanwendung zu belegen.
     Application.CreateForm(TPDFBrowserForm, PDFBrowserForm);
     PDFBrowserForm.PDFFileName := PDFDatei;
+    PDFBrowserForm.StandalonePDFMode := True;
   end else
   begin
     // Regulärer Start von FreePDF64
