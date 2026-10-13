@@ -1,4 +1,4 @@
-﻿//
+﻿                     //
 // Programmname: FreePDF64
 //
 
@@ -46,6 +46,7 @@ type
     FPageEdit: TEdit;
     FGoPageButton: TButton;
     FFindButton: TButton;
+    FAttachmentsButton: TButton;
     FPageNavigationTimer: TTimer;
     FSearchTerm: string;
     FStartPage: Integer;
@@ -54,6 +55,7 @@ type
     procedure BuildNavigationToolbar;
     procedure GoToPageClick(Sender: TObject);
     procedure FindTermClick(Sender: TObject);
+    procedure ToggleAttachmentsClick(Sender: TObject);
     procedure PageNavigationTimerTimer(Sender: TObject);
     function BuildPdfUrl(const APage: Integer): string;
 
@@ -66,7 +68,6 @@ type
 implementation
 
 {$R *.dfm}
-
 
 procedure TPDFBrowserForm.FormCreate(Sender: TObject);
 var
@@ -92,7 +93,6 @@ begin
     IniDat.Free;
   end;
 end;
-
 
 procedure TPDFBrowserForm.BuildNavigationToolbar;
 begin
@@ -139,6 +139,15 @@ begin
   FFindButton.Height := 27;
   FFindButton.OnClick := FindTermClick;
 
+  FAttachmentsButton := TButton.Create(Self);
+  FAttachmentsButton.Parent := FToolbar;
+  FAttachmentsButton.Caption := 'Anlagen ein-/ausblenden';
+  FAttachmentsButton.Left := 368;
+  FAttachmentsButton.Top := 5;
+  FAttachmentsButton.Width := 200;
+  FAttachmentsButton.Height := 27;
+  FAttachmentsButton.OnClick := ToggleAttachmentsClick;
+
   FPageNavigationTimer := TTimer.Create(Self);
   FPageNavigationTimer.Enabled := False;
   FPageNavigationTimer.Interval := 180;
@@ -149,6 +158,28 @@ begin
   WVWindowParentPDF.SendToBack;
 end;
 
+procedure TPDFBrowserForm.ToggleAttachmentsClick(Sender: TObject);
+var
+  AttachmentWindow: HWND;
+begin
+  AttachmentWindow := FindWindow(nil, 'Eingebettete PDF-Anlagen');
+  if AttachmentWindow = 0 then
+    AttachmentWindow := FindWindow(nil, 'PDF-Anlagen (keine eingebettet)');
+  if AttachmentWindow = 0 then
+  begin
+    MessageDlg('Für diese PDF-Datei ist kein Anlagenfenster verfügbar.',
+      mtInformation, [mbOK], 0);
+    Exit;
+  end;
+
+  if IsWindowVisible(AttachmentWindow) then
+    ShowWindow(AttachmentWindow, SW_HIDE)
+  else
+  begin
+    ShowWindow(AttachmentWindow, SW_SHOWNORMAL);
+    SetForegroundWindow(AttachmentWindow);
+  end;
+end;
 
 function TPDFBrowserForm.BuildPdfUrl(const APage: Integer): string;
 var
@@ -159,7 +190,6 @@ begin
   LPath := StringReplace(LPath, ' ', '%20', [rfReplaceAll]);
   Result := 'file:///' + LPath + '#page=' + IntToStr(Max(1, APage));
 end;
-
 
 procedure TPDFBrowserForm.GoToPageClick(Sender: TObject);
 var
@@ -276,6 +306,7 @@ begin
     FBrowserCreateStarted := True;
 
     WVBrowserPDF.CreateBrowser(WVWindowParentPDF.Handle);
+
   end
   else
   begin

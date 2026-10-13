@@ -1,4 +1,8 @@
-﻿unit Suchen;
+﻿//
+// Programmname: FreePDF64
+//
+
+unit Suchen;
 
 interface
 
@@ -771,7 +775,8 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
         PDFForm.Show;
         Application.ProcessMessages;
-        ShowPDFEmbeddedAttachments(s);
+        // Anlagenfenster an diese PDFForm binden; Position/Abstand wird dort festgelegt.
+        ShowPDFEmbeddedAttachments(s, PDFForm);
         Inc(PDFCount);
       end;
     end;
@@ -4861,5 +4866,4 @@ begin
 end;
 
 end.
-
 
