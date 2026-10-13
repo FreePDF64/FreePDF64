@@ -1,4 +1,5 @@
 13.10.2026 V7.1.2
+Neu -> Eingebettete Anlagen von PDF-Dateien werden nun auch im PDF-Viewer angezeigt. Dort kann man auch Anlagen extrahieren, hinzufügen oder entfernen.
 Neu -> Textsuche im Suche-Fenster durchsucht nun auch PDF-Dateien.
 Neu -> Erstellung eines PDF-Prüfberichts: PDF-Datei auswählen, Prüfbericht-Button klicken...
 09.10.2026 V7.1.1
