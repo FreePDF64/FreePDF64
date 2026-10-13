@@ -776,7 +776,7 @@ begin
         PDFForm.Show;
         Application.ProcessMessages;
         // Anlagenfenster an diese PDFForm binden; Position/Abstand wird dort festgelegt.
-        ShowPDFEmbeddedAttachments(s, PDFForm);
+        ShowPDFEmbeddedAttachments(s, PDFForm, PDFForm.FAttachmentsButton);
         Inc(PDFCount);
       end;
     end;

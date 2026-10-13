@@ -705,7 +705,7 @@ var
   // Verhindert, dass Auswahl-/Tastaturereignisse den PDF-Prüfbericht schließen.
   PDFReportActive: Boolean = False;
 
-  procedure ShowPDFEmbeddedAttachments(const PDFFileName: string; PDFForm: TForm = nil);
+  procedure ShowPDFEmbeddedAttachments(const PDFFileName: string; PDFForm: TForm; AttachmentsButton: TButton);
 
 implementation
 
@@ -1751,7 +1751,7 @@ end;
 // Prüft eine PDF-Datei mit QPDF auf eingebettete Anlagen und zeigt
 // deren Namen in einem separaten, nicht-modalen Fenster an.
 // Die PDF-Datei kann parallel im PDFForm betrachtet werden.
-procedure ShowPDFEmbeddedAttachments(const PDFFileName: string; PDFForm: TForm);
+procedure ShowPDFEmbeddedAttachments(const PDFFileName: string; PDFForm: TForm; AttachmentsButton: TButton);
 var
   QpdfExe, TempFile, CmdLine, AttachmentName: string;
   TempPath: array[0..MAX_PATH] of Char;
@@ -1818,24 +1818,29 @@ begin
       end;
     end;
 
-    // Das Anlagenfenster immer anzeigen, auch wenn die Liste leer ist.
-    // So ist "Anlage hinzufügen..." für jede geöffnete PDF verfügbar.
-    if Assigned(PDFForm) then
-      NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(PDFForm,
-        AttachmentNames, PDFForm, PDFFileName)
-    else
-      NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(Application,
-        AttachmentNames, PDFForm, PDFFileName);
+      if Assigned(AttachmentsButton) then
+      begin
+        if AttachmentNames.Count > 0 then
+          AttachmentsButton.Caption := '-> Anlagen ein-/ausblenden'
+        else
+          AttachmentsButton.Caption := 'Anlagen ein-/ausblenden';
+      end;
 
-    if AttachmentNames.Count = 0 then
-      NoticeForm.Caption := 'Keine eingebettete PDF-Anlagen...';
-//      NoticeForm.Hide
-//    else
-    NoticeForm.Show;
-    NoticeForm.Hide;
+      // Das Anlagenfenster immer anzeigen, auch wenn die Liste leer ist.
+      // So ist "Anlage hinzufügen..." für jede geöffnete PDF verfügbar.
+      if Assigned(PDFForm) then
+        NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(PDFForm, AttachmentNames, PDFForm, PDFFileName)
+      else
+        NoticeForm := TPDFAttachmentNoticeForm.CreateNotice(Application, AttachmentNames, PDFForm, PDFFileName);
 
-    NoticeForm.FormStyle := fsStayOnTop;
-  finally
+      if AttachmentNames.Count = 0 then
+        NoticeForm.Caption := 'Keine eingebettete PDF-Anlagen...';
+
+      NoticeForm.Show;
+      NoticeForm.Hide;
+
+      NoticeForm.FormStyle := fsStayOnTop;
+    finally
     JsonValue.Free;
     AttachmentNames.Free;
     JsonText.Free;
@@ -1975,7 +1980,7 @@ begin
                 PDFForm := TPDFBrowserForm.Create(Self);
                 PDFForm.PDFFileName := IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3);
                 PDFForm.Show;
-                ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+                ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
                 Application.ProcessMessages;
               end;
             end;
@@ -2200,7 +2205,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := Zieldatei;
     PDFForm.Show;
-    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
     Application.ProcessMessages;
   end;
 end;
@@ -2375,7 +2380,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := Zieldatei;
     PDFForm.Show;
-    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
     Application.ProcessMessages;
   end;
 end;
@@ -3904,7 +3909,7 @@ var
       PDFForm := TPDFBrowserForm.Create(Self);
       PDFForm.PDFFileName := FileName;
       PDFForm.Show;
-      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
       Application.ProcessMessages;
     end;
   end;
@@ -4706,7 +4711,7 @@ var
       PDFForm := TPDFBrowserForm.Create(Self);
       PDFForm.PDFFileName := Filename;
       PDFForm.Show;
-      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+      ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
       Application.ProcessMessages;
     end;
   end;
@@ -5221,7 +5226,7 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
 
         PDFForm.Show;
-        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
         Application.ProcessMessages;
 
         Inc(PDFCount);
@@ -5244,7 +5249,7 @@ begin
         PDFForm.Top := PDFForm.Top + Offset;
 
         PDFForm.Show;
-        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+        ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
         Application.ProcessMessages;
 
         Inc(PDFCount);
@@ -8986,7 +8991,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := IncludeTrailingBackslash(Ziel) + ExtractFileName(s);
     PDFForm.Show;
-    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
     Application.ProcessMessages;
   end;
 
@@ -9207,7 +9212,7 @@ begin
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := s;
     PDFForm.Show;
-    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+    ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
     Application.ProcessMessages;
   end;
 end;
@@ -10721,14 +10726,14 @@ begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Ziel;
               PDFForm.Show;
-              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
               Application.ProcessMessages;
             end else
             begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Zielanz;
               PDFForm.Show;
-              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
               Application.ProcessMessages;
             end;
           end else
@@ -10737,7 +10742,7 @@ begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Ziel;
               PDFForm.Show;
-              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm);
+              ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
               Application.ProcessMessages;
             end else
               if Einstellungen_Form.AuswahlRG.ItemIndex in [1, 3] then // PS/DOCX/TXT

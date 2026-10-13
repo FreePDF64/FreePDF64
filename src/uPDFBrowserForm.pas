@@ -46,7 +46,6 @@ type
     FPageEdit: TEdit;
     FGoPageButton: TButton;
     FFindButton: TButton;
-    FAttachmentsButton: TButton;
     FPageNavigationTimer: TTimer;
     FSearchTerm: string;
     FStartPage: Integer;
@@ -60,6 +59,7 @@ type
     function BuildPdfUrl(const APage: Integer): string;
 
   public
+    FAttachmentsButton: TButton;
     PDFFileName: string;
     property SearchTerm: string read FSearchTerm write FSearchTerm;
     property StartPage: Integer read FStartPage write FStartPage;
