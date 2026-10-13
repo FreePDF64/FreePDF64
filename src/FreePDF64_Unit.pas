@@ -1425,7 +1425,6 @@ begin
     CloseHandle(ProcessInfo.hThread);
 end;
 
-
 constructor TPDFAttachmentNoticeForm.CreateNotice(AOwner: TComponent;
   const AttachmentNames: TStrings; PDFForm: TForm; const PDFFileName: string);
 var
@@ -1683,7 +1682,6 @@ begin
     sLineBreak + NewPDF, mtInformation, [mbOK], 0);
 end;
 
-
 procedure TPDFAttachmentNoticeForm.RemoveButtonClick(Sender: TObject);
 var
   QpdfExe, CmdLine, NewPDF, AttachmentKey: string;
@@ -1830,10 +1828,10 @@ begin
         AttachmentNames, PDFForm, PDFFileName);
 
     if AttachmentNames.Count = 0 then
-      NoticeForm.Caption := 'PDF-Anlagen (keine eingebettet)';
-    // Anlagenfenster beim Öffnen einer PDF zunächst ausgeblendet lassen.
-//    NoticeForm.Hide;
-    NoticeForm.Show;
+      NoticeForm.Hide
+    else
+      NoticeForm.Show;
+
     NoticeForm.FormStyle := fsStayOnTop;
   finally
     JsonValue.Free;
