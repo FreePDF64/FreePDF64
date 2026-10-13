@@ -1828,9 +1828,11 @@ begin
         AttachmentNames, PDFForm, PDFFileName);
 
     if AttachmentNames.Count = 0 then
-      NoticeForm.Hide
-    else
-      NoticeForm.Show;
+      NoticeForm.Caption := 'Keine eingebettete PDF-Anlagen...';
+//      NoticeForm.Hide
+//    else
+    NoticeForm.Show;
+    NoticeForm.Hide;
 
     NoticeForm.FormStyle := fsStayOnTop;
   finally
