@@ -169,6 +169,7 @@ type
       procedure ResetResultSearchCache;
       function IsShortCut(var Message: TWMKey): Boolean; override;
       procedure PositioniereSucheControls;
+      procedure FormatiereText(const AText: string; AStyle: TFontStyles);
     end;
 
 var
@@ -1593,19 +1594,51 @@ begin
   end;
 end;
 
+procedure TSuche_Form.FormatiereText(const AText: string; AStyle: TFontStyles);
+var
+  SuchPosition: Integer;
+  Gefunden: Integer;
+  TextLaenge: Integer;
+begin
+  TextLaenge := Suche_Info.RichEdit1.GetTextLen;
+  SuchPosition := 0;
+
+  while SuchPosition < TextLaenge do
+  begin
+    Gefunden := Suche_Info.RichEdit1.FindText(
+      AText,
+      SuchPosition,
+      TextLaenge - SuchPosition,
+      [stMatchCase]
+    );
+
+    if Gefunden < 0 then
+      Break;
+
+    Suche_Info.RichEdit1.SelStart := Gefunden;
+    Suche_Info.RichEdit1.SelLength := Length(AText);
+    Suche_Info.RichEdit1.SelAttributes.Style := AStyle;
+
+    SuchPosition := Gefunden + Length(AText);
+  end;
+end;
+
 // Fragezeichen: Hilfe für die Suchfunktionen
 procedure TSuche_Form.InfoClick(Sender: TObject);
+var
+  SuchText: string;
 begin
   Suche_Info.Position := poDesigned;
-  Suche_Info.Left     := Self.Left + (Self.Width - Suche_Info.Width)  div 2;
+  Suche_Info.Left     := Self.Left + (Self.Width - Suche_Info.Width) div 2;
   Suche_Info.Top      := Self.Top + Panel_Oben.Height;
-  Suche_Info.Memo1.Lines.Text :=
+
+  SuchText :=
     'Suchen nach:' + #13 +
     '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +
-    '- Beispiel: Test oder *Test* findet alle Dateien und Verzeichnisse, die Test im Namen enthalten'  + #13 +
+    '- Beispiel: Test oder *Test* findet alle Dateien und Verzeichnisse, die Test im Namen enthalten' + #13 +
     '- Beispiel: Test. findet nur den exakten Namen Test' + #13 + #13 +
     '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis' + #13 +
-    '- Beispiel: Test?.log findet u.a.: Test1.log", Test8.log, usw.' + #13 +
+    '- Beispiel: Test?.log findet u.a.: Test1.log, Test8.log, usw.' + #13 +
     '- Beispiel: Test??.log findet u.a.: Test1.log, Test8.log, TestA3.log, Test45.log, usw.' + #13 + #13 +
     '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
     '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt, usw.' + #13 +
@@ -1613,7 +1646,7 @@ begin
     'Versteckt+System:' + #13 +
     '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Hidden (H) und System (S)' + #13 +
     '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 +
-    '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 +#13 +
+    '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 + #13 +
     'Text suchen:' + #13 +
     '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 +
     '- Bei Auswahl werden auch PDF-Dateien durchsucht' + #13 + #13 +
@@ -1626,9 +1659,47 @@ begin
     '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis' + #13 +
     '- Strg+A markiert alle Dateien des Suchergebnisses';
 
+  // Gesamten Text in das RichEdit schreiben.
+  Suche_Info.RichEdit1.PlainText := False;
+  Suche_Info.RichEdit1.Lines.Text := SuchText;
+
+  // Überschriften fett formatieren.
+  FormatiereText('Suchen nach:', [fsBold]);
+  FormatiereText('Versteckt+System:', [fsBold]);
+  FormatiereText('Text suchen:', [fsBold]);
+  FormatiereText('Suchergebnis:', [fsBold]);
+
+  // Gewünschte Beispiele fett + kursiv formatieren.
+  // FormatiereText formatiert alle Vorkommen des jeweiligen Textes.
+  FormatiereText('Test', [fsBold, fsItalic]);
+  FormatiereText('*Test*', [fsBold, fsItalic]);
+  FormatiereText('Test.', [fsBold, fsItalic]);
+  FormatiereText('Test?.log', [fsBold, fsItalic]);
+  FormatiereText('Test??.log', [fsBold, fsItalic]);
+  FormatiereText('Test1.log', [fsBold, fsItalic]);
+  FormatiereText('Test8.log', [fsBold, fsItalic]);
+  FormatiereText('TestA3.log', [fsBold, fsItalic]);
+  FormatiereText('Test45.log', [fsBold, fsItalic]);
+  FormatiereText('Lights at the*|Lake*', [fsBold, fsItalic]);
+  FormatiereText('Lights at the Night', [fsBold, fsItalic]);
+  FormatiereText('Circus.jpg', [fsBold, fsItalic]);
+  FormatiereText('Lake Mist.txt', [fsBold, fsItalic]);
+  FormatiereText('*.pdf|*.prn', [fsBold, fsItalic]);
+  FormatiereText('pdf', [fsBold, fsItalic]);
+  FormatiereText('prn', [fsBold, fsItalic]);
+
+  // Alle (*), (?) und  (|) im Info-Text
+  // ebenfalls fett + kursiv formatieren.
+  FormatiereText('*', [fsBold, fsItalic]);
+  FormatiereText('|', [fsBold, fsItalic]);
+  FormatiereText('?', [fsBold, fsItalic]);
+
+  // Cursor/Markierung entfernen.
+  Suche_Info.RichEdit1.SelStart := 0;
+  Suche_Info.RichEdit1.SelLength := 0;
+
   Suche_Info.ShowModal;
 end;
-
 
 procedure TSuche_Form.Kopieren1Click(Sender: TObject);
 begin

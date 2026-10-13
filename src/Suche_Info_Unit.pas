@@ -4,11 +4,11 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls;
+  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ComCtrls;
 
 type
   TSuche_Info = class(TForm)
-    Memo1: TMemo;
+    RichEdit1: TRichEdit;
     Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
@@ -37,9 +37,9 @@ begin
   KeyPreview := True;
 
   // Scrollbares Memo
-  Memo1.ScrollBars := ssBoth;
-  Memo1.ReadOnly   := True;
-  Memo1.WordWrap   := False;
+  RichEdit1.ScrollBars := ssBoth;
+  RichEdit1.ReadOnly   := True;
+  RichEdit1.WordWrap   := False;
 
   BorderStyle := bsSizeable;   // Höhe darf verändert werden
 end;
@@ -55,3 +55,4 @@ begin
 end;
 
 end.
+
