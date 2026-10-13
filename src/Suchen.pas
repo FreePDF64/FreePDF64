@@ -1649,7 +1649,7 @@ begin
     '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 + #13 +
     'Text suchen:' + #13 +
     '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 +
-    '- Bei Auswahl werden auch PDF-Dateien durchsucht' + #13 + #13 +
+    '- Bei Auswahl "[X] inkl. PDF" werden auch PDF-Dateien durchsucht' + #13 + #13 +
     'Suchergebnis:' + #13 +
     '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
     '- Zur Suche die Checkbox "Suche im Suchergebnis" anklicken (oder F2) und dann einfach' + #13 +
