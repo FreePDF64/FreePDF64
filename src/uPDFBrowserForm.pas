@@ -52,6 +52,13 @@ type
     FStandalonePDFMode: Boolean;
     FStandaloneHintShown: Boolean;
 
+    FRotatePageEdit: TEdit;
+    FRotateAngleCombo: TComboBox;
+    FRotateButton: TButton;
+
+    procedure RotatePageClick(Sender: TObject);
+    function ExecuteQpdf(const ACommandLine: string; out AExitCode: DWORD): Boolean;
+
     procedure StartBrowser;
     procedure BuildNavigationToolbar;
     procedure GoToPageClick(Sender: TObject);
@@ -74,6 +81,225 @@ type
 implementation
 
 {$R *.dfm}
+
+function TPDFBrowserForm.ExecuteQpdf(
+  const ACommandLine: string;
+  out AExitCode: DWORD): Boolean;
+var
+  LStartupInfo: TStartupInfo;
+  LProcessInfo: TProcessInformation;
+  LCommandLine: string;
+begin
+  Result := False;
+  AExitCode := DWORD(-1);
+
+  FillChar(LStartupInfo, SizeOf(LStartupInfo), 0);
+  FillChar(LProcessInfo, SizeOf(LProcessInfo), 0);
+
+  LStartupInfo.cb := SizeOf(LStartupInfo);
+  LCommandLine := ACommandLine;
+
+  if not CreateProcess(
+    nil,
+    PChar(LCommandLine),
+    nil,
+    nil,
+    False,
+    CREATE_NO_WINDOW,
+    nil,
+    PChar(ExtractFilePath(Application.ExeName)),
+    LStartupInfo,
+    LProcessInfo
+  ) then
+    Exit;
+
+  try
+    WaitForSingleObject(LProcessInfo.hProcess, INFINITE);
+
+    Result := GetExitCodeProcess(
+      LProcessInfo.hProcess, AExitCode);
+  finally
+    CloseHandle(LProcessInfo.hThread);
+    CloseHandle(LProcessInfo.hProcess);
+  end;
+end;
+
+procedure TPDFBrowserForm.RotatePageClick(Sender: TObject);
+var
+  LPage: Integer;
+  LAngle: Integer;
+  LRotateArg: string;
+  LTempFile: string;
+  LQpdfExe: string;
+  LParams: string;
+  LStartupInfo: TStartupInfo;
+  LProcessInfo: TProcessInformation;
+  LExitCode: DWORD;
+begin
+  // Seitennummer prüfen
+  if not TryStrToInt(Trim(FRotatePageEdit.Text), LPage) or
+     (LPage < 1) then
+  begin
+    MessageDlg(
+      'Bitte eine gültige Seitennummer eingeben.',
+      mtWarning, [mbOK], 0
+    );
+    FRotatePageEdit.SetFocus;
+    Exit;
+  end;
+
+  // Drehwinkel aus der ComboBox lesen
+  if FRotateAngleCombo.ItemIndex < 0 then
+  begin
+    MessageDlg(
+      'Bitte einen Drehwinkel auswählen.',
+      mtWarning, [mbOK], 0
+    );
+    FRotateAngleCombo.SetFocus;
+    Exit;
+  end;
+
+  if not TryStrToInt(
+    StringReplace(
+      FRotateAngleCombo.Text, '°', '', [rfReplaceAll]
+    ),
+    LAngle
+  ) then
+  begin
+    MessageDlg(
+      'Der ausgewählte Drehwinkel ist ungültig.',
+      mtWarning, [mbOK], 0
+    );
+    FRotateAngleCombo.SetFocus;
+    Exit;
+  end;
+
+  // Nur die unterstützten Drehwinkel zulassen
+  if (LAngle <> 90) and
+     (LAngle <> 180) and
+     (LAngle <> 270) then
+  begin
+    MessageDlg(
+      'Erlaubte Drehwinkel sind 90°, 180° und 270°.',
+      mtWarning, [mbOK], 0
+    );
+    Exit;
+  end;
+
+  // Prüfen, ob eine PDF-Datei geöffnet ist
+  if Trim(PDFFileName) = '' then
+  begin
+    MessageDlg(
+      'Es ist keine PDF-Datei geöffnet.',
+      mtWarning, [mbOK], 0
+    );
+    Exit;
+  end;
+
+  // Drehwinkel für qpdf festlegen
+  case LAngle of
+    90:  LRotateArg := '+90';
+    180: LRotateArg := '+180';
+    270: LRotateArg := '-90';
+  else
+    Exit;
+  end;
+
+  // qpdf-Pfad und temporäre Ausgabedatei
+  LQpdfExe := IncludeTrailingPathDelimiter(
+    ExtractFilePath(Application.ExeName)
+  ) + 'qpdf\bin\qpdf.exe';
+
+  LTempFile := PDFFileName + '.qpdf_tmp.pdf';
+
+  if not FileExists(LQpdfExe) then
+  begin
+    MessageDlg(
+      'qpdf wurde nicht gefunden:' + sLineBreak + LQpdfExe,
+      mtError, [mbOK], 0
+    );
+    Exit;
+  end;
+
+  // Vorhandene temporäre Datei entfernen
+  if FileExists(LTempFile) then
+    DeleteFile(LTempFile);
+
+  // qpdf-Parameter zusammensetzen
+  LParams :=
+    '--rotate=' + LRotateArg + ':' + IntToStr(LPage) +
+    ' "' + PDFFileName + '"' +
+    ' "' + LTempFile + '"';
+
+  // qpdf starten
+  FillChar(LStartupInfo, SizeOf(LStartupInfo), 0);
+  FillChar(LProcessInfo, SizeOf(LProcessInfo), 0);
+  LStartupInfo.cb := SizeOf(LStartupInfo);
+
+  if not CreateProcess(
+    PChar(LQpdfExe),
+    PChar('"' + LQpdfExe + '" ' + LParams),
+    nil,
+    nil,
+    False,
+    CREATE_NO_WINDOW,
+    nil,
+    PChar(ExtractFilePath(LQpdfExe)),
+    LStartupInfo,
+    LProcessInfo
+  ) then
+  begin
+    MessageDlg(
+      'qpdf konnte nicht gestartet werden.',
+      mtError, [mbOK], 0
+    );
+    Exit;
+  end;
+
+  try
+    WaitForSingleObject(LProcessInfo.hProcess, INFINITE);
+
+    LExitCode := 1;
+    GetExitCodeProcess(LProcessInfo.hProcess, LExitCode);
+  finally
+    CloseHandle(LProcessInfo.hThread);
+    CloseHandle(LProcessInfo.hProcess);
+  end;
+
+  // Ergebnis prüfen
+  if (LExitCode <> 0) or not FileExists(LTempFile) then
+  begin
+    MessageDlg(
+      'Die PDF-Seite konnte nicht gedreht werden.',
+      mtError, [mbOK], 0
+    );
+
+    if FileExists(LTempFile) then
+      DeleteFile(LTempFile);
+
+    Exit;
+  end;
+
+  // Originaldatei durch die bearbeitete PDF ersetzen
+  if not MoveFileEx(
+    PChar(LTempFile),
+    PChar(PDFFileName),
+    MOVEFILE_REPLACE_EXISTING or MOVEFILE_COPY_ALLOWED
+  ) then
+  begin
+    MessageDlg(
+      'Die bearbeitete PDF-Datei konnte nicht gespeichert werden.' +
+      sLineBreak +
+      'Möglicherweise ist die Datei noch geöffnet oder schreibgeschützt.',
+      mtError, [mbOK], 0
+    );
+    Exit;
+  end;
+
+  // PDF im WebView2 neu laden
+  WVBrowserPDF.Navigate('about:blank');
+  TimerPDF.Enabled := True;
+end;
 
 procedure TPDFBrowserForm.FormCreate(Sender: TObject);
 var
@@ -104,65 +330,134 @@ begin
 end;
 
 procedure TPDFBrowserForm.BuildNavigationToolbar;
+var
+  LLabel: TLabel;
 begin
-  // Die vorhandene PDF-Ansicht bleibt in einem eigenen Fenster.
-  // Diese kleine Leiste ergänzt nur Seitensteuerung und die PDF-Suche.
   FToolbar := TPanel.Create(Self);
   FToolbar.Name := 'PDFNavigationToolbar';
-  FToolbar.Caption := 'PDF-Viewer';
+  FToolbar.Caption := '';
   FToolbar.Parent := Self;
   FToolbar.Align := alTop;
-  FToolbar.Height := 38;
+  FToolbar.Height := 42;
   FToolbar.BevelOuter := bvNone;
 
+  // --------------------------------------------------
+  // Seitennavigation
+  // --------------------------------------------------
   FPageLabel := TLabel.Create(Self);
   FPageLabel.Parent := FToolbar;
   FPageLabel.Caption := 'Seite:';
   FPageLabel.Left := 8;
-  FPageLabel.Top := 12;
+  FPageLabel.Top := 11;
+  FPageLabel.AutoSize := True;
 
   FPageEdit := TEdit.Create(Self);
   FPageEdit.Parent := FToolbar;
   FPageEdit.Name := 'PDFPageNumberEdit';
   FPageEdit.Left := 48;
-  FPageEdit.Top := 6;
-  FPageEdit.Width := 58;
+  FPageEdit.Top := 8;
+  FPageEdit.Width := 42;
   FPageEdit.Text := '1';
   FPageEdit.NumbersOnly := True;
 
   FGoPageButton := TButton.Create(Self);
   FGoPageButton.Parent := FToolbar;
-  FGoPageButton.Caption := 'Gehe zu Seite';
-  FGoPageButton.Left := 112;
-  FGoPageButton.Top := 5;
-  FGoPageButton.Width := 105;
-  FGoPageButton.Height := 27;
+  FGoPageButton.Caption := 'Gehe zu';
+  FGoPageButton.Left := 96;
+  FGoPageButton.Top := 6;
+  FGoPageButton.Width := 76;
+  FGoPageButton.Height := 28;
   FGoPageButton.OnClick := GoToPageClick;
 
+  // --------------------------------------------------
+  // Textsuche
+  // --------------------------------------------------
   FFindButton := TButton.Create(Self);
   FFindButton.Parent := FToolbar;
-  FFindButton.Caption := 'Suchbegriff suchen';
-  FFindButton.Left := 225;
-  FFindButton.Top := 5;
-  FFindButton.Width := 135;
-  FFindButton.Height := 27;
+  FFindButton.Caption := 'Text suchen';
+  FFindButton.Left := 178;
+  FFindButton.Top := 6;
+  FFindButton.Width := 94;
+  FFindButton.Height := 28;
   FFindButton.OnClick := FindTermClick;
 
+  // --------------------------------------------------
+  // PDF-Anlagen
+  // --------------------------------------------------
   FAttachmentsButton := TButton.Create(Self);
   FAttachmentsButton.Parent := FToolbar;
-  FAttachmentsButton.Caption := 'Anlagen ein-/ausblenden';
-  FAttachmentsButton.Left := 368;
-  FAttachmentsButton.Top := 5;
-  FAttachmentsButton.Width := 200;
-  FAttachmentsButton.Height := 27;
+  FAttachmentsButton.Caption := 'PDF-Anlagen';
+  FAttachmentsButton.Left := 278;
+  FAttachmentsButton.Top := 6;
+  FAttachmentsButton.Width := 112;
+  FAttachmentsButton.Height := 28;
   FAttachmentsButton.OnClick := ToggleAttachmentsClick;
 
+  // --------------------------------------------------
+  // Seitennummer für die Drehung
+  // --------------------------------------------------
+  LLabel := TLabel.Create(Self);
+  LLabel.Parent := FToolbar;
+  LLabel.Caption := 'Drehe Seite:';
+//  LLabel.Left := 398;
+  LLabel.Left := 408;
+  LLabel.Top := 11;
+  LLabel.AutoSize := True;
+
+  FRotatePageEdit := TEdit.Create(Self);
+  FRotatePageEdit.Parent := FToolbar;
+  FRotatePageEdit.Name := 'PDFRotatePageEdit';
+  FRotatePageEdit.Left := 493;
+  FRotatePageEdit.Top := 8;
+  FRotatePageEdit.Width := 42;
+  FRotatePageEdit.Text := '1';
+  FRotatePageEdit.NumbersOnly := True;
+
+  // --------------------------------------------------
+  // Drehwinkel als feste Auswahl
+  // --------------------------------------------------
+  LLabel := TLabel.Create(Self);
+  LLabel.Parent := FToolbar;
+  LLabel.Caption := 'Winkel:';
+  LLabel.Left := 540;
+  LLabel.Top := 11;
+  LLabel.AutoSize := True;
+
+  FRotateAngleCombo := TComboBox.Create(Self);
+  FRotateAngleCombo.Parent := FToolbar;
+  FRotateAngleCombo.Name := 'PDFRotateAngleCombo';
+  FRotateAngleCombo.Left := 590;
+  FRotateAngleCombo.Top := 7;
+  FRotateAngleCombo.Width := 68;
+  FRotateAngleCombo.Height := 28;
+  FRotateAngleCombo.Style := csDropDownList;
+  FRotateAngleCombo.Items.Add('90°');
+  FRotateAngleCombo.Items.Add('180°');
+  FRotateAngleCombo.Items.Add('270°');
+  FRotateAngleCombo.ItemIndex := 0;
+
+  // --------------------------------------------------
+  // Drehfunktion
+  // --------------------------------------------------
+  FRotateButton := TButton.Create(Self);
+  FRotateButton.Parent := FToolbar;
+  FRotateButton.Name := 'PDFRotateButton';
+  FRotateButton.Caption := 'Drehen';
+  FRotateButton.Left := 667;
+  FRotateButton.Top := 6;
+  FRotateButton.Width := 80;
+  FRotateButton.Height := 28;
+  FRotateButton.OnClick := RotatePageClick;
+
+  // --------------------------------------------------
+  // Navigationstimer - nur einmal erstellen
+  // --------------------------------------------------
   FPageNavigationTimer := TTimer.Create(Self);
   FPageNavigationTimer.Enabled := False;
   FPageNavigationTimer.Interval := 180;
   FPageNavigationTimer.OnTimer := PageNavigationTimerTimer;
 
-  // Sicherstellen, dass die vorhandene WebView den restlichen Platz nutzt.
+  // PDF-Viewer füllt den verbleibenden Platz
   WVWindowParentPDF.Align := alClient;
   WVWindowParentPDF.SendToBack;
 end;
