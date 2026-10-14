@@ -18,6 +18,7 @@ object PDFBrowserForm: TPDFBrowserForm
   Position = poDesigned
   OnClose = FormClose
   OnCreate = FormCreate
+  OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 120
   TextHeight = 20

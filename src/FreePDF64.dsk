@@ -92,7 +92,7 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1895
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=00000800010100000000980F00000000000001670700000000000001000000005A0E000009000000446F636B53697465330100000000B91B00001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000980F0000000000000167070000000000000100000000E80A000009000000446F636B53697465330100000000B91B00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1996
 RightPanelClients=DockSite2,DockSite4
 RightPanelData=00000800010100000000980F00000000000001CC0700000000000001000000004912000009000000446F636B53697465320100000000B91B000009000000446F636B5369746534FFFFFFFF
@@ -106,13 +106,13 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=15
-CursorY=3028
-TopLine=3007
+CursorX=1
+CursorY=6442
+TopLine=6438
 LeftCol=1
 Elisions=
-Bookmarks={0,11212,5}
-EditViewName=Borland.FormDesignerView
+Bookmarks={0,1594,1}
+EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
 CustomEditViewType=TEditView
@@ -206,11 +206,11 @@ EditViewName=Borland.FormDesignerView
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 CursorX=1
-CursorY=705
-TopLine=687
+CursorY=937
+TopLine=899
 LeftCol=1
 Elisions=
-Bookmarks={0,705,23}
+Bookmarks={0,754,23}
 EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
 [Watches]
@@ -328,13 +328,13 @@ Visible=1
 Docked=1
 State=0
 Left=0
-Top=565
+Top=438
 Width=1895
-Height=3312
+Height=4232
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3312
+ClientHeight=4232
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=9014
@@ -345,8 +345,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Hint,
-ExpandedItems=Anchors=0,Constraints=0,Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0
+SelectedItem=Caption,OnResize
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,LiveBindings=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -626,11 +626,11 @@ State=0
 Left=0
 Top=0
 Width=1895
-Height=3500
+Height=2580
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3500
+ClientHeight=2580
 TBDockHeight=3681
 LRDockWidth=1895
 Dockable=1
@@ -747,11 +747,11 @@ State=0
 Left=0
 Top=36
 Width=1895
-Height=3500
+Height=2580
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=3500
+ClientHeight=2580
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=9014

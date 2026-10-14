@@ -727,6 +727,7 @@ type
     procedure ExtractButtonClick(Sender: TObject);
     procedure AddButtonClick(Sender: TObject);
     procedure RemoveButtonClick(Sender: TObject);
+    procedure UpdatePosition(PDFForm: TForm);
   public
     constructor CreateNotice(AOwner: TComponent; const AttachmentNames: TStrings; PDFForm: TForm; const PDFFileName: string);
   end;
@@ -1533,11 +1534,20 @@ begin
   else
     WorkArea := Screen.WorkAreaRect;
 
-  // Ausgangsposition links neben der PDF-Steuerung.
+  // Verfügbaren Bildschirmarbeitsbereich ermitteln.
+  if Assigned(PDFForm) then
+    WorkArea := Screen.MonitorFromWindow(
+      PDFForm.Handle).WorkareaRect
+  else
+    WorkArea := Screen.WorkAreaRect;
+
+  // Ausgangsposition:
+  // Der linke Rand des Anlagenfensters entspricht immer
+  // dem linken Rand der PDFForm.
   if Assigned(PDFForm) then
   begin
-    Left := PDFForm.Left + 8;
-    Top := PDFForm.Top + 125;
+    Left := PDFForm.Left;
+    Top := PDFForm.Top + 130;
 
     AvailableHeight := WorkArea.Bottom - Top - 8;
     if AvailableHeight > 0 then
@@ -1545,8 +1555,8 @@ begin
   end
   else
   begin
-    Left := WorkArea.Left + 8;
-    Top := WorkArea.Top + 125;
+    Left := WorkArea.Left;
+    Top := WorkArea.Top + 130;
 
     AvailableHeight := WorkArea.Bottom - Top - 8;
     if AvailableHeight > 0 then
@@ -1560,18 +1570,27 @@ begin
   if Height > WorkArea.Bottom - WorkArea.Top then
     Height := WorkArea.Bottom - WorkArea.Top;
 
-  // Fensterposition innerhalb des Arbeitsbereichs halten.
-  if Left < WorkArea.Left then
-    Left := WorkArea.Left;
-
+  // Vertikale Position innerhalb des Arbeitsbereichs halten.
   if Top < WorkArea.Top then
     Top := WorkArea.Top;
 
-  if Left + Width > WorkArea.Right then
-    Left := WorkArea.Right - Width;
-
   if Top + Height > WorkArea.Bottom then
     Top := WorkArea.Bottom - Height;
+
+  // Horizontale Position möglichst exakt am linken Rand
+  // der PDFForm belassen.
+  if Assigned(PDFForm) then
+    Left := PDFForm.Left
+  else
+    Left := WorkArea.Left;
+
+  // Nur korrigieren, wenn das Fenster sonst außerhalb
+  // des Bildschirmarbeitsbereichs liegen würde.
+  if Left < WorkArea.Left then
+    Left := WorkArea.Left;
+
+  if Left + Width > WorkArea.Right then
+    Left := WorkArea.Right - Width;
 
   // Robuste, explizite Layout-Geometrie statt VCL-alTop/alBottom/alClient.
   // Damit ist die Anlagenliste unabhängig von der Align-Reihenfolge sichtbar.
@@ -1750,6 +1769,27 @@ begin
   FAttachmentList.Items.Add(ExtractFileName(AttachmentFile));
   MessageDlg('Die PDF-Datei mit der zusätzlichen Anlage wurde gespeichert:' +
     sLineBreak + NewPDF, mtInformation, [mbOK], 0);
+end;
+
+procedure TPDFAttachmentNoticeForm.UpdatePosition(PDFForm: TForm);
+var
+  WorkArea: TRect;
+begin
+  if not Assigned(PDFForm) then
+    Exit;
+
+  WorkArea := Screen.MonitorFromWindow(
+    PDFForm.Handle).WorkareaRect;
+
+  // Linken Rand der PDFForm übernehmen.
+  Left := PDFForm.Left;
+
+  // Anlagenfenster innerhalb des Bildschirmbereichs halten.
+  if Left < WorkArea.Left then
+    Left := WorkArea.Left;
+
+  if Left + Width > WorkArea.Right then
+    Left := WorkArea.Right - Width;
 end;
 
 procedure TPDFAttachmentNoticeForm.RemoveButtonClick(Sender: TObject);

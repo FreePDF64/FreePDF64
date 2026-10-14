@@ -30,6 +30,7 @@ type
     procedure WVBrowserPDFAfterCreated(Sender: TObject);
     procedure WVBrowserPDFInitializationError(Sender: TObject;
       aErrorCode: HRESULT; const aErrorMessage: wvstring);
+    procedure FormResize(Sender: TObject);
 
   protected
     procedure WMMove(var aMessage: TWMMove); message WM_MOVE;
@@ -66,6 +67,7 @@ type
     procedure ToggleAttachmentsClick(Sender: TObject);
     procedure PageNavigationTimerTimer(Sender: TObject);
     function BuildPdfUrl(const APage: Integer): string;
+    procedure UpdateAttachmentWindowPosition;
 
   public
     FAttachmentsButton: TButton;
@@ -429,6 +431,53 @@ begin
   finally
     IniDat.Free;
   end;
+end;
+
+procedure TPDFBrowserForm.UpdateAttachmentWindowPosition;
+var
+  WorkArea: TRect;
+  AttachmentRect: TRect;
+  NewLeft: Integer;
+begin
+  if (AttachmentWindowHandle = 0) or
+     not IsWindow(AttachmentWindowHandle) then
+    Exit;
+
+  if not IsWindowVisible(AttachmentWindowHandle) then
+    Exit;
+
+  if not GetWindowRect(AttachmentWindowHandle, AttachmentRect) then
+    Exit;
+
+  WorkArea := Screen.MonitorFromWindow(Handle).WorkareaRect;
+
+  // Linken Rand der PDFForm übernehmen.
+  NewLeft := Left;
+
+  // Innerhalb des Bildschirmarbeitsbereichs bleiben.
+  if NewLeft < WorkArea.Left then
+    NewLeft := WorkArea.Left;
+
+  if NewLeft + (AttachmentRect.Right - AttachmentRect.Left) >
+     WorkArea.Right then
+    NewLeft := WorkArea.Right -
+      (AttachmentRect.Right - AttachmentRect.Left);
+
+  // Nur horizontal verschieben; Größe und Höhe bleiben erhalten.
+  SetWindowPos(
+    AttachmentWindowHandle,
+    0,
+    NewLeft,
+    AttachmentRect.Top,
+    0,
+    0,
+    SWP_NOSIZE or SWP_NOZORDER or SWP_NOACTIVATE
+  );
+end;
+
+procedure TPDFBrowserForm.FormResize(Sender: TObject);
+begin
+  UpdateAttachmentWindowPosition;
 end;
 
 procedure TPDFBrowserForm.BuildNavigationToolbar;
@@ -867,15 +916,15 @@ begin
   Action := caFree;
 end;
 
-
 procedure TPDFBrowserForm.WMMove(var aMessage: TWMMove);
 begin
   inherited;
 
   if (WVBrowserPDF <> nil) and not FClosing then
     WVBrowserPDF.NotifyParentWindowPositionChanged;
-end;
 
+  UpdateAttachmentWindowPosition;
+end;
 
 procedure TPDFBrowserForm.WMMoving(var aMessage: TMessage);
 begin
@@ -884,7 +933,6 @@ begin
   if (WVBrowserPDF <> nil) and not FClosing then
     WVBrowserPDF.NotifyParentWindowPositionChanged;
 end;
-
 
 initialization
   GlobalWebView2Loader := TWVLoader.Create(nil);
