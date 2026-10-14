@@ -27,7 +27,7 @@ Besonders praktisch ist die automatische Verzeichnisüberwachung: FreePDF64 erke
 - **Integrierter Druckertreiber:** PDF-Dateien aus praktisch jeder druckfähigen Windows-Anwendung erstellen.
 - **Automatische Dateiverarbeitung:** Eingehende Dateien überwachen, erkennen und in das gewünschte Format umwandeln.
 - **Direkte Anzeige:** Erstellte PDFs und unterstützte Dateiformate unmittelbar nach der Verarbeitung öffnen.
-- **PDF-Anzeige im FreePDF64-Viewer:** PDF-Dateien direkt aus dem Windows-Datei-Explorer per Doppelklick öffnen, sofern die entsprechende Dateizuordnung eingerichtet ist.
+- **PDF-Anzeige im FreePDF64-Viewer:** PDF-Dateien direkt aus dem Windows-Datei-Explorer per Doppelklick öffnen.
 - **Komplettes Installationspaket:** Die benötigten Konvertierungsprogramme sind bereits enthalten.
 - **Vorkonfigurierte Einstellungen:** Wichtige Optionen und Programmverzeichnisse sind bereits voreingestellt.
 - **Umfangreiche PDF-Werkzeuge:** Vorhandene Dokumente bearbeiten, optimieren, durchsuchen und analysieren.
@@ -83,6 +83,7 @@ Für alle, die genauer wissen möchten, was in einer PDF-Datei steckt, bietet Fr
 Viele praktische Details erleichtern die tägliche Arbeit mit Dateien und Dokumenten.
 
 - Erstellte PDF-, PS-, TXT- und TIFF-Dateien direkt nach der Verarbeitung im zugewiesenen Anzeiger öffnen.
+- Alles im PDF-Viewer: Eingebettete Anlagen in PDF-Dateien extrahieren, hinzufügen, entfernen. PDF-Seiten auf Wunsch um 90, 180 oder 270 Grad drehen.
 - Markierte Dateien bequem per E-Mail versenden – ähnlich der Windows-Funktion „Senden an“.
 - Neue eingehende Dateien automatisch überwachen und verarbeiten.
 - Zahlreiche Konvertierungs- und Bearbeitungsschritte über ein gemeinsames Programm steuern.
