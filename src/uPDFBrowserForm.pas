@@ -128,6 +128,7 @@ procedure TPDFBrowserForm.RotatePageClick(Sender: TObject);
 var
   LPage: Integer;
   LAngle: Integer;
+  LBackupFile: string;
   LRotateArg: string;
   LTempFile: string;
   LQpdfExe: string;
@@ -280,6 +281,34 @@ begin
     Exit;
   end;
 
+  // --------------------------------------------------
+  // Originaldatei beim ersten Drehen sichern
+  // --------------------------------------------------
+  LBackupFile := ChangeFileExt(PDFFileName, '_BAK' + ExtractFileExt(PDFFileName));
+
+  if not FileExists(LBackupFile) then
+  begin
+    if not CopyFile(
+      PChar(PDFFileName),
+      PChar(LBackupFile),
+      True
+    ) then
+    begin
+      MessageDlg(
+        'Die Original-PDF konnte nicht gesichert werden.' +
+        sLineBreak +
+        'Die Drehung wurde abgebrochen.' +
+        sLineBreak + LBackupFile,
+        mtError, [mbOK], 0
+      );
+
+      if FileExists(LTempFile) then
+        DeleteFile(LTempFile);
+
+      Exit;
+    end;
+  end;
+
   // Originaldatei durch die bearbeitete PDF ersetzen
   if not MoveFileEx(
     PChar(LTempFile),
@@ -297,7 +326,9 @@ begin
   end;
 
   // PDF im WebView2 neu laden
+  TimerPDF.Enabled := False;
   WVBrowserPDF.Navigate('about:blank');
+  TimerPDF.Interval := 500;
   TimerPDF.Enabled := True;
 end;
 
@@ -628,7 +659,6 @@ begin
   end;
 end;
 
-
 procedure TPDFBrowserForm.TimerPDFTimer(Sender: TObject);
 begin
   TimerPDF.Enabled := False;
@@ -637,21 +667,28 @@ begin
   if FClosing then
     Exit;
 
-  if FBrowserCreateStarted then
-    Exit;
-
+  // WebView2-Initialisierung prüfen.
   if GlobalWebView2Loader.InitializationError then
   begin
     ShowMessage(GlobalWebView2Loader.ErrorMessage);
     Exit;
   end;
 
+  // Browser wurde bereits erstellt:
+  // PDF erneut laden, statt StartBrowser erneut aufzurufen.
+  if FBrowserCreateStarted then
+  begin
+    if Assigned(WVBrowserPDF) and (PDFFileName <> '') and FileExists(PDFFileName) then
+       WVBrowserPDF.Navigate('file:///' + StringReplace(ExpandFileName(PDFFileName), '\', '/', [rfReplaceAll]));
+    Exit;
+  end;
+
+  // Browser noch nicht erstellt: Initialisierung abwarten.
   if GlobalWebView2Loader.Initialized then
     StartBrowser
   else
     TimerPDF.Enabled := True;
 end;
-
 
 procedure TPDFBrowserForm.WVBrowserPDFAfterCreated(Sender: TObject);
 begin

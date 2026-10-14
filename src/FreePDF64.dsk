@@ -14,9 +14,9 @@ File_11=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
 File_12=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Info_Unit.pas
-Module2=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module0=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\Info_Unit.pas
 Module3=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 Module4=D:\Delphi\FreePDF64\Suchen.pas
 Module5=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
@@ -27,13 +27,13 @@ Module9=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Count=10
 EditWindowCount=1
 
+[D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Info_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Auswahl_Unit.pas]
@@ -59,7 +59,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=10
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 View0=0
 View1=1
 View2=2
@@ -205,12 +205,12 @@ EditViewName=Borland.FormDesignerView
 [View9]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-CursorX=23
-CursorY=351
-TopLine=343
+CursorX=3
+CursorY=287
+TopLine=277
 LeftCol=1
 Elisions=
-Bookmarks={0,782,1}
+Bookmarks={0,819,1}
 EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
 [Watches]
@@ -337,11 +337,11 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
-SplitPos=115
+SplitPos=111
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -380,8 +380,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=14
-Description=36
+Name=77
+Description=214
 filter=1
 
 [DebugLogView]
@@ -723,7 +723,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -749,7 +749,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -775,7 +775,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
