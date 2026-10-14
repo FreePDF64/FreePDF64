@@ -205,9 +205,9 @@ EditViewName=Borland.FormDesignerView
 [View9]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-CursorX=81
+CursorX=101
 CursorY=495
-TopLine=493
+TopLine=481
 LeftCol=1
 Elisions=
 Bookmarks={0,900,1}
@@ -380,8 +380,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=40
-Description=110
+Name=77
+Description=214
 filter=1
 
 [DebugLogView]

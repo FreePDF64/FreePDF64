@@ -492,7 +492,7 @@ begin
   FAttachmentsButton.Parent := FToolbar;
   FAttachmentsButton.Caption := 'PDF-Anlagen';
   FAttachmentsButton.ShowHint := True;
-  FAttachmentsButton.Hint := 'Öffnen/Schließen der Anlagenliste zur PDF-Datei';
+  FAttachmentsButton.Hint := 'Öffnen/Schließen der Anlagenliste zur PDF-Datei:' + #13 + 'Ein "->" bedeutet Anlage(n) vorhanden';
   FAttachmentsButton.Left := 278;
   FAttachmentsButton.Top := 6;
   FAttachmentsButton.Width := 112;
