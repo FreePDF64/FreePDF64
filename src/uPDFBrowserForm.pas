@@ -702,8 +702,8 @@ begin
   SetForegroundWindow(Handle);
 
   // Fokus auf das Formular selbst setzen
-  ActiveControl := nil;
-  SetFocus;
+  Self.ActiveControl := FPageEdit;
+  FPageEdit.SetFocus;
 end;
 
 
@@ -798,14 +798,12 @@ begin
     Winapi.Windows.SetFocus(WVWindowParentPDF.Handle);
 end;
 
-
 function TPDFBrowserForm.IsShortCut(var Message: TWMKey): Boolean;
 begin
   // Keine Tastenkombinationen pauschal verschlucken.
   // Insbesondere muss Strg+F an den Edge-PDF-Viewer gelangen können.
   Result := inherited IsShortCut(Message);
 end;
-
 
 procedure TPDFBrowserForm.WVBrowserPDFInitializationError(
   Sender: TObject; aErrorCode: HRESULT;

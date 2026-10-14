@@ -544,12 +544,12 @@
       Width = 150
       Height = 33
       Hint = 
-        'PDF-Dateien werden in einem neuen Fenster angezeigt. Fenster sch' +
-        'lie'#223'en mit dem Close Button (oder Alt+F4)'#13#10'PS-Dateien werden ent' +
-        'weder mit dem PDF-Anzeiger angezeigt oder mit Ghostscript'#13#10'Bilde' +
-        'r werden im gegen'#252'berliegenden Fenster angezeigt. Fenster schlie' +
-        #223'en mit F3'#13#10'Alle anderen Dateien werden "versucht" im unteren An' +
-        'zeigefenster anzuzeigen!'
+        '- PDF-Dateien werden im internen PDF-Viewer angezeigt. Schlie'#223'en' +
+        ' mit dem Close Button (oder Alt+F4)'#13#10'- PS-Dateien werden mit Gho' +
+        'stscript angezeigt. Schlie'#223'en mit dem Close Button (oder Alt+F4)' +
+        #13#10'- Bilder werden im gegen'#252'berliegenden Fenster angezeigt. Fenst' +
+        'er schlie'#223'en mit F3'#13#10'- Alle anderen Dateien werden "versucht" im' +
+        ' unteren Anzeigefenster anzuzeigen!'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4

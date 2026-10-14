@@ -112,7 +112,7 @@ TopLine=3007
 LeftCol=1
 Elisions=
 Bookmarks={0,11212,5}
-EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+EditViewName=Borland.FormDesignerView
 
 [View1]
 CustomEditViewType=TEditView
@@ -205,12 +205,12 @@ EditViewName=Borland.FormDesignerView
 [View9]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-CursorX=101
-CursorY=495
-TopLine=481
+CursorX=1
+CursorY=705
+TopLine=687
 LeftCol=1
 Elisions=
-Bookmarks={0,900,1}
+Bookmarks={0,705,23}
 EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
 [Watches]
@@ -343,6 +343,11 @@ Dockable=1
 StayOnTop=0
 SplitPos=111
 
+[PropInspDesignerSelection]
+ArrangeBy=Name
+SelectedItem=Hint,
+ExpandedItems=Anchors=0,Constraints=0,Font=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0
+
 [frmDesignPreview]
 PercentageSizes=1
 Create=1
@@ -380,8 +385,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=77
-Description=214
+Name=62
+Description=171
 filter=1
 
 [DebugLogView]
