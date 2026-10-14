@@ -126,30 +126,82 @@ end;
 
 procedure TPDFBrowserForm.RotatePageClick(Sender: TObject);
 var
-  LPage: Integer;
+  LPageRange: string;
+  LPageStart: Integer;
+  LPageEnd: Integer;
+  LDashPos: Integer;
   LAngle: Integer;
-  LBackupFile: string;
   LRotateArg: string;
   LTempFile: string;
+  LBackupFile: string;
   LQpdfExe: string;
   LParams: string;
   LStartupInfo: TStartupInfo;
   LProcessInfo: TProcessInformation;
   LExitCode: DWORD;
 begin
-  // Seitennummer prüfen
-  if not TryStrToInt(Trim(FRotatePageEdit.Text), LPage) or
-     (LPage < 1) then
+  // --------------------------------------------------
+  // Seitennummer oder Seitenbereich prüfen
+  // Beispiele: 3 oder 1-5
+  // --------------------------------------------------
+  LPageRange := Trim(FRotatePageEdit.Text);
+
+  if LPageRange = '' then
   begin
     MessageDlg(
-      'Bitte eine gültige Seitennummer eingeben.',
+      'Bitte eine Seitennummer oder einen Seitenbereich eingeben, ' +
+      'z. B. 3 oder 1-5.',
       mtWarning, [mbOK], 0
     );
     FRotatePageEdit.SetFocus;
     Exit;
   end;
 
+  LDashPos := Pos('-', LPageRange);
+
+  if LDashPos = 0 then
+  begin
+    // Einzelne Seite
+    if not TryStrToInt(LPageRange, LPageStart) or
+       (LPageStart < 1) then
+    begin
+      MessageDlg(
+        'Ungültige Seitennummer. Beispiel: 3 oder 1-5.',
+        mtWarning, [mbOK], 0
+      );
+      FRotatePageEdit.SetFocus;
+      Exit;
+    end;
+  end
+  else
+  begin
+    // Seitenbereich
+    if (LDashPos = 1) or
+       (LDashPos = Length(LPageRange)) or
+       (Pos('-', Copy(LPageRange, LDashPos + 1, MaxInt)) > 0) or
+       not TryStrToInt(
+         Trim(Copy(LPageRange, 1, LDashPos - 1)),
+         LPageStart
+       ) or
+       not TryStrToInt(
+         Trim(Copy(LPageRange, LDashPos + 1, MaxInt)),
+         LPageEnd
+       ) or
+       (LPageStart < 1) or
+       (LPageEnd < LPageStart) then
+    begin
+      MessageDlg(
+        'Ungültiger Seitenbereich. Beispiel: 1-5.',
+        mtWarning, [mbOK], 0
+      );
+      FRotatePageEdit.SetFocus;
+      Exit;
+    end;
+  end;
+
+  // --------------------------------------------------
   // Drehwinkel aus der ComboBox lesen
+  // --------------------------------------------------
   if FRotateAngleCombo.ItemIndex < 0 then
   begin
     MessageDlg(
@@ -175,7 +227,6 @@ begin
     Exit;
   end;
 
-  // Nur die unterstützten Drehwinkel zulassen
   if (LAngle <> 90) and
      (LAngle <> 180) and
      (LAngle <> 270) then
@@ -187,17 +238,22 @@ begin
     Exit;
   end;
 
+  // --------------------------------------------------
   // Prüfen, ob eine PDF-Datei geöffnet ist
-  if Trim(PDFFileName) = '' then
+  // --------------------------------------------------
+  if (Trim(PDFFileName) = '') or
+     not FileExists(PDFFileName) then
   begin
     MessageDlg(
-      'Es ist keine PDF-Datei geöffnet.',
+      'Die PDF-Datei wurde nicht gefunden.',
       mtWarning, [mbOK], 0
     );
     Exit;
   end;
 
+  // --------------------------------------------------
   // Drehwinkel für qpdf festlegen
+  // --------------------------------------------------
   case LAngle of
     90:  LRotateArg := '+90';
     180: LRotateArg := '+180';
@@ -206,7 +262,9 @@ begin
     Exit;
   end;
 
+  // --------------------------------------------------
   // qpdf-Pfad und temporäre Ausgabedatei
+  // --------------------------------------------------
   LQpdfExe := IncludeTrailingPathDelimiter(
     ExtractFilePath(Application.ExeName)
   ) + 'qpdf\bin\qpdf.exe';
@@ -222,17 +280,20 @@ begin
     Exit;
   end;
 
-  // Vorhandene temporäre Datei entfernen
   if FileExists(LTempFile) then
     DeleteFile(LTempFile);
 
-  // qpdf-Parameter zusammensetzen
+  // --------------------------------------------------
+  // qpdf-Parameter: einzelne Seite oder Seitenbereich
+  // --------------------------------------------------
   LParams :=
-    '--rotate=' + LRotateArg + ':' + IntToStr(LPage) +
+    '--rotate=' + LRotateArg + ':' + LPageRange +
     ' "' + PDFFileName + '"' +
     ' "' + LTempFile + '"';
 
+  // --------------------------------------------------
   // qpdf starten
+  // --------------------------------------------------
   FillChar(LStartupInfo, SizeOf(LStartupInfo), 0);
   FillChar(LProcessInfo, SizeOf(LProcessInfo), 0);
   LStartupInfo.cb := SizeOf(LStartupInfo);
@@ -267,11 +328,13 @@ begin
     CloseHandle(LProcessInfo.hProcess);
   end;
 
+  // --------------------------------------------------
   // Ergebnis prüfen
+  // --------------------------------------------------
   if (LExitCode <> 0) or not FileExists(LTempFile) then
   begin
     MessageDlg(
-      'Die PDF-Seite konnte nicht gedreht werden.',
+      'Die PDF-Seite(n) konnten nicht gedreht werden.',
       mtError, [mbOK], 0
     );
 
@@ -283,8 +346,12 @@ begin
 
   // --------------------------------------------------
   // Originaldatei beim ersten Drehen sichern
+  // Beispiel: Dokument.pdf -> Dokument_BAK.pdf
   // --------------------------------------------------
-  LBackupFile := ChangeFileExt(PDFFileName, '_BAK' + ExtractFileExt(PDFFileName));
+  LBackupFile := ChangeFileExt(
+    PDFFileName,
+    '_BAK' + ExtractFileExt(PDFFileName)
+  );
 
   if not FileExists(LBackupFile) then
   begin
@@ -297,7 +364,7 @@ begin
       MessageDlg(
         'Die Original-PDF konnte nicht gesichert werden.' +
         sLineBreak +
-        'Die Drehung wurde abgebrochen.' +
+        'Die Drehung wurde nicht gespeichert.' +
         sLineBreak + LBackupFile,
         mtError, [mbOK], 0
       );
@@ -309,7 +376,9 @@ begin
     end;
   end;
 
-  // Originaldatei durch die bearbeitete PDF ersetzen
+  // --------------------------------------------------
+  // Bearbeitete PDF als Originaldatei speichern
+  // --------------------------------------------------
   if not MoveFileEx(
     PChar(LTempFile),
     PChar(PDFFileName),
@@ -317,7 +386,7 @@ begin
   ) then
   begin
     MessageDlg(
-      'Die bearbeitete PDF-Datei konnte nicht gespeichert werden.' +
+      'Die bearbeitete PDF konnte nicht gespeichert werden.' +
       sLineBreak +
       'Möglicherweise ist die Datei noch geöffnet oder schreibgeschützt.',
       mtError, [mbOK], 0
@@ -325,7 +394,9 @@ begin
     Exit;
   end;
 
+  // --------------------------------------------------
   // PDF im WebView2 neu laden
+  // --------------------------------------------------
   TimerPDF.Enabled := False;
   WVBrowserPDF.Navigate('about:blank');
   TimerPDF.Interval := 500;
@@ -406,6 +477,8 @@ begin
   FFindButton := TButton.Create(Self);
   FFindButton.Parent := FToolbar;
   FFindButton.Caption := 'Text suchen';
+  FFindButton.ShowHint := True;
+  FFindButton.Hint := 'Siehe Suchmaske [Text suchen] im Suchefenster von FreePDF64';
   FFindButton.Left := 178;
   FFindButton.Top := 6;
   FFindButton.Width := 94;
@@ -418,6 +491,8 @@ begin
   FAttachmentsButton := TButton.Create(Self);
   FAttachmentsButton.Parent := FToolbar;
   FAttachmentsButton.Caption := 'PDF-Anlagen';
+  FAttachmentsButton.ShowHint := True;
+  FAttachmentsButton.Hint := 'Öffnen/Schließen der Anlagenliste zur PDF-Datei';
   FAttachmentsButton.Left := 278;
   FAttachmentsButton.Top := 6;
   FAttachmentsButton.Width := 112;
@@ -430,7 +505,8 @@ begin
   LLabel := TLabel.Create(Self);
   LLabel.Parent := FToolbar;
   LLabel.Caption := 'Drehe Seite:';
-//  LLabel.Left := 398;
+  LLabel.ShowHint := True;
+  LLabel.Hint := 'Eine Seite oder einen Bereich eingeben:' + #13 + '1-3 oder 5-20 oder...';
   LLabel.Left := 408;
   LLabel.Top := 11;
   LLabel.AutoSize := True;
@@ -442,7 +518,8 @@ begin
   FRotatePageEdit.Top := 8;
   FRotatePageEdit.Width := 42;
   FRotatePageEdit.Text := '1';
-  FRotatePageEdit.NumbersOnly := True;
+  FRotatePageEdit.NumbersOnly := False;
+  FRotatePageEdit.Text := '1';
 
   // --------------------------------------------------
   // Drehwinkel als feste Auswahl
@@ -450,6 +527,8 @@ begin
   LLabel := TLabel.Create(Self);
   LLabel.Parent := FToolbar;
   LLabel.Caption := 'Winkel:';
+  LLabel.ShowHint := True;
+  LLabel.Hint := 'Um wieviel Grad man die Seite(n) drehen möchte';
   LLabel.Left := 540;
   LLabel.Top := 11;
   LLabel.AutoSize := True;
@@ -473,6 +552,8 @@ begin
   FRotateButton := TButton.Create(Self);
   FRotateButton.Parent := FToolbar;
   FRotateButton.Name := 'PDFRotateButton';
+  FRotateButton.ShowHint := True;
+  FRotateButton.Hint := 'Dreht die Seite(n) und speichert danach. Vorher wird eine BAK-Datei erstellt';
   FRotateButton.Caption := 'Drehen';
   FRotateButton.Left := 667;
   FRotateButton.Top := 6;
