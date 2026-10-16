@@ -211,6 +211,7 @@ begin
   if not FInitialWindowOffscreen then
   begin
     if IsIconic(Handle) then ShowWindow(Handle, SW_RESTORE);
+    BringToFront;
     SetForegroundWindow(Handle);
   end;
 end;
@@ -920,6 +921,15 @@ begin
   if PDFTabsWindow = nil then
     PDFTabsWindow := TPDFTabsForm.Create(Application);
   PDFTabsWindow.AddPDF(APDF);
+  // Auch beim Aufruf aus Hauptprogramm/Suche den PDF-Anzeiger aktivieren.
+  // Keine dauerhafte TopMost-Einstellung: andere Fenster bleiben nutzbar.
+  if not PDFTabsWindow.FInitialWindowOffscreen then
+  begin
+    if IsIconic(PDFTabsWindow.Handle) then
+      ShowWindow(PDFTabsWindow.Handle, SW_RESTORE);
+    PDFTabsWindow.BringToFront;
+    SetForegroundWindow(PDFTabsWindow.Handle);
+  end;
 end;
 
 end.
