@@ -68,6 +68,7 @@ type
     procedure WMNavigatePDF(var Msg: TMessage); message WM_APP + 191;
     procedure StartBrowser;
     procedure BuildNavigationToolbar;
+    procedure NumberFieldMouseEnter(Sender: TObject);
     procedure GoToPageClick(Sender: TObject);
     procedure FindTermClick(Sender: TObject);
     procedure ToggleAttachmentsClick(Sender: TObject);
@@ -570,10 +571,54 @@ begin
   UpdateAttachmentWindowPosition;
 end;
 
+procedure TPDFBrowserForm.NumberFieldMouseEnter(Sender: TObject);
+var
+  C: TWinControl;
+begin
+  // Der Pfad-Hint der Registerkarte darf nicht ueber den Zahlenfeldern
+  // stehen bleiben. Er wird beim Ueberfahren des Tabs neu gesetzt.
+  Application.CancelHint;
+  C := Parent;
+  while Assigned(C) do
+  begin
+    if C is TPageControl then
+    begin
+      C.Hint := '';
+      Break;
+    end;
+    C := C.Parent;
+  end;
+end;
+
 procedure TPDFBrowserForm.BuildNavigationToolbar;
 var
   LLabel: TLabel;
+  RotateLabel, AngleLabel: TLabel;
+  Dpi, Gap, XPos, ControlHeight, ToolbarHeight: Integer;
+  function ScalePx(Value: Integer): Integer;
+  begin
+    Result := MulDiv(Value, Dpi, 96);
+  end;
+  procedure PlaceControl(C: TControl; DesiredWidth: Integer);
+  var
+    H: Integer;
+  begin
+    H := ControlHeight;
+    // Beschriftungen auf die vertikale Mitte der Eingabefelder setzen.
+    // TLabel.AutoSize laesst die Hoehe nicht wie bei einem TEdit strecken.
+    if (C = FPageLabel) or (C = RotateLabel) or (C = AngleLabel) then
+      H := TLabel(C).Height;
+    // Nur die vier Aktionsbuttons etwas flacher gestalten.
+    // Eingabefelder, Beschriftungen und Auswahlliste bleiben unveraendert.
+    if (C = FGoPageButton) or (C = FFindButton) or
+       (C = FAttachmentsButton) or (C = FRotateButton) then
+      H := Max(ScalePx(22), ControlHeight - ScalePx(4));
+    C.SetBounds(XPos, (ToolbarHeight - H) div 2, DesiredWidth, H);
+    Inc(XPos, DesiredWidth + Gap);
+  end;
 begin
+  Dpi := CurrentPPI;
+  if Dpi < 96 then Dpi := 96;
   FToolbar := TPanel.Create(Self);
   FToolbar.Name := 'PDFNavigationToolbar';
   FToolbar.Caption := '';
@@ -594,6 +639,10 @@ begin
 
   FPageEdit := TEdit.Create(Self);
   FPageEdit.Parent := FToolbar;
+  FPageEdit.ParentShowHint := False;
+  FPageEdit.ShowHint := False;
+  FPageEdit.Hint := '';
+  FPageEdit.OnMouseEnter := NumberFieldMouseEnter;
   FPageEdit.Name := 'PDFPageNumberEdit';
   FPageEdit.Left := 48;
   FPageEdit.Top := 8;
@@ -647,6 +696,7 @@ begin
   LLabel := TLabel.Create(Self);
   LLabel.Parent := FToolbar;
   LLabel.Caption := 'Drehe Seite:';
+  RotateLabel := LLabel;
   LLabel.ShowHint := True;
   LLabel.Hint := 'Eine Seite oder einen Bereich eingeben:' + #13 + '1-3 oder 5-20 oder...';
   LLabel.Left := 408;
@@ -655,6 +705,10 @@ begin
 
   FRotatePageEdit := TEdit.Create(Self);
   FRotatePageEdit.Parent := FToolbar;
+  FRotatePageEdit.ParentShowHint := False;
+  FRotatePageEdit.ShowHint := False;
+  FRotatePageEdit.Hint := '';
+  FRotatePageEdit.OnMouseEnter := NumberFieldMouseEnter;
   FRotatePageEdit.Name := 'PDFRotatePageEdit';
   FRotatePageEdit.Left := 493;
   FRotatePageEdit.Top := 8;
@@ -669,6 +723,7 @@ begin
   LLabel := TLabel.Create(Self);
   LLabel.Parent := FToolbar;
   LLabel.Caption := 'Winkel:';
+  AngleLabel := LLabel;
   LLabel.ShowHint := True;
   LLabel.Hint := 'Um wieviel Grad man die Seite(n) drehen möchte';
   LLabel.Left := 540;
@@ -677,6 +732,10 @@ begin
 
   FRotateAngleCombo := TComboBox.Create(Self);
   FRotateAngleCombo.Parent := FToolbar;
+  FRotateAngleCombo.ParentShowHint := False;
+  FRotateAngleCombo.ShowHint := False;
+  FRotateAngleCombo.Hint := '';
+  FRotateAngleCombo.OnMouseEnter := NumberFieldMouseEnter;
   FRotateAngleCombo.Name := 'PDFRotateAngleCombo';
   FRotateAngleCombo.Left := 590;
   FRotateAngleCombo.Top := 7;
@@ -702,6 +761,33 @@ begin
   FRotateButton.Width := 80;
   FRotateButton.Height := 28;
   FRotateButton.OnClick := RotatePageClick;
+
+  // DPI-feste Anordnung: keine 96-DPI-Koordinaten fuer 4K/Skalierung.
+  // Alle Breiten orientieren sich am tatsaechlich verwendeten Schriftbild.
+  Gap := ScalePx(7);
+  ControlHeight := Max(ScalePx(25), Canvas.TextHeight('Ag') + ScalePx(10));
+  ToolbarHeight := ControlHeight + ScalePx(8);
+  FToolbar.Height := ToolbarHeight;
+  XPos := ScalePx(8);
+
+  PlaceControl(FPageLabel, Canvas.TextWidth(FPageLabel.Caption) + ScalePx(5));
+  PlaceControl(FPageEdit, Max(ScalePx(36), Canvas.TextWidth('999') + ScalePx(12)));
+  PlaceControl(FGoPageButton, Max(ScalePx(70),
+    Canvas.TextWidth(FGoPageButton.Caption) + ScalePx(18)));
+  PlaceControl(FFindButton, Max(ScalePx(86),
+    Canvas.TextWidth(FFindButton.Caption) + ScalePx(18)));
+  PlaceControl(FAttachmentsButton, Max(ScalePx(104),
+    Canvas.TextWidth(FAttachmentsButton.Caption) + ScalePx(18)));
+
+  Inc(XPos, ScalePx(8));
+  PlaceControl(RotateLabel, Canvas.TextWidth(RotateLabel.Caption) + ScalePx(5));
+  PlaceControl(FRotatePageEdit, Max(ScalePx(36),
+    Canvas.TextWidth('999') + ScalePx(12)));
+  PlaceControl(AngleLabel, Canvas.TextWidth(AngleLabel.Caption) + ScalePx(5));
+  PlaceControl(FRotateAngleCombo, Max(ScalePx(60),
+    Canvas.TextWidth('270°') + ScalePx(24)));
+  PlaceControl(FRotateButton, Max(ScalePx(74),
+    Canvas.TextWidth(FRotateButton.Caption) + ScalePx(18)));
 
   // --------------------------------------------------
   // Navigationstimer - nur einmal erstellen

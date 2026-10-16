@@ -12,9 +12,10 @@ type
   TPDFTabsForm = class(TForm)
   private
     FTabs: TPageControl;
+    FTabHintWindow: THintWindow;
+    FHintTabIndex: Integer;
     FCloseButton: TButton;
     FOpenButton: TButton;
-    FAssociationButton: TButton;
     FLastNormalBounds: TRect;
     FRestoringWindowSettings: Boolean;
     FAddingPDF: Boolean;
@@ -31,7 +32,6 @@ type
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
-    procedure AssociationClick(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
     procedure LoadWindowSettings;
@@ -45,6 +45,7 @@ type
     procedure RefreshAttachmentPositions;
     procedure TabsChange(Sender: TObject);
     procedure TabsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure TabsMouseLeave(Sender: TObject);
     procedure DrawPDFTab(Control: TCustomTabControl; TabIndex: Integer;
       const Rect: TRect; Active: Boolean);
     procedure WindowMoved(var Msg: TWMMove); message WM_MOVE;
@@ -68,7 +69,6 @@ type
 var
   PDFTabsWindow: TPDFTabsForm;
   PDFTabAttachmentsInitializer: TPDFTabAttachmentsProc;
-  PDFTabAssociationClick: TNotifyEvent = nil;
   // True nur bei einem eigenstaendigen Explorer-Start mit PDF-Parametern.
   PDFTabsExplorerOnlyProcess: Boolean = False;
 
@@ -322,20 +322,16 @@ begin
   end;
 end;
 
-procedure TPDFTabsForm.AssociationClick(Sender: TObject);
-begin
-  if Assigned(PDFTabAssociationClick) then
-    PDFTabAssociationClick(Sender)
-  else
-    MessageDlg('PDF-Verknuepfung ist momentan nicht verfuegbar.',
-      mtInformation, [mbOK], 0);
-end;
-
 constructor TPDFTabsForm.Create(AOwner: TComponent);
 var
   Header: TPanel;
+  Dpi: Integer;
+  ButtonHeight: Integer;
 begin
   inherited CreateNew(AOwner);
+  Dpi := CurrentPPI;
+  if Dpi < 96 then Dpi := 96;
+  ButtonHeight := Max(MulDiv(26, Dpi, 96), Canvas.TextHeight('Ag') + MulDiv(10, Dpi, 96));
   PDFTabsWindow := Self;
   // Normales Fenster, keine TopMost-Eigenschaft.
   FormStyle := fsNormal;
@@ -351,12 +347,12 @@ begin
   Header := TPanel.Create(Self);
   Header.Parent := Self;
   Header.Align := alTop;
-  Header.Height := 36;
+  Header.Height := ButtonHeight + MulDiv(6, Dpi, 96);
   Header.BevelOuter := bvNone;
   FCloseButton := TButton.Create(Self);
   FCloseButton.Parent := Header;
   FCloseButton.Align := alRight;
-  FCloseButton.Width := 185;
+  FCloseButton.Width := Max(MulDiv(185, Dpi, 96), Canvas.TextWidth('Aktiven Tab schließen') + MulDiv(28, Dpi, 96));
   FCloseButton.Caption := 'Aktiven Tab schließen';
   FCloseButton.OnClick := CloseActive;
   FTabs := TPageControl.Create(Self);
@@ -365,38 +361,22 @@ begin
   FTabs.Align := alClient;
   FTabs.OnMouseDown := TabMouseDown;
   FTabs.OnMouseUp := TabMouseUp;
-  FTabs.ShowHint := True;
+  FTabs.ShowHint := False; // Pfad niemals als vererbbarer VCL-Hint
+  FTabHintWindow := THintWindow.Create(Self);
+  FHintTabIndex := -1;
   FTabs.OnMouseMove := TabsMouseMove;
+  FTabs.OnMouseLeave := TabsMouseLeave;
   FTabs.OnChange := TabsChange;
   FTabs.OwnerDraw := True;
   FTabs.OnDrawTab := DrawPDFTab;
   FOpenButton := TButton.Create(Self);
   FOpenButton.Parent := Header;
   FOpenButton.Align := alLeft;
-  FOpenButton.Width := 180;
+  FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
   FOpenButton.Caption := 'Datei(en) öffnen ...';
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
-  // Kleiner Abstand zwischen Oeffnen- und Verknuepfen-Button.
-  with TPanel.Create(Self) do
-  begin
-    Parent := Header;
-    Align := alLeft;
-    Width := 16;
-    BevelOuter := bvNone;
-    Caption := '';
-  end;
-  FAssociationButton := TButton.Create(Self);
-  FAssociationButton.Parent := Header;
-  FAssociationButton.Align := alLeft;
-  FAssociationButton.Width := 125;
-  FAssociationButton.Caption := 'PDF verknüpfen';
-  FAssociationButton.Hint := 'FreePDF64 als Standardprogramm für PDF-Dateien festlegen:' + #13 +
-                             'Öffnet die Windows-Einstellungen, in denen Sie FreePDF64' + #13 +
-                             'als Standard-PDF-Anzeigeprogramm auswählen können';
-  FAssociationButton.ShowHint := True;
-  FAssociationButton.OnClick := AssociationClick;
   FPendingExplorerFiles := TStringList.Create;
   FDeferredActivePDF := nil;
   FInitialWindowOffscreen := False;
@@ -543,7 +523,7 @@ begin
   Tab.DoubleBuffered := True;
   Tab.Caption := ExtractFileName(APDF.PDFFileName);
   Tab.Hint := APDF.PDFFileName;
-  Tab.ShowHint := True;
+  Tab.ShowHint := False; // Kein geerbter Dateipfad-Hint im PDF-Inhaltsbereich
   APDF.TabbedPDFMode := True;
   APDF.BorderStyle := bsNone;
   APDF.Parent := Tab;
@@ -730,20 +710,38 @@ procedure TPDFTabsForm.TabsMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
 var
   TabIndex: Integer;
-  NewHint: string;
+  HintText: string;
+  P: TPoint;
+  R: TRect;
 begin
-  // TPageControl empfaengt die Mausereignisse auf den Registerreitern.
-  // TTabSheet.Hint allein wird dort von Windows nicht angezeigt.
+  // Kein FTabs.Hint: Dieser wuerde auf die PDF-Navigationsleiste vererbt.
   TabIndex := FTabs.IndexOfTabAt(X, Y);
-  if (TabIndex >= 0) and (TabIndex < FTabs.PageCount) then
-    NewHint := FTabs.Pages[TabIndex].Hint
-  else
-    NewHint := '';
-  if FTabs.Hint <> NewHint then
+  if (TabIndex < 0) or (TabIndex >= FTabs.PageCount) then
   begin
-    FTabs.Hint := NewHint;
-    Application.CancelHint;
+    TabsMouseLeave(Sender);
+    Exit;
   end;
+
+  if TabIndex = FHintTabIndex then
+    Exit;
+
+  FTabHintWindow.ReleaseHandle;
+  FHintTabIndex := TabIndex;
+  HintText := FTabs.Pages[TabIndex].Hint;
+  if HintText = '' then
+    Exit;
+
+  P := FTabs.ClientToScreen(Point(X, Y + MulDiv(20, CurrentPPI, 96)));
+  R := FTabHintWindow.CalcHintRect(700, HintText, nil);
+  OffsetRect(R, P.X, P.Y);
+  FTabHintWindow.ActivateHint(R, HintText);
+end;
+
+procedure TPDFTabsForm.TabsMouseLeave(Sender: TObject);
+begin
+  FHintTabIndex := -1;
+  if Assigned(FTabHintWindow) then
+    FTabHintWindow.ReleaseHandle;
 end;
 
 procedure TPDFTabsForm.TabsChange(Sender: TObject);

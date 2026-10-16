@@ -414,7 +414,6 @@ type
     procedure Gitternetzlinien1Click(Sender: TObject);
     procedure VersteckteDateienanzeigen1Click(Sender: TObject);
     procedure Einstellungen1Click(Sender: TObject);
-    procedure PDFVerknuepfungClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure PDF_ErstellungClick(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -656,7 +655,8 @@ type
     procedure LetztenPDFPrfberichtanzeigen1Click(Sender: TObject);
     procedure PDFPrfberichtPDFprfen1Click(Sender: TObject);
     procedure PrüfBtnClick(Sender: TObject);
-    procedure ToolButtonPDFViewerClick(Sender: TObject);
+    procedure ToolButtonPDFViewerMouseDown(Sender: TObject;
+      Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -677,6 +677,7 @@ type
       procedure WMSettingChange(var Message: TMessage); message WM_SETTINGCHANGE;
       procedure WMQueryEndSession(var Msg: TWMQueryEndSession); message WM_QUERYENDSESSION;
       procedure ActiveControlChanged(Sender: TObject);
+      procedure PDFVerknuepfungClick(Sender: TObject);
     protected
     published
       { Doppelclick auf Splitter }
@@ -3638,9 +3639,15 @@ begin
   StatusBarAnpassen;
 end;
 
-procedure TFreePDF64_Form.ToolButtonPDFViewerClick(Sender: TObject);
+procedure TFreePDF64_Form.ToolButtonPDFViewerMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
-  ShowEmptyPDFViewer;
+  // Linke Maustaste ? Log anzeigen
+  if Button = mbLeft then
+    ShowEmptyPDFViewer
+  // Rechte Maustaste ? Panel schließen oder Log extern öffnen
+  else if Button = mbRight then
+    PDFVerknuepfungClick(Sender);
 end;
 
 procedure TFreePDF64_Form.SearchBtnClick(Sender: TObject);
@@ -6125,7 +6132,6 @@ var
   Entry: string;
   PDFMenuItem, PDFCheckMenuItem, PDFLastReportMenuItem: TMenuItem;
 begin
-  PDFTabAssociationClick := PDFVerknuepfungClick;
   // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
   PDFMenuItem := TMenuItem.Create(MainMenu1);
   PDFMenuItem.Caption := 'PDF-Dateien mit FreePDF64 verknüpfen...';
@@ -6170,7 +6176,7 @@ begin
       Width  := Ini.ReadInteger('Position', 'Width', Width);
       Height := Ini.ReadInteger('Position', 'Height', Height);
 
-      Panel_Left.Width  := Ini.ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
+      Panel_Left.Width  := Ini.ReadInteger('Position', 'Left T7ree Width', Panel_Left.Width);
       PDFPanel.Height   := Ini.ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
       PanelR.Width      := Ini.ReadInteger('Position', 'Right Panel Width', PanelR.Width);
       PDFPanelH         := PDFPanel.Height;
@@ -7068,6 +7074,9 @@ begin
     LogBt.Hint :=
       'LMB: Ansehen im unteren Anzeigefenster' + #13 +
       'RMB: Ansehen im externen Editor';
+    ToolButtonPDFViewer.Hint :=
+      'LMB: Öffnet den leeren FreePDF64-Viewer' + #13 +
+      'RMB: PDF-Dateien mit dem FreePDF64-Viewer verknüpfen...';
 
     FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));
     if FreePDF64_Notify.LMDShellNotify.Active then

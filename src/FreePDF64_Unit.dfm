@@ -356,11 +356,10 @@
       object ToolButtonPDFViewer: TToolButton
         Left = 671
         Top = 0
-        Hint = #214'ffnet den leeren FreePDF64Viewer'
         Caption = 'PDF'
         ImageIndex = 103
         ImageName = 'FreePDF64_Monochrom_128'
-        OnClick = ToolButtonPDFViewerClick
+        OnMouseDown = ToolButtonPDFViewerMouseDown
       end
       object ToolButton6: TToolButton
         Left = 709
