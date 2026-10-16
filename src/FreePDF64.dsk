@@ -15,11 +15,11 @@ File_12=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
 File_13=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Suchen.pas
-Module2=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-Module3=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-Module4=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\Suchen.pas
+Module3=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module4=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 Module5=D:\Delphi\FreePDF64\Anleitung_Unit.pas
 Module6=D:\Delphi\FreePDF64\Auswahl_Unit.pas
 Module7=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
@@ -27,6 +27,9 @@ Module8=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
 Module9=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Count=10
 EditWindowCount=1
+
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
@@ -38,9 +41,6 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFTabsForm.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Anleitung_Unit.pas]
@@ -60,7 +60,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=10
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -107,12 +107,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=47
-CursorY=6137
-TopLine=6110
+CursorX=1
+CursorY=17
+TopLine=1
 LeftCol=1
 Elisions=
-Bookmarks={0,3652,1}
+Bookmarks={0,3651,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -343,11 +343,6 @@ LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Hint,
-ExpandedItems=Anchors=0,Constraints=0,Font=0
 
 [frmDesignPreview]
 PercentageSizes=1
