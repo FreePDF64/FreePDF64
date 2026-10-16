@@ -14,6 +14,9 @@ type
     FTabs: TPageControl;
     FTabHintWindow: THintWindow;
     FHintTabIndex: Integer;
+    FDragTabIndex: Integer;
+    FDragStartPoint: TPoint;
+    FDraggingTab: Boolean;
     FCloseButton: TButton;
     FOpenButton: TButton;
     FLastNormalBounds: TRect;
@@ -359,6 +362,8 @@ begin
   FTabs.Parent := Self;
   FTabs.DoubleBuffered := True;
   FTabs.Align := alClient;
+  FDragTabIndex := -1;
+  FDraggingTab := False;
   FTabs.OnMouseDown := TabMouseDown;
   FTabs.OnMouseUp := TabMouseUp;
   FTabs.ShowHint := False; // Pfad niemals als vererbbarer VCL-Hint
@@ -668,7 +673,11 @@ procedure TPDFTabsForm.TabMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button = mbLeft then
+  begin
+    FDragTabIndex := -1;
+    FDraggingTab := False;
     PostMessage(Handle, WM_APP + 193, 0, 0); // Auch bereits aktiver erster Tab.
+  end;
 end;
 
 procedure TPDFTabsForm.DrawPDFTab(Control: TCustomTabControl;
@@ -714,6 +723,30 @@ var
   P: TPoint;
   R: TRect;
 begin
+  // Registerkarten mit linker Maustaste verschieben (erst nach Ziehschwelle).
+  if (FDragTabIndex >= 0) and (ssLeft in Shift) then
+  begin
+    if not FDraggingTab then
+      FDraggingTab :=
+        (Abs(X - FDragStartPoint.X) >= GetSystemMetrics(SM_CXDRAG)) or
+        (Abs(Y - FDragStartPoint.Y) >= GetSystemMetrics(SM_CYDRAG));
+
+    if FDraggingTab then
+    begin
+      TabsMouseLeave(Sender);
+      TabIndex := FTabs.IndexOfTabAt(X, Y);
+      if (TabIndex >= 0) and (TabIndex < FTabs.PageCount) and
+         (TabIndex <> FDragTabIndex) then
+      begin
+        // Das TabSheet (und damit die zugehoerige PDF) bleibt erhalten.
+        FTabs.Pages[FDragTabIndex].PageIndex := TabIndex;
+        FDragTabIndex := TabIndex;
+        FTabs.Invalidate;
+      end;
+      Exit;
+    end;
+  end;
+
   // Kein FTabs.Hint: Dieser wuerde auf die PDF-Navigationsleiste vererbt.
   TabIndex := FTabs.IndexOfTabAt(X, Y);
   if (TabIndex < 0) or (TabIndex >= FTabs.PageCount) then
@@ -839,6 +872,13 @@ procedure TPDFTabsForm.TabMouseDown(Sender: TObject; Button: TMouseButton;
 var
   I: Integer;
 begin
+  if Button = mbLeft then
+  begin
+    FDragTabIndex := FTabs.IndexOfTabAt(X, Y);
+    FDragStartPoint := Point(X, Y);
+    FDraggingTab := False;
+    Exit;
+  end;
   if Button <> mbMiddle then Exit;
   for I := 0 to FTabs.PageCount - 1 do
     if PtInRect(FTabs.TabRect(I), Point(X, Y)) then

@@ -6134,7 +6134,7 @@ var
 begin
   // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
   PDFMenuItem := TMenuItem.Create(MainMenu1);
-  PDFMenuItem.Caption := 'PDF-Dateien mit FreePDF64 verknüpfen...';
+  PDFMenuItem.Caption := 'PDF-Dateien mit dem FreePDF64-Viewer verknüpfen...';
   PDFMenuItem.OnClick := PDFVerknuepfungClick;
   WindowsIntegration1.Add(PDFMenuItem);
   Application.HintHidePause := 5000;

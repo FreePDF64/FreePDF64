@@ -1178,9 +1178,7 @@ object Suche_Form: TSuche_Form
       Top = 1
       Width = 120
       Height = 26
-      Hint = 
-        'PDF-Dateien anzeigen im integrierten FreePDF64-Viewer. Schlie'#223'en' +
-        ' mit dem Close Button (oder Alt+F4)'
+      Hint = 'PDF-Dateien anzeigen im integrierten FreePDF64-Viewer'
       Margins.Left = 4
       Margins.Top = 4
       Margins.Right = 4
