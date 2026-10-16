@@ -51,7 +51,8 @@ var
 implementation
 
 uses
-  FreePDF64_Unit, Einstellungen_Unit, DokuInfo_Unit, FreePDF64_Notify_Unit, uPDFBrowserForm;
+  FreePDF64_Unit, Einstellungen_Unit, DokuInfo_Unit, FreePDF64_Notify_Unit,
+  uPDFBrowserForm, uPDFTabsForm;
 
 {$R *.DFM}
 
@@ -265,6 +266,7 @@ procedure TAuswahl_Form.MergeViewerClick(Sender: TObject);
 var
   i, Offset, BaseOffset: Integer;
   PDFForm: TPDFBrowserForm;
+  LastPDFForm: TPDFBrowserForm;
 begin
   // Wo liegt das Ghostscript-Programm?
   Ghostscript := Einstellungen_Form.Edit1.Text;
@@ -290,29 +292,33 @@ begin
             Break;
       end else
       begin
-        // PDFForm aufrufen...
-       PDFForm := TPDFBrowserForm.Create(Self);
-       PDFForm.PDFFileName := Auswahl;
+        // PDF als Registerkarte im vorhandenen PDF-Anzeigefenster oeffnen.
+        PDFForm := TPDFBrowserForm.Create(Application);
+        PDFForm.PDFFileName := Auswahl;
+        ShowPDFInTabs(PDFForm);
 
-       // DPI-skalierter Versatz
-       Offset := MulDiv((i mod 8) * BaseOffset, PDFForm.CurrentPPI, 96);
+        // Die zentrale Tab-Initialisierung kann je nach Startweg
+        // noch nicht registriert sein. Nur bei fehlendem Anlagenfenster
+        // die Anlagenliste fuer diese PDF explizit erstellen.
+        if (PDFForm.AttachmentWindowHandle = 0) or
+           (not IsWindow(PDFForm.AttachmentWindowHandle)) then
+          ShowPDFEmbeddedAttachments(PDFForm.PDFFileName,
+            PDFForm, PDFForm.FAttachmentsButton);
 
-       PDFForm.Left := PDFForm.Left + Offset;
-       PDFForm.Top := PDFForm.Top + Offset;
-       PDFForm.FormStyle := fsStayOnTop;
-
-       // PDF anzeigen
-       PDFForm.Show;
-
-       // Eingebettete PDF-Anlagen erkennen und Anlagenfenster erstellen
-       ShowPDFEmbeddedAttachments(PDFForm.PDFFileName, PDFForm, PDFForm.FAttachmentsButton);
+        LastPDFForm := PDFForm;
 
        Application.ProcessMessages;
        FileList.Items[i].Selected := False;
      end;
     end;
   end;
-  Hinzufuegen.SetFocus;
+  if Assigned(LastPDFForm) then
+  begin
+    if LastPDFForm.HandleAllocated then
+      SetForegroundWindow(GetAncestor(LastPDFForm.Handle, GA_ROOT));
+  end
+  else
+    Hinzufuegen.SetFocus;
 end;
 
 end.

@@ -80,7 +80,6 @@ type
     DateiCheckBox: TCheckBox;
     Gehezu1: TMenuItem;
     Btn_8: TSpeedButton;
-    PDFViewer1: TMenuItem;
     SuchergebnisCB: TCheckBox;
     SucheEdit: TEdit;
     AnzeigenPanel: TPanel;
@@ -184,7 +183,7 @@ implementation
 
 {$R *.dfm}
 
-uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm;
+uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm, uPDFTabsForm;
 
 procedure TSuche_Form.PositioniereSucheControls;
 begin
@@ -726,63 +725,54 @@ end;
 // Button: F3 Anzeigen
 procedure TSuche_Form.Btn_8Click(Sender: TObject);
 var
-  i: Integer;
-  s: String;
+  I: Integer;
+  S: string;
   PDFForm: TPDFBrowserForm;
-  Offset: Integer;
   PDFCount: Integer;
-  BaseOffset: Integer;
+  LastPDF: TPDFBrowserForm;
 begin
   if ListBox1.SelCount = 0 then
     Exit;
 
   PDFCount := 0;
-
-  // Grundversatz bei 100 % DPI
-  BaseOffset := 20;
-
-  // Alle markierten Dateien durchlaufen
-  for i := 0 to ListBox1.Count - 1 do
+  LastPDF := nil;
+  for I := 0 to ListBox1.Count - 1 do
   begin
-    if ListBox1.Selected[i] then
-    begin
-      s := FSearchResults[i];
-      // Prüfe, ob das erste Zeichen ein [ ist - und entfernen
-      if (Length(s) > 0) and (s[1] = '[') then
-        Delete(s, 1, 1);
-      // Prüfe, ob das letzte Zeichen ein ] ist - und entfernen
-      if (Length(s) > 0) and (s[Length(s)] = ']') then
-        Delete(s, Length(s), 1);
-      // Nur PDF-Dateien anzeigen
-      if UpperCase(ExtractFileExt(s)) = '.PDF' then
-      begin
-        PDFForm := TPDFBrowserForm.Create(Self);
-        PDFForm.PDFFileName := s;
-        PDFForm.StartPage := 1; // Die Suchergebnisliste enthält aktuell keine Seitenzahl.
-        PDFForm.SearchTerm := Trim(TextCB.Text);
-        // DPI-skalierter Versatz
-        // 100 % = 30 Pixel
-        // 125 % = 38 Pixel
-        // 150 % = 45 Pixel
-        // 175 % = 53 Pixel
-        // 200 % = 60 Pixel
-        Offset := MulDiv(
-                 (PDFCount mod 8) * BaseOffset,
-                  PDFForm.CurrentPPI,
-                  96
-                 );
-        PDFForm.Left := PDFForm.Left + Offset;
-        PDFForm.Top := PDFForm.Top + Offset;
-        PDFForm.Show;
-        Application.ProcessMessages;
-        // Anlagenfenster an diese PDFForm binden; Position/Abstand wird dort festgelegt.
-        ShowPDFEmbeddedAttachments(s, PDFForm, PDFForm.FAttachmentsButton);
-        Inc(PDFCount);
-      end;
+    if not ListBox1.Selected[I] then
+      Continue;
+
+    S := FSearchResults[I];
+    if (Length(S) > 0) and (S[1] = '[') then
+      Delete(S, 1, 1);
+    if (Length(S) > 0) and (S[Length(S)] = ']') then
+      Delete(S, Length(S), 1);
+
+    if not SameText(ExtractFileExt(S), '.pdf') then
+      Continue;
+
+    PDFForm := TPDFBrowserForm.Create(Application);
+    try
+      PDFForm.PDFFileName := S;
+      PDFForm.StartPage := 1;
+      PDFForm.SearchTerm := Trim(TextCB.Text);
+      PDFForm.StandalonePDFMode := False;
+      // AddPDF zeigt die PDF im Tab an und initialisiert die Anlagen
+      // über PDFTabAttachmentsInitializer automatisch genau einmal.
+      ShowPDFInTabs(PDFForm);
+      LastPDF := PDFForm;
+      Inc(PDFCount);
+    except
+      PDFForm.Free;
+      raise;
     end;
   end;
 
-  // Falls keine PDF-Datei ausgewählt wurde
+  // Jeder selektierte Eintrag wurde in einem eigenen Tab angelegt.
+  // Zuletzt geoeffnete PDF aktivieren; uPDFTabsForm verzoegert den
+  // Wechsel bei Bedarf bis zur Initialisierung des ersten Tabs.
+  if (LastPDF <> nil) and (PDFTabsWindow <> nil) then
+    PDFTabsWindow.ActivatePDF(LastPDF);
+
   if PDFCount = 0 then
     ShowMessage('Es wurden keine PDF-Dateien ausgewählt!');
 end;

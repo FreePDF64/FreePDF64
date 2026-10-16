@@ -4,7 +4,7 @@ PDF-Dateien erzeugen, miteinander verbinden, drucken, Seiten entnehmen, Bilder e
 
 Drucken aus jedem Programm heraus mit sofortiger PS/PDF/BMP/JPEG/PNG/TIFF-Erstellung:
 - Bei der Installation von FreePDF64 wird ein Windows-Druckertreiber (der FreePDF64 Postscript-Drucker) angelegt. Dadurch können PDF-Dateien direkt aus allen Anwendung erstellt werden, die eine Druckfunktion bereitstellen
-- PDF-Dateien öffnen per Doppelklick im Explorer direkt im FreePDF64-PDF-Anzeiger
+- PDF-Dateien öffnen per Doppelklick im Explorer direkt im FreePDF64-Viewer
 - Alle benötigten Programme sind schon im Installationspaket enthalten
 - Die wichtigsten FreePDF64-Einstellungen inkl. korrekter Pfade sind schon voreingestellt!
 - Drucke nun aus jeder Windows-Anwendung heraus auf den FreePDF64 Postscript-Drucker -> und erhalte PDF-Datei(en) oder JPG-Datei(en) oder... Fertig!
