@@ -23,6 +23,7 @@ type
     FRestoringWindowSettings: Boolean;
     FAddingPDF: Boolean;
     FPendingExplorerFiles: TStringList;
+    FExplorerBatchTimer: TTimer;
     FDeferredActivePDF: TPDFBrowserForm;
     FActivationTimer: TTimer;
     FActivationChecks: Integer;
@@ -31,6 +32,7 @@ type
     FInitialWindowBounds: TRect;
     FInitialWindowMaximized: Boolean;
     procedure ActivationTimerTick(Sender: TObject);
+    procedure ExplorerBatchTimerTick(Sender: TObject);
     procedure RestoreInitialWindow;
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
@@ -156,8 +158,18 @@ begin
      not FileExists(FileName) then Exit;
   // Niemals im synchronen WM_COPYDATA-Handler WebView2/VCL-Forms erstellen.
   FPendingExplorerFiles.Add(FileName);
-  PostMessage(Handle, WM_APP + 192, 0, 0);
+  // Explorer uebergibt mehrere markierte PDFs oft als einzelne WM_COPYDATA-
+  // Nachrichten. Erst nach einer kurzen Empfangspause den Stapel verarbeiten.
+  FExplorerBatchTimer.Enabled := False;
+  FExplorerBatchTimer.Enabled := True;
   Msg.Result := 1;
+end;
+
+procedure TPDFTabsForm.ExplorerBatchTimerTick(Sender: TObject);
+begin
+  FExplorerBatchTimer.Enabled := False;
+  if FPendingExplorerFiles.Count > 0 then
+    PostMessage(Handle, WM_APP + 192, 0, 0);
 end;
 
 procedure TPDFTabsForm.WMOpenQueuedPDF(var Msg: TMessage);
@@ -166,6 +178,10 @@ var
   PDF: TPDFBrowserForm;
   LastOpenedPDF: TPDFBrowserForm;
 begin
+  // Bereits wartende Explorer-Nachrichten vor dem Anlegen verarbeiten.
+  // Der Timer sorgt dafuer, dass ein zusammengehoeriger Dateistapel
+  // gesammelt wird, bevor die erste WebView2-Instanz starten kann.
+  FExplorerBatchTimer.Enabled := False;
   LastOpenedPDF := nil;
   while FPendingExplorerFiles.Count > 0 do
   begin
@@ -406,6 +422,10 @@ begin
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
   FPendingExplorerFiles := TStringList.Create;
+  FExplorerBatchTimer := TTimer.Create(Self);
+  FExplorerBatchTimer.Enabled := False;
+  FExplorerBatchTimer.Interval := 350;
+  FExplorerBatchTimer.OnTimer := ExplorerBatchTimerTick;
   FDeferredActivePDF := nil;
   FInitialWindowOffscreen := False;
   FActivationTimer := TTimer.Create(Self);
@@ -418,6 +438,7 @@ end;
 
 destructor TPDFTabsForm.Destroy;
 begin
+  FExplorerBatchTimer.Enabled := False;
   FActivationTimer.Enabled := False;
   RestoreInitialWindow;
   FPendingExplorerFiles.Free;
@@ -470,7 +491,7 @@ begin
   Inc(FActivationChecks);
   // Die erste PDF muss mindestens ihren ersten WebView2-Navigationsaufruf
   // erhalten haben, bevor wir zu einer anderen Registerkarte wechseln.
-  if (FirstPDF <> nil) and (not FirstPDF.PDFNavigationStarted) and
+  if (FirstPDF <> nil) and (not FirstPDF.PDFNavigationSucceeded) and
      (FActivationChecks < 80) then
   begin
     FirstPDF.RequestPDFLoad;
@@ -556,56 +577,26 @@ begin
   APDF.BorderStyle := bsNone;
   APDF.Parent := Tab;
   APDF.Align := alClient;
-  // Die erste Seite bleibt aktiv. Weitere Tabs nicht automatisch aktivieren.
+  // Lazy Loading: Alle Register anlegen, aber ausschliesslich das
+  // jeweils aktive PDF initialisieren. Kein unsichtbarer Erst-Tab-Start.
   FAddingPDF := True;
   try
-    if FTabs.PageCount = 1 then
-      FTabs.ActivePage := Tab;
+    FTabs.ActivePage := Tab;
   finally
     FAddingPDF := False;
   end;
   if not Visible then
   begin
     LoadWindowSettings;
-    // Nur beim erstmaligen Anzeigen: Fenster ausserhalb des virtuellen
-    // Desktops positionieren, aber sichtbar lassen. WebView2 braucht
-    // einen sichtbaren Host mit echter Groesse.
-    if FTabs.PageCount = 1 then
-    begin
-      FInitialWindowBounds := FLastNormalBounds;
-      FInitialWindowMaximized := WindowState = wsMaximized;
-      FInitialWindowOffscreen := True;
-      WindowState := wsNormal;
-      SetBounds(GetSystemMetrics(SM_XVIRTUALSCREEN) +
-        GetSystemMetrics(SM_CXVIRTUALSCREEN) + 100,
-        FInitialWindowBounds.Top,
-        FInitialWindowBounds.Right - FInitialWindowBounds.Left,
-        FInitialWindowBounds.Bottom - FInitialWindowBounds.Top);
-    end;
     Show;
   end;
-  // Bereits sichtbares Registerkartenfenster nicht erneut anzeigen:
-  // das verhindert Aktivierungs- und Z-Order-Flackern beim Nachladen.
   APDF.Show;
-  // Die aktive Seite nach dem Einbetten vermessen und erst dann starten.
   FTabs.Realign;
   APDF.Realign;
-  // Diagnose: Die erste Registerkarte auch bei weiteren PDFs aktiv lassen.
-  if (FTabs.PageCount > 0) and (not FFirstPDFInitialized) then
-  begin
-    if FInitialWindowOffscreen and not FActivationTimer.Enabled then
-    begin
-      FActivationChecks := 0;
-      FActivationTimer.Enabled := True;
-    end;
-    FAddingPDF := True;
-    try
-      FTabs.ActivePage := FTabs.Pages[0];
-    finally
-      FAddingPDF := False;
-    end;
-    PostMessage(Handle, WM_APP + 193, 0, 0);
-  end;
+  FFirstPDFInitialized := True;
+  FDeferredActivePDF := nil;
+  FActivationTimer.Enabled := False;
+  PostMessage(Handle, WM_APP + 193, 0, 0);
   if Assigned(PDFTabAttachmentsInitializer) then
     PDFTabAttachmentsInitializer(APDF.PDFFileName, APDF);
   APDF.UpdateAttachmentWindowPosition;
@@ -624,30 +615,9 @@ procedure TPDFTabsForm.ActivatePDF(APDF: TPDFBrowserForm);
 begin
   if (APDF = nil) or not (APDF.Parent is TTabSheet) or
      (TTabSheet(APDF.Parent).PageControl <> FTabs) then Exit;
-  // Der erste Tab bleibt waehrend seiner WebView2-Initialisierung aktiv.
-  // Das zuletzt angeforderte PDF wird danach automatisch aktiviert.
-  // Falls die erste PDF schon navigiert hat, ist die einmalige
-  // Initialisierung abgeschlossen; kein Zurueckspringen zum ersten Tab.
-  if (not FFirstPDFInitialized) and (FTabs.PageCount > 0) then
-  begin
-    if FTabs.Pages[0].ControlCount > 0 then
-      if FTabs.Pages[0].Controls[0] is TPDFBrowserForm then
-        FFirstPDFInitialized :=
-          TPDFBrowserForm(FTabs.Pages[0].Controls[0]).PDFNavigationStarted;
-  end;
-  if (not FFirstPDFInitialized) and (FTabs.PageCount > 1) and
-     (FTabs.ActivePage = FTabs.Pages[0]) then
-  begin
-    FDeferredActivePDF := APDF;
-    FTabs.Invalidate; // Zielregister optisch hervorheben, bevor der Wechsel erfolgt.
-    FActivationChecks := 0;
-    FActivationTimer.Enabled := True;
-    PostMessage(Handle, WM_APP + 193, 0, 0);
-    Exit;
-  end;
-  FDeferredActivePDF := nil;
-  FTabs.Invalidate;
   FActivationTimer.Enabled := False;
+  FDeferredActivePDF := nil;
+  FFirstPDFInitialized := True;
   FAddingPDF := True;
   try
     FTabs.ActivePage := TTabSheet(APDF.Parent);
@@ -666,12 +636,28 @@ begin
   for I := 0 to FTabs.PageCount - 1 do
   begin
     Tab := FTabs.Pages[I];
-    if Tab <> FTabs.ActivePage then Continue;
     for J := 0 to Tab.ControlCount - 1 do
       if Tab.Controls[J] is TPDFBrowserForm then
       begin
-        TPDFBrowserForm(Tab.Controls[J]).RefreshActiveTabPDF;
-        TPDFBrowserForm(Tab.Controls[J]).UpdateAttachmentWindowPosition;
+        if Tab <> FTabs.ActivePage then
+        begin
+          // Die Anlagenliste gehoert zur vorherigen PDF und darf nicht
+          // ueber der neu aktivierten Registerkarte sichtbar bleiben.
+          if IsWindow(TPDFBrowserForm(Tab.Controls[J]).AttachmentWindowHandle) then
+          begin
+            ShowWindow(TPDFBrowserForm(Tab.Controls[J]).AttachmentWindowHandle,
+              SW_HIDE);
+            SetWindowPos(
+              TPDFBrowserForm(Tab.Controls[J]).AttachmentWindowHandle,
+              HWND_NOTOPMOST, 0, 0, 0, 0,
+              SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE);
+          end;
+        end
+        else
+        begin
+          TPDFBrowserForm(Tab.Controls[J]).RefreshActiveTabPDF;
+          TPDFBrowserForm(Tab.Controls[J]).UpdateAttachmentWindowPosition;
+        end;
       end;
   end;
 end;

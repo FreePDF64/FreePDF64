@@ -721,8 +721,8 @@ type
   private
     FAttachmentList: TListBox;
     FSourcePDF: string;
-    FPDFForm: TPDFBrowserForm;
-    procedure ShowSavedPDF(const AFileName: string);
+    FPDFBrowser: TPDFBrowserForm;
+    procedure DisplaySavedPDF(const AFileName: string);
     procedure NoticeFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ExtractButtonClick(Sender: TObject);
     procedure AddButtonClick(Sender: TObject);
@@ -1444,9 +1444,9 @@ begin
   inherited CreateNew(AOwner);
 
   FSourcePDF := PDFFileName;
-  FPDFForm := nil;
+  FPDFBrowser := nil;
   if PDFForm is TPDFBrowserForm then
-    FPDFForm := TPDFBrowserForm(PDFForm);
+    FPDFBrowser := TPDFBrowserForm(PDFForm);
 
   Caption := 'Eingebettete PDF-Anlagen';
   BorderStyle := bsSizeable;
@@ -1586,6 +1586,21 @@ begin
   Realign;
 end;
 
+procedure TPDFAttachmentNoticeForm.DisplaySavedPDF(const AFileName: string);
+var
+  Tab: TTabSheet;
+begin
+  if not Assigned(FPDFBrowser) or not FileExists(AFileName) then Exit;
+  // Die neue PDF im vorhandenen Register laden, nicht in einem neuen Tab.
+  FPDFBrowser.OpenSavedPDF(AFileName, FAttachmentList.Items.Count > 0);
+  if FPDFBrowser.Parent is TTabSheet then
+  begin
+    Tab := TTabSheet(FPDFBrowser.Parent);
+    Tab.Caption := ExtractFileName(AFileName);
+    Tab.Hint := AFileName;
+  end;
+end;
+
 procedure TPDFAttachmentNoticeForm.NoticeFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
@@ -1704,20 +1719,6 @@ begin
   end;
 end;
 
-procedure TPDFAttachmentNoticeForm.ShowSavedPDF(const AFileName: string);
-var
-  Tab: TTabSheet;
-begin
-  if not Assigned(FPDFForm) then Exit;
-  FPDFForm.OpenSavedPDF(AFileName, FAttachmentList.Items.Count > 0);
-  if FPDFForm.Parent is TTabSheet then
-  begin
-    Tab := TTabSheet(FPDFForm.Parent);
-    Tab.Caption := ExtractFileName(AFileName);
-    Tab.Hint := AFileName;
-  end;
-end;
-
 procedure TPDFAttachmentNoticeForm.AddButtonClick(Sender: TObject);
 var
   OpenDialog: TOpenDialog;
@@ -1798,9 +1799,7 @@ begin
 
   FSourcePDF := NewPDF;
   FAttachmentList.Items.Add(ExtractFileName(AttachmentFile));
-  ShowSavedPDF(NewPDF);
-  if Owner is TPDFBrowserForm then
-    TPDFBrowserForm(Owner).SetAttachmentIndicator(True);
+  DisplaySavedPDF(NewPDF);
   MessageDlg('Die PDF-Datei mit der zusätzlichen Anlage wurde gespeichert:' +
     sLineBreak + NewPDF, mtInformation, [mbOK], 0);
 end;
@@ -1897,9 +1896,7 @@ begin
 
   FSourcePDF := NewPDF;
   FAttachmentList.Items.Delete(SelectedIndex);
-  ShowSavedPDF(NewPDF);
-  if Owner is TPDFBrowserForm then
-    TPDFBrowserForm(Owner).SetAttachmentIndicator(FAttachmentList.Items.Count > 0);
+  DisplaySavedPDF(NewPDF);
   MessageDlg('Die PDF-Datei ohne die ausgewählte Anlage wurde gespeichert:' +
     sLineBreak + NewPDF, mtInformation, [mbOK], 0);
 end;
@@ -5369,10 +5366,9 @@ begin
         PDFForm.Left := PDFForm.Left + Offset;
         PDFForm.Top := PDFForm.Top + Offset;
 
-        PDFForm.StandalonePDFMode := True;
+        PDFForm.StandalonePDFMode := False;
         ShowPDFInTabs(PDFForm);
 
-        Application.ProcessMessages;
 
         Inc(PDFCount);
       end;
@@ -5393,10 +5389,9 @@ begin
         PDFForm.Left := PDFForm.Left + Offset;
         PDFForm.Top := PDFForm.Top + Offset;
 
-        PDFForm.StandalonePDFMode := True;
+        PDFForm.StandalonePDFMode := False;
         ShowPDFInTabs(PDFForm);
 
-        Application.ProcessMessages;
 
         Inc(PDFCount);
       end;

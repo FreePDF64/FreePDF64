@@ -1,4 +1,4 @@
-object PDFBrowserForm: TPDFBrowserForm
+﻿object PDFBrowserForm: TPDFBrowserForm
   Left = 303
   Top = 133
   Margins.Left = 4
@@ -49,6 +49,7 @@ object PDFBrowserForm: TPDFBrowserForm
     AllowSingleSignOnUsingOSPrimaryAccount = False
     OnInitializationError = WVBrowserPDFInitializationError
     OnAfterCreated = WVBrowserPDFAfterCreated
+    OnNavigationCompleted = WVBrowserPDFNavigationCompleted
     Left = 200
     Top = 160
   end

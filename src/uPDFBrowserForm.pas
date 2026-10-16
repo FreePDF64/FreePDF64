@@ -28,6 +28,9 @@ type
 
     procedure TimerPDFTimer(Sender: TObject);
     procedure WVBrowserPDFAfterCreated(Sender: TObject);
+    procedure WVBrowserPDFNavigationCompleted(Sender: TObject;
+      const aWebView: ICoreWebView2;
+      const aArgs: ICoreWebView2NavigationCompletedEventArgs);
     procedure WVBrowserPDFInitializationError(Sender: TObject;
       aErrorCode: HRESULT; const aErrorMessage: wvstring);
     procedure FormResize(Sender: TObject);
@@ -44,7 +47,13 @@ type
     FBrowserCreateStarted: Boolean;
     FBrowserCreated: Boolean;
     FNavigationDone: Boolean;
+    FNavigationSucceeded: Boolean;
+    FNavigationRetries: Integer;
     FBrowserError: string;
+    FWatchdog: TTimer;
+    FCreateTick: Cardinal;
+    FNavigateTick: Cardinal;
+    FRecoveryCount: Integer;
     FClosing: Boolean;
     FToolbar: TPanel;
     FPageLabel: TLabel;
@@ -66,6 +75,7 @@ type
     function ExecuteQpdf(const ACommandLine: string; out AExitCode: DWORD): Boolean;
 
     procedure WMNavigatePDF(var Msg: TMessage); message WM_APP + 191;
+    procedure ActivePDFWatchdog(Sender: TObject);
     procedure StartBrowser;
     procedure BuildNavigationToolbar;
     procedure NumberFieldMouseEnter(Sender: TObject);
@@ -86,6 +96,7 @@ type
     procedure SetAttachmentIndicator(AHasAttachments: Boolean);
     procedure RequestPDFLoad;
     property PDFNavigationStarted: Boolean read FNavigationDone;
+    property PDFNavigationSucceeded: Boolean read FNavigationSucceeded;
     property TabbedPDFMode: Boolean read FTabbedPDFMode write FTabbedPDFMode;
     property SearchTerm: string read FSearchTerm write FSearchTerm;
     property StartPage: Integer read FStartPage write FStartPage;
@@ -96,6 +107,32 @@ type
 implementation
 
 {$R *.dfm}
+
+procedure TPDFBrowserForm.ActivePDFWatchdog(Sender: TObject);
+begin
+  if FClosing or not FTabbedPDFMode or not FLoadRequested or
+     not (Parent is TTabSheet) or
+     (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) then Exit;
+  if not Visible or (WVWindowParentPDF.ClientWidth <= 0) or
+     (WVWindowParentPDF.ClientHeight <= 0) then Exit;
+  if not FBrowserCreated then
+  begin
+    if FBrowserCreateStarted and (GetTickCount - FCreateTick > 12000) then
+    begin
+      FCreateTick := GetTickCount;
+    end;
+    if not FBrowserCreateStarted then RefreshActiveTabPDF;
+  end
+  else if not FNavigationDone then
+    RefreshActiveTabPDF
+  else if not FNavigationSucceeded and (GetTickCount - FNavigateTick > 15000) and
+          (FRecoveryCount < 2) then
+  begin
+    Inc(FRecoveryCount);
+    FNavigationDone := False;
+    RefreshActiveTabPDF;
+  end;
+end;
 
 procedure TPDFBrowserForm.CreateParams(var Params: TCreateParams);
 begin
@@ -422,6 +459,8 @@ begin
   // Browser ist bereits erstellt: TimerPDF wuerde wegen
   // FBrowserCreateStarted abbrechen und die Ansicht leer lassen.
   FNavigationDone := False;
+  FNavigationSucceeded := False;
+  FNavigationRetries := 0;
   FPageNavigationTimer.Enabled := False;
   FPageNavigationTimer.Interval := 500;
   FPageNavigationTimer.Enabled := True;
@@ -433,6 +472,13 @@ var
 begin
   Position := poDesigned;
 
+  FWatchdog := TTimer.Create(Self);
+  FWatchdog.Interval := 1000;
+  FWatchdog.OnTimer := ActivePDFWatchdog;
+  FWatchdog.Enabled := True;
+  FCreateTick := GetTickCount;
+  FNavigateTick := GetTickCount;
+  FRecoveryCount := 0;
   FLoadRequested := False;
   FBrowserCreateStarted := False;
   FBrowserCreated := False;
@@ -508,19 +554,59 @@ procedure TPDFBrowserForm.WMNavigatePDF(var Msg: TMessage);
 begin
   if FClosing or (csDestroying in ComponentState) or
      not FBrowserCreated or FNavigationDone then Exit;
-  if FTabbedPDFMode and
-     ((not (Parent is TTabSheet)) or
-      (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent))) then Exit;
-  if not Visible or (WVWindowParentPDF.ClientWidth <= 0) or
-     (WVWindowParentPDF.ClientHeight <= 0) then Exit;
+  // Eine bereits erstellte WebView2-Instanz darf auch nach einem
+  // Registerwechsel ihren ausstehenden PDF-Ladeauftrag abschliessen.
+  // Sonst geht insbesondere beim ersten Register Navigate verloren.
+  if (WVWindowParentPDF.ClientWidth <= 0) or
+     (WVWindowParentPDF.ClientHeight <= 0) then
+  begin
+    Exit;
+  end;
   try
     WVWindowParentPDF.UpdateSize;
+    FNavigationSucceeded := False;
+    FNavigateTick := GetTickCount;
     WVBrowserPDF.Navigate(BuildPdfUrl(FStartPage));
     FNavigationDone := True;
 
   except
     on E: Exception do
-      Exit;
+    begin
+      // Ein fehlgeschlagener Navigate-Aufruf darf den Tab nicht sperren.
+      FNavigationDone := False;
+      if FNavigationRetries < 3 then
+      begin
+        Inc(FNavigationRetries);
+        FPageNavigationTimer.Enabled := False;
+        FPageNavigationTimer.Interval := 800;
+        FPageNavigationTimer.Enabled := True;
+      end;
+    end;
+  end;
+end;
+
+procedure TPDFBrowserForm.WVBrowserPDFNavigationCompleted(Sender: TObject;
+  const aWebView: ICoreWebView2;
+  const aArgs: ICoreWebView2NavigationCompletedEventArgs);
+var
+  NavSuccess: Integer;
+begin
+  if FClosing or (csDestroying in ComponentState) then Exit;
+  NavSuccess := 0;
+  if (aArgs <> nil) and Succeeded(aArgs.get_IsSuccess(NavSuccess)) then
+  begin
+    FNavigationSucceeded := NavSuccess <> 0;
+    if FNavigationSucceeded then FNavigationRetries := 0;
+  end
+  else
+    FNavigationSucceeded := False;
+  if not FNavigationSucceeded and (FNavigationRetries < 3) then
+  begin
+    Inc(FNavigationRetries);
+    FNavigationDone := False;
+    FPageNavigationTimer.Enabled := False;
+    FPageNavigationTimer.Interval := 700;
+    FPageNavigationTimer.Enabled := True;
   end;
 end;
 
@@ -530,7 +616,13 @@ begin
   FLoadRequested := True;
   RefreshActiveTabPDF;
   if FBrowserCreated and not FNavigationDone and HandleAllocated then
-    PostMessage(Handle, WM_APP + 191, 0, 0);
+    PostMessage(Handle, WM_APP + 191, 0, 0)
+  else if FBrowserCreateStarted and not FBrowserCreated then
+  begin
+    // CreateBrowser ist asynchron: Ladeauftrag bis AfterCreated behalten.
+    TimerPDF.Interval := 250;
+    TimerPDF.Enabled := True;
+  end;
 end;
 
 procedure TPDFBrowserForm.RefreshActiveTabPDF;
@@ -568,6 +660,8 @@ begin
   end
   else if FLoadRequested and not FBrowserCreateStarted then
     StartBrowser;
+  // Falls WebView2 gerade asynchron erstellt wird, bleibt FLoadRequested
+  // gesetzt und AfterCreated uebernimmt die Navigation.
 end;
 
 procedure TPDFBrowserForm.FormResize(Sender: TObject);
@@ -863,6 +957,8 @@ begin
   PDFFileName := AFileName;
   Caption := AFileName;
   FStartPage := 1;
+  FNavigationSucceeded := False;
+  FNavigationRetries := 0;
   if Assigned(FPageEdit) then FPageEdit.Text := '1';
   if Assigned(FAttachmentsButton) then
   begin
@@ -872,9 +968,13 @@ begin
       FAttachmentsButton.Caption := 'Anlagen';
   end;
   FNavigationDone := False;
+  // Auch bei bereits erstelltem Browser den asynchronen Ladeauftrag
+  // ueber den regulaeren Lazy-Loading-Pfad anstossen.
+  FLoadRequested := True;
   if FBrowserCreated then
   begin
     FPageNavigationTimer.Enabled := False;
+    FPageNavigationTimer.Interval := 250;
     FPageNavigationTimer.Enabled := True;
   end
   else
@@ -1008,8 +1108,19 @@ begin
   if GlobalWebView2Loader.Initialized then
   begin
     FBrowserCreateStarted := True;
-
-    WVBrowserPDF.CreateBrowser(WVWindowParentPDF.Handle);
+    FCreateTick := GetTickCount;
+    // CreateBrowser liefert Boolean: False bedeutet, dass gar kein
+    // asynchroner Erstellungsauftrag gestartet wurde.
+    if not WVBrowserPDF.CreateBrowser(WVWindowParentPDF.Handle) then
+    begin
+      FBrowserCreateStarted := False;
+      FBrowserError := 'CreateBrowser returned False';
+      if FTabbedPDFMode and FLoadRequested then
+      begin
+        TimerPDF.Interval := 500;
+        TimerPDF.Enabled := True;
+      end;
+    end;
   end
   else
     TimerPDF.Enabled := True;
@@ -1020,9 +1131,15 @@ begin
   try
 
   TimerPDF.Enabled := False;
-  if FClosing or FBrowserCreateStarted or
-     (csDestroying in ComponentState) or
+  if FClosing or (csDestroying in ComponentState) or
      (FTabbedPDFMode and not FLoadRequested) then Exit;
+
+  if FBrowserCreateStarted then
+  begin
+    // Solange WebView2 noch initialisiert, keine zweite Instanz erstellen.
+    // Der eigentliche Navigate-Aufruf erfolgt in AfterCreated.
+    Exit;
+  end;
 
   if FTabbedPDFMode and
      ((not (Parent is TTabSheet)) or
@@ -1063,6 +1180,7 @@ begin
     Exit;
 
   FBrowserCreated := True;
+  TimerPDF.Enabled := False;
 
   // Inaktive TabSheets koennen momentan 0x0 Pixel gross sein.
   // Die Groesse erst beim Aktivieren aktualisieren; Navigation
@@ -1077,9 +1195,9 @@ begin
   FPageEdit.Text := IntToStr(FStartPage);
   // Nicht im asynchronen WebView2-Callback navigieren.
   // Nur der aktive Tab navigiert; der erste Tab wird genauso behandelt.
-  if HandleAllocated and ((not FTabbedPDFMode) or
-     ((Parent is TTabSheet) and
-      (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent)))) then
+  // Auch ein inzwischen inaktives Register muss den begonnenen
+  // asynchronen Erstellungsablauf zu Ende fuehren koennen.
+  if HandleAllocated and FLoadRequested then
     PostMessage(Handle, WM_APP + 191, 0, 0);
 
   // Asynchrone WebView2-Initialisierung darf NICHT den aktiven Tab
@@ -1120,9 +1238,21 @@ begin
     Exit;
 
   FBrowserCreated := False;
+  FBrowserCreateStarted := False;
   FBrowserError := aErrorMessage;
+  FBrowserCreateStarted := False;
 
-  ShowMessage(aErrorMessage);
+  if FTabbedPDFMode then
+  begin
+    if FLoadRequested and (Parent is TTabSheet) and
+       (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent)) then
+    begin
+      TimerPDF.Interval := 1000;
+      TimerPDF.Enabled := True;
+    end;
+  end
+  else
+    ShowMessage(aErrorMessage);
   except
     on E: Exception do
     begin
