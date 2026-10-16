@@ -150,3 +150,6 @@ Here are some ideas to get you started:
 ### Suche
 ![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Suche.jpg)
 
+### FreePDF64-Viewer
+![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Viewer.jpg)
+
