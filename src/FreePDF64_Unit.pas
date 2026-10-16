@@ -670,6 +670,7 @@ type
       PDF_UeberwachungsDatei: string;
       FormLoaded: Boolean;
       procedure AllesSpeichern;
+      procedure ShowMainWindowFromPDF(Sender: TObject);
       procedure FavClose;
       procedure PlaySoundFile(FileName: string);
       procedure WMSysCommand(var Message: TWMSysCommand); message WM_SYSCOMMAND;
@@ -2813,6 +2814,10 @@ begin
           WriteString('History', 'History Right' + IntToStr(I - 1),
             ComboBoxR.Items[I - 1]);
       WriteInteger('Start', 'Counter', Counter);
+      WriteInteger('Start', 'Sort ColumnL', FSortColumn);
+      WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
+      WriteBool('Start', 'SortDir ColumnL', FSortAscending);
+      WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -3398,10 +3403,6 @@ begin
     WriteString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
     WriteBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
     WriteBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
-    WriteInteger('Start', 'Sort ColumnL', FSortColumn);
-    WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
-    WriteBool('Start', 'SortDir ColumnL', FSortAscending);
-    WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     // Linke, rechte Column-Breite schreiben
     WriteInteger('Start', 'ColumnsL Width0', LMDShellList1.Column[0].Width);
     WriteInteger('Start', 'ColumnsL Width1', LMDShellList1.Column[1].Width);
@@ -6143,6 +6144,16 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.ShowMainWindowFromPDF(Sender: TObject);
+begin
+  if WindowState = wsMinimized then
+    WindowState := wsNormal;
+  PDFTabsMainFormWasShown := True;
+  Show;
+  BringToFront;
+  SetForegroundWindow(Handle);
+end;
+
 procedure TFreePDF64_Form.FormCreate(Sender: TObject);
 var
   I: Integer;
@@ -6151,6 +6162,7 @@ var
   Entry: string;
   PDFMenuItem, PDFCheckMenuItem, PDFLastReportMenuItem: TMenuItem;
 begin
+  PDFTabsShowMainForm := ShowMainWindowFromPDF;
   // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
   PDFMenuItem := TMenuItem.Create(MainMenu1);
   PDFMenuItem.Caption := 'PDF-Dateien mit dem FreePDF64-Viewer verknüpfen...';
@@ -10813,7 +10825,9 @@ begin
             StartUp.hStdError := 0;
           end;
         end;
-        // Markierte Datei(en) mit einem Anzeigeprogramm anzeigen
+        // Auch beim automatischen PostScript-Druckauftrag die erstellte
+        // PDF nur bei aktivierter AnzeigenCB im Register-Anzeiger oeffnen.
+        // ShowPDFInTabs aktiviert das PDF-Fenster im Vordergrund.
         if Einstellungen_Form.AnzeigenCB.Checked then
         begin
           if Einstellungen_Form.AuswahlRG.ItemIndex in [0, 11] then // PDF anzeigen
@@ -10845,15 +10859,16 @@ begin
             // Pause von 1 sec. einbauen...
             Sleep(1000);
 
-            // Anzeigen in der PDFForm
-            if Encrypt_Form.EncryptCombo.ItemIndex = 1 then
+            // Anzeigen in der PDFForm; nur eine tatsaechlich erstellte PDF oeffnen.
+            if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and FileExists(Ziel) then
             begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Ziel;
               ShowPDFInTabs(PDFForm);
 
               Application.ProcessMessages;
-            end else
+            end else if (Encrypt_Form.EncryptCombo.ItemIndex <> 1) and
+                        FileExists(Zielanz) then
             begin
               PDFForm := TPDFBrowserForm.Create(Self);
               PDFForm.PDFFileName := Zielanz;

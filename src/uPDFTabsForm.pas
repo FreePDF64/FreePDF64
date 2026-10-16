@@ -19,7 +19,6 @@ type
     FDraggingTab: Boolean;
     FCloseButton: TButton;
     FOpenButton: TButton;
-    FMainWindowButton: TButton;
     FLastNormalBounds: TRect;
     FRestoringWindowSettings: Boolean;
     FAddingPDF: Boolean;
@@ -39,7 +38,6 @@ type
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
-    procedure ShowMainWindowClick(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
     procedure LoadWindowSettings;
@@ -298,12 +296,6 @@ begin
   end;
 end;
 
-procedure TPDFTabsForm.ShowMainWindowClick(Sender: TObject);
-begin
-  if Assigned(PDFTabsShowMainForm) then
-    PDFTabsShowMainForm(Sender);
-end;
-
 procedure TPDFTabsForm.OpenPDFClick(Sender: TObject);
 var
   Dialog: TFileOpenDialog;
@@ -432,13 +424,6 @@ begin
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
-  FMainWindowButton := TButton.Create(Self);
-  FMainWindowButton.Parent := Header;
-  FMainWindowButton.Align := alLeft;
-  FMainWindowButton.Width := Max(MulDiv(165, Dpi, 96),
-    Canvas.TextWidth('FreePDF64 öffnen') + MulDiv(28, Dpi, 96));
-  FMainWindowButton.Caption := 'FreePDF64 öffnen';
-  FMainWindowButton.OnClick := ShowMainWindowClick;
   FPendingExplorerFiles := TStringList.Create;
   FExplorerBatchTimer := TTimer.Create(Self);
   FExplorerBatchTimer.Enabled := False;
