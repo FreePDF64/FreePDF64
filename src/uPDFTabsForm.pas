@@ -19,6 +19,7 @@ type
     FDraggingTab: Boolean;
     FCloseButton: TButton;
     FOpenButton: TButton;
+    FMainWindowButton: TButton;
     FLastNormalBounds: TRect;
     FRestoringWindowSettings: Boolean;
     FAddingPDF: Boolean;
@@ -34,9 +35,11 @@ type
     procedure ActivationTimerTick(Sender: TObject);
     procedure ExplorerBatchTimerTick(Sender: TObject);
     procedure RestoreInitialWindow;
+    procedure BringViewerToForeground;
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
+    procedure ShowMainWindowClick(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
     procedure LoadWindowSettings;
@@ -76,10 +79,15 @@ var
   PDFTabAttachmentsInitializer: TPDFTabAttachmentsProc;
   // True nur bei einem eigenstaendigen Explorer-Start mit PDF-Parametern.
   PDFTabsExplorerOnlyProcess: Boolean = False;
+  // Wurde das Hauptfenster im Explorer-Prozess explizit geoeffnet?
+  PDFTabsMainFormWasShown: Boolean = False;
 
 procedure ShowEmptyPDFViewer;
 procedure ShowPDFInTabs(APDF: TPDFBrowserForm);
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
+
+var
+  PDFTabsShowMainForm: TNotifyEvent = nil;
 
 implementation
 
@@ -208,12 +216,8 @@ begin
   // Erst nach dem Abarbeiten der Warteschlange aktivieren.
   if LastOpenedPDF <> nil then
     ActivatePDF(LastOpenedPDF);
-  if not FInitialWindowOffscreen then
-  begin
-    if IsIconic(Handle) then ShowWindow(Handle, SW_RESTORE);
-    BringToFront;
-    SetForegroundWindow(Handle);
-  end;
+  if LastOpenedPDF <> nil then
+    BringViewerToForeground;
 end;
 
 function TabsIniFileName: string;
@@ -292,6 +296,12 @@ begin
   finally
     Ini.Free;
   end;
+end;
+
+procedure TPDFTabsForm.ShowMainWindowClick(Sender: TObject);
+begin
+  if Assigned(PDFTabsShowMainForm) then
+    PDFTabsShowMainForm(Sender);
 end;
 
 procedure TPDFTabsForm.OpenPDFClick(Sender: TObject);
@@ -422,6 +432,13 @@ begin
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
+  FMainWindowButton := TButton.Create(Self);
+  FMainWindowButton.Parent := Header;
+  FMainWindowButton.Align := alLeft;
+  FMainWindowButton.Width := Max(MulDiv(165, Dpi, 96),
+    Canvas.TextWidth('FreePDF64 öffnen') + MulDiv(28, Dpi, 96));
+  FMainWindowButton.Caption := 'FreePDF64 öffnen';
+  FMainWindowButton.OnClick := ShowMainWindowClick;
   FPendingExplorerFiles := TStringList.Create;
   FExplorerBatchTimer := TTimer.Create(Self);
   FExplorerBatchTimer.Enabled := False;
@@ -447,6 +464,25 @@ begin
   if PDFTabsWindow = Self then
     PDFTabsWindow := nil;
   inherited Destroy;
+end;
+
+procedure TPDFTabsForm.BringViewerToForeground;
+begin
+  // Explorer-Aufruf: Fenster sichtbar machen, ohne dauerhaft TopMost zu sein.
+  if FInitialWindowOffscreen then
+    RestoreInitialWindow;
+  if IsIconic(Handle) then
+    ShowWindow(Handle, SW_RESTORE)
+  else if not Visible then
+    Show;
+  // Windows kann SetForegroundWindow bei fremden Prozessen verweigern.
+  // Kurzes Anheben in der Z-Reihenfolge stellt die Sichtbarkeit sicher.
+  SetWindowPos(Handle, HWND_TOPMOST, 0, 0, 0, 0,
+    SWP_NOMOVE or SWP_NOSIZE or SWP_SHOWWINDOW);
+  SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0,
+    SWP_NOMOVE or SWP_NOSIZE or SWP_SHOWWINDOW);
+  BringToFront;
+  SetForegroundWindow(Handle);
 end;
 
 procedure TPDFTabsForm.RestoreInitialWindow;
@@ -547,13 +583,9 @@ begin
   // Wichtig: auch bei caHide speichern und die Tabs entfernen.
   SaveWindowSettings;
   ClearAllPDFTabs;
-  if PDFTabsExplorerOnlyProcess then
-  begin
-    Action := caHide;
+  Action := caHide;
+  if PDFTabsExplorerOnlyProcess and not PDFTabsMainFormWasShown then
     Application.Terminate;
-  end
-  else
-    Action := caHide;
 end;
 
 procedure TPDFTabsForm.WMLoadActivePDF(var Msg: TMessage);
@@ -869,7 +901,12 @@ begin
   begin
     FFirstPDFInitialized := False;
     if PDFTabsExplorerOnlyProcess then
-      Close
+    begin
+      if PDFTabsMainFormWasShown then
+        Hide
+      else
+        Close;
+    end
     else if Application.MainForm = Self then
       Close
     else
