@@ -82,8 +82,8 @@ Für alle, die genauer wissen möchten, was in einer PDF-Datei steckt, bietet Fr
 
 Viele praktische Details erleichtern die tägliche Arbeit mit Dateien und Dokumenten.
 
-- Erstellte PDF-, PS-, TXT- und TIFF-Dateien direkt nach der Verarbeitung im zugewiesenen Anzeiger öffnen.
-- Alles im PDF-Viewer: Eingebettete Anlagen in PDF-Dateien extrahieren, hinzufügen, entfernen. PDF-Seiten auf Wunsch um 90, 180 oder 270 Grad drehen.
+- Erstellte PDF-, PS-, TXT- und TIFF-Dateien direkt nach der Verarbeitung im Anzeiger (PDF's im FreePDF64-Viewer) öffnen.
+- Alles im FreePDF64-Viewer: Eingebettete Anlagen in PDF-Dateien extrahieren, hinzufügen, entfernen. PDF-Seiten auf Wunsch um 90, 180 oder 270 Grad drehen.
 - Markierte Dateien bequem per E-Mail versenden – ähnlich der Windows-Funktion „Senden an“.
 - Neue eingehende Dateien automatisch überwachen und verarbeiten.
 - Zahlreiche Konvertierungs- und Bearbeitungsschritte über ein gemeinsames Programm steuern.
