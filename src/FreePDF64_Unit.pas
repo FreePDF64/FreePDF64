@@ -2813,10 +2813,6 @@ begin
           WriteString('History', 'History Right' + IntToStr(I - 1),
             ComboBoxR.Items[I - 1]);
       WriteInteger('Start', 'Counter', Counter);
-      WriteInteger('Start', 'Sort ColumnL', FSortColumn);
-      WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
-      WriteBool('Start', 'SortDir ColumnL', FSortAscending);
-      WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -3402,6 +3398,10 @@ begin
     WriteString('Start', 'Watermark/Stamp', Wasserzeichen_Form.Edit1.Text);
     WriteBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
     WriteBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
+    WriteInteger('Start', 'Sort ColumnL', FSortColumn);
+    WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
+    WriteBool('Start', 'SortDir ColumnL', FSortAscending);
+    WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     // Linke, rechte Column-Breite schreiben
     WriteInteger('Start', 'ColumnsL Width0', LMDShellList1.Column[0].Width);
     WriteInteger('Start', 'ColumnsL Width1', LMDShellList1.Column[1].Width);
