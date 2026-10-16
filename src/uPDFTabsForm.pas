@@ -44,6 +44,7 @@ type
     procedure DestroyWnd; override;
     procedure RefreshAttachmentPositions;
     procedure TabsChange(Sender: TObject);
+    procedure TabsMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure DrawPDFTab(Control: TCustomTabControl; TabIndex: Integer;
       const Rect: TRect; Active: Boolean);
     procedure WindowMoved(var Msg: TWMMove); message WM_MOVE;
@@ -364,6 +365,8 @@ begin
   FTabs.Align := alClient;
   FTabs.OnMouseDown := TabMouseDown;
   FTabs.OnMouseUp := TabMouseUp;
+  FTabs.ShowHint := True;
+  FTabs.OnMouseMove := TabsMouseMove;
   FTabs.OnChange := TabsChange;
   FTabs.OwnerDraw := True;
   FTabs.OnDrawTab := DrawPDFTab;
@@ -721,6 +724,26 @@ begin
   InflateRect(R, -7, -2);
   DrawText(FTabs.Canvas.Handle, PChar(S), Length(S), R,
     DT_SINGLELINE or DT_VCENTER or DT_CENTER or DT_END_ELLIPSIS);
+end;
+
+procedure TPDFTabsForm.TabsMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+var
+  TabIndex: Integer;
+  NewHint: string;
+begin
+  // TPageControl empfaengt die Mausereignisse auf den Registerreitern.
+  // TTabSheet.Hint allein wird dort von Windows nicht angezeigt.
+  TabIndex := FTabs.IndexOfTabAt(X, Y);
+  if (TabIndex >= 0) and (TabIndex < FTabs.PageCount) then
+    NewHint := FTabs.Pages[TabIndex].Hint
+  else
+    NewHint := '';
+  if FTabs.Hint <> NewHint then
+  begin
+    FTabs.Hint := NewHint;
+    Application.CancelHint;
+  end;
 end;
 
 procedure TPDFTabsForm.TabsChange(Sender: TObject);

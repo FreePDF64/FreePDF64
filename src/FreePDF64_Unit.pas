@@ -11113,6 +11113,22 @@ begin
   CommandLine := '"' + ExePath + '" "%1"';
   RegisteredAppsPath := 'Software\FreePDF64\Capabilities';
 
+  if MessageDlg(
+    'Möchten Sie FreePDF64 als Standardprogramm für PDF-Dateien einrichten?' +
+    sLineBreak + sLineBreak +
+    'Vorteile einer PDF-Verknüpfung:' + sLineBreak +
+    '• PDF-Dateien lassen sich per Doppelklick im Windows-Explorer' +
+    ' direkt mit dem FreePDF64-Viewer öffnen' + sLineBreak +
+    '• Sie müssen FreePDF64 nicht vorher starten oder die PDF-Datei' +
+    ' manuell auswählen' + sLineBreak +
+    sLineBreak +
+    'Wenn Sie auf Ja klicken, wird die bisherige Verknüpfungsfunktion' +
+    ' gestartet. Die Auswahl als' + #13 +
+    'Standard-App bestätigen Sie anschließend in den Windows-Einstellungen.' + sLineBreak +
+    sLineBreak + 'Möchten Sie fortfahren?',
+  mtInformation, [mbYes, mbNo], 0) <> mrYes then
+    Exit;
+
   // Registrierung nur für den aktuellen Benutzer; keine Adminrechte nötig.
   Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
   try

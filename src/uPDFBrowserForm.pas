@@ -604,6 +604,9 @@ begin
   FGoPageButton := TButton.Create(Self);
   FGoPageButton.Parent := FToolbar;
   FGoPageButton.Caption := 'Gehe zu';
+  // Eigenen Hinweis setzen, damit nicht der Dateipfad des Tabs geerbt wird.
+  FGoPageButton.ShowHint := True;
+  FGoPageButton.Hint := 'Zur angegebenen PDF-Seite wechseln';
   FGoPageButton.Left := 96;
   FGoPageButton.Top := 6;
   FGoPageButton.Width := 76;
