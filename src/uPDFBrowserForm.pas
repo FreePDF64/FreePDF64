@@ -82,6 +82,8 @@ type
     PDFFileName: string;
     procedure UpdateAttachmentWindowPosition;
     procedure RefreshActiveTabPDF;
+    procedure OpenSavedPDF(const AFileName: string; AHasAttachments: Boolean);
+    procedure SetAttachmentIndicator(AHasAttachments: Boolean);
     procedure RequestPDFLoad;
     property PDFNavigationStarted: Boolean read FNavigationDone;
     property TabbedPDFMode: Boolean read FTabbedPDFMode write FTabbedPDFMode;
@@ -417,10 +419,12 @@ begin
   // --------------------------------------------------
   // PDF im WebView2 neu laden
   // --------------------------------------------------
-  TimerPDF.Enabled := False;
-  WVBrowserPDF.Navigate('about:blank');
-  TimerPDF.Interval := 500;
-  TimerPDF.Enabled := True;
+  // Browser ist bereits erstellt: TimerPDF wuerde wegen
+  // FBrowserCreateStarted abbrechen und die Ansicht leer lassen.
+  FNavigationDone := False;
+  FPageNavigationTimer.Enabled := False;
+  FPageNavigationTimer.Interval := 500;
+  FPageNavigationTimer.Enabled := True;
 end;
 
 procedure TPDFBrowserForm.FormCreate(Sender: TObject);
@@ -803,6 +807,15 @@ begin
   WVWindowParentPDF.SendToBack;
 end;
 
+procedure TPDFBrowserForm.SetAttachmentIndicator(AHasAttachments: Boolean);
+begin
+  if not Assigned(FAttachmentsButton) then Exit;
+  if AHasAttachments then
+    FAttachmentsButton.Caption := '-> Anlagen'
+  else
+    FAttachmentsButton.Caption := 'Anlagen';
+end;
+
 procedure TPDFBrowserForm.ToggleAttachmentsClick(Sender: TObject);
 begin
   if (AttachmentWindowHandle = 0) or
@@ -839,7 +852,33 @@ begin
   LPath := StringReplace(ExpandFileName(PDFFileName), '\', '/', [rfReplaceAll]);
   // URL-Kodierung der Leerzeichen verhindert fehlerhafte file-URLs.
   LPath := StringReplace(LPath, ' ', '%20', [rfReplaceAll]);
-  Result := 'file:///' + LPath + '#page=' + IntToStr(Max(1, APage));
+  Result := 'file:///' + LPath + '?freepdf64_refresh=' +
+    IntToStr(GetTickCount64) + '#page=' + IntToStr(Max(1, APage));
+end;
+
+procedure TPDFBrowserForm.OpenSavedPDF(const AFileName: string;
+  AHasAttachments: Boolean);
+begin
+  if FClosing or not FileExists(AFileName) then Exit;
+  PDFFileName := AFileName;
+  Caption := AFileName;
+  FStartPage := 1;
+  if Assigned(FPageEdit) then FPageEdit.Text := '1';
+  if Assigned(FAttachmentsButton) then
+  begin
+    if AHasAttachments then
+      FAttachmentsButton.Caption := '-> Anlagen'
+    else
+      FAttachmentsButton.Caption := 'Anlagen';
+  end;
+  FNavigationDone := False;
+  if FBrowserCreated then
+  begin
+    FPageNavigationTimer.Enabled := False;
+    FPageNavigationTimer.Enabled := True;
+  end
+  else
+    RequestPDFLoad;
 end;
 
 procedure TPDFBrowserForm.GoToPageClick(Sender: TObject);
@@ -859,7 +898,7 @@ begin
     // Ein Zwischenaufruf verhindert, dass WebView2 eine reine Fragment-
     // Änderung bei derselben PDF-Datei ignoriert.
     FPageNavigationTimer.Enabled := False;
-    WVBrowserPDF.Navigate('about:blank');
+    FNavigationDone := False;
     FPageNavigationTimer.Enabled := True;
   end;
 end;

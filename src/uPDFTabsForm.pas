@@ -283,13 +283,36 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
   LastOpenedPDF: TPDFBrowserForm;
+  ActiveTab: TTabSheet;
+  ActivePDF: TPDFBrowserForm;
+  ActiveDir: string;
+  J: Integer;
 begin
   LastOpenedPDF := nil;
+  ActivePDF := nil;
+  ActiveDir := '';
+  ActiveTab := FTabs.ActivePage;
+  if Assigned(ActiveTab) then
+    for J := 0 to ActiveTab.ControlCount - 1 do
+      if ActiveTab.Controls[J] is TPDFBrowserForm then
+      begin
+        ActivePDF := TPDFBrowserForm(ActiveTab.Controls[J]);
+        Break;
+      end;
+  if Assigned(ActivePDF) and (ActivePDF.PDFFileName <> '') then
+  begin
+    ActiveDir := ExtractFilePath(ActivePDF.PDFFileName);
+    if not DirectoryExists(ActiveDir) then
+      ActiveDir := '';
+  end;
   Dialog := TFileOpenDialog.Create(Self);
   try
     Dialog.Title := 'Datei(en) öffnen';
-    // Windows-Shellordner 'Dieser PC' (Laufwerke) statt letztem Verzeichnis.
-    Dialog.DefaultFolder := '::{20D04FE0-3AEA-1069-A2D8-08002B30309D}';
+    // Ordner der aktiven PDF; ohne PDF oder bei fehlendem Ordner 'Dieser PC'.
+    if ActiveDir <> '' then
+      Dialog.DefaultFolder := ActiveDir
+    else
+      Dialog.DefaultFolder := '::{20D04FE0-3AEA-1069-A2D8-08002B30309D}';
     Dialog.FileName := '';
     with Dialog.FileTypes.Add do
     begin
