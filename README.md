@@ -33,7 +33,7 @@ Dabei geht FreePDF64 weit über die reine PDF-Erstellung hinaus. Umfangreiche Ko
 
 ## Das Highlight: Drucken, konvertieren, fertig!
 
-**Aus jeder druckfähigen Windows-Anwendung direkt PDF-Dateien oder Bilder erstellen – und auf Wunsch sofort anzeigen lassen.**
+**Aus jeder druckfähigen Windows-Anwendung direkt PDF-Dateien erstellen – und auf Wunsch sofort im komfortablen FreePDF64-Viewer anzeigen lassen.**
 
 Mit dem integrierten FreePDF64-PostScript-Drucker verwandelst du Druckausgaben beispielsweise aus Office-Programmen, Texteditoren oder anderen Windows-Anwendungen in die gewünschten Dateiformate.
 
