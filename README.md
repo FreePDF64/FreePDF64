@@ -1,6 +1,29 @@
-# FreePDF64 – Die vielseitige Freeware für PDF-Erstellung und PDF-Bearbeitung
+# FreePDF64 – Kostenlose PDF-Komplettlösung für Windows
 
-**PDFs erstellen, bearbeiten, konvertieren und verwalten – einfach, flexibel und direkt aus Windows heraus.**
+**PDFs erstellen, bearbeiten, konvertieren und verwalten – kostenlos für private und kommerzielle Nutzung.**
+
+## 📥 Download
+
+**➡️ [FreePDF64 herunterladen – Downloads und Installationsdateien](https://github.com/FreePDF64/FreePDF64/tree/main/releases/download)**
+
+[Benutzerhandbuch (PDF)](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf) · [GitHub-Projekt](https://github.com/FreePDF64/FreePDF64)
+
+**Lizenz:** Freeware – private und kommerzielle Nutzung kostenlos  
+**Betriebssystem:** Windows (genaue unterstützte Versionen bitte ergänzen)  
+**Aktuelle Version:** Bitte Versionsnummer ergänzen
+
+## ⭐ Die wichtigsten Funktionen auf einen Blick
+
+- **PDF-Drucker:** Dokumente aus nahezu jeder druckfähigen Windows-Anwendung als PDF oder Bilddatei ausgeben.
+- **PDF-Anzeiger:** Mehrere PDFs in Registerkarten öffnen, Tabs durchsuchen und geschlossene PDFs wiederherstellen.
+- **PDF-Bearbeitung:** Dateien zusammenführen, komprimieren, Seiten entnehmen sowie Wasserzeichen und Stempel hinzufügen.
+- **Konvertierung:** PDF-, PostScript- und Bilddateien in zahlreiche Ausgabeformate umwandeln.
+- **Sicherheit und Archivierung:** PDF-Verschlüsselung und Erstellung von PDF/A-Dokumenten.
+- **Automatisierung:** Neu eingehende Dateien per Verzeichnisüberwachung automatisch verarbeiten.
+
+**[🖼️ Screenshots ansehen](#screenshots)**
+
+---
 
 FreePDF64 ist eine leistungsstarke, kostenlose Windows-Anwendung rund um PDF-Dateien. Ob PDF-Erstellung aus nahezu jeder druckfähigen Anwendung, das Zusammenführen mehrerer Dokumente, das Komprimieren bestehender PDFs oder das Hinzufügen von Wasserzeichen und Stempeln: FreePDF64 vereint zahlreiche praktische Funktionen in einem Programm.
 
@@ -27,7 +50,7 @@ Besonders praktisch ist die automatische Verzeichnisüberwachung: FreePDF64 erke
 - **Integrierter Druckertreiber:** PDF-Dateien aus praktisch jeder druckfähigen Windows-Anwendung erstellen.
 - **Automatische Dateiverarbeitung:** Eingehende Dateien überwachen, erkennen und in das gewünschte Format umwandeln.
 - **Direkte Anzeige:** Erstellte PDFs und unterstützte Dateiformate unmittelbar nach der Verarbeitung öffnen.
-- **PDF-Anzeige im FreePDF64-Viewer: PDF-Dateien direkt aus dem Windows-Datei-Explorer per Doppelklick öffnen. Jetzt auch mit Registerkarten, Tab-Suche, geschlossene PDFs wieder öffnen, Doppelklick auf Registerkarte schließt diese!!**
+- **FreePDF64-Viewer:** PDFs per Doppelklick aus dem Windows-Explorer öffnen, in Registerkarten anzeigen, Tabs durchsuchen und geschlossene PDFs wiederherstellen. Ein Doppelklick auf eine Registerkarte schließt die betreffende PDF.
 - **Komplettes Installationspaket:** Die benötigten Konvertierungsprogramme sind bereits enthalten.
 - **Vorkonfigurierte Einstellungen:** Wichtige Optionen und Programmverzeichnisse sind bereits voreingestellt.
 - **Umfangreiche PDF-Werkzeuge:** Vorhandene Dokumente bearbeiten, optimieren, durchsuchen und analysieren.
@@ -82,8 +105,8 @@ Für alle, die genauer wissen möchten, was in einer PDF-Datei steckt, bietet Fr
 
 Viele praktische Details erleichtern die tägliche Arbeit mit Dateien und Dokumenten.
 
-- Erstellte PDF-, PS-, TXT- und TIFF-Dateien direkt nach der Verarbeitung im Anzeiger (PDF's im FreePDF64-Viewer) öffnen.
-- Alles im FreePDF64-Viewer: Eingebettete Anlagen in PDF-Dateien extrahieren, hinzufügen, entfernen. PDF-Seiten auf Wunsch um 90, 180 oder 270 Grad drehen.
+- Erstellte PDF-, PS-, TXT- und TIFF-Dateien nach der Verarbeitung direkt mit dem jeweiligen Anzeiger öffnen; PDFs im FreePDF64-Viewer.
+- Im FreePDF64-Viewer eingebettete PDF-Anlagen extrahieren, hinzufügen oder entfernen und PDF-Seiten um 90, 180 oder 270 Grad drehen.
 - Markierte Dateien bequem per E-Mail versenden – ähnlich der Windows-Funktion „Senden an“.
 - Neue eingehende Dateien automatisch überwachen und verarbeiten.
 - Zahlreiche Konvertierungs- und Bearbeitungsschritte über ein gemeinsames Programm steuern.
@@ -107,22 +130,11 @@ Weitere Informationen findest du direkt im Programm unter:
 https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf
   
  
-Fragen, Anregungen, Wünsche gerne an FreePDF64@outlook.com oder hier über GitHub!
+Fragen, Anregungen oder Wünsche? Schreibe an **FreePDF64@outlook.com** oder melde dich über GitHub.
 
-<!--
-**FreePDF64/FreePDF64** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
-Here are some ideas to get you started:
+## Screenshots
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
 ### Hauptfenster
 ![FreePDF64_Hauptbildschirm](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Hauptfenster.JPG)
 
@@ -151,5 +163,5 @@ Here are some ideas to get you started:
 ![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Suche.jpg)
 
 ### FreePDF64-Viewer
-![FreePDF64_Suche](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Viewer.jpg)
+![FreePDF64-Viewer](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-Viewer.jpg)
 
