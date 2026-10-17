@@ -1,5 +1,5 @@
 17.10.2026 V7.2.0
-Neu -> Der FreePDF64-Viewer wurde umfangreich überarbeitet und zeigt nun alle Dateien in Registern an, ähnlich Browsern!
+Neu -> Der FreePDF64-Viewer wurde umfangreich überarbeitet und zeigt nun alle Dateien in Registern an, ähnlich Browsern. Jetzt auch mit Tab-Suche!
 14.10.2026 V7.1.3
 Neu -> Im FreePDF64-Viewer kann man PDF-Seiten nun einzeln oder einen Seitenbereich drehen und direkt danach abspeichern.
 13.10.2026 V7.1.2
