@@ -2887,11 +2887,6 @@ begin
         for I := 1 to ComboBoxR.Items.Count do
           WriteString('History', 'History Right' + IntToStr(I - 1),
             ComboBoxR.Items[I - 1]);
-      WriteInteger('Start', 'Counter', Counter);
-      WriteInteger('Start', 'Sort ColumnL', FSortColumn);
-      WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
-      WriteBool('Start', 'SortDir ColumnL', FSortAscending);
-      WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     // Speicher wird wieder freigeben
     IniDat.Free;
@@ -3457,6 +3452,12 @@ begin
     WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
     WriteBool('Folder', 'Autosize Name', AutoSpalte.Checked);
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
+    WriteInteger('Start', 'Counter', Counter);
+    WriteInteger('Start', 'Sort ColumnL', FSortColumn);
+    WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
+    WriteBool('Start', 'SortDir ColumnL', FSortAscending);
+    WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
+
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
     WriteBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
     WriteBool('Start', 'Rename by double-clicking', UPD.Checked);
@@ -6845,6 +6846,13 @@ begin
       LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
       LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
 
+      FSortAscending  := True;
+      FSortAscending2 := True;
+      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
+      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
+      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
+      FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
+
       VS_Left := ReadInteger('Start', 'ViewStyle_Left', Ord(vsReport));
       LMDShellList1.ViewStyle := TViewStyle(VS_Left);
       VS_Right := ReadInteger('Start', 'ViewStyle_Right', Ord(vsReport));
@@ -7005,13 +7013,6 @@ begin
           Zusatz_Form.ZusatzCB.Items.EndUpdate;
         end;
       end;
-
-      FSortAscending  := True;
-      FSortAscending2 := True;
-      FSortColumn     := ReadInteger('Start', 'Sort ColumnL', FSortColumn);
-      FSortColumn2    := ReadInteger('Start', 'Sort ColumnR', FSortColumn2);
-      FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
-      FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
     end;
     IniDat.Free;
   except
