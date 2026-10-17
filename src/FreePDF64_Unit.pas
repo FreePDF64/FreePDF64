@@ -102,6 +102,8 @@ const
   FOLDERID_ProgramFiles: TGUID = '{905E63B6-CDF3-4F11-8E03-FFB7CFB0FCB3}';
   FOLDERID_ProgramFilesX86: TGUID = '{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}';
 
+  WM_START_IN_TRAY = WM_APP + 100;
+
 type
   TProcessMemoryCountersEx2 = record
     cb: DWORD;
@@ -303,7 +305,6 @@ type
     InsUnterverzeichnisbeimErstellen1: TMenuItem;
     Splash1: TMenuItem;
     TrayIcon1: TTrayIcon;
-    Timer2: TTimer;
     InDenTray: TMenuItem;
     berFreePDF641: TMenuItem;
     N13: TMenuItem;
@@ -527,7 +528,6 @@ type
     procedure Btn_RenameClick(Sender: TObject);
     procedure Splash1Click(Sender: TObject);
     procedure TrayIcon1Click(Sender: TObject);
-    procedure Timer2Timer(Sender: TObject);
     procedure InDenTrayClick(Sender: TObject);
     procedure berFreePDF641Click(Sender: TObject);
     procedure Einstellungenndern2Click(Sender: TObject);
@@ -665,6 +665,7 @@ type
       F2Pressed: Boolean;
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
+      procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
     public
       { Public-Deklarationen }
       PDF_UeberwachungsDatei: string;
@@ -738,6 +739,11 @@ type
 
 {$R *.DFM}
 {$R FreePDF64.res}
+
+procedure TFreePDF64_Form.WMStartInTray(var Msg: TMessage);
+begin
+  Hide;
+end;
 
 // Dauerhafter Speicherort für den zuletzt erstellten PDF-Prüfbericht.
 function PdfLastReportFileName: string;
@@ -3687,22 +3693,6 @@ begin
 
   SB_Left;
   SB_Right;
-end;
-
-// Nach dem Start von FreePDF64 wird die Hauptform kurz angezeigt - und danach geht sie in den System Tray
-procedure TFreePDF64_Form.Timer2Timer(Sender: TObject);
-begin
-  if Systray_Taskleiste.Checked then
-  begin
-    FreePDF64_Form.Visible := False;
-    TrayIcon1.Visible := True;
-    Timer2.Enabled := False;
-  end
-  else
-  begin
-    FreePDF64_Form.WindowState := wsMinimized;
-    Timer2.Enabled := False;
-  end;
 end;
 
 procedure TFreePDF64_Form.StatusBarAnpassen;
@@ -7248,7 +7238,16 @@ begin
 
     FormLoaded := True;
 
-    Timer2.Enabled := InDenTray.Checked;
+    // Beim Start in den SysTray verschwinden?
+    if InDenTray.Checked then
+    begin
+      if Systray_Taskleiste.Checked then
+      begin
+        TrayIcon1.Visible := True;
+        PostMessage(Handle, WM_START_IN_TRAY, 0, 0);
+      end;
+      FreePDF64_Form.WindowState := wsMinimized;
+    end;
   end;
 end;
 

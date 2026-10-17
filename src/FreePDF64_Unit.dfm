@@ -489,8 +489,6 @@
       OnClick = MonitorBtnClick
       OnMouseDown = MonitorBtnMouseDown
       OnMouseEnter = MonitorBtnMouseEnter
-      ExplicitLeft = 1007
-      ExplicitTop = -3
     end
     object StatusBitBtn: TBitBtn
       Left = 969
@@ -25781,13 +25779,6 @@
     OnMouseDown = TrayIcon1MouseDown
     Left = 58
     Top = 130
-  end
-  object Timer2: TTimer
-    Enabled = False
-    Interval = 2000
-    OnTimer = Timer2Timer
-    Left = 581
-    Top = 365
   end
   object LMDOpenDialog1: TLMDOpenDialog
     Filter = '*.pdf |*.pdf'
