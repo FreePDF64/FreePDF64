@@ -5,13 +5,16 @@ interface
 uses
   System.SysUtils, System.Classes, Winapi.Windows, Winapi.Messages,
   Vcl.Forms, Vcl.Controls, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Graphics,
-  Vcl.Dialogs, System.IniFiles, Math,
+  Vcl.Dialogs, Vcl.Menus, System.IniFiles, Math,
   uPDFBrowserForm;
 
 type
   TPDFTabsForm = class(TForm)
   private
     FTabs: TPageControl;
+    FClosedPDFs: TStringList;
+    FTabContextMenu: TPopupMenu;
+    FReopenClosedItem: TMenuItem;
     FTabHintWindow: THintWindow;
     FHintTabIndex: Integer;
     FDragTabIndex: Integer;
@@ -36,6 +39,9 @@ type
     FInitialWindowOffscreen: Boolean;
     FInitialWindowBounds: TRect;
     FInitialWindowMaximized: Boolean;
+    procedure TabContextPopup(Sender: TObject);
+    procedure ReopenLastClosedPDF(Sender: TObject);
+    procedure ReopenSelectedClosedPDF(Sender: TObject);
     procedure ActivationTimerTick(Sender: TObject);
     procedure ExplorerBatchTimerTick(Sender: TObject);
     procedure RestoreInitialWindow;
@@ -394,6 +400,12 @@ begin
   if Dpi < 96 then Dpi := 96;
   ButtonHeight := Max(MulDiv(26, Dpi, 96), Canvas.TextHeight('Ag') + MulDiv(10, Dpi, 96));
   PDFTabsWindow := Self;
+  FClosedPDFs := TStringList.Create;
+  FTabContextMenu := TPopupMenu.Create(Self);
+  FTabContextMenu.OnPopup := TabContextPopup;
+  FReopenClosedItem := TMenuItem.Create(FTabContextMenu);
+  // Untermenü wird bei jedem Öffnen aus den letzten 20 PDFs aufgebaut.
+  FTabContextMenu.Items.Add(FReopenClosedItem);
   // Normales Fenster, keine TopMost-Eigenschaft.
   FormStyle := fsNormal;
   BorderStyle := bsSizeable;
@@ -418,6 +430,8 @@ begin
   FCloseButton.OnClick := CloseActive;
   FTabs := TPageControl.Create(Self);
   FTabs.Parent := Self;
+  FTabs.PopupMenu := FTabContextMenu;
+  Header.PopupMenu := FTabContextMenu;
   FTabs.DoubleBuffered := True;
   FTabs.Align := alClient;
   FDragTabIndex := -1;
@@ -689,6 +703,7 @@ begin
   RestoreInitialWindow;
   FPendingExplorerFiles.Free;
   ClearAllPDFTabs;
+  FClosedPDFs.Free;
   if PDFTabsWindow = Self then
     PDFTabsWindow := nil;
   inherited Destroy;
@@ -1079,6 +1094,68 @@ begin
   RefreshAttachmentPositions;
 end;
 
+procedure TPDFTabsForm.TabContextPopup(Sender: TObject);
+var
+  I: Integer;
+  Item: TMenuItem;
+begin
+  // Liste bei jedem Rechtsklick frisch aufbauen, neueste PDF zuerst.
+  FReopenClosedItem.Clear;
+  FReopenClosedItem.Caption := 'Geschlossene PDFs wieder öffnen';
+  FReopenClosedItem.Enabled := FClosedPDFs.Count > 0;
+  for I := FClosedPDFs.Count - 1 downto 0 do
+  begin
+    Item := TMenuItem.Create(FReopenClosedItem);
+    Item.Caption := ExtractFileName(FClosedPDFs[I]);
+    Item.Hint := FClosedPDFs[I];
+    Item.Tag := I;
+    Item.OnClick := ReopenSelectedClosedPDF;
+    FReopenClosedItem.Add(Item);
+  end;
+end;
+
+procedure TPDFTabsForm.ReopenSelectedClosedPDF(Sender: TObject);
+var
+  Index: Integer;
+  FileName: string;
+begin
+  if not (Sender is TMenuItem) then Exit;
+  Index := TMenuItem(Sender).Tag;
+  if (Index < 0) or (Index >= FClosedPDFs.Count) then Exit;
+  // Bestehende Wiederherstellungsroutine weiterverwenden.
+  // Erst nach erfolgreichem Öffnen wird der Eintrag entfernt.
+  FileName := FClosedPDFs[Index];
+  FClosedPDFs.Delete(Index);
+  FClosedPDFs.Add(FileName);
+  ReopenLastClosedPDF(Sender);
+end;
+
+procedure TPDFTabsForm.ReopenLastClosedPDF(Sender: TObject);
+var
+  FileName: string;
+  PDF: TPDFBrowserForm;
+begin
+  if FClosedPDFs.Count = 0 then Exit;
+  FileName := FClosedPDFs[FClosedPDFs.Count - 1];
+  if not FileExists(FileName) then
+  begin
+    MessageDlg('Die PDF-Datei existiert nicht mehr:' + sLineBreak + FileName,
+      mtWarning, [mbOK], 0);
+    Exit;
+  end;
+  PDF := TPDFBrowserForm.Create(Application);
+  try
+    PDF.PDFFileName := FileName;
+    PDF.StandalonePDFMode := False;
+    AddPDF(PDF);
+    FClosedPDFs.Delete(FClosedPDFs.Count - 1);
+    BringViewerToForeground;
+  except
+    PDF.Free;
+    raise;
+  end;
+end;
+
 procedure TPDFTabsForm.CloseActive(Sender: TObject);
 var
   Tab: TTabSheet;
@@ -1101,6 +1178,12 @@ begin
     end;
   if PDF <> nil then
   begin
+    if PDF.PDFFileName <> '' then
+    begin
+      FClosedPDFs.Add(PDF.PDFFileName);
+      if FClosedPDFs.Count > 20 then
+        FClosedPDFs.Delete(0);
+    end;
     // Vor dem Entfernen des Parent unsichtbar machen. Sonst wird
     // das eingebettete Formular kurz ein eigenstaendiges Fenster
     // und kann das Registerkartenfenster nach hinten verdraengen.
