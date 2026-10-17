@@ -640,7 +640,7 @@ begin
     Tab := TTabSheet(FTabSearchList.Items.Objects[Index]);
     FullName := '';
     if Tab <> nil then
-      FullName := Tab.Hint;
+      FullName := ExtractFileName(Tab.Hint);
     if FullName = '' then
       FullName := FTabSearchList.Items[Index];
   end
