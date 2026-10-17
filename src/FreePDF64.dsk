@@ -329,11 +329,6 @@ Dockable=1
 StayOnTop=0
 SplitPos=111
 
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Caption,OnDestroy
-ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0,LiveBindings=0,Menu=0
-
 [frmDesignPreview]
 PercentageSizes=1
 Create=1

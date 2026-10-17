@@ -450,7 +450,7 @@ begin
   FTabCountBadge := TPaintBox.Create(Self);
   FTabCountBadge.Parent := SearchArea;
   FTabCountBadge.Align := alClient;
-  FTabCountBadge.Hint := 'Anzahl geöffneter PDF-Registerkarten';
+  FTabCountBadge.Hint := 'Anzahl geoeffneter PDF-Registerkarten';
   FTabCountBadge.ShowHint := True;
   FTabCountBadge.OnPaint := PaintTabCountBadge;
   FTabSearchButton := TButton.Create(Self);
@@ -471,8 +471,9 @@ begin
   FTabSearchForm.ClientWidth := MulDiv(370, Dpi, 96);
   FTabSearchForm.ClientHeight := MulDiv(300, Dpi, 96);
   // Kein automatisches Ausblenden bei Fokuswechsel: sonst oeffnet der
-  // zweite Klick auf die Lupe die Suche sofort wieder.
-  FTabSearchForm.OnDeactivate := nil;
+  // Bei Fokuswechsel ausserhalb der Suche ausblenden.
+  // Klick auf die Lupe wird gesondert behandelt (Toggle).
+  FTabSearchForm.OnDeactivate := TabSearchDeactivate;
   FTabSearchEdit := TEdit.Create(FTabSearchForm);
   FTabSearchEdit.Parent := FTabSearchForm;
   FTabSearchEdit.Align := alTop;
@@ -662,7 +663,22 @@ begin
 end;
 
 procedure TPDFTabsForm.TabSearchDeactivate(Sender: TObject);
+var
+  CursorPos: TPoint;
+  ButtonRect: TRect;
 begin
+  if (FTabSearchForm = nil) or not FTabSearchForm.Visible then
+    Exit;
+
+  // Beim Klick auf die Lupe nicht vorzeitig schliessen: Der folgende
+  // OnClick-Handler soll die noch sichtbare Suche selbst ausblenden.
+  GetCursorPos(CursorPos);
+  ButtonRect.TopLeft := FTabSearchButton.ClientToScreen(Point(0, 0));
+  ButtonRect.BottomRight := FTabSearchButton.ClientToScreen(
+    Point(FTabSearchButton.Width, FTabSearchButton.Height));
+  if PtInRect(ButtonRect, CursorPos) then
+    Exit;
+
   FTabSearchForm.Hide;
 end;
 
