@@ -9,8 +9,8 @@
 [Benutzerhandbuch (PDF)](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf) · [GitHub-Projekt](https://github.com/FreePDF64/FreePDF64)
 
 **Lizenz:** Freeware – private und kommerzielle Nutzung kostenlos  
-**Betriebssystem:** Windows (genaue unterstützte Versionen bitte ergänzen)  
-**Aktuelle Version:** Bitte Versionsnummer ergänzen
+**Betriebssystem:** Windows 10/11  
+**Aktuelle Version:** 7.2.0
 
 ## ⭐ Die wichtigsten Funktionen auf einen Blick
 
