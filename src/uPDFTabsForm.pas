@@ -19,6 +19,10 @@ type
     FDraggingTab: Boolean;
     FCloseButton: TButton;
     FOpenButton: TButton;
+    FTabSearchButton: TButton;
+    FTabSearchForm: TForm;
+    FTabSearchEdit: TEdit;
+    FTabSearchList: TListBox;
     FLastNormalBounds: TRect;
     FRestoringWindowSettings: Boolean;
     FAddingPDF: Boolean;
@@ -38,6 +42,12 @@ type
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
+    procedure TabSearchClick(Sender: TObject);
+    procedure TabSearchChanged(Sender: TObject);
+    procedure TabSearchChoose(Sender: TObject);
+    procedure TabSearchListMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
+    procedure TabSearchKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure TabSearchDeactivate(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
     procedure LoadWindowSettings;
@@ -144,7 +154,9 @@ end;
 procedure TPDFTabsForm.DestroyWnd;
 begin
   if HandleAllocated then
+  begin
     RemoveProp(Handle, PChar(PDFTabWindowMarker));
+  end;
   inherited DestroyWnd;
 end;
 
@@ -424,6 +436,37 @@ begin
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
+  FTabSearchButton := TButton.Create(Self);
+  FTabSearchButton.Parent := Header;
+  FTabSearchButton.Align := alRight;
+  FTabSearchButton.Width := MulDiv(42, Dpi, 96);
+  FTabSearchButton.Caption := '⌕';
+  FTabSearchButton.Hint := 'Geöffnete PDF-Registerkarten suchen';
+  FTabSearchButton.ShowHint := True;
+  FTabSearchButton.OnClick := TabSearchClick;
+  FTabSearchForm := TForm.CreateNew(Self);
+  // Suchfenster dem PDF-Anzeiger zuordnen, nicht dem FreePDF64-Hauptfenster.
+  FTabSearchForm.PopupMode := pmExplicit;
+  FTabSearchForm.PopupParent := Self;
+  FTabSearchForm.BorderStyle := bsToolWindow;
+  FTabSearchForm.Position := poDesigned;
+  FTabSearchForm.Caption := 'PDF-Registerkarten suchen';
+  FTabSearchForm.ClientWidth := MulDiv(370, Dpi, 96);
+  FTabSearchForm.ClientHeight := MulDiv(300, Dpi, 96);
+  FTabSearchForm.OnDeactivate := TabSearchDeactivate;
+  FTabSearchEdit := TEdit.Create(FTabSearchForm);
+  FTabSearchEdit.Parent := FTabSearchForm;
+  FTabSearchEdit.Align := alTop;
+  FTabSearchEdit.TextHint := 'Dateiname eingeben ...';
+  FTabSearchEdit.OnChange := TabSearchChanged;
+  FTabSearchEdit.OnKeyDown := TabSearchKeyDown;
+  FTabSearchList := TListBox.Create(FTabSearchForm);
+  FTabSearchList.Parent := FTabSearchForm;
+  FTabSearchList.Align := alClient;
+  FTabSearchList.OnDblClick := TabSearchChoose;
+  FTabSearchList.OnMouseMove := TabSearchListMouseMove;
+  FTabSearchList.OnKeyDown := TabSearchKeyDown;
+  FTabSearchList.ShowHint := True;
   FPendingExplorerFiles := TStringList.Create;
   FExplorerBatchTimer := TTimer.Create(Self);
   FExplorerBatchTimer.Enabled := False;
@@ -437,6 +480,133 @@ begin
   FActivationTimer.OnTimer := ActivationTimerTick;
   LoadWindowSettings;
   OnClose := TabsFormClose;
+end;
+
+procedure TPDFTabsForm.TabSearchClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  if FTabSearchForm.Visible then
+  begin
+    FTabSearchForm.Hide;
+    Exit;
+  end;
+  FTabSearchEdit.Clear;
+  TabSearchChanged(nil);
+  P := FTabSearchButton.ClientToScreen(Point(FTabSearchButton.Width, FTabSearchButton.Height));
+  FTabSearchForm.Left := P.X - FTabSearchForm.Width;
+  FTabSearchForm.Top := P.Y;
+  FTabSearchForm.Show;
+  FTabSearchEdit.SetFocus;
+end;
+
+procedure TPDFTabsForm.TabSearchChanged(Sender: TObject);
+var
+  I: Integer;
+  Tab: TTabSheet;
+  Filter: string;
+begin
+  Filter := Trim(FTabSearchEdit.Text);
+  FTabSearchList.Items.BeginUpdate;
+  try
+    FTabSearchList.Clear;
+    for I := 0 to FTabs.PageCount - 1 do
+    begin
+      Tab := FTabs.Pages[I];
+      if (Filter = '') or (Pos(UpperCase(Filter), UpperCase(Tab.Caption)) > 0) then
+        FTabSearchList.Items.AddObject(Tab.Caption, Tab);
+    end;
+    if FTabSearchList.Count > 0 then
+      FTabSearchList.ItemIndex := 0;
+  finally
+    FTabSearchList.Items.EndUpdate;
+  end;
+end;
+
+procedure TPDFTabsForm.TabSearchListMouseMove(Sender: TObject;
+  Shift: TShiftState; X, Y: Integer);
+var
+  Index: Integer;
+  Tab: TTabSheet;
+  FullName: string;
+begin
+  Index := FTabSearchList.ItemAtPos(Point(X, Y), True);
+  if Index >= 0 then
+  begin
+    Tab := TTabSheet(FTabSearchList.Items.Objects[Index]);
+    FullName := '';
+    if Tab <> nil then
+      FullName := Tab.Hint;
+    if FullName = '' then
+      FullName := FTabSearchList.Items[Index];
+  end
+  else
+    FullName := '';
+
+  if FTabSearchList.Hint <> FullName then
+  begin
+    FTabSearchList.Hint := FullName;
+    // Bereits angezeigte Hinweise beim Wechsel auf einen anderen Eintrag aktualisieren.
+    Application.CancelHint;
+  end;
+end;
+
+procedure TPDFTabsForm.TabSearchChoose(Sender: TObject);
+var
+  Tab, PreviousTab: TTabSheet;
+  J: Integer;
+  PreviousPDF: TPDFBrowserForm;
+begin
+  if FTabSearchList.ItemIndex < 0 then Exit;
+  Tab := TTabSheet(FTabSearchList.Items.Objects[FTabSearchList.ItemIndex]);
+  FTabSearchForm.Hide;
+  if (Tab <> nil) and (Tab.PageControl = FTabs) then
+  begin
+    PreviousTab := FTabs.ActivePage;
+    // Bei einem Wechsel ueber die Lupensuche die Anlagenliste der
+    // bisher aktiven PDF sofort ausblenden (vor dem Registerwechsel).
+    if (PreviousTab <> nil) and (PreviousTab <> Tab) then
+      for J := 0 to PreviousTab.ControlCount - 1 do
+        if PreviousTab.Controls[J] is TPDFBrowserForm then
+        begin
+          PreviousPDF := TPDFBrowserForm(PreviousTab.Controls[J]);
+          if IsWindow(PreviousPDF.AttachmentWindowHandle) then
+            ShowWindow(PreviousPDF.AttachmentWindowHandle, SW_HIDE);
+          Break;
+        end;
+    FTabs.ActivePage := Tab;
+    RefreshAttachmentPositions;
+    LoadSelectedPDF;
+    FTabs.SetFocus;
+  end;
+end;
+
+procedure TPDFTabsForm.TabSearchKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case Key of
+    VK_ESCAPE:
+      begin
+        FTabSearchForm.Hide;
+        Key := 0;
+      end;
+    VK_RETURN:
+      begin
+        TabSearchChoose(Sender);
+        Key := 0;
+      end;
+    VK_DOWN:
+      if Sender = FTabSearchEdit then
+      begin
+        if FTabSearchList.Count > 0 then FTabSearchList.SetFocus;
+        Key := 0;
+      end;
+  end;
+end;
+
+procedure TPDFTabsForm.TabSearchDeactivate(Sender: TObject);
+begin
+  FTabSearchForm.Hide;
 end;
 
 destructor TPDFTabsForm.Destroy;
@@ -555,7 +725,8 @@ begin
       if Tab.Controls[I] is TPDFBrowserForm then
       begin
         PDF := TPDFBrowserForm(Tab.Controls[I]);
-        PDF.Parent := nil;
+        // Eingebettetes Fenster nicht vorher abkoppeln: kein kurzzeitig
+        // sichtbares eigenstaendiges Fenster beim Aufraeumen.
         PDF.Free;
       end;
     Tab.Free;
@@ -565,10 +736,14 @@ end;
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  // Wichtig: auch bei caHide speichern und die Tabs entfernen.
+  // Fenster zuerst ausblenden, dann die WebView2-Registerkarten
+  // unsichtbar abbauen. Sonst flackert der Viewer bei vielen PDFs.
   SaveWindowSettings;
-  ClearAllPDFTabs;
   Action := caHide;
+  if FTabSearchForm <> nil then
+    FTabSearchForm.Hide;
+  Hide;
+  ClearAllPDFTabs;
   if PDFTabsExplorerOnlyProcess and not PDFTabsMainFormWasShown then
     Application.Terminate;
 end;

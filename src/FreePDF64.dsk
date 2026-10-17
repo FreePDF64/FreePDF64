@@ -193,7 +193,7 @@ CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 CursorX=1
 CursorY=1
-TopLine=1
+TopLine=3
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -331,8 +331,8 @@ SplitPos=111
 
 [PropInspDesignerSelection]
 ArrangeBy=Name
-SelectedItem=Caption,Action
-ExpandedItems=Anchors=0,BorderIcons=0,LiveBindings=0,LiveBindings-Designer=0,Margins=0,Constraints=0,Images=0,Font=0,StyleElements=0
+SelectedItem=Caption,
+ExpandedItems=Anchors=0,BorderIcons=0,Constraints=0,CustomTitleBar=0
 
 [frmDesignPreview]
 PercentageSizes=1
