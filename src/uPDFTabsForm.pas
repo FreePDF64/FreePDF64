@@ -25,6 +25,7 @@ type
     FCloseButton: TButton;
     FOpenButton: TButton;
     FTabSearchButton: TButton;
+    FLocalTabSearchHotkeyRegistered: Boolean;
     FTabCountBadge: TPaintBox;
     FTabSearchForm: TForm;
     FTabSearchEdit: TEdit;
@@ -42,6 +43,8 @@ type
     FInitialWindowBounds: TRect;
     FInitialWindowMaximized: Boolean;
     procedure TabsWindowProc(var Msg: TMessage);
+    procedure WMViewerActivate(var Msg: TWMActivate); message WM_ACTIVATE;
+    procedure WMViewerHotKey(var Msg: TMessage); message WM_HOTKEY;
     procedure UpdateEmptyTabStrip;
     procedure TabsResized(Sender: TObject);
     procedure EmptyTabStripMouseUp(Sender: TObject; Button: TMouseButton;
@@ -85,6 +88,7 @@ type
     procedure TabMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure LoadSelectedPDF;
+    procedure TabDoubleClick(Sender: TObject);
     procedure TabMouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
   public
@@ -116,6 +120,7 @@ var
 implementation
 
 const
+  LOCAL_TAB_SEARCH_HOTKEY_ID = $5A71;
   PDFTabWindowMarker = 'FreePDF64.PDFTabs.Window.v1';
   PDFTabMessageId = $46504446;
 
@@ -486,7 +491,7 @@ begin
   FTabCountBadge := TPaintBox.Create(Self);
   FTabCountBadge.Parent := SearchArea;
   FTabCountBadge.Align := alClient;
-  FTabCountBadge.Hint := 'Anzahl geoeffneter PDF-Registerkarten';
+  FTabCountBadge.Hint := 'Anzahl geöffneter PDF-Registerkarten';
   FTabCountBadge.ShowHint := True;
   FTabCountBadge.OnPaint := PaintTabCountBadge;
   FTabSearchButton := TButton.Create(Self);
@@ -494,7 +499,7 @@ begin
   FTabSearchButton.Align := alRight;
   FTabSearchButton.Width := MulDiv(42, Dpi, 96);
   FTabSearchButton.Caption := '⌕';
-  FTabSearchButton.Hint := 'Geöffnete PDF-Registerkarten suchen';
+  FTabSearchButton.Hint := 'Geöffnete PDF-Registerkarten suchen (Strg+Umsch+A)';
   FTabSearchButton.ShowHint := True;
   FTabSearchButton.OnClick := TabSearchClick;
   FTabSearchForm := TForm.CreateNew(Self);
@@ -728,8 +733,42 @@ begin
   FTabSearchForm.Hide;
 end;
 
+procedure TPDFTabsForm.WMViewerActivate(var Msg: TWMActivate);
+begin
+  inherited;
+  if Msg.Active <> WA_INACTIVE then
+  begin
+    if (FTabSearchButton <> nil) and not FLocalTabSearchHotkeyRegistered then
+      FLocalTabSearchHotkeyRegistered := RegisterHotKey(Handle,
+        LOCAL_TAB_SEARCH_HOTKEY_ID, MOD_CONTROL or MOD_SHIFT or MOD_NOREPEAT,
+        Ord('A'));
+  end
+  else if FLocalTabSearchHotkeyRegistered then
+  begin
+    UnregisterHotKey(Handle, LOCAL_TAB_SEARCH_HOTKEY_ID);
+    FLocalTabSearchHotkeyRegistered := False;
+  end;
+end;
+
+procedure TPDFTabsForm.WMViewerHotKey(var Msg: TMessage);
+begin
+  if Msg.WParam = LOCAL_TAB_SEARCH_HOTKEY_ID then
+  begin
+    if (GetForegroundWindow = Handle) and Visible then
+      TabSearchClick(FTabSearchButton);
+    Msg.Result := 0;
+  end
+  else
+    inherited;
+end;
+
 destructor TPDFTabsForm.Destroy;
 begin
+  if FLocalTabSearchHotkeyRegistered then
+  begin
+    UnregisterHotKey(Handle, LOCAL_TAB_SEARCH_HOTKEY_ID);
+    FLocalTabSearchHotkeyRegistered := False;
+  end;
   FExplorerBatchTimer.Enabled := False;
   FActivationTimer.Enabled := False;
   RestoreInitialWindow;
@@ -1053,6 +1092,19 @@ var
   TabStripBottom: Integer;
   TabRect: TRect;
 begin
+  // TPageControl.OnDblClick ist protected. Den Doppelklick daher
+  // direkt im bereits vorhandenen WindowProc-Hook behandeln.
+  if Msg.Msg = WM_LBUTTONDBLCLK then
+  begin
+    LocalP := Point(SmallInt(LOWORD(Msg.LParam)),
+                    SmallInt(HIWORD(Msg.LParam)));
+    if FTabs.IndexOfTabAt(LocalP.X, LocalP.Y) >= 0 then
+    begin
+      TabDoubleClick(FTabs);
+      Msg.Result := 0;
+      Exit;
+    end;
+  end;
   if (Msg.Msg = WM_CONTEXTMENU) or (Msg.Msg = WM_RBUTTONUP) then
   begin
     // WM_CONTEXTMENU kommt vom nativen Windows-Tabcontrol auch dann,
@@ -1345,6 +1397,20 @@ begin
     else
       Hide;
   end;
+end;
+
+procedure TPDFTabsForm.TabDoubleClick(Sender: TObject);
+var
+  P: TPoint;
+  TabIndex: Integer;
+begin
+  // Nur Doppelklick direkt auf einem Register, nicht auf der freien Leiste.
+  GetCursorPos(P);
+  P := FTabs.ScreenToClient(P);
+  TabIndex := FTabs.IndexOfTabAt(P.X, P.Y);
+  if (TabIndex < 0) or (TabIndex >= FTabs.PageCount) then Exit;
+  FTabs.ActivePageIndex := TabIndex;
+  CloseActive(Sender);
 end;
 
 procedure TPDFTabsForm.TabMouseDown(Sender: TObject; Button: TMouseButton;
