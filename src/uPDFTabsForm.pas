@@ -20,6 +20,7 @@ type
     FCloseButton: TButton;
     FOpenButton: TButton;
     FTabSearchButton: TButton;
+    FTabCountBadge: TPaintBox;
     FTabSearchForm: TForm;
     FTabSearchEdit: TEdit;
     FTabSearchList: TListBox;
@@ -42,6 +43,8 @@ type
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
+    procedure UpdateTabCount;
+    procedure PaintTabCountBadge(Sender: TObject);
     procedure TabSearchClick(Sender: TObject);
     procedure TabSearchChanged(Sender: TObject);
     procedure TabSearchChoose(Sender: TObject);
@@ -382,6 +385,7 @@ end;
 constructor TPDFTabsForm.Create(AOwner: TComponent);
 var
   Header: TPanel;
+  SearchArea: TPanel;
   Dpi: Integer;
   ButtonHeight: Integer;
 begin
@@ -436,8 +440,21 @@ begin
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
+  // Eigener rechter Bereich: feste Positionen unabhaengig von der
+  // VCL-Ausrichtungsreihenfolge anderer Header-Steuerelemente.
+  SearchArea := TPanel.Create(Self);
+  SearchArea.Parent := Header;
+  SearchArea.Align := alRight;
+  SearchArea.Width := MulDiv(90, Dpi, 96);
+  SearchArea.BevelOuter := bvNone;
+  FTabCountBadge := TPaintBox.Create(Self);
+  FTabCountBadge.Parent := SearchArea;
+  FTabCountBadge.Align := alClient;
+  FTabCountBadge.Hint := 'Anzahl geöffneter PDF-Registerkarten';
+  FTabCountBadge.ShowHint := True;
+  FTabCountBadge.OnPaint := PaintTabCountBadge;
   FTabSearchButton := TButton.Create(Self);
-  FTabSearchButton.Parent := Header;
+  FTabSearchButton.Parent := SearchArea;
   FTabSearchButton.Align := alRight;
   FTabSearchButton.Width := MulDiv(42, Dpi, 96);
   FTabSearchButton.Caption := '⌕';
@@ -453,7 +470,9 @@ begin
   FTabSearchForm.Caption := 'PDF-Registerkarten suchen';
   FTabSearchForm.ClientWidth := MulDiv(370, Dpi, 96);
   FTabSearchForm.ClientHeight := MulDiv(300, Dpi, 96);
-  FTabSearchForm.OnDeactivate := TabSearchDeactivate;
+  // Kein automatisches Ausblenden bei Fokuswechsel: sonst oeffnet der
+  // zweite Klick auf die Lupe die Suche sofort wieder.
+  FTabSearchForm.OnDeactivate := nil;
   FTabSearchEdit := TEdit.Create(FTabSearchForm);
   FTabSearchEdit.Parent := FTabSearchForm;
   FTabSearchEdit.Align := alTop;
@@ -480,6 +499,44 @@ begin
   FActivationTimer.OnTimer := ActivationTimerTick;
   LoadWindowSettings;
   OnClose := TabsFormClose;
+end;
+
+procedure TPDFTabsForm.PaintTabCountBadge(Sender: TObject);
+var
+  C: TCanvas;
+  R: TRect;
+  S: string;
+  TextX, TextY, Radius, Pad: Integer;
+begin
+  if (FTabCountBadge = nil) or (FTabs = nil) then Exit;
+  C := FTabCountBadge.Canvas;
+  C.Brush.Color := FTabCountBadge.Parent.Brush.Color;
+  C.FillRect(FTabCountBadge.ClientRect);
+
+  Pad := MulDiv(6, CurrentPPI, 96);
+  R := Rect(Pad, MulDiv(7, CurrentPPI, 96),
+    FTabCountBadge.Width - Pad, FTabCountBadge.Height - MulDiv(7, CurrentPPI, 96));
+  Radius := MulDiv(14, CurrentPPI, 96);
+  C.Pen.Style := psClear;
+  C.Brush.Color := RGB(225, 236, 250);
+  C.RoundRect(R.Left, R.Top, R.Right, R.Bottom, Radius, Radius);
+  C.Brush.Style := bsClear;
+  C.Font.Name := 'Segoe UI';
+  C.Font.Size := 10;
+  C.Font.Style := [fsBold];
+  C.Font.Color := RGB(35, 85, 145);
+  S := IntToStr(FTabs.PageCount);
+  TextX := R.Left + (R.Right - R.Left - C.TextWidth(S)) div 2;
+  TextY := R.Top + (R.Bottom - R.Top - C.TextHeight(S)) div 2;
+  C.TextOut(TextX, TextY, S);
+  C.Brush.Style := bsSolid;
+  C.Pen.Style := psSolid;
+end;
+
+procedure TPDFTabsForm.UpdateTabCount;
+begin
+  if FTabCountBadge <> nil then
+    FTabCountBadge.Invalidate;
 end;
 
 procedure TPDFTabsForm.TabSearchClick(Sender: TObject);
@@ -731,6 +788,7 @@ begin
       end;
     Tab.Free;
   end;
+  UpdateTabCount;
 end;
 
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
@@ -762,6 +820,7 @@ var
 begin
   Tab := TTabSheet.Create(FTabs);
   Tab.PageControl := FTabs;
+  UpdateTabCount;
   Tab.DoubleBuffered := True;
   Tab.Caption := ExtractFileName(APDF.PDFFileName);
   Tab.Hint := APDF.PDFFileName;
@@ -1034,6 +1093,7 @@ begin
     PDF.Close;
   end;
   Tab.Free;
+  UpdateTabCount;
   if FTabs.PageCount > 0 then
   begin
     // Rechten Nachbarn bevorzugen. Nach Tab.Free rueckt er auf
