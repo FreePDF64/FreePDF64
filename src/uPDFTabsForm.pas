@@ -3,7 +3,7 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, Winapi.Windows, Winapi.Messages,
+  System.SysUtils, System.Classes, Winapi.Windows, Winapi.Messages, Winapi.CommCtrl,
   Vcl.Forms, Vcl.Controls, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Graphics,
   Vcl.Dialogs, Vcl.Menus, System.IniFiles, Math,
   uPDFBrowserForm;
@@ -12,6 +12,8 @@ type
   TPDFTabsForm = class(TForm)
   private
     FTabs: TPageControl;
+    FEmptyTabStrip: TPanel;
+    FOriginalTabsWindowProc: TWndMethod;
     FClosedPDFs: TStringList;
     FTabContextMenu: TPopupMenu;
     FReopenClosedItem: TMenuItem;
@@ -39,6 +41,11 @@ type
     FInitialWindowOffscreen: Boolean;
     FInitialWindowBounds: TRect;
     FInitialWindowMaximized: Boolean;
+    procedure TabsWindowProc(var Msg: TMessage);
+    procedure UpdateEmptyTabStrip;
+    procedure TabsResized(Sender: TObject);
+    procedure EmptyTabStripMouseUp(Sender: TObject; Button: TMouseButton;
+      Shift: TShiftState; X, Y: Integer);
     procedure TabContextPopup(Sender: TObject);
     procedure ReopenLastClosedPDF(Sender: TObject);
     procedure ReopenSelectedClosedPDF(Sender: TObject);
@@ -430,7 +437,10 @@ begin
   FCloseButton.OnClick := CloseActive;
   FTabs := TPageControl.Create(Self);
   FTabs.Parent := Self;
-  FTabs.PopupMenu := FTabContextMenu;
+  // Das native Register-Control verarbeitet den freien Streifen selbst.
+  // WM_CONTEXTMENU erfasst deshalb auch Rechtsklicks neben den Tabs.
+  FOriginalTabsWindowProc := FTabs.WindowProc;
+  FTabs.WindowProc := TabsWindowProc;
   Header.PopupMenu := FTabContextMenu;
   FTabs.DoubleBuffered := True;
   FTabs.Align := alClient;
@@ -444,8 +454,20 @@ begin
   FTabs.OnMouseMove := TabsMouseMove;
   FTabs.OnMouseLeave := TabsMouseLeave;
   FTabs.OnChange := TabsChange;
+  FTabs.OnResize := TabsResized;
   FTabs.OwnerDraw := True;
   FTabs.OnDrawTab := DrawPDFTab;
+  // Die freie Registerleiste ist bei TPageControl nicht in allen
+  // Windows/VCL-Versionen zuverlässig über dessen Mausereignisse erreichbar.
+  // Ein eigenes Steuerelement deckt ausschließlich den freien Bereich ab.
+  FEmptyTabStrip := TPanel.Create(Self);
+  FEmptyTabStrip.Parent := FTabs;
+  FEmptyTabStrip.BevelOuter := bvNone;
+  FEmptyTabStrip.Caption := '';
+  FEmptyTabStrip.Color := clBtnFace;
+  FEmptyTabStrip.Cursor := crDefault;
+  FEmptyTabStrip.OnMouseUp := EmptyTabStripMouseUp;
+  UpdateEmptyTabStrip;
   FOpenButton := TButton.Create(Self);
   FOpenButton.Parent := Header;
   FOpenButton.Align := alLeft;
@@ -550,6 +572,7 @@ end;
 
 procedure TPDFTabsForm.UpdateTabCount;
 begin
+  UpdateEmptyTabStrip;
   if FTabCountBadge <> nil then
     FTabCountBadge.Invalidate;
 end;
@@ -703,6 +726,8 @@ begin
   RestoreInitialWindow;
   FPendingExplorerFiles.Free;
   ClearAllPDFTabs;
+  if FTabs <> nil then
+    FTabs.WindowProc := FOriginalTabsWindowProc;
   FClosedPDFs.Free;
   if PDFTabsWindow = Self then
     PDFTabsWindow := nil;
@@ -968,8 +993,88 @@ begin
   begin
     FDragTabIndex := -1;
     FDraggingTab := False;
-    PostMessage(Handle, WM_APP + 193, 0, 0); // Auch bereits aktiver erster Tab.
+    PostMessage(Handle, WM_APP + 193, 0, 0);
   end;
+end;
+
+procedure TPDFTabsForm.TabsResized(Sender: TObject);
+begin
+  UpdateEmptyTabStrip;
+end;
+
+procedure TPDFTabsForm.UpdateEmptyTabStrip;
+var
+  R: TRect;
+  LeftEdge, StripHeight: Integer;
+begin
+  if (FTabs = nil) or (FEmptyTabStrip = nil) then Exit;
+  StripHeight := MulDiv(28, CurrentPPI, 96);
+  LeftEdge := 0;
+  if FTabs.PageCount > 0 then
+  begin
+    if SendMessage(FTabs.Handle, TCM_GETITEMRECT,
+      WPARAM(FTabs.PageCount - 1), LPARAM(@R)) <> 0 then
+    begin
+      LeftEdge := R.Right + 1;
+      StripHeight := R.Bottom;
+    end;
+  end;
+  if StripHeight < 1 then Exit;
+  FEmptyTabStrip.SetBounds(LeftEdge, 0,
+    Max(0, FTabs.ClientWidth - LeftEdge), StripHeight);
+  FEmptyTabStrip.Visible := FEmptyTabStrip.Width > 0;
+  if FEmptyTabStrip.Visible then
+    FEmptyTabStrip.BringToFront;
+end;
+
+procedure TPDFTabsForm.EmptyTabStripMouseUp(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  P: TPoint;
+begin
+  if Button <> mbRight then Exit;
+  P := FEmptyTabStrip.ClientToScreen(Point(X, Y));
+  FTabContextMenu.Popup(P.X, P.Y);
+end;
+
+procedure TPDFTabsForm.TabsWindowProc(var Msg: TMessage);
+var
+  P: TPoint;
+  LocalP: TPoint;
+  TabStripBottom: Integer;
+  TabRect: TRect;
+begin
+  if (Msg.Msg = WM_CONTEXTMENU) or (Msg.Msg = WM_RBUTTONUP) then
+  begin
+    // WM_CONTEXTMENU kommt vom nativen Windows-Tabcontrol auch dann,
+    // wenn der Mauszeiger rechts von der letzten Registerkarte steht.
+    if Msg.Msg = WM_RBUTTONUP then
+    begin
+      LocalP := Point(SmallInt(LOWORD(Msg.LParam)),
+                      SmallInt(HIWORD(Msg.LParam)));
+      P := FTabs.ClientToScreen(LocalP);
+    end
+    else
+    begin
+      GetCursorPos(P);
+      LocalP := FTabs.ScreenToClient(P);
+    end;
+    // Nur der obere Registerstreifen, nicht die PDF-Anzeigeflaeche.
+    // Die native Tab-Steuerung liefert die untere Kante des ersten Reiters.
+    // Kein Zugriff auf die protected Eigenschaft DisplayRect.
+    TabStripBottom := MulDiv(30, Screen.PixelsPerInch, 96);
+    if (FTabs.PageCount > 0) and
+       (SendMessage(FTabs.Handle, TCM_GETITEMRECT, 0, LPARAM(@TabRect)) <> 0) then
+      TabStripBottom := TabRect.Bottom;
+    if (LocalP.X >= 0) and (LocalP.X < FTabs.ClientWidth) and
+       (LocalP.Y >= 0) and (LocalP.Y < TabStripBottom) then
+    begin
+      FTabContextMenu.Popup(P.X, P.Y);
+      Msg.Result := 0;
+      Exit;
+    end;
+  end;
+  FOriginalTabsWindowProc(Msg);
 end;
 
 procedure TPDFTabsForm.DrawPDFTab(Control: TCustomTabControl;

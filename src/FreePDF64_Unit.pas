@@ -13,7 +13,7 @@
 // - ExifTool
 // - QPDF
 // - PDFtk
-// - Die Xpdf-Tools
+// - Xpdf-Tools
 //
 // Angefangen im:    Dezember 2021
 // Programmiert mit: Embarcadero Delphi 13.1 Community Edition
