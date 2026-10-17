@@ -27,7 +27,7 @@
 
 FreePDF64 ist eine leistungsstarke, kostenlose Windows-Anwendung rund um PDF-Dateien. Ob PDF-Erstellung aus nahezu jeder druckfähigen Anwendung, das Zusammenführen mehrerer Dokumente, das Komprimieren bestehender PDFs oder das Hinzufügen von Wasserzeichen und Stempeln: FreePDF64 vereint zahlreiche praktische Funktionen in einem Programm.
 
-Dabei geht FreePDF64 weit über die reine PDF-Erstellung hinaus. Umfangreiche Konvertierungs-, Such- und Analysefunktionen sowie die automatische Verarbeitung neu eingehender Dateien machen das Programm zu einem vielseitigen Werkzeug für den täglichen Einsatz.
+Dabei geht FreePDF64 weit über die reine PDF-Erstellung hinaus. Umfangreiche Konvertierungs-, schnelle Such- und Analysefunktionen sowie die automatische Verarbeitung neu eingehender Dateien machen das Programm zu einem vielseitigen Werkzeug für den täglichen Einsatz.
 
 ---
 
