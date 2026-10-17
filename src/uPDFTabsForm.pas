@@ -611,7 +611,16 @@ begin
       if (Filter = '') or (Pos(UpperCase(Filter), UpperCase(Tab.Caption)) > 0) then
         FTabSearchList.Items.AddObject(Tab.Caption, Tab);
     end;
-    if FTabSearchList.Count > 0 then
+    // Den aktiven PDF-Tab in der Suchliste vorauswaehlen.
+    // Bei einem Filter ohne Treffer fuer den aktiven Tab den ersten Treffer nehmen.
+    FTabSearchList.ItemIndex := -1;
+    for I := 0 to FTabSearchList.Count - 1 do
+      if FTabSearchList.Items.Objects[I] = FTabs.ActivePage then
+      begin
+        FTabSearchList.ItemIndex := I;
+        Break;
+      end;
+    if (FTabSearchList.ItemIndex < 0) and (FTabSearchList.Count > 0) then
       FTabSearchList.ItemIndex := 0;
   finally
     FTabSearchList.Items.EndUpdate;
