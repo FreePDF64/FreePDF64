@@ -13,6 +13,7 @@ type
   private
     FTabs: TPageControl;
     FEmptyTabStrip: TPanel;
+    FUpdatingTabLayout: Boolean;
     FOriginalTabsWindowProc: TWndMethod;
     FClosedPDFs: TStringList;
     FSessionPDFs: TStringList;
@@ -1216,6 +1217,7 @@ begin
   UpdateTabCount;
   Tab.DoubleBuffered := True;
   Tab.Caption := ExtractFileName(APDF.PDFFileName);
+  UpdateEmptyTabStrip;
   Tab.Hint := APDF.PDFFileName;
   Tab.ShowHint := False; // Kein geerbter Dateipfad-Hint im PDF-Inhaltsbereich
   APDF.TabbedPDFMode := True;
@@ -1343,8 +1345,23 @@ procedure TPDFTabsForm.UpdateEmptyTabStrip;
 var
   R: TRect;
   LeftEdge, StripHeight: Integer;
+  AvailableWidth, MinTabWidth, MaxTabWidth, NewTabWidth: Integer;
 begin
-  if (FTabs = nil) or (FEmptyTabStrip = nil) then Exit;
+  if (FTabs = nil) or (FEmptyTabStrip = nil) or FUpdatingTabLayout then Exit;
+  FUpdatingTabLayout := True;
+  try
+    // Browser-aehnlich: alle Tabs gleich breit, bei vielen Tabs schmaler.
+    // Unterhalb der Mindestbreite verwendet Windows die nativen Scrollpfeile.
+    MinTabWidth := MulDiv(120, CurrentPPI, 96);
+    MaxTabWidth := MulDiv(260, CurrentPPI, 96);
+    AvailableWidth := Max(1, FTabs.ClientWidth - MulDiv(8, CurrentPPI, 96));
+    if FTabs.PageCount > 0 then
+    begin
+      NewTabWidth := Max(MinTabWidth,
+        Min(MaxTabWidth, AvailableWidth div FTabs.PageCount));
+      if FTabs.TabWidth <> NewTabWidth then
+        FTabs.TabWidth := NewTabWidth;
+    end;
   StripHeight := MulDiv(28, CurrentPPI, 96);
   LeftEdge := 0;
   if FTabs.PageCount > 0 then
@@ -1357,11 +1374,26 @@ begin
     end;
   end;
   if StripHeight < 1 then Exit;
+
+  // Bei zu vielen Registerkarten blendet Windows rechts die beiden
+  // Navigationspfeile ein. Das Overlay darf diese nicht ueberdecken.
+  // Sobald die letzte Registerkarte den rechten Rand erreicht oder
+  // darueber hinausreicht, den freien Streifen ganz ausblenden.
+  if (FTabs.PageCount > 0) and
+     (LeftEdge >= FTabs.ClientWidth - MulDiv(48, CurrentPPI, 96)) then
+  begin
+    FEmptyTabStrip.Visible := False;
+    Exit;
+  end;
+
   FEmptyTabStrip.SetBounds(LeftEdge, 0,
     Max(0, FTabs.ClientWidth - LeftEdge), StripHeight);
   FEmptyTabStrip.Visible := FEmptyTabStrip.Width > 0;
   if FEmptyTabStrip.Visible then
     FEmptyTabStrip.BringToFront;
+  finally
+    FUpdatingTabLayout := False;
+  end;
 end;
 
 procedure TPDFTabsForm.EmptyTabStripMouseUp(Sender: TObject;
@@ -1507,9 +1539,14 @@ begin
 
   FTabHintWindow.ReleaseHandle;
   FHintTabIndex := TabIndex;
+  // Zwei Zeilen wie bei Browser-Tabs: Dateiname und Verzeichnispfad.
+  // Der vollstaendige Dateipfad ist bereits im Tab.Hint hinterlegt;
+  // es ist kein Dateizugriff (auch nicht auf Netzlaufwerke) noetig.
   HintText := FTabs.Pages[TabIndex].Hint;
   if HintText = '' then
     Exit;
+  HintText := ExtractFileName(HintText) + sLineBreak +
+    ExtractFilePath(FTabs.Pages[TabIndex].Hint);
 
   P := FTabs.ClientToScreen(Point(X, Y + MulDiv(20, CurrentPPI, 96)));
   R := FTabHintWindow.CalcHintRect(700, HintText, nil);
