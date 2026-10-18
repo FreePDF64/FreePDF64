@@ -185,6 +185,81 @@ implementation
 
 uses FreePDF64_Unit, FreePDF64_Notify_Unit, Einstellungen_Unit, Suche_Info_Unit, uPDFBrowserForm, uPDFTabsForm;
 
+// Gemeinsamer Verlauf fuer alle drei Such-ComboBoxen.
+// Der zuletzt verwendete Wert steht oben; gleiche Werte erscheinen nur einmal.
+procedure BereinigeSuchverlauf(ACombo: TComboBox);
+var
+  I, J: Integer;
+begin
+  ACombo.Items.BeginUpdate;
+  try
+    I := 0;
+    while I < ACombo.Items.Count do
+    begin
+      if Trim(ACombo.Items[I]) = '' then
+        ACombo.Items.Delete(I)
+      else
+      begin
+        J := 0;
+        while J < I do
+        begin
+          if SameText(Trim(ACombo.Items[J]), Trim(ACombo.Items[I])) then
+            Break;
+          Inc(J);
+        end;
+        if J < I then
+          ACombo.Items.Delete(I)
+        else
+          Inc(I);
+      end;
+    end;
+  finally
+    ACombo.Items.EndUpdate;
+  end;
+end;
+
+procedure MerkeSuchverlauf(ACombo: TComboBox);
+var
+  I: Integer;
+  S: string;
+begin
+  S := Trim(ACombo.Text);
+  BereinigeSuchverlauf(ACombo);
+  if S = '' then Exit;
+  ACombo.Items.BeginUpdate;
+  try
+    I := ACombo.Items.Count - 1;
+    while I >= 0 do
+    begin
+      if SameText(Trim(ACombo.Items[I]), S) then
+        ACombo.Items.Delete(I);
+      Dec(I);
+    end;
+    ACombo.Items.Insert(0, S);
+  finally
+    ACombo.Items.EndUpdate;
+  end;
+  ACombo.Text := S;
+end;
+
+procedure LoescheAlteSuchverlaufsSchluessel(AIni: TIniFile);
+var
+  Keys: TStringList;
+  I: Integer;
+begin
+  Keys := TStringList.Create;
+  try
+    AIni.ReadSection('Search', Keys);
+    for I := Keys.Count - 1 downto 0 do
+      if SameText(Copy(Keys[I], 1, 9), 'FileField') or
+         SameText(Copy(Keys[I], 1, 11), 'SearchField') or
+         SameText(Copy(Keys[I], 1, 10), 'Textsearch') then
+        AIni.DeleteKey('Search', Keys[I]);
+  finally
+    Keys.Free;
+  end;
+end;
+
 procedure TSuche_Form.PositioniereSucheControls;
 begin
   // SucheEdit rechts unten in der ListBox
@@ -442,18 +517,15 @@ begin
   end;
   // ============================================================
 
-  for i := FileField.Items.Count - 1 downto 0 do
-    if FileField.Items.Strings[i] = '' then
-      FileField.Items.Delete(i);
-  for i := SearchField.Items.Count - 1 downto 0 do
-    if SearchField.Items.Strings[i] = '' then
-      SearchField.Items.Delete(i);
-  for i := TextCB.Items.Count - 1 downto 0 do
-    if TextCB.Items.Strings[i] = '' then
-      TextCB.Items.Delete(i);
+  BereinigeSuchverlauf(FileField);
+  BereinigeSuchverlauf(SearchField);
+  BereinigeSuchverlauf(TextCB);
   try
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
+    // Alte Verlaufsschluessel loeschen, damit entfernte Eintraege
+    // nach einem Neustart nicht wieder erscheinen.
+    LoescheAlteSuchverlaufsSchluessel(IniDat);
     // Speichere beim Beenden des Programmes in die 'FreePDF64.ini'
     with IniDat do
       // Verlauf Suche-Form schreiben.
@@ -821,8 +893,7 @@ begin
   if Length(SearchField.Text) = 2 then
     SearchField.Text := IncludeTrailingBackslash
       (ExtractFileDir(ExcludeTrailingBackslash(SearchField.Text)));
-  if SearchField.Items.IndexOf(SearchField.Text) < 0 then
-    SearchField.Items.Add(SearchField.Text);
+  MerkeSuchverlauf(SearchField);
   if SearchField.Text = '' then
     SearchField.Text := ExcludeTrailingBackslash(Ziel);
 end;
@@ -4147,6 +4218,7 @@ procedure TSuche_Form.StartSearchButtonClick(Sender: TObject);
 var
   Path, Mask: String;
   MinMaxFileSize: Int64;
+  i: Integer;
 begin
   // =========================================================
   // GESAMTE SUCHZEIT MESSEN
@@ -4320,14 +4392,9 @@ begin
   // =========================================================
   // SUCHFELDER-EINTRÄGE HINZUFÜGEN
   // =========================================================
-  if SearchField.Items.IndexOf(SearchField.Text) < 0 then
-    SearchField.Items.Insert(0, SearchField.Text);
-
-  if FileField.Items.IndexOf(FileField.Text) < 0 then
-    FileField.Items.Insert(0, FileField.Text);
-
-  if TextCB.Items.IndexOf(TextCB.Text) < 0 then
-    TextCB.Items.Insert(0, TextCB.Text);
+  MerkeSuchverlauf(SearchField);
+  MerkeSuchverlauf(FileField);
+  MerkeSuchverlauf(TextCB);
 
   // =========================================================
   // SUCHE STARTEN
@@ -4539,34 +4606,8 @@ begin
 end;
 
 procedure TSuche_Form.SearchFieldDropDown(Sender: TObject);
-var
-  Last: string;
-  i: Integer;
 begin
-  Last := SearchField.Text;
-
-  // Leere Einträge entfernen (korrekter Bereich!)
-  for i := SearchField.Items.Count - 1 downto 0 do
-    if SearchField.Items[i] = '' then
-      SearchField.Items.Delete(i);
-
-  // Letzten Eintrag oben einfügen, wenn er noch nicht existiert
-  if (Last <> '') and (SearchField.Items.IndexOf(Last) < 0) then
-    SearchField.Items.Insert(0, Last)
-  else
-  begin
-    // Falls vorhanden → nach oben verschieben
-    i := SearchField.Items.IndexOf(Last);
-    if i > 0 then
-    begin
-      SearchField.Items.Delete(i);
-      SearchField.Items.Insert(0, Last);
-    end;
-  end;
-
-  // Immer den obersten Eintrag auswählen
-  if SearchField.Items.Count > 0 then
-    SearchField.ItemIndex := 0;
+  BereinigeSuchverlauf(SearchField);
 end;
 
 procedure TSuche_Form.FileFieldChange(Sender: TObject);
@@ -4575,49 +4616,20 @@ begin
 end;
 
 procedure TSuche_Form.FileFieldCloseUp(Sender: TObject);
-var
-  idx: Integer;
-  S: string;
 begin
-  S := TrimRight(FileField.Text);
-
-  if S = '' then
-    Exit;
-
-  FileField.Text := S;
-
-  idx := FileField.Items.IndexOf(S);
-
-  if idx > 0 then
-  begin
-    FileField.Items.Delete(idx);
-    FileField.Items.Insert(0, S);
-  end
-  else if idx < 0 then
-    FileField.Items.Insert(0, S);
-
-  FLastPersistent := S;
+  // Auswahl uebernehmen, ohne den Verlauf beim Oeffnen zu veraendern.
+  MerkeSuchverlauf(FileField);
+  FLastPersistent := FileField.Text;
 end;
 
 procedure TSuche_Form.FileFieldDropDown(Sender: TObject);
-var
-  i: Integer;
 begin
-  for i := FileField.Items.Count - 1 downto 0 do
-    if Trim(FileField.Items[i]) = '' then
-      FileField.Items.Delete(i);
+  BereinigeSuchverlauf(FileField);
 end;
 
 procedure TSuche_Form.TextCBDropDown(Sender: TObject);
-var
-  i: Integer;
 begin
-  if TextCB.Items.IndexOf(TextCB.Text) < 0 then
-    TextCB.Items.Insert(0, TextCB.Text);
-
-  for i := TextCB.Items.Count - 1 downto 0 do
-    if TextCB.Items.Strings[i] = '' then
-      TextCB.Items.Delete(i);
+  BereinigeSuchverlauf(TextCB);
 end;
 
 Procedure TSuche_Form.FilesFoldersCBChange(Sender: TObject);
