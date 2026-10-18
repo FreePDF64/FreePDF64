@@ -15,8 +15,8 @@
 ## ⭐ Die wichtigsten Funktionen auf einen Blick
 
 - **PDF-Drucker:** Dokumente aus nahezu jeder druckfähigen Windows-Anwendung als PDF ausgeben.
-- **PDF-Anzeiger:** Mehrere PDFs in Registerkarten öffnen, Tabs durchsuchen und geschlossene PDFs wiederherstellen. Ersetzt jeden PDF-Reader!
 - **PDF-Bearbeitung:** Dateien zusammenführen, komprimieren, Seiten entnehmen sowie Wasserzeichen und Stempel hinzufügen.
+- **FreePDF64-Viewer:** Mehrere PDFs in Registerkarten öffnen, Tabs durchsuchen und geschlossene PDFs wiederherstellen. Ersetzt jeden PDF-Reader!
 - **Konvertierung:** PDF-, PostScript- und Bilddateien in zahlreiche Ausgabeformate umwandeln.
 - **Sicherheit und Archivierung:** PDF-Verschlüsselung und Erstellung von PDF/A-Dokumenten.
 - **Automatisierung:** Neu eingehende Dateien per Verzeichnisüberwachung automatisch verarbeiten.
