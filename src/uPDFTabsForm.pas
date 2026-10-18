@@ -145,17 +145,21 @@ end;
 function ActivateRunningMainProgram: Boolean;
 var
   Wnd: HWND;
+  TargetPID: DWORD;
 begin
   Wnd := 0;
   EnumWindows(@FindMainWindowCallback, LPARAM(@Wnd));
-  Result := Wnd <> 0;
-  if Result then
-  begin
-    if IsIconic(Wnd) then ShowWindow(Wnd, SW_RESTORE)
-    else ShowWindow(Wnd, SW_SHOW);
-    BringWindowToTop(Wnd);
-    SetForegroundWindow(Wnd);
-  end;
+  Result := (Wnd <> 0) and IsWindow(Wnd);
+  if not Result then
+    Exit;
+
+  // Dem Hauptprogramm die Vordergrundaktivierung gestatten.
+  // Die eigentliche Aktivierung erfolgt in dessen Nachrichten-Thread.
+  TargetPID := 0;
+  GetWindowThreadProcessId(Wnd, @TargetPID);
+  if TargetPID <> 0 then
+    AllowSetForegroundWindow(TargetPID);
+  PostMessage(Wnd, WM_APP + 194, 0, 0);
 end;
 
 procedure MarkMainProgramWindow(Wnd: HWND);
@@ -1437,8 +1441,11 @@ begin
   FileName := FClosedPDFs[FClosedPDFs.Count - 1];
   if not FileExists(FileName) then
   begin
-    MessageDlg('Die PDF-Datei existiert nicht mehr:' + sLineBreak + FileName,
-      mtWarning, [mbOK], 0);
+    // Fehlenden Eintrag auch dauerhaft aus der Wiederherstellungsliste entfernen.
+    FClosedPDFs.Delete(FClosedPDFs.Count - 1);
+    SaveClosedPDFs;
+    MessageDlg('Die PDF-Datei existiert nicht mehr und wurde aus der Liste entfernt:' +
+      sLineBreak + FileName, mtWarning, [mbOK], 0);
     Exit;
   end;
   PDF := TPDFBrowserForm.Create(Application);

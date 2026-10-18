@@ -103,6 +103,7 @@ const
   FOLDERID_ProgramFilesX86: TGUID = '{7C5A40EF-A0FB-4BFC-874A-C0F2E0B9FA8E}';
 
   WM_START_IN_TRAY = WM_APP + 100;
+  WM_ACTIVATE_FREEPDF_MAIN = WM_APP + 194;
 
 type
   TProcessMemoryCountersEx2 = record
@@ -668,6 +669,7 @@ type
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
       procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
+      procedure WMActivateFreePDFMain(var Msg: TMessage); message WM_ACTIVATE_FREEPDF_MAIN;
     public
       { Public-Deklarationen }
       PDF_UeberwachungsDatei: string;
@@ -6297,6 +6299,13 @@ begin
     else
       FreePDF64_Form.WindowState := wsMinimized;
   end;
+end;
+
+procedure TFreePDF64_Form.WMActivateFreePDFMain(var Msg: TMessage);
+begin
+  // Auf dem UI-Thread des Hauptprogramms wiederherstellen und aktivieren.
+  ShowMainWindowFromPDF(nil);
+  Msg.Result := 1;
 end;
 
 procedure TFreePDF64_Form.ShowMainWindowFromPDF(Sender: TObject);
