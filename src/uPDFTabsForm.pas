@@ -106,6 +106,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     procedure AddPDF(APDF: TPDFBrowserForm);
+    procedure AddAttachmentPDF(APDF: TPDFBrowserForm; ASource: TPDFBrowserForm);
     procedure ActivatePDF(APDF: TPDFBrowserForm);
     procedure GetOpenPDFFileNames(AFiles: TStrings);
     function ActivateExistingPDF(const AFileName: string): Boolean;
@@ -134,6 +135,8 @@ var
   PDFTabsShowMainForm: TNotifyEvent = nil;
 
 implementation
+
+uses uPDFAttachmentTemp;
 
 const
   LOCAL_TAB_SEARCH_HOTKEY_ID = $5A71;
@@ -577,6 +580,11 @@ begin
   end;
 end;
 
+function IsFreePDFTempAttachment(const AFileName: string): Boolean;
+begin
+  Result := Pos('FreePDF64_Attachment_', ExtractFileName(AFileName)) = 1;
+end;
+
 procedure TPDFTabsForm.SavePDFSession;
 var
   Ini: TIniFile;
@@ -591,7 +599,7 @@ begin
     for I := 0 to FTabs.PageCount - 1 do
     begin
       S := Trim(FTabs.Pages[I].Hint);
-      if (S <> '') and (Files.IndexOf(S) < 0) then
+      if (S <> '') and not IsFreePDFTempAttachment(S) and (Files.IndexOf(S) < 0) then
         Files.Add(S);
     end;
     Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
@@ -1206,6 +1214,7 @@ var
   Tab: TTabSheet;
   I: Integer;
   PDF: TPDFBrowserForm;
+  TempPDFFile: string;
 begin
   if FTabs = nil then Exit;
   FActivationTimer.Enabled := False;
@@ -1219,7 +1228,10 @@ begin
         PDF := TPDFBrowserForm(Tab.Controls[I]);
         // Eingebettetes Fenster nicht vorher abkoppeln: kein kurzzeitig
         // sichtbares eigenstaendiges Fenster beim Aufraeumen.
+        TempPDFFile := PDF.PDFFileName;
         PDF.Free;
+        if IsFreePDFTempAttachment(TempPDFFile) then
+          ReleasePDFAttachmentTemp(TempPDFFile);
       end;
     Tab.Free;
   end;
@@ -1334,6 +1346,22 @@ begin
     FActivationTimer.Enabled := False;
     FDeferredActivePDF := nil;
     RestoreInitialWindow;
+  end;
+end;
+
+procedure TPDFTabsForm.AddAttachmentPDF(APDF: TPDFBrowserForm; ASource: TPDFBrowserForm);
+var
+  SourceIndex: Integer;
+begin
+  SourceIndex := -1;
+  if (ASource <> nil) and (ASource.Parent is TTabSheet) then
+    if TTabSheet(ASource.Parent).PageControl = FTabs then
+      SourceIndex := TTabSheet(ASource.Parent).PageIndex;
+  AddPDF(APDF);
+  if (SourceIndex >= 0) and (APDF.Parent is TTabSheet) then
+  begin
+    TTabSheet(APDF.Parent).PageIndex := SourceIndex + 1;
+    UpdateEmptyTabStrip;
   end;
 end;
 
@@ -1737,6 +1765,7 @@ var
   PDF: TPDFBrowserForm;
   I: Integer;
   ClosedIndex, NextIndex: Integer;
+  TempPDFFile: string;
 begin
   Tab := FTabs.ActivePage;
   if Tab = nil then Exit;
@@ -1753,16 +1782,19 @@ begin
     end;
   if PDF <> nil then
   begin
-    if PDF.PDFFileName <> '' then
+    if (PDF.PDFFileName <> '') and not IsFreePDFTempAttachment(PDF.PDFFileName) then
     begin
       UpdateClosedPDFHistory(PDF.PDFFileName, True);
     end;
     // Vor dem Entfernen des Parent unsichtbar machen. Sonst wird
     // das eingebettete Formular kurz ein eigenstaendiges Fenster
     // und kann das Registerkartenfenster nach hinten verdraengen.
+    TempPDFFile := PDF.PDFFileName;
     PDF.Hide;
     PDF.Parent := nil;
     PDF.Close;
+    if IsFreePDFTempAttachment(TempPDFFile) then
+      ReleasePDFAttachmentTemp(TempPDFFile);
   end;
   Tab.Free;
   UpdateTabCount;

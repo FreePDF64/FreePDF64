@@ -719,13 +719,14 @@ uses
   Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit,
   Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
   Dateianlage_Unit, Status_Unit, Anleitung_Unit, Suchen, uPDFBrowserForm,
-  FreePDF64PrinterConfig, uPDFTabsForm;
+  FreePDF64PrinterConfig, uPDFTabsForm, uPDFAttachmentTemp;
 
 type
   // Nicht-modales Fenster für die Anlagenliste einer PDF-Datei.
   TPDFAttachmentNoticeForm = class(TForm)
   private
     FAttachmentList: TListBox;
+    FOpenedPDFs: TStringList;
     FCloseButton: TButton;
     FSourcePDF: string;
     FPDFBrowser: TPDFBrowserForm;
@@ -734,11 +735,14 @@ type
     procedure CloseButtonClick(Sender: TObject);
     procedure CloseButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ExtractButtonClick(Sender: TObject);
+    procedure AttachmentDoubleClick(Sender: TObject);
+    procedure HideAfterAttachmentOpen;
     procedure AddButtonClick(Sender: TObject);
     procedure RemoveButtonClick(Sender: TObject);
     procedure UpdatePosition(PDFForm: TForm);
   public
     constructor CreateNotice(AOwner: TComponent; const AttachmentNames: TStrings; PDFForm: TForm; const PDFFileName: string);
+    destructor Destroy; override;
   end;
 
 {$R *.DFM}
@@ -1497,8 +1501,8 @@ begin
       'Diese PDF-Datei enthält keine eingebetteten Anlagen.'
   else
     InfoLabel.Caption :=
-      'Eingebettete Anlagen dieser PDF-Datei: ' +
-      'Anlagen extrahieren, hinzufügen oder entfernen.';
+      'Doppelklick: Anlage öffnen.' + sLineBreak +
+      'PDFs im neuen Tab, andere mit Windows öffnen.';
 
   // Bedienleiste unten.
   BottomPanel := TPanel.Create(Self);
@@ -1546,6 +1550,8 @@ begin
   FAttachmentList.ItemHeight := 20;
   FAttachmentList.MultiSelect := True;
   FAttachmentList.ExtendedSelect := True;
+  FAttachmentList.OnDblClick := AttachmentDoubleClick;
+  FOpenedPDFs := TStringList.Create;
 
   if AttachmentNames <> nil then
     FAttachmentList.Items.Assign(AttachmentNames);
@@ -1628,6 +1634,12 @@ begin
   end;
 end;
 
+destructor TPDFAttachmentNoticeForm.Destroy;
+begin
+  FOpenedPDFs.Free;
+  inherited;
+end;
+
 procedure TPDFAttachmentNoticeForm.CloseButtonClick(Sender: TObject);
 begin
   // Direkt ueber das Windows-Fensterhandle ausblenden.
@@ -1677,6 +1689,123 @@ begin
       CloseFile(F);
     except
     end;
+end;
+
+// Fenster nach erfolgreichem Oeffnen zuverlaessig ausblenden.
+// Die Instanz bleibt fuer die Anlagen-Schaltflaeche erhalten.
+procedure TPDFAttachmentNoticeForm.HideAfterAttachmentOpen;
+begin
+  ShowWindow(Handle, SW_HIDE);
+  Hide;
+end;
+
+procedure TPDFAttachmentNoticeForm.AttachmentDoubleClick(Sender: TObject);
+var
+  Index: Integer;
+  Name, Ext, TargetFile, CmdLine, PdfDetachExe, TempBase: string;
+  TempDir: array[0..MAX_PATH] of Char;
+  TempName: array[0..MAX_PATH] of Char;
+  ExitCode: Longword;
+  ProcID: Cardinal;
+  PDF: TPDFBrowserForm;
+  Viewer: TPDFTabsForm;
+  OpenResult: HINST;
+begin
+  Index := FAttachmentList.ItemIndex;
+  if (Index < 0) or (FSourcePDF = '') or not FileExists(FSourcePDF) then Exit;
+  Name := ExtractFileName(FAttachmentList.Items[Index]);
+  Ext := LowerCase(ExtractFileExt(Name));
+  Viewer := PDFTabsWindow;
+
+  // Bereits geoeffnete PDF-Anlage nur aktivieren.
+  if (Ext = '.pdf') and (Viewer <> nil) and Assigned(FOpenedPDFs) and
+     (Index < FOpenedPDFs.Count) and FileExists(FOpenedPDFs[Index]) and
+     Viewer.ActivateExistingPDF(FOpenedPDFs[Index]) then
+  begin
+    HideAfterAttachmentOpen;
+    Exit;
+  end;
+
+  if (Ext = '.pdf') and ((Viewer = nil) or not Assigned(FPDFBrowser) or
+     not (FPDFBrowser.Parent is TTabSheet)) then Exit;
+
+  // Aus PDF-Anlagen niemals Programme oder Skripte direkt ausfuehren.
+  if (Ext = '.exe') or (Ext = '.com') or (Ext = '.bat') or
+     (Ext = '.cmd') or (Ext = '.ps1') or (Ext = '.vbs') or
+     (Ext = '.vbe') or (Ext = '.js') or (Ext = '.jse') or
+     (Ext = '.wsf') or (Ext = '.wsh') or (Ext = '.scr') or
+     (Ext = '.pif') or (Ext = '.msi') or (Ext = '.msp') or
+     (Ext = '.hta') or (Ext = '.lnk') or (Ext = '.url') then
+  begin
+    MessageDlg('Diese Anlage kann aus Sicherheitsgründen nicht direkt gestartet werden.' +
+      sLineBreak + 'Verwenden Sie bei Bedarf die Schaltfläche Extrahieren.',
+      mtWarning, [mbOK], 0);
+    Exit;
+  end;
+
+  if (Ext <> '.pdf') and
+     (MessageDlg('Die Anlage "' + Name + '" mit dem zugeordneten Windows-Programm öffnen?' +
+       sLineBreak + 'Öffnen Sie nur Anlagen aus vertrauenswürdigen PDF-Dateien.',
+       mtConfirmation, [mbYes, mbNo], 0) <> mrYes) then Exit;
+
+  PdfDetachExe := PDFTabsPdfDetachExe;
+  if not FileExists(PdfDetachExe) then
+    PdfDetachExe := IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'pdfdetach.exe';
+  if not FileExists(PdfDetachExe) then
+  begin
+    MessageDlg('pdfdetach.exe wurde nicht gefunden.', mtError, [mbOK], 0);
+    Exit;
+  end;
+  if GetTempPath(MAX_PATH, TempDir) = 0 then Exit;
+  if GetTempFileName(TempDir, 'FPA', 0, TempName) = 0 then Exit;
+  TempBase := IncludeTrailingPathDelimiter(string(TempDir)) +
+    'FreePDF64_Attachment_' + ExtractFileName(ChangeFileExt(string(TempName), ''));
+  DeleteFile(string(TempName));
+  // Die Endung beibehalten, damit Windows die passende Anwendung findet.
+  TargetFile := TempBase + Ext;
+  if Ext = '' then TargetFile := TempBase + '.bin';
+  CmdLine := '"' + PdfDetachExe + '" -save ' + IntToStr(Index + 1) +
+    ' -o "' + TargetFile + '" "' + FSourcePDF + '"';
+  ProcID := 0;
+  ExitCode := RunProcess(CmdLine, SW_HIDE, True, @ProcID);
+  if (ExitCode <> 0) or not FileExists(TargetFile) then
+  begin
+    DeleteFile(TargetFile);
+    MessageDlg('Die Anlage konnte nicht extrahiert werden.', mtError, [mbOK], 0);
+    Exit;
+  end;
+
+  RegisterPDFAttachmentTemp(TargetFile);
+
+  if Ext <> '.pdf' then
+  begin
+    OpenResult := ShellExecute(Handle, 'open', PChar(TargetFile), nil, nil, SW_SHOWNORMAL);
+    if NativeInt(OpenResult) <= 32 then
+    begin
+      ReleasePDFAttachmentTemp(TargetFile);
+      MessageDlg('Für diese Anlage konnte kein zugeordnetes Windows-Programm gestartet werden.',
+        mtError, [mbOK], 0);
+      Exit;
+    end;
+    HideAfterAttachmentOpen;
+    Exit;
+  end;
+
+  PDF := TPDFBrowserForm.Create(Application);
+  try
+    PDF.PDFFileName := TargetFile;
+    PDF.StandalonePDFMode := False;
+    Viewer.AddAttachmentPDF(PDF, FPDFBrowser);
+    if PDF.Parent is TTabSheet then
+      TTabSheet(PDF.Parent).Caption := Name;
+    while FOpenedPDFs.Count <= Index do FOpenedPDFs.Add('');
+    FOpenedPDFs[Index] := TargetFile;
+    HideAfterAttachmentOpen;
+  except
+    PDF.Free;
+    ReleasePDFAttachmentTemp(TargetFile);
+    raise;
+  end;
 end;
 
 procedure TPDFAttachmentNoticeForm.ExtractButtonClick(Sender: TObject);

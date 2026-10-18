@@ -13,22 +13,24 @@ File_10=TSourceModule,'c:\program files (x86)\embarcadero\studio\37.0\SOURCE\RTL
 File_11=TSourceModule,'D:\Delphi\FreePDF64_BAK\FreePDF64_03082026\FreePDF64_Unit.pas',0,1,1,1,1,0,0,,
 File_12=TSourceModule,'D:\Delphi\FreePDF64\EineInstanz_Unit.pas',0,1,1,22,1,0,0,,
 File_13=TSourceModule,'D:\Delphi\FreePDF64\Anlage_Unit.dfm',0,1,1,1,1,0,0,,
-File_14=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0\Imports\AcroPDFLib_TLB.pas',0,1,1,1,1,0,0,,
 
 [Modules]
 Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Suchen.pas
-Module2=D:\Delphi\FreePDF64\Anleitung_Unit.pas
-Module3=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
-Module4=D:\Delphi\FreePDF64\Info_Unit.pas
-Module5=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-Module6=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
-Module7=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
-Module8=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas
+Module2=D:\Delphi\FreePDF64\Suchen.pas
+Module3=D:\Delphi\FreePDF64\Anleitung_Unit.pas
+Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
+Module5=D:\Delphi\FreePDF64\Info_Unit.pas
+Module6=D:\Delphi\FreePDF64\uPDFTabsForm.pas
+Module7=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module8=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
 Count=9
 EditWindowCount=1
 
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
+ModuleType=TSourceModule
+
+[D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Suchen.pas]
@@ -50,9 +52,6 @@ ModuleType=TSourceModule
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Suche_Info_Unit.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\FreePDF64_Notify_Unit.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
@@ -103,9 +102,9 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=64
-CursorY=15
-TopLine=1
+CursorX=5
+CursorY=1774
+TopLine=1774
 LeftCol=1
 Elisions=
 Bookmarks={0,6979,1}
@@ -323,11 +322,11 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
-SplitPos=111
+SplitPos=115
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -709,7 +708,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -735,7 +734,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -761,7 +760,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
