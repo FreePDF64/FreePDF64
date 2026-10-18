@@ -50,6 +50,7 @@ var
   hPDFStartMutex: THandle;
   PDFMutexWait: DWORD;
   MutexName: string;
+  ForceMainMode: Boolean;
   PDFDatei: string;
   PDFBrowserForm: TPDFBrowserForm;
   PDFTabsForm: TPDFTabsForm;
@@ -68,11 +69,17 @@ begin
   PDFModus := False;
   IndependentViewer := False;
   EmptyIndependentViewer := False;
+  ForceMainMode := False;
 
   PDFDateien := TStringList.Create;
   try
     for I := 1 to ParamCount do
     begin
+      if SameText(ParamStr(I), '--main') then
+      begin
+        ForceMainMode := True;
+        Continue;
+      end;
       if SameText(ParamStr(I), '--viewer-empty') then
       begin
         IndependentViewer := True;
@@ -88,7 +95,8 @@ begin
       if SameText(ExtractFileExt(PDFDatei), '.pdf') and FileExists(PDFDatei) then
         PDFDateien.Add(PDFDatei);
     end;
-    PDFModus := (PDFDateien.Count > 0) or EmptyIndependentViewer;
+    PDFModus := ((PDFDateien.Count > 0) or EmptyIndependentViewer) and
+      not ForceMainMode;
 
     // Explorer startet bei Mehrfachauswahl oft mehrere Prozesse gleichzeitig.
     // Der Mutex serialisiert die Entscheidung "an bestehende Tabs senden
@@ -132,19 +140,24 @@ begin
 
   if not PDFModus then
   begin
-    MutexName := 'Mutex_' + ExtractFileName(ParamStr(0));
+    MutexName := 'Local\FreePDF64_MainProgram_SingleInstance_v2';
     hMutex := CreateMutex(nil, True, PChar(MutexName));
-
-    if (hMutex = 0) or (GetLastError = ERROR_ALREADY_EXISTS) then
+    if hMutex = 0 then
     begin
-      if hMutex <> 0 then
-        CloseHandle(hMutex);
-
-      MessageBox(0,
-        'FreePDF64 läuft bereits!',
-        'Hinweis',
-        MB_ICONINFORMATION or MB_OK);
-      Halt;
+      MessageBox(0, 'Die Instanzpruefung konnte nicht initialisiert werden.',
+        'FreePDF64', MB_ICONERROR or MB_OK);
+      Halt(1);
+    end;
+    if GetLastError = ERROR_ALREADY_EXISTS then
+    begin
+      CloseHandle(hMutex);
+      // Bei parallelem Start kann das Hauptfenster noch im Aufbau sein.
+      for I := 1 to 40 do
+      begin
+        if ActivateRunningMainProgram then Break;
+        Sleep(100);
+      end;
+      Halt(0);
     end;
   end;
 
@@ -165,6 +178,8 @@ begin
     Application.ShowMainForm := False;
 
   Application.CreateForm(TFreePDF64_Form, FreePDF64_Form);
+  if not PDFModus then
+    MarkMainProgramWindow(FreePDF64_Form.Handle);
   Application.CreateForm(TEinstellungen_Form, Einstellungen_Form);
   Application.CreateForm(TAuswahl_Form, Auswahl_Form);
   Application.CreateForm(TEncrypt_Form, Encrypt_Form);

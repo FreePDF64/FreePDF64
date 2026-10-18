@@ -118,6 +118,8 @@ var
 procedure ShowEmptyPDFViewer;
 procedure ShowPDFInTabs(APDF: TPDFBrowserForm);
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
+function ActivateRunningMainProgram: Boolean;
+procedure MarkMainProgramWindow(Wnd: HWND);
 
 var
   PDFTabsShowMainForm: TNotifyEvent = nil;
@@ -128,6 +130,40 @@ const
   LOCAL_TAB_SEARCH_HOTKEY_ID = $5A71;
   PDFTabWindowMarker = 'FreePDF64.PDFTabs.Window.v1';
   PDFTabMessageId = $46504446;
+  MainProgramWindowMarker = 'FreePDF64.MainProgram.Window.v1';
+
+function FindMainWindowCallback(Wnd: HWND; Data: LPARAM): BOOL; stdcall;
+begin
+  Result := True;
+  if GetProp(Wnd, PChar(MainProgramWindowMarker)) <> 0 then
+  begin
+    PHandle(Data)^ := Wnd;
+    Result := False;
+  end;
+end;
+
+function ActivateRunningMainProgram: Boolean;
+var
+  Wnd: HWND;
+begin
+  Wnd := 0;
+  EnumWindows(@FindMainWindowCallback, LPARAM(@Wnd));
+  Result := Wnd <> 0;
+  if Result then
+  begin
+    if IsIconic(Wnd) then ShowWindow(Wnd, SW_RESTORE)
+    else ShowWindow(Wnd, SW_SHOW);
+    BringWindowToTop(Wnd);
+    SetForegroundWindow(Wnd);
+  end;
+end;
+
+procedure MarkMainProgramWindow(Wnd: HWND);
+begin
+  if Wnd <> 0 then
+    SetProp(Wnd, PChar(MainProgramWindowMarker), THandle(1));
+end;
+
 
 function FindTabsWindowCallback(Wnd: HWND; Data: LPARAM): BOOL; stdcall;
 begin
@@ -969,11 +1005,26 @@ begin
 end;
 
 procedure TPDFTabsForm.OpenMainProgramClick(Sender: TObject);
+var
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  CmdLine: string;
 begin
-  // Der vorhandene Callback setzt PDFTabsMainFormWasShown und aktiviert
-  // das bereits initialisierte Hauptformular. Kein zweiter Prozess.
-  if Assigned(PDFTabsShowMainForm) then
-    PDFTabsShowMainForm(Self);
+  // Der Viewer ist kein Hauptprogramm und darf dessen Mutex nicht besitzen.
+  if ActivateRunningMainProgram then Exit;
+  CmdLine := '"' + ParamStr(0) + '" --main';
+  FillChar(SI, SizeOf(SI), 0);
+  SI.cb := SizeOf(SI);
+  FillChar(PI, SizeOf(PI), 0);
+  if CreateProcess(PChar(ParamStr(0)), PChar(CmdLine), nil, nil,
+    False, 0, nil, nil, SI, PI) then
+  begin
+    CloseHandle(PI.hThread);
+    CloseHandle(PI.hProcess);
+  end
+  else
+    MessageDlg('Das FreePDF64-Hauptprogramm konnte nicht gestartet werden.',
+      mtError, [mbOK], 0);
 end;
 
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
