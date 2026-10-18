@@ -15,6 +15,8 @@ type
     FEmptyTabStrip: TPanel;
     FOriginalTabsWindowProc: TWndMethod;
     FClosedPDFs: TStringList;
+    FSessionPDFs: TStringList;
+    FRestoreSessionItem: TMenuItem;
     FTabContextMenu: TPopupMenu;
     FReopenClosedItem: TMenuItem;
     FTabHintWindow: THintWindow;
@@ -53,6 +55,10 @@ type
     procedure TabContextPopup(Sender: TObject);
     procedure LoadClosedPDFs;
     procedure SaveClosedPDFs;
+    procedure UpdateClosedPDFHistory(const AFileName: string; AAdd: Boolean);
+    procedure LoadPDFSession;
+    procedure SavePDFSession;
+    procedure RestorePDFSession(Sender: TObject);
     procedure ReopenLastClosedPDF(Sender: TObject);
     procedure ReopenSelectedClosedPDF(Sender: TObject);
     procedure ActivationTimerTick(Sender: TObject);
@@ -457,7 +463,7 @@ begin
     Count := Ini.ReadInteger('ClosedPDFs', 'Count', 0);
     if Count < 0 then Count := 0;
     if Count > 20 then Count := 20;
-    for I := 1 to Count do
+    for I := Count downto 1 do
     begin
       FileName := Trim(Ini.ReadString('ClosedPDFs', 'File' + IntToStr(I), ''));
       if (FileName <> '') and (FClosedPDFs.IndexOf(FileName) < 0) then
@@ -465,6 +471,107 @@ begin
     end;
   finally
     Ini.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.LoadPDFSession;
+var
+  Ini: TIniFile;
+  I, N: Integer;
+  S: string;
+begin
+  FSessionPDFs.Clear;
+  Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+  try
+    N := Ini.ReadInteger('PDFSession', 'Count', 0);
+    if N < 0 then N := 0;
+    if N > 200 then N := 200;
+    for I := 1 to N do
+    begin
+      S := Trim(Ini.ReadString('PDFSession', 'File' + IntToStr(I), ''));
+      if (S <> '') and (FSessionPDFs.IndexOf(S) < 0) then
+        FSessionPDFs.Add(S);
+    end;
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.SavePDFSession;
+var
+  Ini: TIniFile;
+  Files: TStringList;
+  I: Integer;
+  S: string;
+begin
+  Files := TStringList.Create;
+  try
+    // Registerkarten in ihrer Reihenfolge sichern, auch bei Netzlaufwerken.
+    // Keine FileExists-Pruefung: kurzzeitig unerreichbare NAS-Pfade behalten.
+    for I := 0 to FTabs.PageCount - 1 do
+    begin
+      S := Trim(FTabs.Pages[I].Hint);
+      if (S <> '') and (Files.IndexOf(S) < 0) then
+        Files.Add(S);
+    end;
+    Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+    try
+      Ini.EraseSection('PDFSession');
+      Ini.WriteInteger('PDFSession', 'Count', Files.Count);
+      for I := 0 to Files.Count - 1 do
+        Ini.WriteString('PDFSession', 'File' + IntToStr(I + 1), Files[I]);
+    finally
+      Ini.Free;
+    end;
+    FSessionPDFs.Assign(Files);
+  finally
+    Files.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.RestorePDFSession(Sender: TObject);
+var
+  I: Integer;
+  S: string;
+  PDF: TPDFBrowserForm;
+  Missing: TStringList;
+  OpenFiles: TStringList;
+begin
+  Missing := TStringList.Create;
+  OpenFiles := TStringList.Create;
+  try
+    // Keine Datei zweimal oeffnen.
+    for I := 0 to FTabs.PageCount - 1 do
+      if FTabs.Pages[I].Hint <> '' then
+        OpenFiles.Add(FTabs.Pages[I].Hint);
+    for I := 0 to FSessionPDFs.Count - 1 do
+    begin
+      S := FSessionPDFs[I];
+      if OpenFiles.IndexOf(S) >= 0 then Continue;
+      if not FileExists(S) then
+      begin
+        Missing.Add(S);
+        Continue;
+      end;
+      PDF := TPDFBrowserForm.Create(Application);
+      try
+        PDF.PDFFileName := S;
+        PDF.StandalonePDFMode := False;
+        AddPDF(PDF);
+        OpenFiles.Add(S);
+      except
+        PDF.Free;
+        raise;
+      end;
+    end;
+    if Missing.Count > 0 then
+      MessageDlg(IntToStr(Missing.Count) +
+        ' PDF-Datei(en) der letzten Sitzung sind derzeit nicht erreichbar.' +
+        sLineBreak + 'Die gespeicherten Pfade bleiben erhalten.',
+        mtWarning, [mbOK], 0);
+  finally
+    OpenFiles.Free;
+    Missing.Free;
   end;
 end;
 
@@ -488,6 +595,44 @@ begin
   end;
 end;
 
+procedure TPDFTabsForm.UpdateClosedPDFHistory(const AFileName: string;
+  AAdd: Boolean);
+var
+  Mutex: THandle;
+  WaitResult: DWORD;
+  I: Integer;
+begin
+  if Trim(AFileName) = '' then Exit;
+  // Alle Viewer-Prozesse lesen/aendern/schreiben den Verlauf atomar.
+  Mutex := CreateMutex(nil, False, 'Local\FreePDF64_ClosedPDFs_Lock');
+  if Mutex = 0 then
+    RaiseLastOSError;
+  try
+    WaitResult := WaitForSingleObject(Mutex, INFINITE);
+    if (WaitResult <> WAIT_OBJECT_0) and
+       (WaitResult <> WAIT_ABANDONED) then
+      raise Exception.Create('ClosedPDFs-Sperre konnte nicht erworben werden.');
+    try
+      LoadClosedPDFs;
+      // Windows-Dateipfade ohne Beachtung der Gross-/Kleinschreibung vergleichen.
+      for I := FClosedPDFs.Count - 1 downto 0 do
+        if SameText(FClosedPDFs[I], AFileName) then
+          FClosedPDFs.Delete(I);
+      if AAdd then
+      begin
+        FClosedPDFs.Add(AFileName);
+        while FClosedPDFs.Count > 20 do
+          FClosedPDFs.Delete(0);
+      end;
+      SaveClosedPDFs;
+    finally
+      ReleaseMutex(Mutex);
+    end;
+  finally
+    CloseHandle(Mutex);
+  end;
+end;
+
 constructor TPDFTabsForm.Create(AOwner: TComponent);
 var
   Header: TPanel;
@@ -501,12 +646,18 @@ begin
   ButtonHeight := Max(MulDiv(26, Dpi, 96), Canvas.TextHeight('Ag') + MulDiv(10, Dpi, 96));
   PDFTabsWindow := Self;
   FClosedPDFs := TStringList.Create;
+  FSessionPDFs := TStringList.Create;
   LoadClosedPDFs;
+  LoadPDFSession;
   FTabContextMenu := TPopupMenu.Create(Self);
   FTabContextMenu.OnPopup := TabContextPopup;
   FReopenClosedItem := TMenuItem.Create(FTabContextMenu);
   // Untermenü wird bei jedem Öffnen aus den letzten 20 PDFs aufgebaut.
   FTabContextMenu.Items.Add(FReopenClosedItem);
+  FRestoreSessionItem := TMenuItem.Create(FTabContextMenu);
+  FRestoreSessionItem.Caption := 'Letzte PDF-Sitzung wiederherstellen';
+  FRestoreSessionItem.OnClick := RestorePDFSession;
+  FTabContextMenu.Items.Add(FRestoreSessionItem);
   // Normales Fenster, keine TopMost-Eigenschaft.
   FormStyle := fsNormal;
   BorderStyle := bsSizeable;
@@ -875,6 +1026,7 @@ begin
   ClearAllPDFTabs;
   if FTabs <> nil then
     FTabs.WindowProc := FOriginalTabsWindowProc;
+  FSessionPDFs.Free;
   FClosedPDFs.Free;
   if PDFTabsWindow = Self then
     PDFTabsWindow := nil;
@@ -1037,6 +1189,7 @@ begin
   // Fenster zuerst ausblenden, dann die WebView2-Registerkarten
   // unsichtbar abbauen. Sonst flackert der Viewer bei vielen PDFs.
   SaveWindowSettings;
+  SavePDFSession;
   Action := caHide;
   if FTabSearchForm <> nil then
     FTabSearchForm.Hide;
@@ -1401,8 +1554,10 @@ var
   I: Integer;
   Item: TMenuItem;
 begin
-  // Liste bei jedem Rechtsklick frisch aufbauen, neueste PDF zuerst.
+  // Gemeinsamen Verlauf vor jeder Anzeige neu einlesen.
+  LoadClosedPDFs;
   FReopenClosedItem.Clear;
+  FRestoreSessionItem.Enabled := FSessionPDFs.Count > 0;
   FReopenClosedItem.Caption := 'Geschlossene PDFs wieder öffnen';
   FReopenClosedItem.Enabled := FClosedPDFs.Count > 0;
   for I := FClosedPDFs.Count - 1 downto 0 do
@@ -1442,8 +1597,7 @@ begin
   if not FileExists(FileName) then
   begin
     // Fehlenden Eintrag auch dauerhaft aus der Wiederherstellungsliste entfernen.
-    FClosedPDFs.Delete(FClosedPDFs.Count - 1);
-    SaveClosedPDFs;
+    UpdateClosedPDFHistory(FileName, False);
     MessageDlg('Die PDF-Datei existiert nicht mehr und wurde aus der Liste entfernt:' +
       sLineBreak + FileName, mtWarning, [mbOK], 0);
     Exit;
@@ -1453,8 +1607,7 @@ begin
     PDF.PDFFileName := FileName;
     PDF.StandalonePDFMode := False;
     AddPDF(PDF);
-    FClosedPDFs.Delete(FClosedPDFs.Count - 1);
-    SaveClosedPDFs;
+    UpdateClosedPDFHistory(FileName, False);
     BringViewerToForeground;
   except
     PDF.Free;
@@ -1486,13 +1639,7 @@ begin
   begin
     if PDF.PDFFileName <> '' then
     begin
-      // Bereits bekannte Datei entfernen, damit sie nur einmal erscheint.
-      I := FClosedPDFs.IndexOf(PDF.PDFFileName);
-      if I >= 0 then FClosedPDFs.Delete(I);
-      FClosedPDFs.Add(PDF.PDFFileName);
-      if FClosedPDFs.Count > 20 then
-        FClosedPDFs.Delete(0);
-      SaveClosedPDFs;
+      UpdateClosedPDFHistory(PDF.PDFFileName, True);
     end;
     // Vor dem Entfernen des Parent unsichtbar machen. Sonst wird
     // das eingebettete Formular kurz ein eigenstaendiges Fenster
