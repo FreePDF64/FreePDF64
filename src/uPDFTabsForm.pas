@@ -108,6 +108,7 @@ type
     procedure AddPDF(APDF: TPDFBrowserForm);
     procedure ActivatePDF(APDF: TPDFBrowserForm);
     procedure GetOpenPDFFileNames(AFiles: TStrings);
+    function ActivateExistingPDF(const AFileName: string): Boolean;
   end;
 
 type
@@ -125,6 +126,7 @@ var
 procedure ShowEmptyPDFViewer;
 procedure ShowPDFInTabs(APDF: TPDFBrowserForm);
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
+function SendPDFToExternalTabs(const AFileName: string): Boolean;
 function ActivateRunningMainProgram: Boolean;
 procedure MarkMainProgramWindow(Wnd: HWND);
 
@@ -184,6 +186,57 @@ begin
     PPointer(Data)^ := Pointer(Wnd);
     Result := False;
   end;
+end;
+
+type
+  PExternalPDFWindowSearch = ^TExternalPDFWindowSearch;
+  TExternalPDFWindowSearch = record
+    Wnd: HWND;
+    CurrentPID: DWORD;
+  end;
+
+function FindExternalTabsWindowCallback(Wnd: HWND; Data: LPARAM): BOOL; stdcall;
+var
+  Search: PExternalPDFWindowSearch;
+  PID: DWORD;
+begin
+  Result := True;
+  Search := PExternalPDFWindowSearch(Data);
+  if GetProp(Wnd, PChar(PDFTabWindowMarker)) = 0 then Exit;
+  PID := 0;
+  GetWindowThreadProcessId(Wnd, @PID);
+  if (PID <> 0) and (PID <> Search^.CurrentPID) then
+  begin
+    Search^.Wnd := Wnd;
+    Result := False;
+  end;
+end;
+
+function SendPDFToExternalTabs(const AFileName: string): Boolean;
+var
+  Search: TExternalPDFWindowSearch;
+  Data: TCopyDataStruct;
+  Path: string;
+  Reply: DWORD_PTR;
+  TargetPID: DWORD;
+begin
+  Result := False;
+  Search.Wnd := 0;
+  Search.CurrentPID := GetCurrentProcessId;
+  EnumWindows(@FindExternalTabsWindowCallback, LPARAM(@Search));
+  if (Search.Wnd = 0) or not IsWindow(Search.Wnd) then Exit;
+  Path := ExpandFileName(AFileName);
+  if not FileExists(Path) then Exit;
+  Data.dwData := PDFTabMessageId;
+  Data.cbData := (Length(Path) + 1) * SizeOf(Char);
+  Data.lpData := PChar(Path);
+  TargetPID := 0;
+  GetWindowThreadProcessId(Search.Wnd, @TargetPID);
+  if TargetPID <> 0 then AllowSetForegroundWindow(TargetPID);
+  Reply := 0;
+  Result := (SendMessageTimeout(Search.Wnd, WM_COPYDATA, 0,
+    LPARAM(@Data), SMTO_ABORTIFHUNG or SMTO_BLOCK, 4000, @Reply) <> 0)
+    and (Reply = 1);
 end;
 
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
@@ -263,6 +316,31 @@ begin
     PostMessage(Handle, WM_APP + 192, 0, 0);
 end;
 
+function TPDFTabsForm.ActivateExistingPDF(const AFileName: string): Boolean;
+var
+  I: Integer;
+  Tab: TTabSheet;
+  FullName: string;
+begin
+  Result := False;
+  if FTabs = nil then Exit;
+  FullName := ExpandFileName(AFileName);
+  for I := 0 to FTabs.PageCount - 1 do
+  begin
+    Tab := FTabs.Pages[I];
+    if SameText(ExpandFileName(Tab.Hint), FullName) then
+    begin
+      FTabs.ActivePage := Tab;
+      if not Visible then Show;
+      if IsIconic(Handle) then ShowWindow(Handle, SW_RESTORE);
+      PostMessage(Handle, WM_APP + 193, 0, 0);
+      BringViewerToForeground;
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
 procedure TPDFTabsForm.WMOpenQueuedPDF(var Msg: TMessage);
 var
   FileName: string;
@@ -279,6 +357,7 @@ begin
     FileName := FPendingExplorerFiles[0];
     FPendingExplorerFiles.Delete(0);
     if not FileExists(FileName) then Continue;
+    if ActivateExistingPDF(FileName) then Continue;
     PDF := nil;
     try
       PDF := TPDFBrowserForm.Create(Application);

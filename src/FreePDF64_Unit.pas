@@ -9516,6 +9516,13 @@ begin
       ''' scheint nicht vorhanden zu sein! Bitte FreePDF64 nochmals neu downloaden.')
   else
   begin
+    // Bereits eigenstaendig laufenden PDF-Anzeiger bevorzugen.
+    // Der Empfaenger legt den Tab zeitversetzt an (WM_COPYDATA).
+    if SendPDFToExternalTabs(s) then Exit;
+
+    // Kein externer Anzeiger: vorhandenen lokalen Tab wiederverwenden.
+    if (PDFTabsWindow <> nil) and PDFTabsWindow.ActivateExistingPDF(s) then Exit;
+
     PDFForm := TPDFBrowserForm.Create(Self);
     PDFForm.PDFFileName := s;
     ShowPDFInTabs(PDFForm);
