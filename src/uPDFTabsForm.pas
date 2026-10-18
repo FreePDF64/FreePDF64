@@ -51,6 +51,8 @@ type
     procedure EmptyTabStripMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure TabContextPopup(Sender: TObject);
+    procedure LoadClosedPDFs;
+    procedure SaveClosedPDFs;
     procedure ReopenLastClosedPDF(Sender: TObject);
     procedure ReopenSelectedClosedPDF(Sender: TObject);
     procedure ActivationTimerTick(Sender: TObject);
@@ -403,6 +405,49 @@ begin
   end;
 end;
 
+procedure TPDFTabsForm.LoadClosedPDFs;
+var
+  Ini: TIniFile;
+  I, Count: Integer;
+  FileName: string;
+begin
+  FClosedPDFs.Clear;
+  Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+  try
+    Count := Ini.ReadInteger('ClosedPDFs', 'Count', 0);
+    if Count < 0 then Count := 0;
+    if Count > 20 then Count := 20;
+    for I := 1 to Count do
+    begin
+      FileName := Trim(Ini.ReadString('ClosedPDFs', 'File' + IntToStr(I), ''));
+      if (FileName <> '') and (FClosedPDFs.IndexOf(FileName) < 0) then
+        FClosedPDFs.Add(FileName);
+    end;
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.SaveClosedPDFs;
+var
+  Ini: TIniFile;
+  I, N: Integer;
+begin
+  Ini := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+  try
+    // Nur den eigenen Abschnitt aktualisieren; andere Einstellungen erhalten.
+    Ini.EraseSection('ClosedPDFs');
+    N := FClosedPDFs.Count;
+    if N > 20 then N := 20;
+    Ini.WriteInteger('ClosedPDFs', 'Count', N);
+    for I := 0 to N - 1 do
+      Ini.WriteString('ClosedPDFs', 'File' + IntToStr(I + 1),
+        FClosedPDFs[FClosedPDFs.Count - 1 - I]);
+  finally
+    Ini.Free;
+  end;
+end;
+
 constructor TPDFTabsForm.Create(AOwner: TComponent);
 var
   Header: TPanel;
@@ -416,6 +461,7 @@ begin
   ButtonHeight := Max(MulDiv(26, Dpi, 96), Canvas.TextHeight('Ag') + MulDiv(10, Dpi, 96));
   PDFTabsWindow := Self;
   FClosedPDFs := TStringList.Create;
+  LoadClosedPDFs;
   FTabContextMenu := TPopupMenu.Create(Self);
   FTabContextMenu.OnPopup := TabContextPopup;
   FReopenClosedItem := TMenuItem.Create(FTabContextMenu);
@@ -1350,6 +1396,7 @@ begin
     PDF.StandalonePDFMode := False;
     AddPDF(PDF);
     FClosedPDFs.Delete(FClosedPDFs.Count - 1);
+    SaveClosedPDFs;
     BringViewerToForeground;
   except
     PDF.Free;
@@ -1381,9 +1428,13 @@ begin
   begin
     if PDF.PDFFileName <> '' then
     begin
+      // Bereits bekannte Datei entfernen, damit sie nur einmal erscheint.
+      I := FClosedPDFs.IndexOf(PDF.PDFFileName);
+      if I >= 0 then FClosedPDFs.Delete(I);
       FClosedPDFs.Add(PDF.PDFFileName);
       if FClosedPDFs.Count > 20 then
         FClosedPDFs.Delete(0);
+      SaveClosedPDFs;
     end;
     // Vor dem Entfernen des Parent unsichtbar machen. Sonst wird
     // das eingebettete Formular kurz ein eigenstaendiges Fenster
@@ -1471,7 +1522,31 @@ begin
 end;
 
 procedure ShowEmptyPDFViewer;
+var
+  SI: TStartupInfo;
+  PI: TProcessInformation;
+  CmdLine: string;
 begin
+  // Vom Hauptprogramm aus einen unabhaengigen Viewer starten. Dieser
+  // ueberlebt das Beenden des Hauptprogramms (auch ohne geoeffnete PDF).
+  if not PDFTabsExplorerOnlyProcess and
+     ((PDFTabsWindow = nil) or not PDFTabsWindow.Visible) then
+  begin
+    CmdLine := '"' + ParamStr(0) + '" --viewer-empty';
+    FillChar(SI, SizeOf(SI), 0);
+    SI.cb := SizeOf(SI);
+    FillChar(PI, SizeOf(PI), 0);
+    if CreateProcess(PChar(ParamStr(0)), PChar(CmdLine), nil, nil,
+      False, 0, nil, nil, SI, PI) then
+    begin
+      CloseHandle(PI.hThread);
+      CloseHandle(PI.hProcess);
+      Exit;
+    end;
+    MessageDlg('Der eigenstaendige PDF-Anzeiger konnte nicht gestartet werden.',
+      mtError, [mbOK], 0);
+    Exit;
+  end;
   if PDFTabsWindow = nil then
     PDFTabsWindow := TPDFTabsForm.Create(Application);
   if not PDFTabsWindow.Visible then

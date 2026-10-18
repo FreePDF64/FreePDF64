@@ -55,6 +55,7 @@ var
   PDFTabsForm: TPDFTabsForm;
   PDFModus: Boolean;
   IndependentViewer: Boolean;
+  EmptyIndependentViewer: Boolean;
   PDFDateien: TStringList;
   I: Integer;
   ExceptionHandler: TPDFExceptionHandler;
@@ -66,11 +67,18 @@ begin
   PDFDatei := '';
   PDFModus := False;
   IndependentViewer := False;
+  EmptyIndependentViewer := False;
 
   PDFDateien := TStringList.Create;
   try
     for I := 1 to ParamCount do
     begin
+      if SameText(ParamStr(I), '--viewer-empty') then
+      begin
+        IndependentViewer := True;
+        EmptyIndependentViewer := True;
+        Continue;
+      end;
       if SameText(ParamStr(I), '--viewer-independent') then
       begin
         IndependentViewer := True;
@@ -80,7 +88,7 @@ begin
       if SameText(ExtractFileExt(PDFDatei), '.pdf') and FileExists(PDFDatei) then
         PDFDateien.Add(PDFDatei);
     end;
-    PDFModus := PDFDateien.Count > 0;
+    PDFModus := (PDFDateien.Count > 0) or EmptyIndependentViewer;
 
     // Explorer startet bei Mehrfachauswahl oft mehrere Prozesse gleichzeitig.
     // Der Mutex serialisiert die Entscheidung "an bestehende Tabs senden

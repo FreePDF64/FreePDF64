@@ -17,9 +17,9 @@ File_14=TSourceModule,'C:\Users\micha\OneDrive\Dokumente\Embarcadero\Studio\23.0
 
 [Modules]
 Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\Info_Unit.pas
-Module2=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-Module3=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module1=D:\Delphi\FreePDF64\uPDFTabsForm.pas
+Module2=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
+Module3=D:\Delphi\FreePDF64\Info_Unit.pas
 Module4=D:\Delphi\FreePDF64\Einstellungen_Unit.pas
 Module5=D:\Delphi\FreePDF64\Suchen.pas
 Module6=D:\Delphi\FreePDF64\Anleitung_Unit.pas
@@ -31,13 +31,13 @@ EditWindowCount=1
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\Info_Unit.pas]
-ModuleType=TSourceModule
-
 [D:\Delphi\FreePDF64\uPDFTabsForm.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
+ModuleType=TSourceModule
+
+[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\Einstellungen_Unit.pas]
@@ -103,12 +103,12 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=15
-CursorY=3087
-TopLine=3067
+CursorX=23
+CursorY=3730
+TopLine=3709
 LeftCol=1
 Elisions=
-Bookmarks={0,7243,3}
+Bookmarks={0,7244,1}
 EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
@@ -191,9 +191,9 @@ EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 [View8]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-CursorX=77
-CursorY=502
-TopLine=485
+CursorX=29
+CursorY=1473
+TopLine=1451
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -323,7 +323,7 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -709,7 +709,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -735,7 +735,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -761,7 +761,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=8812
+TBDockHeight=9014
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0

@@ -656,6 +656,7 @@ type
     procedure PrüfBtnClick(Sender: TObject);
     procedure ToolButtonPDFViewerMouseDown(Sender: TObject;
       Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure ToolButtonPDFViewerClick(Sender: TObject);
     private
       { Private-Deklarationen }
       wcActive, wcPrevious: TWinControl;
@@ -3721,6 +3722,11 @@ begin
   StatusBarAnpassen;
 end;
 
+procedure TFreePDF64_Form.ToolButtonPDFViewerClick(Sender: TObject);
+begin
+
+end;
+
 procedure TFreePDF64_Form.ToolButtonPDFViewerMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
 begin
@@ -6206,9 +6212,12 @@ begin
     try
       if (PDFTabsWindow <> nil) and PDFTabsWindow.Visible then
         PDFTabsWindow.GetOpenPDFFileNames(OpenFiles);
-      if OpenFiles.Count > 0 then
+      if ((PDFTabsWindow <> nil) and PDFTabsWindow.Visible) then
       begin
-        CmdLine := PdfQuoteArg(ParamStr(0)) + ' --viewer-independent';
+        if OpenFiles.Count > 0 then
+          CmdLine := PdfQuoteArg(ParamStr(0)) + ' --viewer-independent'
+        else
+          CmdLine := PdfQuoteArg(ParamStr(0)) + ' --viewer-empty';
         for I := 0 to OpenFiles.Count - 1 do
           CmdLine := CmdLine + ' ' + PdfQuoteArg(OpenFiles[I]);
         FillChar(SI, SizeOf(SI), 0);
