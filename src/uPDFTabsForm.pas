@@ -24,6 +24,7 @@ type
     FDraggingTab: Boolean;
     FCloseButton: TButton;
     FOpenButton: TButton;
+    FMainProgramButton: TButton;
     FTabSearchButton: TButton;
     FLocalTabSearchHotkeyRegistered: Boolean;
     FTabCountBadge: TPaintBox;
@@ -59,6 +60,7 @@ type
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
     procedure WMLoadActivePDF(var Msg: TMessage); message WM_APP + 193;
     procedure OpenPDFClick(Sender: TObject);
+    procedure OpenMainProgramClick(Sender: TObject);
     procedure UpdateTabCount;
     procedure PaintTabCountBadge(Sender: TObject);
     procedure TabSearchClick(Sender: TObject);
@@ -96,6 +98,7 @@ type
     destructor Destroy; override;
     procedure AddPDF(APDF: TPDFBrowserForm);
     procedure ActivatePDF(APDF: TPDFBrowserForm);
+    procedure GetOpenPDFFileNames(AFiles: TStrings);
   end;
 
 type
@@ -481,6 +484,16 @@ begin
   FOpenButton.Hint := '... auch alle anderen Dateitypen';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
+  // Hauptprogramm im selben Prozess sichtbar machen.
+  FMainProgramButton := TButton.Create(Self);
+  FMainProgramButton.Parent := Header;
+  FMainProgramButton.Align := alLeft;
+  FMainProgramButton.Width := Max(MulDiv(170, Dpi, 96),
+    Canvas.TextWidth('FreePDF64 öffnen') + MulDiv(28, Dpi, 96));
+  FMainProgramButton.Caption := 'FreePDF64 öffnen';
+  FMainProgramButton.Hint := 'FreePDF64-Hauptprogramm öffnen';
+  FMainProgramButton.ShowHint := True;
+  FMainProgramButton.OnClick := OpenMainProgramClick;
   // Eigener rechter Bereich: feste Positionen unabhaengig von der
   // VCL-Ausrichtungsreihenfolge anderer Header-Steuerelemente.
   SearchArea := TPanel.Create(Self);
@@ -893,6 +906,28 @@ begin
     Tab.Free;
   end;
   UpdateTabCount;
+end;
+
+procedure TPDFTabsForm.GetOpenPDFFileNames(AFiles: TStrings);
+var
+  I: Integer;
+  FileName: string;
+begin
+  if AFiles = nil then Exit;
+  for I := 0 to FTabs.PageCount - 1 do
+  begin
+    FileName := FTabs.Pages[I].Hint;
+    if (FileName <> '') and FileExists(FileName) then
+      AFiles.Add(FileName);
+  end;
+end;
+
+procedure TPDFTabsForm.OpenMainProgramClick(Sender: TObject);
+begin
+  // Der vorhandene Callback setzt PDFTabsMainFormWasShown und aktiviert
+  // das bereits initialisierte Hauptformular. Kein zweiter Prozess.
+  if Assigned(PDFTabsShowMainForm) then
+    PDFTabsShowMainForm(Self);
 end;
 
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;

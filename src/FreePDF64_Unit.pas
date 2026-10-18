@@ -663,6 +663,7 @@ type
       FSortAscending, FSortAscending2: Boolean;
       FDirectoryNavigation1: Boolean;
       F2Pressed: Boolean;
+      FExplicitExit: Boolean;
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
       procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
@@ -3085,7 +3086,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '16.10.2026';
+  Datum := '18.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -5842,9 +5843,14 @@ end;
 
 procedure TFreePDF64_Form.Exit1Click(Sender: TObject);
 begin
-  Tray1 := False;
-  Close;
-  Application.Terminate;
+  // Datei > Beenden und Tray > Beenden muessen auch bei
+  // aktivierter X-in-Tray-Option wirklich beenden.
+  FExplicitExit := True;
+  try
+    Close; // FormCloseQuery uebergibt zuerst alle geoeffneten PDFs.
+  finally
+    FExplicitExit := False;
+  end;
 end;
 
 procedure TFreePDF64_Form.FavLbLClick(Sender: TObject);
@@ -6184,8 +6190,50 @@ end;
 
 procedure TFreePDF64_Form.FormCloseQuery(Sender: TObject;
   var CanClose: Boolean);
+var
+  OpenFiles: TStringList;
+  CmdLine: string;
+  I: Integer;
+  SI: TStartupInfo;
+  PI: TProcessInformation;
 begin
-  if KlickaufX.Checked then
+  // Bei echtem Beenden des Hauptprogramms geoeffnete PDF-Tabs in
+  // einen unabhaengigen FreePDF64-Viewer-Prozess uebergeben.
+  // Bei "X minimiert in den Tray" erfolgt kein Prozesswechsel.
+  if FExplicitExit or not KlickaufX.Checked then
+  begin
+    OpenFiles := TStringList.Create;
+    try
+      if (PDFTabsWindow <> nil) and PDFTabsWindow.Visible then
+        PDFTabsWindow.GetOpenPDFFileNames(OpenFiles);
+      if OpenFiles.Count > 0 then
+      begin
+        CmdLine := PdfQuoteArg(ParamStr(0)) + ' --viewer-independent';
+        for I := 0 to OpenFiles.Count - 1 do
+          CmdLine := CmdLine + ' ' + PdfQuoteArg(OpenFiles[I]);
+        FillChar(SI, SizeOf(SI), 0);
+        SI.cb := SizeOf(SI);
+        FillChar(PI, SizeOf(PI), 0);
+        if CreateProcess(PChar(ParamStr(0)), PChar(CmdLine), nil, nil,
+          False, 0, nil, nil, SI, PI) then
+        begin
+          CloseHandle(PI.hThread);
+          CloseHandle(PI.hProcess);
+        end
+        else
+        begin
+          CanClose := False;
+          MessageDlg('Der eigenstaendige PDF-Anzeiger konnte nicht gestartet werden. ' +
+            'FreePDF64 bleibt geoeffnet, damit die PDF-Dateien nicht verloren gehen.',
+            mtError, [mbOK], 0);
+          Exit;
+        end;
+      end;
+    finally
+      OpenFiles.Free;
+    end;
+  end;
+  if KlickaufX.Checked and not FExplicitExit then
   begin
     CanClose := False;
     if AutoSpalte.Checked then

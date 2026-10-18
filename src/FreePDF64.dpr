@@ -54,6 +54,7 @@ var
   PDFBrowserForm: TPDFBrowserForm;
   PDFTabsForm: TPDFTabsForm;
   PDFModus: Boolean;
+  IndependentViewer: Boolean;
   PDFDateien: TStringList;
   I: Integer;
   ExceptionHandler: TPDFExceptionHandler;
@@ -64,11 +65,17 @@ begin
   // (z. B. durch Doppelklick im Windows-Explorer)?
   PDFDatei := '';
   PDFModus := False;
+  IndependentViewer := False;
 
   PDFDateien := TStringList.Create;
   try
     for I := 1 to ParamCount do
     begin
+      if SameText(ParamStr(I), '--viewer-independent') then
+      begin
+        IndependentViewer := True;
+        Continue;
+      end;
       PDFDatei := ExpandFileName(ParamStr(I));
       if SameText(ExtractFileExt(PDFDatei), '.pdf') and FileExists(PDFDatei) then
         PDFDateien.Add(PDFDatei);
@@ -78,7 +85,7 @@ begin
     // Explorer startet bei Mehrfachauswahl oft mehrere Prozesse gleichzeitig.
     // Der Mutex serialisiert die Entscheidung "an bestehende Tabs senden
     // oder selbst ein Tabfenster erstellen".
-    if PDFModus then
+    if PDFModus and not IndependentViewer then
     begin
       hPDFStartMutex := CreateMutex(nil, False,
         'Local\FreePDF64_PDFTabs_Explorer_Start');
@@ -95,7 +102,7 @@ begin
 
     // Alle Explorer-Dateien uebergeben, nicht nur ParamStr(1).
     // Wenn nicht alle angenommen werden, bleiben sie fuer den lokalen Start.
-    if PDFModus then
+    if PDFModus and not IndependentViewer then
     begin
       I := 0;
       while I < PDFDateien.Count do
