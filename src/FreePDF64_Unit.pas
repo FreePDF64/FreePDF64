@@ -673,6 +673,7 @@ type
       PDF_UeberwachungsDatei: string;
       FormLoaded: Boolean;
       procedure AllesSpeichern;
+      procedure SaveCounter;
       procedure ShowMainWindowFromPDF(Sender: TObject);
       procedure FavClose;
       procedure PlaySoundFile(FileName: string);
@@ -2873,6 +2874,14 @@ var
   IniFile: String;
   I: Integer;
 begin
+  // Der eigenstaendige Viewer darf keine Hauptprogramm-Daten
+  // mit seinem (ggf. veralteten) Zustand ueberschreiben.
+  if FindCmdLineSwitch('viewer-independent', ['-'], True) or
+     FindCmdLineSwitch('viewer-empty', ['-'], True) then
+  begin
+    Screen.OnActiveControlChange := nil;
+    Exit;
+  end;
   try
     IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
     IniDat := TIniFile.Create(IniFile);
@@ -3426,12 +3435,37 @@ begin
 end;
 
 // Alle wichtigen Einstellungen in die FreePDF64.ini abspeichern...
+procedure TFreePDF64_Form.SaveCounter;
+var
+  IniDat: TIniFile;
+begin
+  // Viewer-Prozesse haben eine eigene (ggf. veraltete) Counter-Kopie.
+  // Ausschliesslich das Hauptprogramm darf [Start] Counter schreiben.
+  if FindCmdLineSwitch('viewer-independent', ['-'], True) or
+     FindCmdLineSwitch('viewer-empty', ['-'], True) then
+    Exit;
+
+  IniDat := TIniFile.Create(ExtractFilePath(Application.ExeName) +
+    'FreePDF64.ini');
+  try
+    IniDat.WriteInteger('Start', 'Counter', Counter);
+  finally
+    IniDat.Free;
+  end;
+end;
+
 procedure TFreePDF64_Form.AllesSpeichern;
 var
   I: Integer;
   IniDat: TIniFile;
   IniFile: String;
 begin
+  // Eigenstaendige Viewer duerfen die Hauptprogramm-Einstellungen nicht
+  // mit veralteten Werten ueberschreiben (insbesondere [Start] Counter).
+  if FindCmdLineSwitch('viewer-independent', ['-'], True) or
+     FindCmdLineSwitch('viewer-empty', ['-'], True) then
+    Exit;
+
   IniFile := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
   IniDat := TIniFile.Create(IniFile);
   // Speichere beim Beenden des Programmes wichtige Daten in die 'FreePDF64.ini'
@@ -3454,7 +3488,7 @@ begin
     WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
     WriteBool('Folder', 'Autosize Name', AutoSpalte.Checked);
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
-    WriteInteger('Start', 'Counter', Counter);
+    // Counter wird separat mit SaveCounter gesichert.
     WriteInteger('Start', 'Sort ColumnL', FSortColumn);
     WriteInteger('Start', 'Sort ColumnR', FSortColumn2);
     WriteBool('Start', 'SortDir ColumnL', FSortAscending);
@@ -3489,7 +3523,7 @@ begin
     WriteInteger('Start', 'ColumnsR Width1', LMDShellList2.Column[1].Width);
     WriteInteger('Start', 'ColumnsR Width2', LMDShellList2.Column[2].Width);
     WriteInteger('Start', 'ColumnsR Width3', LMDShellList2.Column[3].Width);
-    WriteInteger('Start', 'Counter', Counter);
+    // Counter wird separat mit SaveCounter gesichert.
     WriteInteger('Start', 'ViewStyle_Left', Ord(LMDShellList1.ViewStyle));
     WriteInteger('Start', 'ViewStyle_Right', Ord(LMDShellList2.ViewStyle));
   end;
@@ -6203,6 +6237,11 @@ var
   SI: TStartupInfo;
   PI: TProcessInformation;
 begin
+  // Nur das Hauptprogramm darf den Dateizaehler beim Beenden sichern.
+  // AllesSpeichern wird dabei absichtlich NICHT aufgerufen.
+  if FExplicitExit or not KlickaufX.Checked then
+    SaveCounter;
+
   // Bei echtem Beenden des Hauptprogramms geoeffnete PDF-Tabs in
   // einen unabhaengigen FreePDF64-Viewer-Prozess uebergeben.
   // Bei "X minimiert in den Tray" erfolgt kein Prozesswechsel.
@@ -9308,7 +9347,10 @@ var
 begin
   Msg := 'Soll der Erstellzähler wirklich auf Null gesetzt werden?';
   if MessageDlgCenter(Msg, mtInformation, [mbYes, mbNo]) = mrYes then
+  begin
     Counter := 0;
+    SaveCounter;
+  end;
 
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
@@ -9756,6 +9798,7 @@ begin
       for I := 0 to AnzahlDateien - 1 do
       begin
         INC(Counter);
+        SaveCounter;
         if (Einstellungen_Form.PDFA_CB.Checked = False) and
            (Einstellungen_Form.PDFX.Checked = False) and
            (Einstellungen_Form.PDFX4.Checked = False) then

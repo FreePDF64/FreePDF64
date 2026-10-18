@@ -21,7 +21,6 @@
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
   OnDestroy = FormDestroy
-  OnKeyDown = FormKeyDown
   OnResize = FormResize
   OnShow = FormShow
   PixelsPerInch = 120
@@ -359,7 +358,6 @@
         Caption = 'PDF'
         ImageIndex = 103
         ImageName = 'FreePDF64_Monochrom_128'
-        OnClick = ToolButtonPDFViewerClick
         OnMouseDown = ToolButtonPDFViewerMouseDown
       end
       object ToolButton6: TToolButton
