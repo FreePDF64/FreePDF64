@@ -181,7 +181,7 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
       ''
       ' Zeichenketten:'
       
-        ' Entfernen von Zeichenketten aus den ermittelten Dateinamen beim' +
+        ' Entfernen von Zeichenketten aus dem ermittelten Dateinamen beim' +
         ' Drucken in eine PDF-Datei. Beispiel: Beim Drucken aus z.B. Word' +
         ' auf den FreePDF64-'
       
