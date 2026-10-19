@@ -56,9 +56,6 @@ type
     FRecoveryCount: Integer;
     FClosing: Boolean;
     FToolbar: TPanel;
-    FPageLabel: TLabel;
-    FPageEdit: TEdit;
-    FGoPageButton: TButton;
     FFindButton: TButton;
     FPageNavigationTimer: TTimer;
     FSearchTerm: string;
@@ -79,7 +76,6 @@ type
     procedure StartBrowser;
     procedure BuildNavigationToolbar;
     procedure NumberFieldMouseEnter(Sender: TObject);
-    procedure GoToPageClick(Sender: TObject);
     procedure FindTermClick(Sender: TObject);
     procedure ToggleAttachmentsClick(Sender: TObject);
     procedure PageNavigationTimerTimer(Sender: TObject);
@@ -704,13 +700,13 @@ var
     H := ControlHeight;
     // Beschriftungen auf die vertikale Mitte der Eingabefelder setzen.
     // TLabel.AutoSize laesst die Hoehe nicht wie bei einem TEdit strecken.
-    if (C = FPageLabel) or (C = RotateLabel) or (C = AngleLabel) then
+    if (C = RotateLabel) or (C = AngleLabel) then
       H := TLabel(C).Height;
     // Eingabefelder und Auswahlliste an die Hoehe der Buttons angleichen.
     // Die Mindesthoehe wird mit der DPI skaliert.
-    if (C = FGoPageButton) or (C = FFindButton) or
+    if (C = FFindButton) or
        (C = FAttachmentsButton) or (C = FRotateButton) or
-       (C = FPageEdit) or (C = FRotatePageEdit) or
+       (C = FRotatePageEdit) or
        (C = FRotateAngleCombo) then
       H := Max(ScalePx(22), ControlHeight - ScalePx(4));
     C.SetBounds(XPos, (ToolbarHeight - H) div 2, DesiredWidth, H);
@@ -726,42 +722,6 @@ begin
   FToolbar.Align := alTop;
   FToolbar.Height := 42;
   FToolbar.BevelOuter := bvNone;
-
-  // --------------------------------------------------
-  // Seitennavigation
-  // --------------------------------------------------
-  FPageLabel := TLabel.Create(Self);
-  FPageLabel.Parent := FToolbar;
-  FPageLabel.Caption := 'Seite:';
-  FPageLabel.Left := 8;
-  FPageLabel.Top := 11;
-  FPageLabel.AutoSize := True;
-
-  FPageEdit := TEdit.Create(Self);
-  FPageEdit.Parent := FToolbar;
-  FPageEdit.AutoSize := False;
-  FPageEdit.ParentShowHint := False;
-  FPageEdit.ShowHint := False;
-  FPageEdit.Hint := '';
-  FPageEdit.OnMouseEnter := NumberFieldMouseEnter;
-  FPageEdit.Name := 'PDFPageNumberEdit';
-  FPageEdit.Left := 48;
-  FPageEdit.Top := 8;
-  FPageEdit.Width := 42;
-  FPageEdit.Text := '1';
-  FPageEdit.NumbersOnly := True;
-
-  FGoPageButton := TButton.Create(Self);
-  FGoPageButton.Parent := FToolbar;
-  FGoPageButton.Caption := 'Gehe zu';
-  // Eigenen Hinweis setzen, damit nicht der Dateipfad des Tabs geerbt wird.
-  FGoPageButton.ShowHint := True;
-  FGoPageButton.Hint := 'Zur angegebenen PDF-Seite wechseln';
-  FGoPageButton.Left := 96;
-  FGoPageButton.Top := 6;
-  FGoPageButton.Width := 76;
-  FGoPageButton.Height := 28;
-  FGoPageButton.OnClick := GoToPageClick;
 
   // --------------------------------------------------
   // Textsuche
@@ -872,10 +832,6 @@ begin
   FToolbar.Height := ToolbarHeight;
   XPos := ScalePx(8);
 
-  PlaceControl(FPageLabel, Canvas.TextWidth(FPageLabel.Caption) + ScalePx(5));
-  PlaceControl(FPageEdit, Max(ScalePx(36), Canvas.TextWidth('999') + ScalePx(12)));
-  PlaceControl(FGoPageButton, Max(ScalePx(70),
-    Canvas.TextWidth(FGoPageButton.Caption) + ScalePx(18)));
   PlaceControl(FFindButton, Max(ScalePx(86),
     Canvas.TextWidth(FFindButton.Caption) + ScalePx(18)));
   PlaceControl(FAttachmentsButton, Max(ScalePx(104),
@@ -963,7 +919,6 @@ begin
   FStartPage := 1;
   FNavigationSucceeded := False;
   FNavigationRetries := 0;
-  if Assigned(FPageEdit) then FPageEdit.Text := '1';
   if Assigned(FAttachmentsButton) then
   begin
     if AHasAttachments then
@@ -984,29 +939,6 @@ begin
   else
     RequestPDFLoad;
 end;
-
-procedure TPDFBrowserForm.GoToPageClick(Sender: TObject);
-var
-  LPage: Integer;
-begin
-  if not TryStrToInt(Trim(FPageEdit.Text), LPage) or (LPage < 1) then
-  begin
-    MessageDlg('Bitte eine gültige Seitenzahl ab 1 eingeben.', mtInformation, [mbOK], 0);
-    FPageEdit.SetFocus;
-    Exit;
-  end;
-
-  FStartPage := LPage;
-  if FBrowserCreated and not FClosing then
-  begin
-    // Ein Zwischenaufruf verhindert, dass WebView2 eine reine Fragment-
-    // Änderung bei derselben PDF-Datei ignoriert.
-    FPageNavigationTimer.Enabled := False;
-    FNavigationDone := False;
-    FPageNavigationTimer.Enabled := True;
-  end;
-end;
-
 
 procedure TPDFBrowserForm.PageNavigationTimerTimer(Sender: TObject);
 begin
@@ -1079,8 +1011,6 @@ begin
     StartBrowser;
     BringToFront;
     SetForegroundWindow(Handle);
-    if Assigned(FPageEdit) and FPageEdit.CanFocus then
-      FPageEdit.SetFocus;
   end;
 end;
 
@@ -1196,7 +1126,6 @@ begin
 
   if FStartPage < 1 then
     FStartPage := 1;
-  FPageEdit.Text := IntToStr(FStartPage);
   // Nicht im asynchronen WebView2-Callback navigieren.
   // Nur der aktive Tab navigiert; der erste Tab wird genauso behandelt.
   // Auch ein inzwischen inaktives Register muss den begonnenen

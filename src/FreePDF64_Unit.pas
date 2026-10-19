@@ -5888,7 +5888,6 @@ end;
 
 procedure TFreePDF64_Form.ber1Click(Sender: TObject);
 begin
-  // Form soll mittig angezeigt werden.
   Info_Form.Position := poScreenCenter;
   Info_Form.ShowModal;
 end;
