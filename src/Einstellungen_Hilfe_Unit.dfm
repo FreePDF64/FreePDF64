@@ -181,20 +181,19 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
       ''
       ' Zeichenketten:'
       
-        ' Entfernen von Zeichenketten aus dem ermittelten Dateinamen beim' +
-        ' Drucken in eine PDF-Datei. Beispiel: Beim Drucken aus z.B. Word' +
-        ' auf den FreePDF64-'
+        ' Entfernt definierte Zeichenketten aus dem beim Drucken ermittel' +
+        'ten Dateinamen.'
       
-        ' Postscript Drucker, f'#228'ngt der Dateiname mit "Microsoft Word - "' +
-        ' an und endet mit ".docx". Nun hinterlegt man hier beide Zeichen' +
-        'ketten, diese werden '
+        ' Beispiel: Beim Drucken einer Word-Datei auf den FreePDF64 PostS' +
+        'cript-Drucker beginnt der Dateiname h'#228'ufig mit '#8222'Microsoft Word -' +
+        ' '#8220' und endet mit'
       
-        ' dann bei der PDF-Erstellung entfernt - und es bleibt nur der ge' +
-        'w'#252'nschte Dateiname '#252'brig. Z.B. wird so nach dem Drucken mit Word' +
-        ' aus der Beispieldatei '
+        ' ".docx'#8220'. Werden diese beiden Zeichenketten hier eingetragen, en' +
+        'tfernt FreePDF64 sie bei der PDF-Erstellung automatisch. Aus dem' +
+        ' Dateinamen '
       
-        ' "Microsoft Word - Testdatei.docx" nach der Erstellung die gew'#252'n' +
-        'schte PDF-Datei "Testdatei.pdf".'
+        ' "Microsoft Word - Testdatei.docx'#8220' wird dadurch die PDF-Datei "T' +
+        'estdatei.pdf'#8220'.'
       ''
       ' '#220'berwachung:'
       
