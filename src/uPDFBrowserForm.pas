@@ -706,10 +706,12 @@ var
     // TLabel.AutoSize laesst die Hoehe nicht wie bei einem TEdit strecken.
     if (C = FPageLabel) or (C = RotateLabel) or (C = AngleLabel) then
       H := TLabel(C).Height;
-    // Nur die vier Aktionsbuttons etwas flacher gestalten.
-    // Eingabefelder, Beschriftungen und Auswahlliste bleiben unveraendert.
+    // Eingabefelder und Auswahlliste an die Hoehe der Buttons angleichen.
+    // Die Mindesthoehe wird mit der DPI skaliert.
     if (C = FGoPageButton) or (C = FFindButton) or
-       (C = FAttachmentsButton) or (C = FRotateButton) then
+       (C = FAttachmentsButton) or (C = FRotateButton) or
+       (C = FPageEdit) or (C = FRotatePageEdit) or
+       (C = FRotateAngleCombo) then
       H := Max(ScalePx(22), ControlHeight - ScalePx(4));
     C.SetBounds(XPos, (ToolbarHeight - H) div 2, DesiredWidth, H);
     Inc(XPos, DesiredWidth + Gap);
@@ -737,6 +739,7 @@ begin
 
   FPageEdit := TEdit.Create(Self);
   FPageEdit.Parent := FToolbar;
+  FPageEdit.AutoSize := False;
   FPageEdit.ParentShowHint := False;
   FPageEdit.ShowHint := False;
   FPageEdit.Hint := '';
@@ -803,6 +806,7 @@ begin
 
   FRotatePageEdit := TEdit.Create(Self);
   FRotatePageEdit.Parent := FToolbar;
+  FRotatePageEdit.AutoSize := False;
   FRotatePageEdit.ParentShowHint := False;
   FRotatePageEdit.ShowHint := False;
   FRotatePageEdit.Hint := '';

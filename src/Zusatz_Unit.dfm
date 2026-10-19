@@ -3,7 +3,7 @@ object Zusatz_Form: TZusatz_Form
   Top = 0
   BorderStyle = bsDialog
   Caption = 'Zeichenketten festlegen'
-  ClientHeight = 186
+  ClientHeight = 174
   ClientWidth = 304
   Color = clBtnFace
   Font.Charset = ANSI_CHARSET
@@ -20,15 +20,14 @@ object Zusatz_Form: TZusatz_Form
     Left = 15
     Top = 43
     Width = 272
-    Height = 80
+    Height = 60
     Margins.Left = 4
     Margins.Top = 4
     Margins.Right = 4
     Margins.Bottom = 4
     Caption = 
-      'Obige Zeichenketten werden aus den Dateinamen beim Drucken in ei' +
-      'ne PDF-Datei entfernt -> Bestes Ergebnis bei Abfrage auf nur EIN' +
-      'E Zeichenkette!'
+      'Obige Zeichenketten werden aus den '#13#10'Dateinamen beim Drucken in ' +
+      'eine PDF-'#13#10'Datei entfernt.'
     Font.Charset = ANSI_CHARSET
     Font.Color = clWindowText
     Font.Height = -15
@@ -39,7 +38,7 @@ object Zusatz_Form: TZusatz_Form
   end
   object Clear: TSpeedButton
     Left = 246
-    Top = 134
+    Top = 119
     Width = 29
     Height = 27
     Hint = 'Alle Eintr'#228'ge l'#246'schen'
@@ -57,7 +56,7 @@ object Zusatz_Form: TZusatz_Form
   end
   object BitBtn1: TBitBtn
     Left = 88
-    Top = 134
+    Top = 119
     Width = 132
     Height = 44
     Margins.Left = 4

@@ -183,14 +183,18 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
       
         ' Entfernen von Zeichenketten aus den ermittelten Dateinamen beim' +
         ' Drucken in eine PDF-Datei. Beispiel: Beim Drucken aus z.B. Word' +
-        ' in eine f'#252'r'
+        ' auf den FreePDF64-'
       
-        ' FreePDF64 ben'#246'tigte Postscript-Datei, f'#228'ngt der Dateiname mit "' +
-        'Microsoft Word - " an. Nun kann man hier diese Zeichenkette hint' +
-        'erlegen und diese'
+        ' Postscript Drucker, f'#228'ngt der Dateiname mit "Microsoft Word - "' +
+        ' an und endet mit ".docx". Nun hinterlegt man hier beide Zeichen' +
+        'ketten, diese werden '
       
-        ' wird dann bei der PDF-Erstellung entfernt - und es bleibt nur d' +
-        'er gew'#252'nschte Dateiname '#252'brig.'
+        ' dann bei der PDF-Erstellung entfernt - und es bleibt nur der ge' +
+        'w'#252'nschte Dateiname '#252'brig. Z.B. wird so nach dem Drucken mit Word' +
+        ' aus der Beispieldatei '
+      
+        ' "Microsoft Word - Testdatei.docx" nach der Erstellung die gew'#252'n' +
+        'schte PDF-Datei "Testdatei.pdf".'
       ''
       ' '#220'berwachung:'
       
@@ -234,8 +238,6 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
     TabOrder = 0
     WantReturns = False
     WordWrap = False
-    ExplicitWidth = 1051
-    ExplicitHeight = 651
   end
   object Button1: TButton
     Left = 0
@@ -250,7 +252,5 @@ object Einstellungen_Hilfe_Form: TEinstellungen_Hilfe_Form
     Caption = 'Schlie'#223'en'
     TabOrder = 1
     OnClick = Button1Click
-    ExplicitTop = 651
-    ExplicitWidth = 1051
   end
 end
