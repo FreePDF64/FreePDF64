@@ -3252,7 +3252,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '20.10.2026';
+  Datum := '19.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -9720,6 +9720,7 @@ var
     QPDF_ExtractFile, Datei_Hinten, DateiEndung, Buttontext: String;
   F: TextFile;
   PDFForm: TPDFBrowserForm;
+  CreatedPDFViewerRequested: Boolean;
 const
   PDFLevels : array[0..3] of string = ('1.4', '1.5', '1.6', '1.7');
   DPIs:       array[0..5] of string = ('72', '96', '150', '300', '600', '720');
@@ -9734,6 +9735,7 @@ begin
   { --------------------------------------------------------------- }
   { Automatische Verarbeitung aus dem Überwachungsordner             }
   { --------------------------------------------------------------- }
+  CreatedPDFViewerRequested := False;
   UeberwachungsAufruf := Überwachung_Erstellung and (PDF_UeberwachungsDatei <> '');
 
   if UeberwachungsAufruf then
@@ -11196,26 +11198,53 @@ begin
             begin
               PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Ziel;
-              ShowPDFInTabs(PDFForm);
-
-              Application.ProcessMessages;
+              // Ein eigenstaendig laufender Viewer hat Vorrang.
+              // Andernfalls wird der lokale Viewer aktiviert.
+              if SendPDFToExternalTabs(Ziel) then
+              begin
+                CreatedPDFViewerRequested := True;
+                PDFForm.Free;
+              end
+              else
+              begin
+                ShowPDFInTabs(PDFForm);
+                CreatedPDFViewerRequested := True;
+              end;
             end else if (Encrypt_Form.EncryptCombo.ItemIndex <> 1) and
                         FileExists(Zielanz) then
             begin
               PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Zielanz;
-              ShowPDFInTabs(PDFForm);
-
-              Application.ProcessMessages;
+              // Ein eigenstaendig laufender Viewer hat Vorrang.
+              // Andernfalls wird der lokale Viewer aktiviert.
+              if SendPDFToExternalTabs(Zielanz) then
+              begin
+                CreatedPDFViewerRequested := True;
+                PDFForm.Free;
+              end
+              else
+              begin
+                ShowPDFInTabs(PDFForm);
+                CreatedPDFViewerRequested := True;
+              end;
             end;
           end else
             if Einstellungen_Form.AuswahlRG.ItemIndex in [10, 12, 13] then // BMP/PNG/TIFF
             begin
               PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Ziel;
-              ShowPDFInTabs(PDFForm);
-
-              Application.ProcessMessages;
+              // Ein eigenstaendig laufender Viewer hat Vorrang.
+              // Andernfalls wird der lokale Viewer aktiviert.
+              if SendPDFToExternalTabs(Ziel) then
+              begin
+                CreatedPDFViewerRequested := True;
+                PDFForm.Free;
+              end
+              else
+              begin
+                ShowPDFInTabs(PDFForm);
+                CreatedPDFViewerRequested := True;
+              end;
             end else
               if Einstellungen_Form.AuswahlRG.ItemIndex in [1, 3] then // PS/DOCX/TXT
               begin
@@ -11317,6 +11346,16 @@ begin
   end;
 
   Überwachung_Erstellung := False;
+
+  // Ganz zuletzt aktivieren: SetFocus, Listen-Refresh und Statusanzeige
+  // des Hauptfensters sind jetzt abgeschlossen.
+  if CreatedPDFViewerRequested then
+  begin
+    if (PDFTabsWindow <> nil) and PDFTabsWindow.Visible then
+      PDFTabsWindow.ShowCreatedPDFInForeground
+    else
+      ActivateExternalCreatedPDFViewer;
+  end;
 end;
 
 function ScaleForDPI(Value, PPI: Integer): Integer;

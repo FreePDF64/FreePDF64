@@ -40,6 +40,7 @@ type
     FAddingPDF: Boolean;
     FPendingExplorerFiles: TStringList;
     FExplorerBatchTimer: TTimer;
+    FCreatedPDFForegroundTimer: TTimer;
     FDeferredActivePDF: TPDFBrowserForm;
     FActivationTimer: TTimer;
     FActivationChecks: Integer;
@@ -65,6 +66,8 @@ type
     procedure ReopenSelectedClosedPDF(Sender: TObject);
     procedure ActivationTimerTick(Sender: TObject);
     procedure ExplorerBatchTimerTick(Sender: TObject);
+    procedure CreatedPDFForegroundTimerTick(Sender: TObject);
+    procedure QueueCreatedPDFForeground;
     procedure RestoreInitialWindow;
     procedure BringViewerToForeground;
     procedure WMOpenQueuedPDF(var Msg: TMessage); message WM_APP + 192;
@@ -113,6 +116,7 @@ type
     procedure AddPDF(APDF: TPDFBrowserForm);
     procedure AddAttachmentPDF(APDF: TPDFBrowserForm; ASource: TPDFBrowserForm);
     procedure ActivatePDF(APDF: TPDFBrowserForm);
+    procedure ShowCreatedPDFInForeground;
     procedure GetOpenPDFFileNames(AFiles: TStrings);
     function ActivateExistingPDF(const AFileName: string): Boolean;
   end;
@@ -133,6 +137,7 @@ procedure ShowEmptyPDFViewer;
 procedure ShowPDFInTabs(APDF: TPDFBrowserForm);
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
 function SendPDFToExternalTabs(const AFileName: string): Boolean;
+procedure ActivateExternalCreatedPDFViewer;
 function ActivateRunningMainProgram: Boolean;
 procedure MarkMainProgramWindow(Wnd: HWND);
 
@@ -148,6 +153,7 @@ const
   LOCAL_TEXT_SEARCH_HOTKEY_ID = $5A72;
   PDFTabWindowMarker = 'FreePDF64.PDFTabs.Window.v1';
   PDFTabMessageId = $46504446;
+  PDFCreatedMessageId = $46504447;
   MainProgramWindowMarker = 'FreePDF64.MainProgram.Window.v1';
 
 function FindMainWindowCallback(Wnd: HWND; Data: LPARAM): BOOL; stdcall;
@@ -236,16 +242,34 @@ begin
   if (Search.Wnd = 0) or not IsWindow(Search.Wnd) then Exit;
   Path := ExpandFileName(AFileName);
   if not FileExists(Path) then Exit;
-  Data.dwData := PDFTabMessageId;
+  Data.dwData := PDFCreatedMessageId;
   Data.cbData := (Length(Path) + 1) * SizeOf(Char);
   Data.lpData := PChar(Path);
   TargetPID := 0;
   GetWindowThreadProcessId(Search.Wnd, @TargetPID);
   if TargetPID <> 0 then AllowSetForegroundWindow(TargetPID);
+  // Bei der PDF-Erstellung erst NACH Abschluss aller Hauptfenster-
+  // Aktualisierungen aktivieren, sonst holt FreePDF64 sich den Fokus zurueck.
   Reply := 0;
   Result := (SendMessageTimeout(Search.Wnd, WM_COPYDATA, 0,
     LPARAM(@Data), SMTO_ABORTIFHUNG or SMTO_BLOCK, 4000, @Reply) <> 0)
     and (Reply = 1);
+end;
+
+procedure ActivateExternalCreatedPDFViewer;
+var
+  Search: TExternalPDFWindowSearch;
+begin
+  Search.Wnd := 0;
+  Search.CurrentPID := GetCurrentProcessId;
+  EnumWindows(@FindExternalTabsWindowCallback, LPARAM(@Search));
+  if (Search.Wnd = 0) or not IsWindow(Search.Wnd) then Exit;
+  if IsIconic(Search.Wnd) then ShowWindow(Search.Wnd, SW_RESTORE);
+  SetWindowPos(Search.Wnd, HWND_TOPMOST, 0, 0, 0, 0,
+    SWP_NOMOVE or SWP_NOSIZE or SWP_SHOWWINDOW);
+  SetWindowPos(Search.Wnd, HWND_NOTOPMOST, 0, 0, 0, 0,
+    SWP_NOMOVE or SWP_NOSIZE or SWP_SHOWWINDOW);
+  SetForegroundWindow(Search.Wnd);
 end;
 
 function SendPDFToExistingTabs(const AFileName: string): Boolean;
@@ -301,7 +325,8 @@ var
 begin
   Msg.Result := 0;
   if (Msg.CopyDataStruct = nil) or
-     (Msg.CopyDataStruct^.dwData <> PDFTabMessageId) or
+     ((Msg.CopyDataStruct^.dwData <> PDFTabMessageId) and
+      (Msg.CopyDataStruct^.dwData <> PDFCreatedMessageId)) or
      (Msg.CopyDataStruct^.lpData = nil) or
      (Msg.CopyDataStruct^.cbData < 2 * SizeOf(Char)) or
      (Msg.CopyDataStruct^.cbData mod SizeOf(Char) <> 0) then Exit;
@@ -315,7 +340,24 @@ begin
   // Nachrichten. Erst nach einer kurzen Empfangspause den Stapel verarbeiten.
   FExplorerBatchTimer.Enabled := False;
   FExplorerBatchTimer.Enabled := True;
+  // Nur bei normalen Oeffnungen sofort aktivieren. Bei erstellten
+  // PDFs aktiviert das Hauptprogramm erst ganz am Ende den Viewer.
+  if Msg.CopyDataStruct^.dwData = PDFTabMessageId then
+    BringViewerToForeground;
   Msg.Result := 1;
+end;
+
+procedure TPDFTabsForm.QueueCreatedPDFForeground;
+begin
+  // Keine verzoegerte Aktivierung: vermeidet sichtbares Nach-vorne-Springen.
+  FCreatedPDFForegroundTimer.Enabled := False;
+end;
+
+procedure TPDFTabsForm.CreatedPDFForegroundTimerTick(Sender: TObject);
+begin
+  FCreatedPDFForegroundTimer.Enabled := False;
+  if (FTabs <> nil) and (FTabs.PageCount > 0) then
+    BringViewerToForeground;
 end;
 
 procedure TPDFTabsForm.ExplorerBatchTimerTick(Sender: TObject);
@@ -388,7 +430,9 @@ begin
   if LastOpenedPDF <> nil then
     ActivatePDF(LastOpenedPDF);
   if LastOpenedPDF <> nil then
+  begin
     BringViewerToForeground;
+  end;
 end;
 
 function TabsIniFileName: string;
@@ -826,7 +870,7 @@ begin
   FOpenButton.Parent := Header;
   FOpenButton.Align := alLeft;
   FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
-  FOpenButton.Caption := 'PDF-Datei öffnen ...';
+  FOpenButton.Caption := 'PDF-Datei(en) öffnen ...';
   FOpenButton.OnClick := OpenPDFClick;
   // Hauptprogramm im selben Prozess sichtbar machen.
   FMainProgramButton := TButton.Create(Self);
@@ -890,6 +934,10 @@ begin
   FExplorerBatchTimer.Enabled := False;
   FExplorerBatchTimer.Interval := 350;
   FExplorerBatchTimer.OnTimer := ExplorerBatchTimerTick;
+  FCreatedPDFForegroundTimer := TTimer.Create(Self);
+  FCreatedPDFForegroundTimer.Enabled := False;
+  FCreatedPDFForegroundTimer.Interval := 450;
+  FCreatedPDFForegroundTimer.OnTimer := CreatedPDFForegroundTimerTick;
   FDeferredActivePDF := nil;
   FInitialWindowOffscreen := False;
   FActivationTimer := TTimer.Create(Self);
@@ -1192,6 +1240,13 @@ begin
     SWP_NOMOVE or SWP_NOSIZE or SWP_SHOWWINDOW);
   BringToFront;
   SetForegroundWindow(Handle);
+end;
+
+procedure TPDFTabsForm.ShowCreatedPDFInForeground;
+begin
+  // Nach der PDF-Erstellung das Registerfenster auch dann sichtbar machen,
+  // wenn FreePDF64 inzwischen wieder den Vordergrund erhalten hat.
+  BringViewerToForeground;
 end;
 
 procedure TPDFTabsForm.RestoreInitialWindow;
