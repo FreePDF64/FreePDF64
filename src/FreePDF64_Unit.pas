@@ -406,6 +406,7 @@ type
     PrüfBtn: TToolButton;
     ToolButtonPDFViewer: TToolButton;
     ToolButton6: TToolButton;
+    function IsShortCut(var Message: TWMKey): Boolean; override;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
     procedure Speichern1Click(Sender: TObject);
@@ -733,6 +734,7 @@ type
     procedure DisplaySavedPDF(const AFileName: string);
     procedure NoticeFormClose(Sender: TObject; var Action: TCloseAction);
     procedure CloseButtonClick(Sender: TObject);
+    procedure AttachmentKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure CloseButtonMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ExtractButtonClick(Sender: TObject);
     procedure AttachmentDoubleClick(Sender: TObject);
@@ -1461,6 +1463,8 @@ var
   AvailableHeight: Integer;
 begin
   inherited CreateNew(AOwner);
+  KeyPreview := True;
+  OnKeyDown := AttachmentKeyDown;
 
   FSourcePDF := PDFFileName;
   FPDFBrowser := nil;
@@ -1640,6 +1644,18 @@ begin
   inherited;
 end;
 
+procedure TPDFAttachmentNoticeForm.AttachmentKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if (Key = VK_ESCAPE) and (Shift = []) then
+  begin
+    ShowWindow(Handle, SW_HIDE);
+    SetWindowPos(Handle, HWND_NOTOPMOST, 0, 0, 0, 0,
+      SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE);
+    Key := 0;
+  end;
+end;
+
 procedure TPDFAttachmentNoticeForm.CloseButtonClick(Sender: TObject);
 begin
   // Direkt ueber das Windows-Fensterhandle ausblenden.
@@ -1791,7 +1807,7 @@ begin
     Exit;
   end;
 
-  PDF := TPDFBrowserForm.Create(Application);
+  PDF := TPDFBrowserForm.Create(nil);
   try
     PDF.PDFFileName := TargetFile;
     PDF.StandalonePDFMode := False;
@@ -2480,7 +2496,7 @@ begin
               // Mit der PDFForm anzeigen
               if Einstellungen_Form.AnzeigenCB.Checked then
               begin
-                PDFForm := TPDFBrowserForm.Create(Self);
+                PDFForm := TPDFBrowserForm.Create(nil);
                 PDFForm.PDFFileName := IncludeTrailingBackslash(Wasserzeichen_Form.Edit2.Text) + WZST2 + ExtractFileName(AP3);
                 ShowPDFInTabs(PDFForm);
 
@@ -2705,7 +2721,7 @@ begin
   // PDF anzeigen
   if Einstellungen_Form.AnzeigenCB.Checked then
   begin
-    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm := TPDFBrowserForm.Create(nil);
     PDFForm.PDFFileName := Zieldatei;
     ShowPDFInTabs(PDFForm);
 
@@ -3037,6 +3053,16 @@ begin
   Screen.OnActiveControlChange := NIL;
 end;
 
+function TFreePDF64_Form.IsShortCut(var Message: TWMKey): Boolean;
+begin
+  // Solange der eigenständige PDF-Anzeiger im Vordergrund ist, darf
+  // das Hauptprogramm keine eigenen Menü-Shortcuts ausführen.
+  if (PDFTabsWindow <> nil) and PDFTabsWindow.HandleAllocated and
+     (GetForegroundWindow = PDFTabsWindow.Handle) then
+    Exit(False);
+  Result := inherited IsShortCut(Message);
+end;
+
 procedure TFreePDF64_Form.FormKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 begin
@@ -3226,7 +3252,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '19.10.2026';
+  Datum := '20.10.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -4273,7 +4299,7 @@ var
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       Sleep(1000);
-      PDFForm := TPDFBrowserForm.Create(Self);
+      PDFForm := TPDFBrowserForm.Create(nil);
       PDFForm.PDFFileName := FileName;
       ShowPDFInTabs(PDFForm);
 
@@ -5075,7 +5101,7 @@ var
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       Sleep(1000);
-      PDFForm := TPDFBrowserForm.Create(Self);
+      PDFForm := TPDFBrowserForm.Create(nil);
       PDFForm.PDFFileName := Filename;
       ShowPDFInTabs(PDFForm);
 
@@ -5580,7 +5606,7 @@ begin
     begin
       for I := 0 to LMDShellList1.SelCount - 1 do
       begin
-        PDFForm := TPDFBrowserForm.Create(Application);
+        PDFForm := TPDFBrowserForm.Create(nil);
         PDFForm.PDFFileName := LMDShellList1.SelectedItems[I].PathName;
 
         Offset := MulDiv(
@@ -5603,7 +5629,7 @@ begin
     begin
       for I := 0 to LMDShellList2.SelCount - 1 do
       begin
-        PDFForm := TPDFBrowserForm.Create(Application);
+        PDFForm := TPDFBrowserForm.Create(nil);
         PDFForm.PDFFileName := LMDShellList2.SelectedItems[I].PathName;
 
         Offset := MulDiv(
@@ -9420,7 +9446,7 @@ begin
   if ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) and // PDF
     (Einstellungen_Form.AnzeigenCB.Checked)) then
   begin
-    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm := TPDFBrowserForm.Create(nil);
     PDFForm.PDFFileName := IncludeTrailingBackslash(Ziel) + ExtractFileName(s);
     ShowPDFInTabs(PDFForm);
 
@@ -9651,7 +9677,7 @@ begin
     // Kein externer Anzeiger: vorhandenen lokalen Tab wiederverwenden.
     if (PDFTabsWindow <> nil) and PDFTabsWindow.ActivateExistingPDF(s) then Exit;
 
-    PDFForm := TPDFBrowserForm.Create(Self);
+    PDFForm := TPDFBrowserForm.Create(nil);
     PDFForm.PDFFileName := s;
     ShowPDFInTabs(PDFForm);
 
@@ -11168,7 +11194,7 @@ begin
             // Anzeigen in der PDFForm; nur eine tatsaechlich erstellte PDF oeffnen.
             if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and FileExists(Ziel) then
             begin
-              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Ziel;
               ShowPDFInTabs(PDFForm);
 
@@ -11176,7 +11202,7 @@ begin
             end else if (Encrypt_Form.EncryptCombo.ItemIndex <> 1) and
                         FileExists(Zielanz) then
             begin
-              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Zielanz;
               ShowPDFInTabs(PDFForm);
 
@@ -11185,7 +11211,7 @@ begin
           end else
             if Einstellungen_Form.AuswahlRG.ItemIndex in [10, 12, 13] then // BMP/PNG/TIFF
             begin
-              PDFForm := TPDFBrowserForm.Create(Self);
+              PDFForm := TPDFBrowserForm.Create(nil);
               PDFForm.PDFFileName := Ziel;
               ShowPDFInTabs(PDFForm);
 

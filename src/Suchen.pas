@@ -822,7 +822,7 @@ begin
     if not SameText(ExtractFileExt(S), '.pdf') then
       Continue;
 
-    PDFForm := TPDFBrowserForm.Create(Application);
+    PDFForm := TPDFBrowserForm.Create(nil);
     try
       PDFForm.PDFFileName := S;
       PDFForm.StartPage := 1;

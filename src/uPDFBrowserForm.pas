@@ -1,142 +1,74 @@
-﻿//
-// Programmname: FreePDF64
-//
-
+﻿// FreePDF64 - PDFium-only PDF-Anzeige (ohne WebView4Delphi)
 unit uPDFBrowserForm;
-
 interface
-
-{$I ..\..\WebView4Delphi-main\source\webview2.inc}
-
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
+  Winapi.Windows, Winapi.Messages, Winapi.ShellAPI, System.SysUtils, System.Classes,
   Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.ExtCtrls, Vcl.Dialogs,
-  Vcl.StdCtrls, Vcl.Clipbrd, Vcl.ComCtrls, Math,
-  IniFiles, uWVBrowser, uWVWinControl, uWVWindowParent, uWVTypes,
-  uWVConstants, uWVTypeLibrary, uWVLibFunctions, uWVLoader,
-  uWVInterfaces, uWVCoreWebView2Args, uWVBrowserBase, Menus;
-
+  Vcl.StdCtrls, Vcl.ComCtrls, Math, IniFiles, uFreePDF64PDFiumView, Menus;
 type
   TPDFBrowserForm = class(TForm)
     TimerPDF: TTimer;
-    WVWindowParentPDF: TWVWindowParent;
-    WVBrowserPDF: TWVBrowser;
-
     procedure FormCreate(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
-
     procedure TimerPDFTimer(Sender: TObject);
-    procedure WVBrowserPDFAfterCreated(Sender: TObject);
-    procedure WVBrowserPDFNavigationCompleted(Sender: TObject;
-      const aWebView: ICoreWebView2;
-      const aArgs: ICoreWebView2NavigationCompletedEventArgs);
-    procedure WVBrowserPDFInitializationError(Sender: TObject;
-      aErrorCode: HRESULT; const aErrorMessage: wvstring);
     procedure FormResize(Sender: TObject);
-
   protected
     procedure CreateParams(var Params: TCreateParams); override;
     procedure WMMove(var aMessage: TWMMove); message WM_MOVE;
     procedure WMMoving(var aMessage: TMessage); message WM_MOVING;
-
-    function IsShortCut(var Message: TWMKey): Boolean; override;
-
   private
+    FPDFiumView: TFreePDF64PDFiumView;
     FLoadRequested: Boolean;
-    FBrowserCreateStarted: Boolean;
-    FBrowserCreated: Boolean;
+    FPDFLoadInProgress: Boolean;
     FNavigationDone: Boolean;
     FNavigationSucceeded: Boolean;
-    FNavigationRetries: Integer;
-    FBrowserError: string;
-    FWatchdog: TTimer;
-    FCreateTick: Cardinal;
-    FNavigateTick: Cardinal;
-    FRecoveryCount: Integer;
+    FPendingFirstDisplay: Boolean;
     FClosing: Boolean;
     FToolbar: TPanel;
     FFindButton: TButton;
+    FSearchCountLabel: TLabel;
     FPageNavigationTimer: TTimer;
     FSearchTerm: string;
     FStartPage: Integer;
     FTabbedPDFMode: Boolean;
     FStandalonePDFMode: Boolean;
     FStandaloneHintShown: Boolean;
-
     FRotatePageEdit: TEdit;
     FRotateAngleCombo: TComboBox;
     FRotateButton: TButton;
-
     procedure RotatePageClick(Sender: TObject);
+    procedure MarkerClick(Sender: TObject);
     function ExecuteQpdf(const ACommandLine: string; out AExitCode: DWORD): Boolean;
-
-    procedure WMNavigatePDF(var Msg: TMessage); message WM_APP + 191;
-    procedure ActivePDFWatchdog(Sender: TObject);
-    procedure StartBrowser;
     procedure BuildNavigationToolbar;
     procedure NumberFieldMouseEnter(Sender: TObject);
     procedure FindTermClick(Sender: TObject);
+    procedure UpdateSearchCount(Sender: TObject);
+    procedure SetSearchTerm(const AValue: string);
     procedure ToggleAttachmentsClick(Sender: TObject);
     procedure PageNavigationTimerTimer(Sender: TObject);
-    function BuildPdfUrl(const APage: Integer): string;
-
   public
     FAttachmentsButton: TButton;
-    // HWND des Anlagenfensters, das zu genau dieser PDF-Ansicht gehört.
     AttachmentWindowHandle: HWND;
     PDFFileName: string;
+    function IsShortCut(var Message: TWMKey): Boolean; override;
     procedure UpdateAttachmentWindowPosition;
     procedure RefreshActiveTabPDF;
     procedure OpenSavedPDF(const AFileName: string; AHasAttachments: Boolean);
     procedure SetAttachmentIndicator(AHasAttachments: Boolean);
     procedure RequestPDFLoad;
+    procedure ShowPDFSearch;
+    procedure SelectAllPDFText;
+    procedure CopyPDFText;
     property PDFNavigationStarted: Boolean read FNavigationDone;
     property PDFNavigationSucceeded: Boolean read FNavigationSucceeded;
     property TabbedPDFMode: Boolean read FTabbedPDFMode write FTabbedPDFMode;
-    property SearchTerm: string read FSearchTerm write FSearchTerm;
+    property SearchTerm: string read FSearchTerm write SetSearchTerm;
     property StartPage: Integer read FStartPage write FStartPage;
-    // True, wenn die PDF direkt per Kommandozeile/Explorer gestartet wurde.
     property StandalonePDFMode: Boolean read FStandalonePDFMode write FStandalonePDFMode;
   end;
-
 implementation
-
 {$R *.dfm}
-
-procedure TPDFBrowserForm.ActivePDFWatchdog(Sender: TObject);
-begin
-  if FClosing or not FTabbedPDFMode or not FLoadRequested or
-     not (Parent is TTabSheet) or
-     (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) then Exit;
-  if not Visible or (WVWindowParentPDF.ClientWidth <= 0) or
-     (WVWindowParentPDF.ClientHeight <= 0) then Exit;
-  if not FBrowserCreated then
-  begin
-    if FBrowserCreateStarted and (GetTickCount - FCreateTick > 12000) then
-    begin
-      FCreateTick := GetTickCount;
-    end;
-    if not FBrowserCreateStarted then RefreshActiveTabPDF;
-  end
-  else if not FNavigationDone then
-    RefreshActiveTabPDF
-  else if not FNavigationSucceeded and (GetTickCount - FNavigateTick > 15000) and
-          (FRecoveryCount < 2) then
-  begin
-    Inc(FRecoveryCount);
-    FNavigationDone := False;
-    RefreshActiveTabPDF;
-  end;
-end;
-
-procedure TPDFBrowserForm.CreateParams(var Params: TCreateParams);
-begin
-  inherited CreateParams(Params);
-  // Beim Neuzeichnen die WebView2-Kindfenster nicht mit uebermalen.
-  Params.Style := Params.Style or WS_CLIPCHILDREN;
-end;
-
 function TPDFBrowserForm.ExecuteQpdf(
   const ACommandLine: string;
   out AExitCode: DWORD): Boolean;
@@ -306,6 +238,20 @@ begin
     Exit;
   end;
 
+  // PDFium: direkt drehen und mit PDFium speichern, ohne qpdf.
+  if FPDFiumView <> nil then
+  begin
+    if LDashPos = 0 then LPageEnd := LPageStart;
+    try
+      FPDFiumView.RotatePages(LPageStart, LPageEnd, LAngle);
+    except
+      on E: Exception do
+        MessageDlg('Die PDF-Seiten konnten nicht gedreht werden:' +
+          sLineBreak + E.Message, mtError, [mbOK], 0);
+    end;
+    Exit;
+  end;
+
   // --------------------------------------------------
   // Drehwinkel für qpdf festlegen
   // --------------------------------------------------
@@ -431,6 +377,18 @@ begin
     end;
   end;
 
+  // PDFium haelt die Quelldatei ggf. noch offen. Vor dem Ersetzen
+  // Dokumenthandle freigeben; danach die neue Datei laden.
+  if FPDFiumView <> nil then
+  begin
+    if not FPDFiumView.ConfirmUnsaved then
+    begin
+      DeleteFile(LTempFile);
+      Exit;
+    end;
+    FPDFiumView.ReleasePDFForExternalChange;
+  end;
+
   // --------------------------------------------------
   // Bearbeitete PDF als Originaldatei speichern
   // --------------------------------------------------
@@ -446,59 +404,27 @@ begin
       'Möglicherweise ist die Datei noch geöffnet oder schreibgeschützt.',
       mtError, [mbOK], 0
     );
+    if FPDFiumView <> nil then
+      FPDFiumView.OpenPDF(PDFFileName);
     Exit;
   end;
 
-  // --------------------------------------------------
-  // PDF im WebView2 neu laden
-  // --------------------------------------------------
-  // Browser ist bereits erstellt: TimerPDF wuerde wegen
-  // FBrowserCreateStarted abbrechen und die Ansicht leer lassen.
-  FNavigationDone := False;
-  FNavigationSucceeded := False;
-  FNavigationRetries := 0;
-  FPageNavigationTimer.Enabled := False;
-  FPageNavigationTimer.Interval := 500;
-  FPageNavigationTimer.Enabled := True;
-end;
-
-procedure TPDFBrowserForm.FormCreate(Sender: TObject);
-var
-  IniDat: TIniFile;
-begin
-  Position := poDesigned;
-
-  FWatchdog := TTimer.Create(Self);
-  FWatchdog.Interval := 1000;
-  FWatchdog.OnTimer := ActivePDFWatchdog;
-  FWatchdog.Enabled := True;
-  FCreateTick := GetTickCount;
-  FNavigateTick := GetTickCount;
-  FRecoveryCount := 0;
-  FLoadRequested := False;
-  FBrowserCreateStarted := False;
-  FBrowserCreated := False;
-  FNavigationDone := False;
-  FBrowserError := '';
-  FClosing := False;
-  FTabbedPDFMode := False;
-  FStandalonePDFMode := False;
-  FStandaloneHintShown := False;
-  AttachmentWindowHandle := 0;
-  FStartPage := 1;
-  FSearchTerm := '';
-  BuildNavigationToolbar;
-
-  IniDat := TIniFile.Create(
-    ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
-  try
-    Left   := IniDat.ReadInteger('Position', 'PDFBrowserForm_Left', Left);
-    Top    := IniDat.ReadInteger('Position', 'PDFBrowserForm_Top', Top);
-    Width  := IniDat.ReadInteger('Position', 'PDFBrowserForm_Width', Width);
-    Height := IniDat.ReadInteger('Position', 'PDFBrowserForm_Height', Height);
-  finally
-    IniDat.Free;
+  // Bei PDFium sofort die gedrehte Datei laden und die bisherige
+  // Seite beibehalten. WebView2-Fallback bleibt darunter unveraendert.
+  if FPDFiumView <> nil then
+  begin
+    try
+      FPDFiumView.OpenPDF(PDFFileName);
+      FPDFiumView.ShowPage(LPageStart - 1);
+    except
+      on E: Exception do
+        MessageDlg('Die Drehung wurde gespeichert, aber die PDF-Anzeige ' +
+          'konnte nicht aktualisiert werden:' + sLineBreak + E.Message,
+          mtError, [mbOK], 0);
+    end;
+    Exit;
   end;
+
 end;
 
 procedure TPDFBrowserForm.UpdateAttachmentWindowPosition;
@@ -511,18 +437,12 @@ var
   ViewWidth, ViewHeight: Integer;
   PDFOrigin: TPoint;
 begin
-  if (AttachmentWindowHandle = 0) or
-     not IsWindow(AttachmentWindowHandle) or
-     not Assigned(WVWindowParentPDF) or
-     not WVWindowParentPDF.HandleAllocated then
-    Exit;
-
-  // Die Geometrie richtet sich ausschliesslich nach dem PDF-Anzeigebereich,
-  // nicht nach dem Monitor oder dem Hauptformular.
-  PDFOrigin := WVWindowParentPDF.ClientToScreen(Point(0, 0));
+  if (AttachmentWindowHandle = 0) or not IsWindow(AttachmentWindowHandle) or
+     not Assigned(FPDFiumView) then Exit;
+  PDFOrigin := FPDFiumView.ClientToScreen(Point(0, 0));
   ViewRect := Rect(PDFOrigin.X, PDFOrigin.Y,
-    PDFOrigin.X + WVWindowParentPDF.ClientWidth,
-    PDFOrigin.Y + WVWindowParentPDF.ClientHeight);
+    PDFOrigin.X + FPDFiumView.ClientWidth,
+    PDFOrigin.Y + FPDFiumView.ClientHeight);
   ViewWidth := ViewRect.Right - ViewRect.Left;
   ViewHeight := ViewRect.Bottom - ViewRect.Top;
   if (ViewWidth <= 2 * EdgeGap) or (ViewHeight <= 2 * EdgeGap) then
@@ -544,144 +464,6 @@ begin
   SetWindowPos(AttachmentWindowHandle, 0,
     NewLeft, NewTop, NewWidth, NewHeight,
     SWP_NOZORDER or SWP_NOACTIVATE);
-end;
-
-procedure TPDFBrowserForm.WMNavigatePDF(var Msg: TMessage);
-begin
-  if FClosing or (csDestroying in ComponentState) or
-     not FBrowserCreated or FNavigationDone then Exit;
-  // Eine bereits erstellte WebView2-Instanz darf auch nach einem
-  // Registerwechsel ihren ausstehenden PDF-Ladeauftrag abschliessen.
-  // Sonst geht insbesondere beim ersten Register Navigate verloren.
-  if (WVWindowParentPDF.ClientWidth <= 0) or
-     (WVWindowParentPDF.ClientHeight <= 0) then
-  begin
-    Exit;
-  end;
-  try
-    WVWindowParentPDF.UpdateSize;
-    FNavigationSucceeded := False;
-    FNavigateTick := GetTickCount;
-    WVBrowserPDF.Navigate(BuildPdfUrl(FStartPage));
-    FNavigationDone := True;
-
-  except
-    on E: Exception do
-    begin
-      // Ein fehlgeschlagener Navigate-Aufruf darf den Tab nicht sperren.
-      FNavigationDone := False;
-      if FNavigationRetries < 3 then
-      begin
-        Inc(FNavigationRetries);
-        FPageNavigationTimer.Enabled := False;
-        FPageNavigationTimer.Interval := 800;
-        FPageNavigationTimer.Enabled := True;
-      end;
-    end;
-  end;
-end;
-
-procedure TPDFBrowserForm.WVBrowserPDFNavigationCompleted(Sender: TObject;
-  const aWebView: ICoreWebView2;
-  const aArgs: ICoreWebView2NavigationCompletedEventArgs);
-var
-  NavSuccess: Integer;
-begin
-  if FClosing or (csDestroying in ComponentState) then Exit;
-  NavSuccess := 0;
-  if (aArgs <> nil) and Succeeded(aArgs.get_IsSuccess(NavSuccess)) then
-  begin
-    FNavigationSucceeded := NavSuccess <> 0;
-    if FNavigationSucceeded then FNavigationRetries := 0;
-  end
-  else
-    FNavigationSucceeded := False;
-  if not FNavigationSucceeded and (FNavigationRetries < 3) then
-  begin
-    Inc(FNavigationRetries);
-    FNavigationDone := False;
-    FPageNavigationTimer.Enabled := False;
-    FPageNavigationTimer.Interval := 700;
-    FPageNavigationTimer.Enabled := True;
-  end;
-end;
-
-procedure TPDFBrowserForm.RequestPDFLoad;
-begin
-  if FClosing or (csDestroying in ComponentState) then Exit;
-  FLoadRequested := True;
-  RefreshActiveTabPDF;
-  if FBrowserCreated and not FNavigationDone and HandleAllocated then
-    PostMessage(Handle, WM_APP + 191, 0, 0)
-  else if FBrowserCreateStarted and not FBrowserCreated then
-  begin
-    // CreateBrowser ist asynchron: Ladeauftrag bis AfterCreated behalten.
-    TimerPDF.Interval := 250;
-    TimerPDF.Enabled := True;
-  end;
-end;
-
-procedure TPDFBrowserForm.RefreshActiveTabPDF;
-begin
-
-  if FClosing then
-    Exit;
-  // Beim ersten Tab kann der Ladeauftrag vor dem ersten Anzeigen eintreffen.
-  // In diesem Fall nach dem Anzeigen erneut versuchen.
-  if not HandleAllocated or not Visible then
-  begin
-    if FTabbedPDFMode and FLoadRequested and not FBrowserCreateStarted then
-      TimerPDF.Enabled := True;
-    Exit;
-  end;
-  if (Parent is TTabSheet) and
-     (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) then
-    Exit;
-
-  // Ein eingebetteter WebView2-Browser benoetigt einen gueltigen Host.
-  if (WVWindowParentPDF.ClientWidth <= 0) or
-     (WVWindowParentPDF.ClientHeight <= 0) then
-  begin
-    if not FBrowserCreateStarted then
-      TimerPDF.Enabled := True;
-    Exit;
-  end;
-
-  WVWindowParentPDF.UpdateSize;
-  if FBrowserCreated then
-  begin
-    WVBrowserPDF.NotifyParentWindowPositionChanged;
-    if not FNavigationDone and HandleAllocated then
-      PostMessage(Handle, WM_APP + 191, 0, 0);
-  end
-  else if FLoadRequested and not FBrowserCreateStarted then
-    StartBrowser;
-  // Falls WebView2 gerade asynchron erstellt wird, bleibt FLoadRequested
-  // gesetzt und AfterCreated uebernimmt die Navigation.
-end;
-
-procedure TPDFBrowserForm.FormResize(Sender: TObject);
-begin
-  UpdateAttachmentWindowPosition;
-end;
-
-procedure TPDFBrowserForm.NumberFieldMouseEnter(Sender: TObject);
-var
-  C: TWinControl;
-begin
-  // Der Pfad-Hint der Registerkarte darf nicht ueber den Zahlenfeldern
-  // stehen bleiben. Er wird beim Ueberfahren des Tabs neu gesetzt.
-  Application.CancelHint;
-  C := Parent;
-  while Assigned(C) do
-  begin
-    if C is TPageControl then
-    begin
-      C.Hint := '';
-      Break;
-    end;
-    C := C.Parent;
-  end;
 end;
 
 procedure TPDFBrowserForm.BuildNavigationToolbar;
@@ -706,6 +488,7 @@ var
     // Die Mindesthoehe wird mit der DPI skaliert.
     if (C = FFindButton) or
        (C = FAttachmentsButton) or (C = FRotateButton) or
+
        (C = FRotatePageEdit) or
        (C = FRotateAngleCombo) then
       H := Max(ScalePx(22), ControlHeight - ScalePx(4));
@@ -730,12 +513,20 @@ begin
   FFindButton.Parent := FToolbar;
   FFindButton.Caption := 'Text suchen';
   FFindButton.ShowHint := True;
-  FFindButton.Hint := 'Siehe Suchmaske [Text suchen] im Suchefenster von FreePDF64';
+  FFindButton.Hint := 'Suchbegriff für diese PDF eingeben';
   FFindButton.Left := 178;
   FFindButton.Top := 6;
   FFindButton.Width := 94;
   FFindButton.Height := 28;
   FFindButton.OnClick := FindTermClick;
+
+  FSearchCountLabel := TLabel.Create(Self);
+  FSearchCountLabel.Parent := FToolbar;
+  FSearchCountLabel.AutoSize := True;
+  FSearchCountLabel.Caption := '';
+  FSearchCountLabel.Visible := False;
+  FSearchCountLabel.Font.Style := [fsBold];
+  FSearchCountLabel.Font.Color := clWindowText;
 
   // --------------------------------------------------
   // PDF-Anlagen
@@ -832,8 +623,17 @@ begin
   FToolbar.Height := ToolbarHeight;
   XPos := ScalePx(8);
 
+  // Nur eine Textsuche in der oberen Viewer-Leiste.
   PlaceControl(FFindButton, Max(ScalePx(86),
     Canvas.TextWidth(FFindButton.Caption) + ScalePx(18)));
+  // Trefferanzeige direkt rechts neben 'Text suchen'.
+  // Die Breite bleibt auch bei 0 Treffern reserviert, damit die
+  // nachfolgenden Bedienelemente nicht hin- und herspringen.
+  FSearchCountLabel.SetBounds(XPos,
+    (ToolbarHeight - FSearchCountLabel.Height) div 2,
+    Max(ScalePx(75), Canvas.TextWidth('9999 Treffer') + ScalePx(8)),
+    FSearchCountLabel.Height);
+  Inc(XPos, FSearchCountLabel.Width + Gap);
   PlaceControl(FAttachmentsButton, Max(ScalePx(104),
     Canvas.TextWidth(FAttachmentsButton.Caption) + ScalePx(18)));
 
@@ -855,10 +655,28 @@ begin
   FPageNavigationTimer.Interval := 180;
   FPageNavigationTimer.OnTimer := PageNavigationTimerTimer;
 
-  // FreePDF64-Viewer füllt den verbleibenden Platz
+  // PDFium fuellt den verbleibenden Platz
   DoubleBuffered := True;
-  WVWindowParentPDF.Align := alClient;
-  WVWindowParentPDF.SendToBack;
+
+end;
+
+procedure TPDFBrowserForm.NumberFieldMouseEnter(Sender: TObject);
+var
+  C: TWinControl;
+begin
+  // Der Pfad-Hint der Registerkarte darf nicht ueber den Zahlenfeldern
+  // stehen bleiben. Er wird beim Ueberfahren des Tabs neu gesetzt.
+  Application.CancelHint;
+  C := Parent;
+  while Assigned(C) do
+  begin
+    if C is TPageControl then
+    begin
+      C.Hint := '';
+      Break;
+    end;
+    C := C.Parent;
+  end;
 end;
 
 procedure TPDFBrowserForm.SetAttachmentIndicator(AHasAttachments: Boolean);
@@ -899,15 +717,123 @@ begin
   end;
 end;
 
-function TPDFBrowserForm.BuildPdfUrl(const APage: Integer): string;
-var
-  LPath: string;
+
+procedure TPDFBrowserForm.CreateParams(var Params: TCreateParams);
 begin
-  LPath := StringReplace(ExpandFileName(PDFFileName), '\', '/', [rfReplaceAll]);
-  // URL-Kodierung der Leerzeichen verhindert fehlerhafte file-URLs.
-  LPath := StringReplace(LPath, ' ', '%20', [rfReplaceAll]);
-  Result := 'file:///' + LPath + '?freepdf64_refresh=' +
-    IntToStr(GetTickCount64) + '#page=' + IntToStr(Max(1, APage));
+  inherited CreateParams(Params);
+  Params.Style := Params.Style or WS_CLIPCHILDREN;
+end;
+
+procedure TPDFBrowserForm.FormCreate(Sender: TObject);
+var IniDat: TIniFile;
+begin
+  Position := poDesigned;
+  FLoadRequested := False;
+  FNavigationDone := False;
+  FNavigationSucceeded := False;
+  FPendingFirstDisplay := False;
+  FClosing := False;
+  FTabbedPDFMode := False;
+  FStandalonePDFMode := False;
+  FStandaloneHintShown := False;
+  AttachmentWindowHandle := 0;
+  FStartPage := 1;
+  FSearchTerm := '';
+  BuildNavigationToolbar;
+  TimerPDF.Interval := 150;
+  TimerPDF.Enabled := False;
+  FPDFiumView := TFreePDF64PDFiumView.CreateInParent(Self, Self);
+  FPDFiumView.Align := alClient;
+  FPDFiumView.OnSearchCountChanged := UpdateSearchCount;
+  UpdateSearchCount(FPDFiumView);
+  FPDFiumView.BringToFront;
+  FPDFiumView.PlaceEditButton(FToolbar,
+    FRotateButton.Left + FRotateButton.Width + MulDiv(8, CurrentPPI, 96),
+    FRotateButton.Top, FRotateButton.Height);
+  IniDat := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+  try
+    Left := IniDat.ReadInteger('Position', 'PDFBrowserForm_Left', Left);
+    Top := IniDat.ReadInteger('Position', 'PDFBrowserForm_Top', Top);
+    Width := IniDat.ReadInteger('Position', 'PDFBrowserForm_Width', Width);
+    Height := IniDat.ReadInteger('Position', 'PDFBrowserForm_Height', Height);
+  finally IniDat.Free; end;
+end;
+
+procedure TPDFBrowserForm.RequestPDFLoad;
+begin
+  if FClosing or (csDestroying in ComponentState) then Exit;
+  // Nach Abbruch/Fehler nicht durch Tabwechsel oder Timer erneut laden.
+  // Ein explizites OpenSavedPDF setzt FNavigationDone wieder zurueck.
+  if FNavigationDone and not FNavigationSucceeded then Exit;
+  FLoadRequested := True;
+  TimerPDF.Enabled := True;
+  RefreshActiveTabPDF;
+end;
+
+procedure TPDFBrowserForm.RefreshActiveTabPDF;
+begin
+  if FClosing or not FLoadRequested or (FPDFiumView = nil) or
+     FPDFLoadInProgress then Exit;
+  if FNavigationDone and FNavigationSucceeded then
+  begin
+    // Erste Darstellung nach dem endgueltigen Layout des TabSheets.
+    if FPendingFirstDisplay and Visible and (ClientWidth >= 50) and
+       (ClientHeight >= 50) then
+    begin
+      FPDFiumView.RefreshPDFDisplay;
+      FPendingFirstDisplay := False;
+    end;
+    TimerPDF.Enabled := FPendingFirstDisplay;
+    Exit;
+  end;
+  if not Visible or (ClientWidth < 50) or (ClientHeight < 50) then Exit;
+  // Sicherstellen, dass der PDFium-Bereich nicht durch das Einbetten
+  // unsichtbar oder mit veralteten Abmessungen zurueckbleibt.
+  if (FPDFiumView.Parent <> Self) then FPDFiumView.Parent := Self;
+  FPDFiumView.Align := alClient;
+  FPDFiumView.Visible := True;
+  FPDFiumView.BringToFront;
+  if (Parent is TTabSheet) and
+     (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) then Exit;
+  // Ein modaler Kennwortdialog verarbeitet weiterhin Windows-Nachrichten.
+  // Den Ladetimer deshalb vor dem Oeffnen deaktivieren und Rekursion sperren.
+  FPDFLoadInProgress := True;
+  TimerPDF.Enabled := False;
+  try
+    try
+      FPDFiumView.OpenPDF(PDFFileName);
+    if FStartPage > 1 then FPDFiumView.ShowPage(FStartPage - 1);
+    // Den Suchbegriff aus Suchen.pas erst nach dem Laden an PDFium geben.
+    // Vor OpenPDF ist noch kein PDF-Textindex vorhanden.
+    if Trim(FSearchTerm) <> '' then
+      FPDFiumView.SearchText(FSearchTerm);
+    FNavigationDone := True;
+    FNavigationSucceeded := True;
+    FPendingFirstDisplay := True;
+    TimerPDF.Enabled := True;
+  except
+    on E: EAbort do
+    begin
+      FLoadRequested := False;
+      FNavigationDone := True;
+      FNavigationSucceeded := False;
+      FPendingFirstDisplay := False;
+      TimerPDF.Enabled := False;
+    end;
+    on E: Exception do
+    begin
+      FLoadRequested := False;
+      FNavigationDone := True;
+      FNavigationSucceeded := False;
+      FPendingFirstDisplay := False;
+      TimerPDF.Enabled := False;
+      MessageDlg('PDFium konnte die PDF nicht öffnen: ' + E.Message,
+        mtError, [mbOK], 0);
+    end;
+    end;
+  finally
+    FPDFLoadInProgress := False;
+  end;
 end;
 
 procedure TPDFBrowserForm.OpenSavedPDF(const AFileName: string;
@@ -917,241 +843,119 @@ begin
   PDFFileName := AFileName;
   Caption := AFileName;
   FStartPage := 1;
-  FNavigationSucceeded := False;
-  FNavigationRetries := 0;
-  if Assigned(FAttachmentsButton) then
-  begin
-    if AHasAttachments then
-      FAttachmentsButton.Caption := '-> Anlagen'
-    else
-      FAttachmentsButton.Caption := 'Anlagen';
-  end;
   FNavigationDone := False;
-  // Auch bei bereits erstelltem Browser den asynchronen Ladeauftrag
-  // ueber den regulaeren Lazy-Loading-Pfad anstossen.
+  FNavigationSucceeded := False;
   FLoadRequested := True;
-  if FBrowserCreated then
-  begin
-    FPageNavigationTimer.Enabled := False;
-    FPageNavigationTimer.Interval := 250;
-    FPageNavigationTimer.Enabled := True;
-  end
-  else
-    RequestPDFLoad;
+  SetAttachmentIndicator(AHasAttachments);
+  RequestPDFLoad;
 end;
 
 procedure TPDFBrowserForm.PageNavigationTimerTimer(Sender: TObject);
 begin
   FPageNavigationTimer.Enabled := False;
-  if FBrowserCreated and not FClosing then
-    // Erst nach Rueckkehr aus dem WebView2-Callback navigieren.
-  // Das TabSheet hat dann seine endgueltige Groesse.
-  if HandleAllocated then
-    PostMessage(Handle, WM_APP + 191, 0, 0);
+  RefreshActiveTabPDF;
 end;
 
+procedure TPDFBrowserForm.SetSearchTerm(const AValue: string);
+begin
+  FSearchTerm := AValue;
+  // Auch bei bereits geoeffneten PDFs die Suche sofort aktualisieren.
+  if (FPDFiumView <> nil) and FNavigationSucceeded then
+    FPDFiumView.SearchText(FSearchTerm);
+end;
+
+procedure TPDFBrowserForm.ShowPDFSearch;
+begin
+  FindTermClick(nil);
+end;
+
+procedure TPDFBrowserForm.UpdateSearchCount(Sender: TObject);
+begin
+  if (FSearchCountLabel = nil) or (FPDFiumView = nil) then Exit;
+  FSearchCountLabel.Visible := FPDFiumView.SearchMatchCount > 0;
+  if FSearchCountLabel.Visible then
+    FSearchCountLabel.Caption := Format('%d Treffer',
+      [FPDFiumView.SearchMatchCount])
+  else
+    FSearchCountLabel.Caption := '';
+end;
 
 procedure TPDFBrowserForm.FindTermClick(Sender: TObject);
 begin
-  if Trim(FSearchTerm) = '' then
-  begin
-    MessageDlg('In der Suchmaske [Text suchen] ist kein Suchbegriff eingetragen.', mtInformation, [mbOK], 0);
-    Exit;
-  end;
-
-  // Der FreePDF64-Viewer besitzt eine eigene Suche (Strg+F).
-  // WebView2 bietet keine stabile öffentliche API, um interne PDF-Treffer
-  // direkt zu markieren. Deshalb wird die integrierte Suchoberfläche geöffnet.
-  Clipboard.AsText := FSearchTerm;
-
-  // Den Fokus möglichst direkt an die WebView geben, nicht nur an
-  // deren Parent-Window. Die Suche selbst wird vom FreePDF64-Viewer
-  // über Strg+F bereitgestellt.
-  BringToFront;
-  if not FTabbedPDFMode then
-    SetForegroundWindow(Handle);
-  if WVWindowParentPDF.HandleAllocated then
-    Winapi.Windows.SetFocus(WVWindowParentPDF.Handle)
-  else
-    WVBrowserPDF.SetFocus;
-
-  // Erst die Edge-Suchleiste öffnen. Die verzögerte Eingabe verhindert,
-  // dass Strg+V gesendet wird, bevor die Suchleiste bereit ist.
-  keybd_event(VK_CONTROL, 0, 0, 0);
-  keybd_event(Ord('F'), 0, 0, 0);
-  keybd_event(Ord('F'), 0, KEYEVENTF_KEYUP, 0);
-  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
-
-  Sleep(250);
-
-  keybd_event(VK_CONTROL, 0, 0, 0);
-  keybd_event(Ord('V'), 0, 0, 0);
-  keybd_event(Ord('V'), 0, KEYEVENTF_KEYUP, 0);
-  keybd_event(VK_CONTROL, 0, KEYEVENTF_KEYUP, 0);
+  if FPDFiumView <> nil then FPDFiumView.ShowSearchDialog;
 end;
 
+procedure TPDFBrowserForm.MarkerClick(Sender: TObject);
+begin
+  if FPDFiumView <> nil then FPDFiumView.ToggleMarker;
+end;
 
 procedure TPDFBrowserForm.FormShow(Sender: TObject);
 begin
   Caption := PDFFileName;
-  FClosing := False;
-  if FTabbedPDFMode then
+  // Auch eingebettete PDF-Formulare muessen beim ersten Anzeigen laden.
+  // Der Tab-Manager darf nicht der einzige Ausloeser sein.
+  FLoadRequested := True;
+  if FPDFiumView <> nil then
   begin
-    // Der aktive Tab wird nach dem Einbetten automatisch gestartet.
-    // Laden wird vom Tab-Fenster nach dem Stapelaufbau angefordert.
-    // Falls die Anforderung bereits vor dem ersten FormShow kam,
-    // die Initialisierung jetzt erneut anstossen.
-    if FLoadRequested then
-      RefreshActiveTabPDF;
-  end
-  else
-  begin
-    // Explorer/Einzelfenster bleibt unveraendert sofort nutzbar.
-    FLoadRequested := True;
-    StartBrowser;
-    BringToFront;
-    SetForegroundWindow(Handle);
+    FPDFiumView.Align := alClient;
+    FPDFiumView.Visible := True;
+    FPDFiumView.BringToFront;
   end;
-end;
-
-procedure TPDFBrowserForm.StartBrowser;
-begin
-
-  if FClosing or FBrowserCreateStarted or
-     (csDestroying in ComponentState) or
-     (FTabbedPDFMode and not FLoadRequested) then Exit;
-
-  // Bei Tabs niemals in einem unsichtbaren/noch nicht vermessenen
-  // TabSheet einen WebView2-Controller erzeugen.
-  if FTabbedPDFMode then
-  begin
-    if (not (Parent is TTabSheet)) or
-       (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) or
-       (not Visible) or
-       (WVWindowParentPDF.ClientWidth <= 0) or
-       (WVWindowParentPDF.ClientHeight <= 0) then
-      Exit;
-  end;
-
-  if GlobalWebView2Loader.InitializationError then
-  begin
-    ShowMessage(GlobalWebView2Loader.ErrorMessage);
-    Exit;
-  end;
-
-  if GlobalWebView2Loader.Initialized then
-  begin
-    FBrowserCreateStarted := True;
-    FCreateTick := GetTickCount;
-    // CreateBrowser liefert Boolean: False bedeutet, dass gar kein
-    // asynchroner Erstellungsauftrag gestartet wurde.
-    if not WVBrowserPDF.CreateBrowser(WVWindowParentPDF.Handle) then
-    begin
-      FBrowserCreateStarted := False;
-      FBrowserError := 'CreateBrowser returned False';
-      if FTabbedPDFMode and FLoadRequested then
-      begin
-        TimerPDF.Interval := 500;
-        TimerPDF.Enabled := True;
-      end;
-    end;
-  end
-  else
-    TimerPDF.Enabled := True;
+  TimerPDF.Enabled := True;
+  RefreshActiveTabPDF;
 end;
 
 procedure TPDFBrowserForm.TimerPDFTimer(Sender: TObject);
 begin
-  try
-
-  TimerPDF.Enabled := False;
-  if FClosing or (csDestroying in ComponentState) or
-     (FTabbedPDFMode and not FLoadRequested) then Exit;
-
-  if FBrowserCreateStarted then
-  begin
-    // Solange WebView2 noch initialisiert, keine zweite Instanz erstellen.
-    // Der eigentliche Navigate-Aufruf erfolgt in AfterCreated.
-    Exit;
-  end;
-
-  if FTabbedPDFMode and
-     ((not (Parent is TTabSheet)) or
-      (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent))) then
-    Exit;
-
-  if GlobalWebView2Loader.InitializationError then
-  begin
-    ShowMessage(GlobalWebView2Loader.ErrorMessage);
-    Exit;
-  end;
-
-  StartBrowser;
-  // Falls das erste Tab beim ersten Versuch noch nicht sichtbar oder
-  // noch nicht vermessen war, weiter versuchen statt dauerhaft aufzugeben.
-  if FTabbedPDFMode and FLoadRequested and not FBrowserCreateStarted and
-     (Parent is TTabSheet) and
-     (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent)) then
-    TimerPDF.Enabled := True;
-  except
-    on E: Exception do
-    begin
-
-      if Assigned(TimerPDF) then TimerPDF.Enabled := False;
-    end;
-  end;
+  RefreshActiveTabPDF;
 end;
 
-procedure TPDFBrowserForm.WVBrowserPDFAfterCreated(Sender: TObject);
+procedure TPDFBrowserForm.FormResize(Sender: TObject);
 begin
-  try
+  UpdateAttachmentWindowPosition;
+end;
 
-  // Sehr wichtig:
-  // Falls CreateBrowser noch abgeschlossen wurde, nachdem
-  // der Benutzer das PDF-Fenster bereits geschlossen hat,
-  // darf hier nichts mehr mit dem Formular gemacht werden.
-  if FClosing then
-    Exit;
-
-  FBrowserCreated := True;
+procedure TPDFBrowserForm.FormClose(Sender: TObject; var Action: TCloseAction);
+var IniDat: TIniFile;
+begin
+  FClosing := True;
   TimerPDF.Enabled := False;
-
-  // Inaktive TabSheets koennen momentan 0x0 Pixel gross sein.
-  // Die Groesse erst beim Aktivieren aktualisieren; Navigation
-  // dennoch sofort im Hintergrund starten.
-  if (not FTabbedPDFMode) or
-     ((Parent is TTabSheet) and
-      (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent))) then
-    WVWindowParentPDF.UpdateSize;
-
-  if FStartPage < 1 then
-    FStartPage := 1;
-  // Nicht im asynchronen WebView2-Callback navigieren.
-  // Nur der aktive Tab navigiert; der erste Tab wird genauso behandelt.
-  // Auch ein inzwischen inaktives Register muss den begonnenen
-  // asynchronen Erstellungsablauf zu Ende fuehren koennen.
-  if HandleAllocated and FLoadRequested then
-    PostMessage(Handle, WM_APP + 191, 0, 0);
-
-  // Asynchrone WebView2-Initialisierung darf NICHT den aktiven Tab
-  // wechseln oder den Fokus von einer anderen PDF-Registerkarte stehlen.
+  if Assigned(FPageNavigationTimer) then FPageNavigationTimer.Enabled := False;
   if not FTabbedPDFMode then
   begin
-    BringToFront;
-    SetForegroundWindow(Handle);
+    IniDat := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
+    try
+      IniDat.WriteInteger('Position', 'PDFBrowserForm_Left', Left);
+      IniDat.WriteInteger('Position', 'PDFBrowserForm_Top', Top);
+      IniDat.WriteInteger('Position', 'PDFBrowserForm_Width', Width);
+      IniDat.WriteInteger('Position', 'PDFBrowserForm_Height', Height);
+    finally IniDat.Free; end;
   end;
-  if WVWindowParentPDF.HandleAllocated and
-     ((not FTabbedPDFMode) or
-      ((Parent is TTabSheet) and
-       (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent)))) then
-    Winapi.Windows.SetFocus(WVWindowParentPDF.Handle);
-  except
-    on E: Exception do
-    begin
+  Action := caFree;
+end;
 
-      if Assigned(TimerPDF) then TimerPDF.Enabled := False;
-    end;
-  end;
+procedure TPDFBrowserForm.WMMove(var aMessage: TWMMove);
+begin
+  inherited;
+  UpdateAttachmentWindowPosition;
+end;
+
+procedure TPDFBrowserForm.WMMoving(var aMessage: TMessage);
+begin
+  inherited;
+  UpdateAttachmentWindowPosition;
+end;
+
+
+procedure TPDFBrowserForm.SelectAllPDFText;
+begin
+  if FPDFiumView <> nil then FPDFiumView.SelectAllText;
+end;
+
+procedure TPDFBrowserForm.CopyPDFText;
+begin
+  if FPDFiumView <> nil then FPDFiumView.CopySelectedText;
 end;
 
 function TPDFBrowserForm.IsShortCut(var Message: TWMKey): Boolean;
@@ -1160,119 +964,4 @@ begin
   // Insbesondere muss Strg+F an den FreePDF64-Viewer gelangen können.
   Result := inherited IsShortCut(Message);
 end;
-
-procedure TPDFBrowserForm.WVBrowserPDFInitializationError(
-  Sender: TObject; aErrorCode: HRESULT;
-  const aErrorMessage: wvstring);
-begin
-  try
-  // Formular befindet sich bereits im Schließvorgang.
-  if FClosing then
-    Exit;
-
-  FBrowserCreated := False;
-  FBrowserCreateStarted := False;
-  FBrowserError := aErrorMessage;
-  FBrowserCreateStarted := False;
-
-  if FTabbedPDFMode then
-  begin
-    if FLoadRequested and (Parent is TTabSheet) and
-       (TTabSheet(Parent).PageControl.ActivePage = TTabSheet(Parent)) then
-    begin
-      TimerPDF.Interval := 1000;
-      TimerPDF.Enabled := True;
-    end;
-  end
-  else
-    ShowMessage(aErrorMessage);
-  except
-    on E: Exception do
-    begin
-
-      if Assigned(TimerPDF) then TimerPDF.Enabled := False;
-    end;
-  end;
-end;
-
-
-procedure TPDFBrowserForm.FormClose(
-  Sender: TObject; var Action: TCloseAction);
-var
-  IniDat: TIniFile;
-begin
-  // Ab jetzt dürfen keine weiteren Timer-/AfterCreated-Aktionen
-  // mehr mit diesem Formular arbeiten.
-  FClosing := True;
-
-  TimerPDF.Enabled := False;
-  if Assigned(FPageNavigationTimer) then
-    FPageNavigationTimer.Enabled := False;
-
-  if not FTabbedPDFMode then
-  begin
-  IniDat := TIniFile.Create(
-    ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
-  try
-    IniDat.WriteInteger(
-      'Position',
-      'PDFBrowserForm_Left',
-      Left);
-
-    IniDat.WriteInteger(
-      'Position',
-      'PDFBrowserForm_Top',
-      Top);
-
-    IniDat.WriteInteger(
-      'Position',
-      'PDFBrowserForm_Width',
-      Width);
-
-    IniDat.WriteInteger(
-      'Position',
-      'PDFBrowserForm_Height',
-      Height);
-  finally
-    IniDat.Free;
-  end;
-
-  end;
-
-  // Die Form selbst wird freigegeben.
-  //
-  // Dabei werden die darin enthaltenen VCL-Komponenten
-  // einschließlich WVBrowserPDF und WVWindowParentPDF
-  // über den normalen Delphi-Komponenten-Lebenszyklus
-  // ebenfalls freigegeben.
-  Action := caFree;
-end;
-
-procedure TPDFBrowserForm.WMMove(var aMessage: TWMMove);
-begin
-  inherited;
-
-  if (WVBrowserPDF <> nil) and not FClosing then
-    WVBrowserPDF.NotifyParentWindowPositionChanged;
-
-  UpdateAttachmentWindowPosition;
-end;
-
-procedure TPDFBrowserForm.WMMoving(var aMessage: TMessage);
-begin
-  inherited;
-
-  if (WVBrowserPDF <> nil) and not FClosing then
-    WVBrowserPDF.NotifyParentWindowPositionChanged;
-end;
-
-initialization
-  GlobalWebView2Loader := TWVLoader.Create(nil);
-
-  GlobalWebView2Loader.UserDataFolder :=
-    ExtractFileDir(Application.ExeName) + '\CustomCache';
-
-  GlobalWebView2Loader.StartWebView2;
-
 end.
-

@@ -30,6 +30,7 @@ type
     FMainProgramButton: TButton;
     FTabSearchButton: TButton;
     FLocalTabSearchHotkeyRegistered: Boolean;
+    FLocalTextSearchHotkeyRegistered: Boolean;
     FTabCountBadge: TPaintBox;
     FTabSearchForm: TForm;
     FTabSearchEdit: TEdit;
@@ -80,11 +81,15 @@ type
     procedure TabSearchDeactivate(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
+    procedure ApplyShownWindowSettings(var Msg: TMessage); message WM_APP + 194;
+    procedure TabsFormShow(Sender: TObject);
     procedure LoadWindowSettings;
     procedure SaveWindowSettings;
     procedure RememberNormalBounds;
     procedure CloseActive(Sender: TObject);
+    procedure ViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
+    function IsShortCut(var Message: TWMKey): Boolean; override;
     procedure CreateParams(var Params: TCreateParams); override;
     procedure CreateWnd; override;
     procedure DestroyWnd; override;
@@ -140,6 +145,7 @@ uses uPDFAttachmentTemp;
 
 const
   LOCAL_TAB_SEARCH_HOTKEY_ID = $5A71;
+  LOCAL_TEXT_SEARCH_HOTKEY_ID = $5A72;
   PDFTabWindowMarker = 'FreePDF64.PDFTabs.Window.v1';
   PDFTabMessageId = $46504446;
   MainProgramWindowMarker = 'FreePDF64.MainProgram.Window.v1';
@@ -303,7 +309,7 @@ begin
     Msg.CopyDataStruct^.cbData div SizeOf(Char) - 1);
   if not SameText(ExtractFileExt(FileName), '.pdf') or
      not FileExists(FileName) then Exit;
-  // Niemals im synchronen WM_COPYDATA-Handler WebView2/VCL-Forms erstellen.
+  // Niemals im synchronen WM_COPYDATA-Handler PDFium-Forms erstellen.
   FPendingExplorerFiles.Add(FileName);
   // Explorer uebergibt mehrere markierte PDFs oft als einzelne WM_COPYDATA-
   // Nachrichten. Erst nach einer kurzen Empfangspause den Stapel verarbeiten.
@@ -352,7 +358,7 @@ var
 begin
   // Bereits wartende Explorer-Nachrichten vor dem Anlegen verarbeiten.
   // Der Timer sorgt dafuer, dass ein zusammengehoeriger Dateistapel
-  // gesammelt wird, bevor die erste WebView2-Instanz starten kann.
+  // gesammelt wird, bevor die erste PDFium-Instanz starten kann.
   FExplorerBatchTimer.Enabled := False;
   LastOpenedPDF := nil;
   while FPendingExplorerFiles.Count > 0 do
@@ -363,7 +369,7 @@ begin
     if ActivateExistingPDF(FileName) then Continue;
     PDF := nil;
     try
-      PDF := TPDFBrowserForm.Create(Application);
+      PDF := TPDFBrowserForm.Create(nil);
       PDF.PDFFileName := FileName;
       PDF.StandalonePDFMode := False;
       AddPDF(PDF);
@@ -386,15 +392,9 @@ begin
 end;
 
 function TabsIniFileName: string;
-var
-  Folder: string;
 begin
-  Folder := GetEnvironmentVariable('APPDATA');
-  if Folder = '' then
-    Folder := ExtractFilePath(Application.ExeName);
-  Folder := IncludeTrailingPathDelimiter(Folder) + 'FreePDF64';
-  ForceDirectories(Folder);
-  Result := IncludeTrailingPathDelimiter(Folder) + 'PDFTabs.ini';
+  // Alle Viewer-Einstellungen in der gemeinsamen INI im Programmverzeichnis.
+  Result := ExtractFilePath(Application.ExeName) + 'FreePDF64.ini';
 end;
 
 procedure TPDFTabsForm.RememberNormalBounds;
@@ -415,10 +415,10 @@ begin
   try
     Ini := TIniFile.Create(TabsIniFileName);
     try
-      W := Ini.ReadInteger('Fenster', 'Breite', 1100);
-      H := Ini.ReadInteger('Fenster', 'Hoehe', 800);
-      L := Ini.ReadInteger('Fenster', 'Links', (Screen.Width - W) div 2);
-      T := Ini.ReadInteger('Fenster', 'Oben', (Screen.Height - H) div 2);
+      W := Ini.ReadInteger('PDFTabsFenster', 'Breite', 1100);
+      H := Ini.ReadInteger('PDFTabsFenster', 'Hoehe', 800);
+      L := Ini.ReadInteger('PDFTabsFenster', 'Links', (Screen.Width - W) div 2);
+      T := Ini.ReadInteger('PDFTabsFenster', 'Oben', (Screen.Height - H) div 2);
       W := EnsureRange(W, 450, Screen.DesktopWidth);
       H := EnsureRange(H, 300, Screen.DesktopHeight);
       R := Rect(L, T, L + W, T + H);
@@ -431,7 +431,7 @@ begin
       Position := poDesigned;
       SetBounds(L, T, W, H);
       FLastNormalBounds := BoundsRect;
-      if Ini.ReadBool('Fenster', 'Maximiert', False) then
+      if Ini.ReadBool('PDFTabsFenster', 'Maximiert', False) then
         WindowState := wsMaximized;
     finally
       Ini.Free;
@@ -439,6 +439,25 @@ begin
   finally
     FRestoringWindowSettings := False;
   end;
+end;
+
+procedure TPDFTabsForm.TabsFormShow(Sender: TObject);
+begin
+  // Erst nach der VCL-Anzeige wiederherstellen: Explorer und F1 verwenden
+  // unterschiedliche Startwege, aber beide durchlaufen OnShow.
+  PostMessage(Handle, WM_APP + 194, 0, 0);
+end;
+
+procedure TPDFTabsForm.ApplyShownWindowSettings(var Msg: TMessage);
+begin
+  if not Visible or FInitialWindowOffscreen then Exit;
+  LoadWindowSettings;
+  // Nach der VCL-Initialisierung die tatsächliche Fenstergeometrie setzen.
+  if WindowState = wsMaximized then
+    ShowWindow(Handle, SW_SHOWMAXIMIZED)
+  else
+    SetWindowPos(Handle, 0, Left, Top, Width, Height,
+      SWP_NOZORDER or SWP_NOACTIVATE);
 end;
 
 procedure TPDFTabsForm.SaveWindowSettings;
@@ -453,11 +472,11 @@ begin
     R := Rect(Left, Top, Left + 1100, Top + 800);
   Ini := TIniFile.Create(TabsIniFileName);
   try
-    Ini.WriteInteger('Fenster', 'Links', R.Left);
-    Ini.WriteInteger('Fenster', 'Oben', R.Top);
-    Ini.WriteInteger('Fenster', 'Breite', R.Right - R.Left);
-    Ini.WriteInteger('Fenster', 'Hoehe', R.Bottom - R.Top);
-    Ini.WriteBool('Fenster', 'Maximiert', WindowState = wsMaximized);
+    Ini.WriteInteger('PDFTabsFenster', 'Links', R.Left);
+    Ini.WriteInteger('PDFTabsFenster', 'Oben', R.Top);
+    Ini.WriteInteger('PDFTabsFenster', 'Breite', R.Right - R.Left);
+    Ini.WriteInteger('PDFTabsFenster', 'Hoehe', R.Bottom - R.Top);
+    Ini.WriteBool('PDFTabsFenster', 'Maximiert', WindowState = wsMaximized);
   finally
     Ini.Free;
   end;
@@ -514,7 +533,7 @@ begin
     if not Dialog.Execute then Exit;
     for I := 0 to Dialog.Files.Count - 1 do
     begin
-      PDF := TPDFBrowserForm.Create(Application);
+      PDF := TPDFBrowserForm.Create(nil);
       try
         PDF.PDFFileName := Dialog.Files[I];
         PDF.StandalonePDFMode := False;
@@ -641,7 +660,7 @@ begin
         Missing.Add(S);
         Continue;
       end;
-      PDF := TPDFBrowserForm.Create(Application);
+      PDF := TPDFBrowserForm.Create(nil);
       try
         PDF.PDFFileName := S;
         PDF.StandalonePDFMode := False;
@@ -729,6 +748,8 @@ var
   ButtonHeight: Integer;
 begin
   inherited CreateNew(AOwner);
+  KeyPreview := True;
+  OnKeyDown := ViewerKeyDown;
   Dpi := CurrentPPI;
   if Dpi < 96 then Dpi := 96;
   ButtonHeight := Max(MulDiv(26, Dpi, 96), Canvas.TextHeight('Ag') + MulDiv(10, Dpi, 96));
@@ -805,8 +826,8 @@ begin
   FOpenButton.Parent := Header;
   FOpenButton.Align := alLeft;
   FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
-  FOpenButton.Caption := 'Datei(en) öffnen ...';
-  FOpenButton.Hint := '... auch alle anderen Dateitypen';
+  FOpenButton.Caption := 'PDF-Datei öffnen ...';
+  FOpenButton.Hint := '... eine oder mehrere';
   FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
   // Hauptprogramm im selben Prozess sichtbar machen.
@@ -879,6 +900,7 @@ begin
   FActivationTimer.OnTimer := ActivationTimerTick;
   LoadWindowSettings;
   OnClose := TabsFormClose;
+  OnShow := TabsFormShow;
 end;
 
 procedure TPDFTabsForm.PaintTabCountBadge(Sender: TObject);
@@ -1080,20 +1102,49 @@ begin
       FLocalTabSearchHotkeyRegistered := RegisterHotKey(Handle,
         LOCAL_TAB_SEARCH_HOTKEY_ID, MOD_CONTROL or MOD_SHIFT or MOD_NOREPEAT,
         Ord('A'));
+    if not FLocalTextSearchHotkeyRegistered then
+      FLocalTextSearchHotkeyRegistered := RegisterHotKey(Handle,
+        LOCAL_TEXT_SEARCH_HOTKEY_ID, MOD_CONTROL or MOD_NOREPEAT, Ord('F'));
   end
-  else if FLocalTabSearchHotkeyRegistered then
+  else
   begin
-    UnregisterHotKey(Handle, LOCAL_TAB_SEARCH_HOTKEY_ID);
-    FLocalTabSearchHotkeyRegistered := False;
+    if FLocalTabSearchHotkeyRegistered then
+    begin
+      UnregisterHotKey(Handle, LOCAL_TAB_SEARCH_HOTKEY_ID);
+      FLocalTabSearchHotkeyRegistered := False;
+    end;
+    if FLocalTextSearchHotkeyRegistered then
+    begin
+      UnregisterHotKey(Handle, LOCAL_TEXT_SEARCH_HOTKEY_ID);
+      FLocalTextSearchHotkeyRegistered := False;
+    end;
   end;
 end;
 
 procedure TPDFTabsForm.WMViewerHotKey(var Msg: TMessage);
+var
+  Tab: TTabSheet;
+  I: Integer;
 begin
-  if Msg.WParam = LOCAL_TAB_SEARCH_HOTKEY_ID then
+  if (Msg.WParam = LOCAL_TAB_SEARCH_HOTKEY_ID) or
+     (Msg.WParam = LOCAL_TEXT_SEARCH_HOTKEY_ID) then
   begin
     if (GetForegroundWindow = Handle) and Visible then
-      TabSearchClick(FTabSearchButton);
+    begin
+      if Msg.WParam = LOCAL_TAB_SEARCH_HOTKEY_ID then
+        TabSearchClick(FTabSearchButton)
+      else
+      begin
+        Tab := FTabs.ActivePage;
+        if Tab <> nil then
+          for I := 0 to Tab.ControlCount - 1 do
+            if Tab.Controls[I] is TPDFBrowserForm then
+            begin
+              TPDFBrowserForm(Tab.Controls[I]).ShowPDFSearch;
+              Break;
+            end;
+      end;
+    end;
     Msg.Result := 0;
   end
   else
@@ -1102,6 +1153,11 @@ end;
 
 destructor TPDFTabsForm.Destroy;
 begin
+  if FLocalTextSearchHotkeyRegistered then
+  begin
+    UnregisterHotKey(Handle, LOCAL_TEXT_SEARCH_HOTKEY_ID);
+    FLocalTextSearchHotkeyRegistered := False;
+  end;
   if FLocalTabSearchHotkeyRegistered then
   begin
     UnregisterHotKey(Handle, LOCAL_TAB_SEARCH_HOTKEY_ID);
@@ -1181,7 +1237,7 @@ begin
       Break;
     end;
   Inc(FActivationChecks);
-  // Die erste PDF muss mindestens ihren ersten WebView2-Navigationsaufruf
+  // Die erste PDF muss mindestens ihren ersten PDFium-Navigationsaufruf
   // erhalten haben, bevor wir zu einer anderen Registerkarte wechseln.
   if (FirstPDF <> nil) and (not FirstPDF.PDFNavigationSucceeded) and
      (FActivationChecks < 80) then
@@ -1278,7 +1334,7 @@ end;
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
-  // Fenster zuerst ausblenden, dann die WebView2-Registerkarten
+  // Fenster zuerst ausblenden, dann die PDFium-Registerkarten
   // unsichtbar abbauen. Sonst flackert der Viewer bei vielen PDFs.
   SaveWindowSettings;
   SavePDFSession;
@@ -1324,13 +1380,13 @@ begin
     FAddingPDF := False;
   end;
   if not Visible then
-  begin
-    LoadWindowSettings;
     Show;
-  end;
   APDF.Show;
   FTabs.Realign;
   APDF.Realign;
+  // Das erste PDF explizit anfordern: ein Tabwechsel-Ereignis
+  // wird beim erstmaligen Anlegen nicht immer ausgeloest.
+  APDF.RequestPDFLoad;
   FFirstPDFInitialized := True;
   FDeferredActivePDF := nil;
   FActivationTimer.Enabled := False;
@@ -1746,7 +1802,7 @@ begin
       sLineBreak + FileName, mtWarning, [mbOK], 0);
     Exit;
   end;
-  PDF := TPDFBrowserForm.Create(Application);
+  PDF := TPDFBrowserForm.Create(nil);
   try
     PDF.PDFFileName := FileName;
     PDF.StandalonePDFMode := False;
@@ -1757,6 +1813,100 @@ begin
     PDF.Free;
     raise;
   end;
+end;
+
+function TPDFTabsForm.IsShortCut(var Message: TWMKey): Boolean;
+var
+  Tab: TTabSheet;
+  I: Integer;
+  PDF: TPDFBrowserForm;
+begin
+  // Nur die aktive PDF-Anzeige darf diese Kürzel behandeln.
+  // Keine globale Registrierung für Strg+A: so bleibt das Hauptprogramm unabhängig.
+  if (GetForegroundWindow = Handle) and
+     (GetKeyState(VK_CONTROL) < 0) and
+     (GetKeyState(VK_MENU) >= 0) and
+     (Message.CharCode in [Ord('A'), Ord('C'), Ord('F')]) then
+  begin
+    // In Eingabefeldern haben Strg+A/Strg+C die normalen Windows-Funktionen.
+    if (Message.CharCode in [Ord('A'), Ord('C')]) and
+       (Screen.ActiveControl is TCustomEdit) then
+      Exit(inherited IsShortCut(Message));
+    // Strg+A bleibt für die übliche Funktion "Alles auswählen" reserviert.
+    // Nur Strg+Umschalt+A öffnet die Registerkartensuche.
+    if Message.CharCode = Ord('A') then
+    begin
+      if GetKeyState(VK_SHIFT) < 0 then
+      begin
+        TabSearchClick(FTabSearchButton);
+        Exit(True);
+      end;
+      Tab := FTabs.ActivePage;
+      if Tab <> nil then
+        for I := 0 to Tab.ControlCount - 1 do
+          if Tab.Controls[I] is TPDFBrowserForm then
+          begin
+            TPDFBrowserForm(Tab.Controls[I]).SelectAllPDFText;
+            Exit(True);
+          end;
+      Exit(True);
+    end;
+    if Message.CharCode = Ord('C') then
+    begin
+      Tab := FTabs.ActivePage;
+      if Tab <> nil then
+        for I := 0 to Tab.ControlCount - 1 do
+          if Tab.Controls[I] is TPDFBrowserForm then
+          begin
+            TPDFBrowserForm(Tab.Controls[I]).CopyPDFText;
+            Exit(True);
+          end;
+      Exit(True);
+    end;
+    if GetKeyState(VK_SHIFT) < 0 then
+      Exit(inherited IsShortCut(Message));
+    Tab := FTabs.ActivePage;
+    if Tab <> nil then
+      for I := 0 to Tab.ControlCount - 1 do
+        if Tab.Controls[I] is TPDFBrowserForm then
+        begin
+          PDF := TPDFBrowserForm(Tab.Controls[I]);
+          PDF.ShowPDFSearch;
+          Exit(True);
+        end;
+  end;
+  Result := inherited IsShortCut(Message);
+end;
+
+procedure TPDFTabsForm.ViewerKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+var
+  Tab: TTabSheet;
+  I: Integer;
+  PDF: TPDFBrowserForm;
+begin
+  if (Key <> VK_ESCAPE) or (Shift <> []) then Exit;
+  // Erst eine sichtbare Anlagenliste schließen, danach den PDF-Tab.
+  Tab := FTabs.ActivePage;
+  if Tab = nil then Exit;
+  for I := 0 to Tab.ControlCount - 1 do
+    if Tab.Controls[I] is TPDFBrowserForm then
+    begin
+      PDF := TPDFBrowserForm(Tab.Controls[I]);
+      if (PDF.AttachmentWindowHandle <> 0) and
+         IsWindow(PDF.AttachmentWindowHandle) and
+         IsWindowVisible(PDF.AttachmentWindowHandle) then
+      begin
+        ShowWindow(PDF.AttachmentWindowHandle, SW_HIDE);
+        SetWindowPos(PDF.AttachmentWindowHandle, HWND_NOTOPMOST,
+          0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE);
+        Key := 0;
+        Exit;
+      end;
+      Break;
+    end;
+  CloseActive(Self);
+  Key := 0;
 end;
 
 procedure TPDFTabsForm.CloseActive(Sender: TObject);
@@ -1791,8 +1941,7 @@ begin
     // und kann das Registerkartenfenster nach hinten verdraengen.
     TempPDFFile := PDF.PDFFileName;
     PDF.Hide;
-    PDF.Parent := nil;
-    PDF.Close;
+    PDF.Free;
     if IsFreePDFTempAttachment(TempPDFFile) then
       ReleasePDFAttachmentTemp(TempPDFFile);
   end;
@@ -1904,7 +2053,6 @@ begin
     PDFTabsWindow := TPDFTabsForm.Create(Application);
   if not PDFTabsWindow.Visible then
   begin
-    PDFTabsWindow.LoadWindowSettings;
     PDFTabsWindow.Show;
   end
   else
@@ -1916,10 +2064,48 @@ begin
 end;
 
 procedure ShowPDFInTabs(APDF: TPDFBrowserForm);
+var
+  I, J: Integer;
+  Existing: TPDFBrowserForm;
+  Tab: TTabSheet;
+  RequestedFile, RequestedSearch: string;
 begin
+  if APDF = nil then Exit;
   if PDFTabsWindow = nil then
     PDFTabsWindow := TPDFTabsForm.Create(Application);
-  PDFTabsWindow.AddPDF(APDF);
+
+  // Zentraler Einstieg fuer ALLE Aufrufer: vorhandenes Viewerfenster
+  // wiederverwenden und bereits geoeffnete PDF-Dateien aktivieren.
+  RequestedFile := ExpandFileName(APDF.PDFFileName);
+  RequestedSearch := APDF.SearchTerm;
+  Existing := nil;
+  if PDFTabsWindow.FTabs <> nil then
+    for I := 0 to PDFTabsWindow.FTabs.PageCount - 1 do
+    begin
+      Tab := PDFTabsWindow.FTabs.Pages[I];
+      if SameText(ExpandFileName(Tab.Hint), RequestedFile) then
+      begin
+        for J := 0 to Tab.ControlCount - 1 do
+          if Tab.Controls[J] is TPDFBrowserForm then
+          begin
+            Existing := TPDFBrowserForm(Tab.Controls[J]);
+            Break;
+          end;
+        if Existing <> nil then Break;
+      end;
+    end;
+
+  if Existing <> nil then
+  begin
+    PDFTabsWindow.ActivatePDF(Existing);
+    if RequestedSearch <> '' then
+      Existing.SearchTerm := RequestedSearch;
+    // Der uebergebene Formularentwurf wird nicht mehr benoetigt.
+    APDF.Free;
+  end
+  else
+    PDFTabsWindow.AddPDF(APDF);
+
   // Auch beim Aufruf aus Hauptprogramm/Suche den PDF-Anzeiger aktivieren.
   // Keine dauerhafte TopMost-Einstellung: andere Fenster bleiben nutzbar.
   if not PDFTabsWindow.FInitialWindowOffscreen then

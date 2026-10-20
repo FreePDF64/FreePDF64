@@ -210,7 +210,7 @@ begin
     PDFBrowserForm := nil;
     for I := 0 to PDFDateien.Count - 1 do
     begin
-      PDFBrowserForm := TPDFBrowserForm.Create(Application);
+      PDFBrowserForm := TPDFBrowserForm.Create(nil);
       PDFBrowserForm.PDFFileName := PDFDateien[I];
       PDFBrowserForm.StandalonePDFMode := False;
       PDFTabsWindow.AddPDF(PDFBrowserForm);

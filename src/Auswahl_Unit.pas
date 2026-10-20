@@ -293,7 +293,7 @@ begin
       end else
       begin
         // PDF als Registerkarte im vorhandenen PDF-Anzeigefenster oeffnen.
-        PDFForm := TPDFBrowserForm.Create(Application);
+        PDFForm := TPDFBrowserForm.Create(nil);
         PDFForm.PDFFileName := Auswahl;
         ShowPDFInTabs(PDFForm);
 
