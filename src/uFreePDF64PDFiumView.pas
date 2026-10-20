@@ -1121,65 +1121,83 @@ end;
 
 procedure TFreePDF64PDFiumView.LayoutToolbar(Sender: TObject);
 var
-  X, RightX, Gap, W: Integer;
+  X, RightX, Gap, W, H, ButtonH, EditH, LabelY, ButtonY, EditY: Integer;
   Compact: Boolean;
+  function Px(AValue: Integer): Integer;
+  begin
+    Result := MulDiv(AValue, CurrentPPI, 96);
+  end;
+  procedure PlaceButton(AButton: TButton; AWidth: Integer);
+  begin
+    AButton.SetBounds(X, ButtonY, Px(AWidth), ButtonH);
+    Inc(X, Px(AWidth) + Gap);
+  end;
 begin
   if (FBar = nil) or (FInfo = nil) or (FEditBar = nil) then Exit;
+  // VCL skaliert Schrift und Bedienelemente bei 4K/WQHD. Die bisherige
+  // feste Leistenhoehe von 36 Pixeln schnitt dabei die Steuerelemente ab.
+  ButtonH := Max(Px(28), Max(Px(14), Abs(FBar.Font.Height)) + Px(12));
+  EditH := Max(Px(26), Max(Px(14), Abs(FBar.Font.Height)) + Px(9));
+  H := Max(ButtonH, EditH) + Px(10);
+  if FBar.Height <> H then FBar.Height := H;
+  if FEditBar.Visible and (FEditBar.Height <> H) then FEditBar.Height := H;
   W := FBar.ClientWidth;
   if W < 1 then Exit;
-  Compact := W < 1080;
-  if Compact then Gap := 4 else Gap := 7;
-  X := 8;
-  FOutlineButton.SetBounds(X, 4, 36, 28); Inc(X, 36 + Gap);
-  FPrev.SetBounds(X, 4, 60, 28); Inc(X, 60 + Gap);
-  FNext.SetBounds(X, 4, 60, 28); Inc(X, 60 + Gap);
-  FStatus.SetBounds(X, 11, 145, 18); Inc(X, 145 + Gap);
-  FPageEdit.SetBounds(X, 6, 44, 24); Inc(X, 44 + Gap);
-  FGoPage.SetBounds(X, 4, 72, 28); Inc(X, 72 + Gap + 10);
-  FMinus.SetBounds(X, 4, 32, 28); Inc(X, 32 + Gap);
-  FPlus.SetBounds(X, 4, 32, 28); Inc(X, 32 + Gap);
-  FZoomStatus.SetBounds(X, 11, 50, 18); Inc(X, 50 + Gap);
-  FFit.SetBounds(X, 4, 116, 28); Inc(X, 116 + Gap);
+  Compact := W < Px(1080);
+  if Compact then Gap := Px(4) else Gap := Px(7);
+  ButtonY := (H - ButtonH) div 2;
+  EditY := (H - EditH) div 2;
+  LabelY := (H - Max(Px(14), Abs(FBar.Font.Height))) div 2;
+  X := Px(8);
+  PlaceButton(FOutlineButton, 36);
+  PlaceButton(FPrev, 60);
+  PlaceButton(FNext, 60);
+  FStatus.SetBounds(X, LabelY, Px(145), Px(22)); Inc(X, Px(145) + Gap);
+  FPageEdit.SetBounds(X, EditY, Px(44), EditH); Inc(X, Px(44) + Gap);
+  PlaceButton(FGoPage, 72);
+  Inc(X, Px(10));
+  PlaceButton(FMinus, 32);
+  PlaceButton(FPlus, 32);
+  FZoomStatus.SetBounds(X, LabelY, Px(50), Px(22)); Inc(X, Px(50) + Gap);
+  PlaceButton(FFit, 116);
   if Compact then
-    FViewSelect.SetBounds(X, 5, 128, 26)
+    FViewSelect.SetBounds(X, EditY, Px(128), EditH)
   else
-    FViewSelect.SetBounds(X, 5, 156, 26);
+    FViewSelect.SetBounds(X, EditY, Px(156), EditH);
   Inc(X, FViewSelect.Width + Gap);
 
-  RightX := W - 8;
-  FHelp.SetBounds(RightX - 34, 4, 34, 28);
-  FPrint.SetBounds(FHelp.Left - 86 - Gap, 4, 86, 28);
-  FQuickSave.SetBounds(FPrint.Left - 135 - Gap, 4, 135, 28);
-  FInfo.SetBounds(FQuickSave.Left - 34 - Gap, 4, 34, 28);
+  RightX := W - Px(8);
+  FHelp.SetBounds(RightX - Px(34), ButtonY, Px(34), ButtonH);
+  FPrint.SetBounds(FHelp.Left - Px(86) - Gap, ButtonY, Px(86), ButtonH);
+  FQuickSave.SetBounds(FPrint.Left - Px(135) - Gap, ButtonY, Px(135), ButtonH);
+  FInfo.SetBounds(FQuickSave.Left - Px(34) - Gap, ButtonY, Px(34), ButtonH);
   if FEditToggle.Parent = FBar then
-    FEditToggle.SetBounds(FInfo.Left - 104 - Gap, 4, 104, 28);
-  // Bei geringer Breite bleibt die Seitennavigation vorrangig.
+    FEditToggle.SetBounds(FInfo.Left - Px(104) - Gap, ButtonY, Px(104), ButtonH);
   FViewSelect.Visible := FViewSelect.Left + FViewSelect.Width + Gap < FInfo.Left;
   FFit.Visible := FFit.Left + FFit.Width + Gap < FInfo.Left;
   if not FFit.Visible then FViewSelect.Visible := False;
-  // Die Doppelseitenumschaltung bleibt auch bei kleinerer Breite erreichbar.
   if FViewSelect.Visible then
     X := FViewSelect.Left + FViewSelect.Width + Gap
   else if FFit.Visible then
     X := FFit.Left + FFit.Width + Gap
   else
     X := FZoomStatus.Left + FZoomStatus.Width + Gap;
-  FTwoPageButton.SetBounds(X, 4, 82, 28);
-  FTwoPageButton.Visible := X + 82 + Gap < FInfo.Left;
-  Inc(X, 82 + Gap);
-  FFlowSelect.SetBounds(X, 5, 122, 26);
+  FTwoPageButton.SetBounds(X, ButtonY, Px(82), ButtonH);
+  FTwoPageButton.Visible := X + FTwoPageButton.Width + Gap < FInfo.Left;
+  Inc(X, FTwoPageButton.Width + Gap);
+  FFlowSelect.SetBounds(X, EditY, Px(122), EditH);
   FFlowSelect.Visible := FTwoPageButton.Visible and
     (X + FFlowSelect.Width + Gap < FInfo.Left);
 
-  X := 8;
-  FShapeSelect.SetBounds(X, 5, 116, 26); Inc(X, 116 + Gap);
-  FWidthSelect.SetBounds(X, 5, 84, 26); Inc(X, 84 + Gap);
-  FColorButton.SetBounds(X, 4, 108, 28); Inc(X, 108 + 5);
-  FColorSwatch.SetBounds(X, 8, 22, 20); Inc(X, 22 + 14);
-  FSave.SetBounds(X, 4, 153, 28);
-  // Bei schmalen Fenstern bleibt Speichern erreichbar, ohne den Rand zu verlassen.
-  if FSave.Left + FSave.Width > W - 8 then
-    FSave.Left := W - FSave.Width - 8;
+  X := Px(8);
+  FShapeSelect.SetBounds(X, EditY, Px(116), EditH); Inc(X, Px(116) + Gap);
+  FWidthSelect.SetBounds(X, EditY, Px(84), EditH); Inc(X, Px(84) + Gap);
+  FColorButton.SetBounds(X, ButtonY, Px(108), ButtonH); Inc(X, Px(113));
+  FColorSwatch.SetBounds(X, (H - Px(20)) div 2, Px(22), Px(20));
+  Inc(X, Px(36));
+  FSave.SetBounds(X, ButtonY, Px(153), ButtonH);
+  if FSave.Left + FSave.Width > W - Px(8) then
+    FSave.Left := Max(Px(8), W - FSave.Width - Px(8));
 end;
 
 function DetectPDFEncryptionQPDF(const APDFFile: string): string;
