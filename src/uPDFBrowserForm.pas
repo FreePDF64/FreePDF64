@@ -58,6 +58,7 @@ type
     procedure SetAttachmentIndicator(AHasAttachments: Boolean);
     procedure RequestPDFLoad;
     procedure ShowPDFSearch;
+    procedure NextPDFSearchMatch(ADirection: Integer);
     procedure SelectAllPDFText;
     procedure CopyPDFText;
     property PDFNavigationStarted: Boolean read FNavigationDone;
@@ -862,6 +863,12 @@ begin
   // Auch bei bereits geoeffneten PDFs die Suche sofort aktualisieren.
   if (FPDFiumView <> nil) and FNavigationSucceeded then
     FPDFiumView.SearchText(FSearchTerm);
+end;
+
+procedure TPDFBrowserForm.NextPDFSearchMatch(ADirection: Integer);
+begin
+  if (FPDFiumView <> nil) and FNavigationSucceeded then
+    FPDFiumView.NextSearchMatch(ADirection);
 end;
 
 procedure TPDFBrowserForm.ShowPDFSearch;

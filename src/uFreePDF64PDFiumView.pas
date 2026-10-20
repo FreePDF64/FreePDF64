@@ -153,6 +153,7 @@ type
     procedure PlaceEditButton(AParent: TWinControl; ALeft, ATop, AHeight: Integer);
     procedure ShowSearchDialog;
     procedure SearchText(const AText: string);
+    procedure NextSearchMatch(ADirection: Integer);
     procedure SelectAllText;
     procedure CopySelectedText;
     function ConfirmUnsaved: Boolean;
@@ -657,6 +658,11 @@ begin
   FTotalSearchMatches := Length(FCore.FindAllTextMatches(Term));
   if Assigned(FOnSearchCountChanged) then FOnSearchCountChanged(Self);
   SearchNext(1);
+end;
+
+procedure TFreePDF64PDFiumView.NextSearchMatch(ADirection: Integer);
+begin
+  SearchNext(ADirection);
 end;
 
 procedure TFreePDF64PDFiumView.SearchNext(ADirection: Integer);
@@ -2134,6 +2140,7 @@ var
   R: TRect;
   Overlay: TBitmap;
   Blend: TBlendFunction;
+  IsCurrent: Boolean;
 begin
   if (FFindTerm = '') or (APage < 0) then Exit;
   Img := PageImage(APage);
@@ -2150,9 +2157,19 @@ begin
     for M in Matches do
     begin
       if M.PageIndex <> APage then Continue;
-      // Alle Suchtreffer identisch darstellen, auch den ersten/aktuellen.
-      Overlay.Canvas.Pixels[0, 0] := RGB(255, 225, 60);
-      Blend.SourceConstantAlpha := 110;
+      // Alle Treffer gelb; der mit F3 aktive Treffer orange und umrandet.
+      IsCurrent := (M.PageIndex = FMatchPage) and
+        (M.CharIndex = FMatchChar) and (M.CharCount = FMatchCount);
+      if IsCurrent then
+      begin
+        Overlay.Canvas.Pixels[0, 0] := RGB(255, 150, 35);
+        Blend.SourceConstantAlpha := 145;
+      end
+      else
+      begin
+        Overlay.Canvas.Pixels[0, 0] := RGB(255, 225, 60);
+        Blend.SourceConstantAlpha := 110;
+      end;
       Boxes := FCore.MatchCharRects(APage, M.CharIndex, M.CharCount);
       for Box in Boxes do
       begin
@@ -2167,6 +2184,14 @@ begin
         Winapi.Windows.AlphaBlend(Img.Picture.Bitmap.Canvas.Handle,
           R.Left, R.Top, W, H, Overlay.Canvas.Handle,
           0, 0, 1, 1, Blend);
+        if IsCurrent then
+        begin
+          Img.Picture.Bitmap.Canvas.Brush.Style := bsClear;
+          Img.Picture.Bitmap.Canvas.Pen.Color := RGB(210, 95, 0);
+          Img.Picture.Bitmap.Canvas.Pen.Width := 2;
+          Img.Picture.Bitmap.Canvas.Rectangle(R.Left, R.Top, R.Right, R.Bottom);
+          Img.Picture.Bitmap.Canvas.Brush.Style := bsSolid;
+        end;
       end;
     end;
   finally

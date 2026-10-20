@@ -827,8 +827,6 @@ begin
   FOpenButton.Align := alLeft;
   FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
   FOpenButton.Caption := 'PDF-Datei öffnen ...';
-  FOpenButton.Hint := '... eine oder mehrere';
-  FOpenButton.ShowHint := True;
   FOpenButton.OnClick := OpenPDFClick;
   // Hauptprogramm im selben Prozess sichtbar machen.
   FMainProgramButton := TButton.Create(Self);
@@ -1821,6 +1819,24 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
 begin
+  // F3/Shift+F3 zentral behandeln, auch wenn eine Toolbar-Schaltfläche
+  // oder die Registerkarte den Tastaturfokus hat.
+  if (Message.CharCode = VK_F3) and (GetForegroundWindow = Handle) and
+     (GetKeyState(VK_CONTROL) >= 0) and (GetKeyState(VK_MENU) >= 0) then
+  begin
+    Tab := FTabs.ActivePage;
+    if Tab <> nil then
+      for I := 0 to Tab.ControlCount - 1 do
+        if Tab.Controls[I] is TPDFBrowserForm then
+        begin
+          PDF := TPDFBrowserForm(Tab.Controls[I]);
+          if GetKeyState(VK_SHIFT) < 0 then
+            PDF.NextPDFSearchMatch(-1)
+          else
+            PDF.NextPDFSearchMatch(1);
+          Exit(True);
+        end;
+  end;
   // Nur die aktive PDF-Anzeige darf diese Kürzel behandeln.
   // Keine globale Registrierung für Strg+A: so bleibt das Hauptprogramm unabhängig.
   if (GetForegroundWindow = Handle) and
