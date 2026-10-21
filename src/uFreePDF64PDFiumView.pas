@@ -73,6 +73,10 @@ type
     FFindTerm: string;
     FMatchPage, FMatchChar, FMatchCount: Integer;
     FTotalSearchMatches: Integer;
+    FSearchTimer: TTimer;
+    FSearchPage: Integer;
+    FSearchMatches: TArray<TPDFTextMatch>;
+    FSearchRunning: Boolean;
     FOnSearchCountChanged: TNotifyEvent;
     FWheelAccum: Integer;
     FMarker, FSave, FQuickSave: TButton;
@@ -98,6 +102,7 @@ type
     FFlowSelect: TComboBox;
     FTwoPageButton: TButton;
     FViewSelect: TComboBox;
+    procedure SearchTimerTick(Sender: TObject);
     procedure ToggleEditBar(Sender: TObject);
     procedure ToggleOutline(Sender: TObject);
     procedure OutlineTabClick(Sender: TObject);
@@ -120,6 +125,8 @@ type
     procedure InfoClick(Sender: TObject);
     function RequestPDFPassword(const AFileName: string; out APassword: string): Boolean;
     procedure SearchNext(ADirection: Integer);
+    function FindCachedSearchMatch(AStartPage, AStartChar, ADirection: Integer;
+      out APage, ACharIndex, ACharCount: Integer): Boolean;
     procedure ViewModeChange(Sender: TObject);
     procedure TwoPageClick(Sender: TObject);
     procedure FlowModeChange(Sender: TObject);
@@ -208,6 +215,12 @@ begin
   FMatchChar := -1;
   FMatchCount := 0;
   FTotalSearchMatches := 0;
+  FSearchPage := 0;
+  FSearchRunning := False;
+  FSearchTimer := TTimer.Create(Self);
+  FSearchTimer.Enabled := False;
+  FSearchTimer.Interval := 15;
+  FSearchTimer.OnTimer := SearchTimerTick;
   FZoom := 1.0;
   FFitMode := True;
   FViewMode := 1;
@@ -450,6 +463,7 @@ end;
 
 destructor TFreePDF64PDFiumView.Destroy;
 begin
+  if Assigned(FSearchTimer) then FSearchTimer.Enabled := False;
   if Assigned(FRenderTimer) then FRenderTimer.Enabled := False;
   FPreviewBitmap.Free;
   FCurrentStroke.Free;
@@ -669,13 +683,46 @@ begin
   FindClick(Self);
 end;
 
+procedure TFreePDF64PDFiumView.SearchTimerTick(Sender: TObject);
+var
+  PageMatches: TArray<TPDFTextMatch>;
+  I, N, Pg: Integer;
+begin
+  if not FSearchRunning then Exit;
+  if FSearchPage >= FCore.PageCount then
+  begin
+    FSearchRunning := False;
+    FSearchTimer.Enabled := False;
+    if Assigned(FOnSearchCountChanged) then FOnSearchCountChanged(Self);
+    Exit;
+  end;
+  Pg := FSearchPage;
+  Inc(FSearchPage);
+  // PDFium bleibt ausschliesslich im UI-Thread: keine konkurrierenden
+  // Dokumentzugriffe. Pro Tick nur eine Seite, daher kein 800-Seiten-Block.
+  PageMatches := FCore.FindTextMatchesOnPage(FFindTerm, Pg);
+  N := Length(FSearchMatches);
+  SetLength(FSearchMatches, N + Length(PageMatches));
+  for I := 0 to High(PageMatches) do
+    FSearchMatches[N + I] := PageMatches[I];
+  FTotalSearchMatches := Length(FSearchMatches);
+  if Assigned(FOnSearchCountChanged) then FOnSearchCountChanged(Self);
+  if (N = 0) and (Length(PageMatches) > 0) then SearchNext(1);
+end;
+
 procedure TFreePDF64PDFiumView.SearchText(const AText: string);
 var Term: string; PageIndex: Integer;
 begin
-  // Leerer Suchbegriff: alle Suchmarkierungen sofort entfernen.
   Term := Trim(AText);
+  FSearchTimer.Enabled := False;
+  FSearchRunning := False;
+  SetLength(FSearchMatches, 0);
+  FSearchPage := 0;
   if Term = '' then
   begin
+    FSearchTimer.Enabled := False;
+    FSearchRunning := False;
+    SetLength(FSearchMatches, 0);
     FFindTerm := '';
     FMatchPage := -1;
     FMatchChar := -1;
@@ -695,23 +742,52 @@ begin
     Exit;
   end;
   if FCore.PageCount = 0 then Exit;
-  if not SameText(Term, FFindTerm) then
-  begin
-    FMatchPage := -1;
-    FMatchChar := -1;
-    FMatchCount := 0;
-    // Alle bereits gerenderten Seiten werden nach dem Suchwechsel aktualisiert.
-    // Die Hervorhebungen entstehen anschließend in SearchNext neu.
-  end;
+  FMatchPage := -1;
+  FMatchChar := -1;
+  FMatchCount := 0;
   FFindTerm := Term;
-  FTotalSearchMatches := Length(FCore.FindAllTextMatches(Term));
+  FTotalSearchMatches := 0;
   if Assigned(FOnSearchCountChanged) then FOnSearchCountChanged(Self);
-  SearchNext(1);
+  FSearchRunning := True;
+  FSearchTimer.Enabled := True;
 end;
 
 procedure TFreePDF64PDFiumView.NextSearchMatch(ADirection: Integer);
 begin
   SearchNext(ADirection);
+end;
+
+function TFreePDF64PDFiumView.FindCachedSearchMatch(
+  AStartPage, AStartChar, ADirection: Integer;
+  out APage, ACharIndex, ACharCount: Integer): Boolean;
+var
+  I, Selected: Integer;
+begin
+  Result := False;
+  Selected := -1;
+  if Length(FSearchMatches) = 0 then Exit;
+  if ADirection >= 0 then
+  begin
+    for I := 0 to High(FSearchMatches) do
+      if (FSearchMatches[I].PageIndex > AStartPage) or
+         ((FSearchMatches[I].PageIndex = AStartPage) and
+          (FSearchMatches[I].CharIndex >= AStartChar)) then
+      begin Selected := I; Break; end;
+    if Selected < 0 then Selected := 0;
+  end
+  else
+  begin
+    for I := High(FSearchMatches) downto 0 do
+      if (FSearchMatches[I].PageIndex < AStartPage) or
+         ((FSearchMatches[I].PageIndex = AStartPage) and
+          (FSearchMatches[I].CharIndex <= AStartChar)) then
+      begin Selected := I; Break; end;
+    if Selected < 0 then Selected := High(FSearchMatches);
+  end;
+  APage := FSearchMatches[Selected].PageIndex;
+  ACharIndex := FSearchMatches[Selected].CharIndex;
+  ACharCount := FSearchMatches[Selected].CharCount;
+  Result := True;
 end;
 
 procedure TFreePDF64PDFiumView.SearchNext(ADirection: Integer);
@@ -729,7 +805,7 @@ begin
     if ADirection > 0 then StartChar := FMatchChar + Max(1, FMatchCount)
     else StartChar := FMatchChar - 1;
   end;
-  if FCore.FindTextMatch(FFindTerm, StartPg, StartChar, ADirection,
+  if FindCachedSearchMatch(StartPg, StartChar, ADirection,
     Pg, Idx, Cnt) then
   begin
     OldPage := FMatchPage;
@@ -738,7 +814,7 @@ begin
     FMatchCount := Cnt;
     // Alle sichtbaren Seiten neu rendern: jeder Treffer wird hervorgehoben.
     for OldPage := 0 to High(FLoadedPages) do
-      if FLoadedPages[OldPage] then
+      if FLoadedPages[OldPage] and (Abs(OldPage - Pg) <= 2) then
       begin
         FCore.RenderPage(OldPage, PageImage(OldPage).Picture.Bitmap,
           PageImage(OldPage).Width, PageImage(OldPage).Height);
@@ -1081,6 +1157,9 @@ begin
     FSelecting := False;
     FSelAnchorPage := -1;
     FSelFocusPage := -1;
+    FSearchTimer.Enabled := False;
+    FSearchRunning := False;
+    SetLength(FSearchMatches, 0);
     FFindTerm := '';
     FMatchPage := -1;
     FMatchChar := -1;
@@ -1181,6 +1260,7 @@ begin
   ThumbAreaResize(nil);
   UpdateThumbnailSelection;
   FThumbNext := 0;
+  FThumbTimer.Interval := 120;
   FThumbTimer.Enabled := FThumbImages.Count > 0;
 end;
 
@@ -1207,20 +1287,27 @@ procedure TFreePDF64PDFiumView.ThumbTimerTick(Sender: TObject);
 var
   Img: TImage;
   Bmp: TBitmap;
+  I, TopY, BottomY: Integer;
+  Pt: TPoint;
 begin
-  if FThumbNext >= FThumbImages.Count then
+  if (FThumbScroll = nil) or not FThumbScroll.Visible then Exit;
+  // Nur Miniaturen im sichtbaren Bereich rendern, statt 800 Seiten
+  // unnoetig im Hintergrund zu erzeugen.
+  for I := 0 to FThumbImages.Count - 1 do
   begin
-    FThumbTimer.Enabled := False;
-    Exit;
-  end;
-  Img := TImage(FThumbImages[FThumbNext]);
-  Inc(FThumbNext);
-  Bmp := TBitmap.Create;
-  try
-    FCore.RenderPage(Img.Tag, Bmp, Img.Width, Img.Height);
-    Img.Picture.Bitmap.Assign(Bmp);
-  finally
-    Bmp.Free;
+    Img := TImage(FThumbImages[I]);
+    if not Img.Picture.Bitmap.Empty then Continue;
+    Pt := FThumbScroll.ScreenToClient(Img.ClientToScreen(Point(0, 0)));
+    TopY := Pt.Y;
+    BottomY := TopY + Img.Height;
+    if (BottomY < -200) or (TopY > FThumbScroll.ClientHeight + 200) then
+      Continue;
+    Bmp := TBitmap.Create;
+    try
+      FCore.RenderPage(Img.Tag, Bmp, Img.Width, Img.Height);
+      Img.Picture.Bitmap.Assign(Bmp);
+    finally Bmp.Free; end;
+    Break; // Eine Miniatur je Tick, damit die VCL reagiert.
   end;
 end;
 
@@ -2429,7 +2516,7 @@ begin
   if (FFindTerm = '') or (APage < 0) then Exit;
   Img := PageImage(APage);
   if (Img = nil) or Img.Picture.Bitmap.Empty then Exit;
-  Matches := FCore.FindAllTextMatches(FFindTerm);
+  Matches := FSearchMatches;
   if Length(Matches) = 0 then Exit;
   Overlay := TBitmap.Create;
   try

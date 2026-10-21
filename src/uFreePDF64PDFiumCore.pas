@@ -1,4 +1,4 @@
-﻿unit uFreePDF64PDFiumCore;
+unit uFreePDF64PDFiumCore;
 
 interface
 
@@ -36,6 +36,9 @@ type
   TFreePDF64PDFiumCore = class
   private
     FDocument: Pointer;
+    FSearchTerm: string;
+    FSearchCache: TArray<TPDFTextMatch>;
+    FSearchCacheValid: Boolean;
     FFileName: string;
     FPageCount: Integer;
     FStrokes: TObjectList<TPDFInkStroke>;
@@ -45,6 +48,7 @@ type
     FUndoWasModified: Boolean;
     FHasUndo: Boolean;
     FUndoSource: string;
+    procedure InvalidateSearchCache;
   public
     constructor Create;
     destructor Destroy; override;
@@ -71,6 +75,7 @@ type
     function PageSize(APageIndex: Integer; out AWidth, AHeight: Single): Boolean;
     function FindTextPage(const AText: string; AStartPage: Integer): Integer;
     function FindAllTextMatches(const AText: string): TArray<TPDFTextMatch>;
+    function FindTextMatchesOnPage(const AText: string; APage: Integer): TArray<TPDFTextMatch>;
     function MatchCharRects(APage, ACharIndex, ACharCount: Integer): TArray<TPDFInkRect>;
     function TextCharAt(APage: Integer; AX, AY: Double): Integer;
     function TextCharCount(APage: Integer): Integer;
@@ -298,8 +303,16 @@ begin
   inherited Destroy;
 end;
 
+procedure TFreePDF64PDFiumCore.InvalidateSearchCache;
+begin
+  FSearchCacheValid := False;
+  FSearchTerm := '';
+  SetLength(FSearchCache, 0);
+end;
+
 procedure TFreePDF64PDFiumCore.CloseFile;
 begin
+  InvalidateSearchCache;
   if FDocument <> nil then
   begin
     FPDF_CloseDocument(FDocument);
@@ -485,6 +498,7 @@ begin
     end;
   end;
   FModified := True;
+  InvalidateSearchCache;
 end;
 
 procedure TFreePDF64PDFiumCore.DeletePages(const APageIndices: TArray<Integer>);
@@ -737,48 +751,68 @@ begin
   finally FPDF_ClosePage(P); end;
 end;
 
-function TFreePDF64PDFiumCore.FindAllTextMatches(
-  const AText: string): TArray<TPDFTextMatch>;
+function TFreePDF64PDFiumCore.FindTextMatchesOnPage(
+  const AText: string; APage: Integer): TArray<TPDFTextMatch>;
 var
-  Pg, Idx, Cnt, N: Integer;
+  Idx, Cnt, N: Integer;
   P, TP, H: Pointer;
   M: TPDFTextMatch;
 begin
   SetLength(Result, 0);
-  if (FDocument = nil) or (Trim(AText) = '') then Exit;
+  if (FDocument = nil) or (AText = '') or (APage < 0) or
+     (APage >= FPageCount) then Exit;
+  P := FPDF_LoadPage(FDocument, APage);
+  if P = nil then Exit;
+  try
+    TP := FPDFText_LoadPage(P);
+    if TP = nil then Exit;
+    try
+      H := FPDFText_FindStart(TP, PWideChar(AText), 0, 0);
+      if H = nil then Exit;
+      try
+        while FPDFText_FindNext(H) <> 0 do
+        begin
+          Idx := FPDFText_GetSchResultIndex(H);
+          Cnt := FPDFText_GetSchCount(H);
+          if (Idx < 0) or (Cnt <= 0) then Continue;
+          M.PageIndex := APage;
+          M.CharIndex := Idx;
+          M.CharCount := Cnt;
+          N := Length(Result);
+          SetLength(Result, N + 1);
+          Result[N] := M;
+        end;
+      finally FPDFText_FindClose(H); end;
+    finally FPDFText_ClosePage(TP); end;
+  finally FPDF_ClosePage(P); end;
+end;
+
+function TFreePDF64PDFiumCore.FindAllTextMatches(
+  const AText: string): TArray<TPDFTextMatch>;
+var
+  Pg, N, I: Integer;
+  PageMatches: TArray<TPDFTextMatch>;
+begin
+  if FSearchCacheValid and (FSearchTerm = AText) then
+    Exit(Copy(FSearchCache));
+  SetLength(FSearchCache, 0);
+  FSearchCacheValid := False;
+  if (FDocument = nil) or (Trim(AText) = '') then
+  begin
+    SetLength(Result, 0);
+    Exit;
+  end;
   for Pg := 0 to FPageCount - 1 do
   begin
-    P := FPDF_LoadPage(FDocument, Pg);
-    if P = nil then Continue;
-    try
-      TP := FPDFText_LoadPage(P);
-      if TP = nil then Continue;
-      try
-        H := FPDFText_FindStart(TP, PWideChar(AText), 0, 0);
-        if H = nil then Continue;
-        try
-          while FPDFText_FindNext(H) <> 0 do
-          begin
-            Idx := FPDFText_GetSchResultIndex(H);
-            Cnt := FPDFText_GetSchCount(H);
-            if (Idx < 0) or (Cnt <= 0) then Continue;
-            M.PageIndex := Pg;
-            M.CharIndex := Idx;
-            M.CharCount := Cnt;
-            N := Length(Result);
-            SetLength(Result, N + 1);
-            Result[N] := M;
-          end;
-        finally
-          FPDFText_FindClose(H);
-        end;
-      finally
-        FPDFText_ClosePage(TP);
-      end;
-    finally
-      FPDF_ClosePage(P);
-    end;
+    PageMatches := FindTextMatchesOnPage(AText, Pg);
+    N := Length(FSearchCache);
+    SetLength(FSearchCache, N + Length(PageMatches));
+    for I := 0 to High(PageMatches) do
+      FSearchCache[N + I] := PageMatches[I];
   end;
+  FSearchTerm := AText;
+  FSearchCacheValid := True;
+  Result := Copy(FSearchCache);
 end;
 
 function TFreePDF64PDFiumCore.FindTextMatch(const AText: string;
