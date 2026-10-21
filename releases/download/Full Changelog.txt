@@ -1,5 +1,5 @@
 21.10.2026 V8.0
-Neu -> Umbau des FreePDF64-Viewers von WebView4Delphi zu PDFium, inkl. Markierungsfunktionen, bessere Textsuche, etc.!
+Neu -> Umbau des FreePDF64-Viewers von WebView4Delphi zu PDFium, inkl. Markierungsfunktionen, bessere Textsuche, Löschen/Drehen von PDF-Seiten in der Miniaturansicht, etc.!
 19.10.2026 V7.2.0
 Neu -> Der FreePDF64-Viewer wurde umfangreich überarbeitet und zeigt nun alle Dateien in Registern an, ähnlich Browsern. Jetzt auch mit Tab-Suche und das Wiederherstellen von geschlossenen PDF-Dateien!
 14.10.2026 V7.1.3

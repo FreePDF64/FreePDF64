@@ -5,11 +5,18 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, Winapi.CommDlg, System.SysUtils, System.Classes, Vcl.Controls,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Printers, Vcl.Clipbrd, Vcl.ComCtrls, System.Generics.Collections, Math, System.Types, uFreePDF64PDFiumCore;
+  Vcl.Printers, Vcl.Clipbrd, Vcl.ComCtrls, Vcl.Menus, System.Generics.Collections, Math, System.Types, uFreePDF64PDFiumCore;
 
 type
   // TWinControl/VCL deklariert diese Events als protected.
   // Kleine Ableitungen machen sie fuer die programmatische Zuweisung zugaenglich.
+  // Zugriff auf die geschuetzten VCL-Eigenschaften fuer den Speicherstatus.
+  TPDFiumSaveButton = class(TButton)
+  public
+    property ParentBackground;
+    property Color;
+  end;
+
   TPDFiumScrollBox = class(TScrollBox)
   public
     property OnMouseWheel;
@@ -38,6 +45,9 @@ type
     FThumbTimer: TTimer;
     FThumbNext: Integer;
     FThumbImages: TList;
+    FThumbSelected: TList<Integer>;
+    FThumbAnchor: Integer;
+    FThumbMenu: TPopupMenu;
     FOutlineHeader: TPanel;
     FOutlineTitle: TLabel;
     FOutlineButton: TButton;
@@ -66,6 +76,7 @@ type
     FOnSearchCountChanged: TNotifyEvent;
     FWheelAccum: Integer;
     FMarker, FSave, FQuickSave: TButton;
+    FUndoMenuItem: TMenuItem;
     FShapeSelect: TComboBox;
     FWidthSelect: TComboBox;
     FColorButton: TButton;
@@ -91,6 +102,12 @@ type
     procedure ToggleOutline(Sender: TObject);
     procedure OutlineTabClick(Sender: TObject);
     procedure ThumbClick(Sender: TObject);
+    procedure ThumbMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+    procedure DeleteSelectedThumbs(Sender: TObject);
+    procedure RotateSelectedThumbs(Sender: TObject);
+    procedure UndoClick(Sender: TObject);
+    procedure ThumbMenuPopup(Sender: TObject);
+    procedure UpdateSaveState;
     procedure ThumbTimerTick(Sender: TObject);
     procedure ThumbAreaResize(Sender: TObject);
     procedure BuildThumbnails;
@@ -382,6 +399,26 @@ begin
   FThumbScroll.OnResize := ThumbAreaResize;
   FThumbScroll.OnMouseWheel := OutlineMouseWheel;
   FThumbImages := TList.Create;
+  FThumbSelected := TList<Integer>.Create;
+  FThumbAnchor := -1;
+  FThumbMenu := TPopupMenu.Create(Self);
+  FThumbMenu.Items.Add(TMenuItem.Create(FThumbMenu));
+  with FThumbMenu.Items[FThumbMenu.Items.Count - 1] do
+  begin
+    Caption := 'Ausgewählte Seite(n) löschen';
+    OnClick := DeleteSelectedThumbs;
+  end;
+  FThumbMenu.Items.Add(TMenuItem.Create(FThumbMenu));
+  with FThumbMenu.Items[FThumbMenu.Items.Count - 1] do
+  begin
+    Caption := 'Ausgewählte Seite(n) 90° im Uhrzeigersinn drehen';
+    OnClick := RotateSelectedThumbs;
+  end;
+  FUndoMenuItem := TMenuItem.Create(FThumbMenu);
+  FUndoMenuItem.Caption := 'Letzten Schritt rückgängig machen';
+  FUndoMenuItem.OnClick := UndoClick;
+  FThumbMenu.Items.Add(FUndoMenuItem);
+  FThumbMenu.OnPopup := ThumbMenuPopup;
   FThumbTimer := TTimer.Create(Self);
   FThumbTimer.Enabled := False;
   FThumbTimer.Interval := 35;
@@ -418,6 +455,7 @@ begin
   FCurrentStroke.Free;
   FPages.Free;
   if Assigned(FThumbTimer) then FThumbTimer.Enabled := False;
+  FThumbSelected.Free;
   FThumbImages.Free;
   FOutlineItems.Free;
   FCore.Free;
@@ -587,9 +625,12 @@ begin
     end;
   end;
   Password := '';
+  UpdateSaveState;
   FSelecting := False;
   FSelAnchorPage := -1;
   FSelFocusPage := -1;
+  FThumbSelected.Clear;
+  FThumbAnchor := -1;
   UpdateSecurityIcon;
   FFindTerm := '';
   FMatchPage := -1;
@@ -748,6 +789,12 @@ end;
 procedure TFreePDF64PDFiumView.PageKeyDown(Sender: TObject;
   var Key: Word; Shift: TShiftState);
 begin
+  if (Key = Ord('Z')) and (ssCtrl in Shift) then
+  begin
+    UndoClick(nil);
+    Key := 0;
+    Exit;
+  end;
   case Key of
     VK_F3: begin
       if ssShift in Shift then SearchNext(-1) else SearchNext(1);
@@ -894,9 +941,161 @@ begin
 end;
 
 procedure TFreePDF64PDFiumView.ThumbClick(Sender: TObject);
+var
+  Index, I, A, B: Integer;
+  Ctrl, ShiftDown: Boolean;
 begin
-  if Sender is TControl then
-    ShowPage(TControl(Sender).Tag);
+  if not (Sender is TControl) then Exit;
+  Index := TControl(Sender).Tag;
+  Ctrl := GetKeyState(VK_CONTROL) < 0;
+  ShiftDown := GetKeyState(VK_SHIFT) < 0;
+  if not Ctrl and not ShiftDown then FThumbSelected.Clear;
+  if ShiftDown and (FThumbAnchor >= 0) then
+  begin
+    A := Min(FThumbAnchor, Index);
+    B := Max(FThumbAnchor, Index);
+    for I := A to B do
+      if FThumbSelected.IndexOf(I) < 0 then FThumbSelected.Add(I);
+  end
+  else if Ctrl and (FThumbSelected.IndexOf(Index) >= 0) then
+    FThumbSelected.Remove(Index)
+  else if FThumbSelected.IndexOf(Index) < 0 then
+    FThumbSelected.Add(Index);
+  if not ShiftDown then FThumbAnchor := Index;
+  UpdateThumbnailSelection;
+  ShowPage(Index);
+end;
+
+procedure TFreePDF64PDFiumView.ThumbMouseDown(Sender: TObject;
+  Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  Index: Integer;
+begin
+  if (Button <> mbRight) or not (Sender is TControl) then Exit;
+  Index := TControl(Sender).Tag;
+  if FThumbSelected.IndexOf(Index) < 0 then
+  begin
+    FThumbSelected.Clear;
+    FThumbSelected.Add(Index);
+    FThumbAnchor := Index;
+  end;
+  UpdateThumbnailSelection;
+end;
+
+procedure TFreePDF64PDFiumView.UpdateSaveState;
+  procedure SetButtonState(B: TButton);
+  begin
+    if B = nil then Exit;
+    TPDFiumSaveButton(B).ParentBackground := False;
+    if FCore.Modified then
+    begin
+      TPDFiumSaveButton(B).Color := RGB(255, 175, 65);
+      B.Hint := 'Änderungen nicht gespeichert – Speichern unter erforderlich';
+    end
+    else
+    begin
+      TPDFiumSaveButton(B).Color := clBtnFace;
+      B.Hint := 'PDF-Kopie unter neuem Namen speichern';
+    end;
+    B.ShowHint := True;
+  end;
+begin
+  SetButtonState(FSave);
+  SetButtonState(FQuickSave);
+  if FUndoMenuItem <> nil then FUndoMenuItem.Enabled := FCore.CanUndo;
+end;
+
+procedure TFreePDF64PDFiumView.ThumbMenuPopup(Sender: TObject);
+begin
+  if FUndoMenuItem <> nil then
+    FUndoMenuItem.Enabled := FCore.CanUndo;
+end;
+
+procedure TFreePDF64PDFiumView.UndoClick(Sender: TObject);
+var
+  Target: Integer;
+begin
+  if not FCore.CanUndo then Exit;
+  Target := FPage;
+  try
+    FThumbTimer.Enabled := False;
+    FCore.UndoLast;
+    FPage := Max(0, Min(Target, FCore.PageCount - 1));
+    PaintPage;
+    PopulateOutline;
+    BuildThumbnails;
+    UpdateSaveState;
+  except
+    on E: Exception do MessageDlg('Rückgängig fehlgeschlagen: ' + E.Message,
+      mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TFreePDF64PDFiumView.RotateSelectedThumbs(Sender: TObject);
+var
+  Pages: TArray<Integer>;
+  I: Integer;
+begin
+  if FThumbSelected.Count = 0 then Exit;
+  Pages := FThumbSelected.ToArray;
+  try
+    FThumbTimer.Enabled := False;
+    FCore.BeginUndo;
+    for I := 0 to High(Pages) do
+      FCore.RotateInMemory(Pages[I] + 1, Pages[I] + 1, 90);
+    PaintPage;
+    PopulateOutline;
+    BuildThumbnails;
+    UpdateSaveState;
+  except
+    on E: Exception do MessageDlg('Drehen fehlgeschlagen: ' + E.Message,
+      mtError, [mbOK], 0);
+  end;
+end;
+
+procedure TFreePDF64PDFiumView.DeleteSelectedThumbs(Sender: TObject);
+var
+  Pages: TArray<Integer>;
+  I, Target: Integer;
+begin
+  if FThumbSelected.Count = 0 then Exit;
+  if FThumbSelected.Count >= FCore.PageCount then
+  begin
+    MessageDlg('Mindestens eine Seite muss erhalten bleiben.', mtWarning, [mbOK], 0);
+    Exit;
+  end;
+  if MessageDlg(Format('%d ausgewählte PDF-Seite(n) entfernen?'+sLineBreak+
+     'Das Original bleibt unverändert. Dauerhaft wird die Änderung erst mit "Speichern unter ...".',
+     [FThumbSelected.Count]), mtConfirmation, [mbYes, mbNo], 0) <> mrYes then Exit;
+  Pages := FThumbSelected.ToArray;
+  Target := FPage;
+  for I := 0 to High(Pages) do
+    if Pages[I] <= Target then Dec(Target);
+  FThumbTimer.Enabled := False;
+  try
+    FCore.BeginUndo;
+    FCore.DeletePages(Pages);
+    FThumbSelected.Clear;
+    FThumbAnchor := -1;
+    FPage := Max(0, Min(FCore.PageCount - 1, Target));
+    FSelecting := False;
+    FSelAnchorPage := -1;
+    FSelFocusPage := -1;
+    FFindTerm := '';
+    FMatchPage := -1;
+    FMatchChar := -1;
+    FMatchCount := 0;
+    FTotalSearchMatches := 0;
+    if Assigned(FOnSearchCountChanged) then FOnSearchCountChanged(Self);
+    PaintPage;
+    PopulateOutline;
+    BuildThumbnails;
+    UpdateSaveState;
+  except
+    on E: Exception do
+      MessageDlg('Seiten konnten nicht entfernt werden: ' + E.Message,
+        mtError, [mbOK], 0);
+  end;
 end;
 
 procedure TFreePDF64PDFiumView.ThumbAreaResize(Sender: TObject);
@@ -936,6 +1135,8 @@ var
   W, PH: Single;
 begin
   FThumbTimer.Enabled := False;
+  FThumbSelected.Clear;
+  FThumbAnchor := -1;
   FThumbImages.Clear;
   while FThumbScroll.ControlCount > 0 do
     FThumbScroll.Controls[0].Free;
@@ -963,6 +1164,8 @@ begin
     Img.Center := True;
     Img.Tag := I;
     Img.OnClick := ThumbClick;
+    Img.OnMouseDown := ThumbMouseDown;
+    Img.PopupMenu := FThumbMenu;
     FThumbImages.Add(Img);
     Inc(Y, H + 5);
     Lab := TLabel.Create(FThumbScroll);
@@ -971,6 +1174,8 @@ begin
     Lab.SetBounds(93, Y, 70, 18);
     Lab.Tag := I;
     Lab.OnClick := ThumbClick;
+    Lab.OnMouseDown := ThumbMouseDown;
+    Lab.PopupMenu := FThumbMenu;
     Inc(Y, 29);
   end;
   ThumbAreaResize(nil);
@@ -989,7 +1194,9 @@ begin
     if FThumbScroll.Controls[I] is TShape then
     begin
       Border := TShape(FThumbScroll.Controls[I]);
-      if Border.Tag = FPage then
+      if FThumbSelected.IndexOf(Border.Tag) >= 0 then
+        Border.Pen.Color := clRed
+      else if Border.Tag = FPage then
         Border.Pen.Color := clHighlight
       else
         Border.Pen.Color := clWhite;
@@ -1113,6 +1320,9 @@ begin
     'Anlagen: Eingebettete Dateien anzeigen.' + sLineBreak +
     'Drehen: PDF-Seiten drehen.' + sLineBreak +
     'Dokumentinfo (i/Schloss): Eigenschaften und Sicherheit.' + sLineBreak +
+    'Seitenminiaturen: Rechtsklick zum Löschen ausgewählter Seiten.' + sLineBreak +
+    'Strg-Klick / Umschalt-Klick: Mehrere Seiten auswählen.' + sLineBreak +
+    'Gelöschte Seiten werden erst mit Speichern unter dauerhaft entfernt.' + sLineBreak +
     'Speichern unter: PDF als neue Datei speichern.' + sLineBreak +
     'Drucken: PDF ausdrucken.' + sLineBreak + sLineBreak +
     'TASTATUR' + sLineBreak +
@@ -1133,6 +1343,8 @@ procedure TFreePDF64PDFiumView.LayoutToolbar(Sender: TObject);
 var
   X, RightX, Gap, W, H, ButtonH, EditH, LabelY, ButtonY, EditY: Integer;
   Compact: Boolean;
+  EditButtonW: Integer;
+  MeasureBitmap: TBitmap;
   function Px(AValue: Integer): Integer;
   begin
     Result := MulDiv(AValue, CurrentPPI, 96);
@@ -1146,8 +1358,12 @@ begin
   if (FBar = nil) or (FInfo = nil) or (FEditBar = nil) then Exit;
   // VCL skaliert Schrift und Bedienelemente bei 4K/WQHD. Die bisherige
   // feste Leistenhoehe von 36 Pixeln schnitt dabei die Steuerelemente ab.
-  ButtonH := Max(Px(28), Max(Px(14), Abs(FBar.Font.Height)) + Px(12));
-  EditH := Max(Px(26), Max(Px(14), Abs(FBar.Font.Height)) + Px(9));
+  // Native VCL-Comboboxen legen ihre geschlossene Hoehe selbst fest.
+  // Diese tatsaechliche Hoehe als Referenz fuer alle Steuerelemente nehmen.
+  // Keine OwnerDraw-Umstellung und keine erzwungene ComboBox.Height.
+  ButtonH := FFlowSelect.Height;
+  if ButtonH < Px(24) then ButtonH := Px(24);
+  EditH := ButtonH;
   H := Max(ButtonH, EditH) + Px(10);
   if FBar.Height <> H then FBar.Height := H;
   if FEditBar.Visible and (FEditBar.Height <> H) then FEditBar.Height := H;
@@ -1181,8 +1397,18 @@ begin
   FPrint.SetBounds(FHelp.Left - Px(86) - Gap, ButtonY, Px(86), ButtonH);
   FQuickSave.SetBounds(FPrint.Left - Px(135) - Gap, ButtonY, Px(135), ButtonH);
   FInfo.SetBounds(FQuickSave.Left - Px(34) - Gap, ButtonY, Px(34), ButtonH);
+  // Breite aus dem tatsaechlichen Text inklusive Pfeil ermitteln.
+  // Auch bei 4K und geaenderter Systemschrift darf nichts abgeschnitten werden.
+  MeasureBitmap := TBitmap.Create;
+  try
+    MeasureBitmap.Canvas.Font.Assign(FEditToggle.Font);
+    EditButtonW := Max(Px(110),
+      MeasureBitmap.Canvas.TextWidth('Bearbeiten ▼') + Px(30));
+  finally
+    MeasureBitmap.Free;
+  end;
   if FEditToggle.Parent = FBar then
-    FEditToggle.SetBounds(FInfo.Left - Px(104) - Gap, ButtonY, Px(104), ButtonH);
+    FEditToggle.SetBounds(FInfo.Left - EditButtonW - Gap, ButtonY, EditButtonW, ButtonH);
   FViewSelect.Visible := FViewSelect.Left + FViewSelect.Width + Gap < FInfo.Left;
   FFit.Visible := FFit.Left + FFit.Width + Gap < FInfo.Left;
   if not FFit.Visible then FViewSelect.Visible := False;
@@ -1311,10 +1537,14 @@ var
   CloseBtn: TButton;
   Stream: TFileStream;
   Bytes: Int64;
-  RowY: Integer;
+  RowY, RowStep, FieldHeight, DialogW, DialogH: Integer;
   PW, PH: Single;
   PageSizeText, VersionText, FilePath, OrientationText: string;
   PDFWindow: TCustomForm;
+  function P(N: Integer): Integer;
+  begin
+    Result := MulDiv(N, Screen.PixelsPerInch, 96);
+  end;
   function DisplayValue(const S: string): string;
   begin
     Result := Trim(S);
@@ -1334,27 +1564,28 @@ var
   procedure AddSection(const ACaption: string);
   var Sep: TBevel;
   begin
-    if RowY > 100 then
+    if RowY > P(100) then
     begin
       Sep := TBevel.Create(Dlg);
       Sep.Parent := Dlg;
       Sep.Shape := bsTopLine;
-      Sep.SetBounds(26, RowY + 3, 430, 2);
-      Inc(RowY, 24);
+      Sep.SetBounds(P(26), RowY + P(3), P(430), P(2));
+      Inc(RowY, P(15));
     end;
     SectionTitle := TLabel.Create(Dlg);
     SectionTitle.Parent := Dlg;
     SectionTitle.Caption := ACaption;
     SectionTitle.Font.Style := [fsBold];
-    SectionTitle.SetBounds(26, RowY, 420, 24);
-    Inc(RowY, 32);
+    SectionTitle.SetBounds(P(26), RowY, P(420), FieldHeight);
+    Inc(RowY, RowStep + P(2));
   end;
   procedure AddField(const ACaption, AValue: string);
   begin
     Lab := TLabel.Create(Dlg);
     Lab.Parent := Dlg;
     Lab.Caption := ACaption;
-    Lab.SetBounds(26, RowY, 150, 20);
+    Lab.AutoSize := False;
+    Lab.SetBounds(P(26), RowY, P(150), FieldHeight);
     Val := TLabel.Create(Dlg);
     Val.Parent := Dlg;
     Val.AutoSize := False;
@@ -1362,8 +1593,8 @@ var
     Val.Caption := DisplayValue(AValue);
     Val.Hint := AValue;
     Val.ShowHint := True;
-    Val.SetBounds(180, RowY, 275, 20);
-    Inc(RowY, 29);
+    Val.SetBounds(P(180), RowY, P(275), FieldHeight);
+    Inc(RowY, RowStep);
   end;
 begin
   if FCore.PageCount <= 0 then Exit;
@@ -1396,20 +1627,26 @@ begin
     Dlg.Caption := 'Dokumenteigenschaften';
     Dlg.BorderStyle := bsDialog;
     Dlg.Position := poDesigned;
-    Dlg.Left := PDFWindow.Left + (PDFWindow.Width - 485) div 2;
-    Dlg.Top := PDFWindow.Top + (PDFWindow.Height - 960) div 2;
+    DialogW := P(485);
+    DialogH := P(920);
+    Dlg.Left := PDFWindow.Left + (PDFWindow.Width - DialogW) div 2;
+    Dlg.Top := PDFWindow.Top + (PDFWindow.Height - DialogH) div 2;
     if Dlg.Left < Screen.WorkAreaLeft then Dlg.Left := Screen.WorkAreaLeft;
     if Dlg.Top < Screen.WorkAreaTop then Dlg.Top := Screen.WorkAreaTop;
-    Dlg.ClientWidth := 485;
-    Dlg.ClientHeight := 920;
+    Dlg.ClientWidth := DialogW;
+    Dlg.ClientHeight := DialogH;
     Dlg.Font.Name := 'Segoe UI';
     Dlg.Font.Size := 9;
+    // Die Schrift ist bereits durch VCL/Windows DPI-skaliert.
+    // Keine zweite DPI-Multiplikation auf die Zeilenhoehe anwenden.
+    FieldHeight := Dlg.Canvas.TextHeight('Ag') + 4;
+    RowStep := FieldHeight + 5;
     Header := TLabel.Create(Dlg);
     Header.Parent := Dlg;
     Header.Caption := 'Dokumenteigenschaften';
     Header.Font.Size := 16;
-    Header.SetBounds(26, 22, 430, 36);
-    RowY := 85;
+    Header.SetBounds(P(26), P(22), P(430), P(36));
+    RowY := P(85);
     AddSection('Beschreibung');
     AddField('Dateiname:', ExtractFileName(FilePath));
     AddField('Dateigröße:', FormatFloat('#,##0', Bytes / 1024) + ' KB');
@@ -1469,7 +1706,14 @@ begin
     CloseBtn.ModalResult := mrCancel;
     CloseBtn.Default := True;
     CloseBtn.Cancel := True;  // ESC schliesst den modalen Dialog
-    CloseBtn.SetBounds(260, 864, 195, 35);
+    CloseBtn.SetBounds(P(260), RowY + P(15), P(195), P(35));
+    // Keine feste Mindesthoehe: der Dialog endet knapp unter dem Schliessen-Button.
+    Dlg.ClientHeight := CloseBtn.Top + CloseBtn.Height + P(16);
+    // Nach der endgueltigen Groessenberechnung erneut am PDF-Fenster ausrichten.
+    Dlg.Left := PDFWindow.Left + (PDFWindow.Width - Dlg.Width) div 2;
+    Dlg.Top := PDFWindow.Top + (PDFWindow.Height - Dlg.Height) div 2;
+    if Dlg.Left < Screen.WorkAreaLeft then Dlg.Left := Screen.WorkAreaLeft;
+    if Dlg.Top < Screen.WorkAreaTop then Dlg.Top := Screen.WorkAreaTop;
     Dlg.ShowModal;
   finally
     Dlg.Free;
@@ -1751,9 +1995,21 @@ begin
 end;
 
 procedure TFreePDF64PDFiumView.PlaceEditButton(AParent: TWinControl; ALeft, ATop, AHeight: Integer);
+var
+  MeasureBitmap: TBitmap;
+  ButtonWidth: Integer;
 begin
   FEditToggle.Parent := AParent;
-  FEditToggle.SetBounds(ALeft, ATop, 110, AHeight);
+  MeasureBitmap := TBitmap.Create;
+  try
+    MeasureBitmap.Canvas.Font.Assign(FEditToggle.Font);
+    ButtonWidth := Max(MulDiv(110, FEditToggle.CurrentPPI, 96),
+      MeasureBitmap.Canvas.TextWidth('Bearbeiten ▼') +
+      MulDiv(30, FEditToggle.CurrentPPI, 96));
+  finally
+    MeasureBitmap.Free;
+  end;
+  FEditToggle.SetBounds(ALeft, ATop, ButtonWidth, AHeight);
   FEditToggle.BringToFront;
 end;
 
@@ -2252,6 +2508,8 @@ begin
           FCore.SaveAs(D.FileName)
         else if not CopyFile(PChar(FCore.FileName), PChar(D.FileName), False) then
           RaiseLastOSError;
+        FCore.ClearUndo;
+        UpdateSaveState;
         MessageDlg('PDF gespeichert: ' + D.FileName, mtInformation, [mbOK], 0);
       except
         on E: Exception do MessageDlg('Speichern fehlgeschlagen: ' + E.Message,

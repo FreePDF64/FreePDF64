@@ -41,6 +41,10 @@ type
     FStrokes: TObjectList<TPDFInkStroke>;
     FStrokePages: TList<Integer>;
     FModified: Boolean;
+    FUndoFile: string;
+    FUndoWasModified: Boolean;
+    FHasUndo: Boolean;
+    FUndoSource: string;
   public
     constructor Create;
     destructor Destroy; override;
@@ -50,6 +54,12 @@ type
       AWidth, AHeight: Integer; ARotation: Integer = 0);
     procedure AddStroke(APageIndex: Integer; APoints: TPDFInkStroke);
     procedure SaveAs(const AFileName: string);
+    procedure DeletePages(const APageIndices: TArray<Integer>);
+    procedure BeginUndo;
+    procedure UndoLast;
+    procedure ClearUndo;
+    procedure RotateInMemory(AFirstPage, ALastPage, AAngle: Integer);
+    property CanUndo: Boolean read FHasUndo;
     procedure RotatePages(AFirstPage, ALastPage, AAngle: Integer; const ATargetFile: string);
     function PagePointToDevice(APageIndex, AWidth, AHeight: Integer;
       AX, AY: Double; out X, Y: Integer): Boolean;
@@ -126,6 +136,7 @@ function FPDF_GetMetaText(Doc: Pointer; Tag: PAnsiChar; Buffer: Pointer;
   BufLen: Cardinal): Cardinal; stdcall; external 'pdfium.dll';
 function FPDF_LoadPage(Doc: Pointer; Index: Integer): Pointer; stdcall; external 'pdfium.dll';
 procedure FPDF_ClosePage(Page: Pointer); stdcall; external 'pdfium.dll';
+procedure FPDFPage_Delete(Doc: Pointer; PageIndex: Integer); stdcall; external 'pdfium.dll';
 function FPDFPage_GetRotation(Page: Pointer): Integer; stdcall; external 'pdfium.dll';
 procedure FPDFPage_SetRotation(Page: Pointer; Rotate: Integer); stdcall; external 'pdfium.dll';
 function FPDF_DeviceToPage(Page: Pointer; StartX, StartY, SizeX, SizeY, Rotate,
@@ -294,6 +305,7 @@ begin
     FPDF_CloseDocument(FDocument);
     FDocument := nil;
   end;
+  ClearUndo;
   FFileName := '';
   FPageCount := 0;
   FStrokes.Clear;
@@ -398,6 +410,121 @@ begin
   finally
     W.Stream.Free;
   end;
+end;
+
+procedure TFreePDF64PDFiumCore.ClearUndo;
+begin
+  FHasUndo := False;
+  if (FUndoFile <> '') and FileExists(FUndoFile) then
+    DeleteFile(FUndoFile);
+  FUndoFile := '';
+end;
+
+procedure TFreePDF64PDFiumCore.BeginUndo;
+var
+  Dir: array[0..MAX_PATH] of Char;
+  Tmp: array[0..MAX_PATH] of Char;
+  WasModified: Boolean;
+  Source: string;
+begin
+  if FDocument = nil then Exit;
+  ClearUndo;
+  WasModified := FModified;
+  Source := FFileName;
+  if (GetTempPath(MAX_PATH, Dir) = 0) or
+     (GetTempFileName(Dir, 'fpu', 0, Tmp) = 0) then RaiseLastOSError;
+  FUndoFile := string(Tmp);
+  try
+    SaveAs(FUndoFile);
+    FModified := WasModified;
+    FUndoWasModified := WasModified;
+    FUndoSource := Source;
+    FHasUndo := True;
+  except
+    ClearUndo;
+    raise;
+  end;
+end;
+
+procedure TFreePDF64PDFiumCore.UndoLast;
+var
+  Temp, Source: string;
+  WasModified: Boolean;
+begin
+  if not FHasUndo then Exit;
+  Temp := FUndoFile;
+  Source := FUndoSource;
+  WasModified := FUndoWasModified;
+  // Sicherungsdatei vor CloseFile vor automatischem Loeschen schuetzen.
+  FUndoFile := '';
+  FHasUndo := False;
+  OpenFile(Temp);
+  FFileName := Source;
+  FModified := WasModified;
+  // Die geoeffnete PDFium-Datei darf unter Windows noch referenziert sein.
+  FUndoFile := '';
+  FHasUndo := False;
+end;
+
+procedure TFreePDF64PDFiumCore.RotateInMemory(AFirstPage, ALastPage, AAngle: Integer);
+var
+  I: Integer;
+  Page: Pointer;
+begin
+  if (AFirstPage < 1) or (ALastPage > FPageCount) or
+     (AFirstPage > ALastPage) or (AAngle <> 90) then
+    raise EPDFiumViewer.Create('Ungueltiger Seitenbereich oder Drehwinkel.');
+  for I := AFirstPage - 1 to ALastPage - 1 do
+  begin
+    Page := FPDF_LoadPage(FDocument, I);
+    if Page = nil then raise EPDFiumViewer.Create('Seite konnte nicht gedreht werden.');
+    try
+      FPDFPage_SetRotation(Page, (FPDFPage_GetRotation(Page) + 1) mod 4);
+    finally
+      FPDF_ClosePage(Page);
+    end;
+  end;
+  FModified := True;
+end;
+
+procedure TFreePDF64PDFiumCore.DeletePages(const APageIndices: TArray<Integer>);
+var
+  I, J, N: Integer;
+  Selected: TArray<Boolean>;
+begin
+  if (FDocument = nil) or (Length(APageIndices) = 0) then Exit;
+  SetLength(Selected, FPageCount);
+  N := 0;
+  for I := 0 to High(APageIndices) do
+    if (APageIndices[I] >= 0) and (APageIndices[I] < FPageCount) and
+       not Selected[APageIndices[I]] then
+    begin
+      Selected[APageIndices[I]] := True;
+      Inc(N);
+    end;
+  if N = 0 then Exit;
+  if N >= FPageCount then
+    raise EPDFiumViewer.Create('Mindestens eine PDF-Seite muss erhalten bleiben.');
+  // Die gespeicherten Markierungen beziehen sich auf die bisherigen Seitenindizes.
+  for I := FStrokePages.Count - 1 downto 0 do
+  begin
+    if Selected[FStrokePages[I]] then
+    begin
+      FStrokePages.Delete(I);
+      FStrokes.Delete(I);
+    end
+    else
+    begin
+      J := 0;
+      for N := 0 to FStrokePages[I] - 1 do
+        if Selected[N] then Inc(J);
+      FStrokePages[I] := FStrokePages[I] - J;
+    end;
+  end;
+  for I := High(Selected) downto 0 do
+    if Selected[I] then FPDFPage_Delete(FDocument, I);
+  FPageCount := FPDF_GetPageCount(FDocument);
+  FModified := True;
 end;
 
 procedure TFreePDF64PDFiumCore.SaveAs(const AFileName: string);
