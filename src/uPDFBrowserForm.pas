@@ -61,6 +61,7 @@ type
     procedure NextPDFSearchMatch(ADirection: Integer);
     procedure SelectAllPDFText;
     procedure CopyPDFText;
+    procedure SetFullScreenDisplay(AEnabled: Boolean);
     property PDFNavigationStarted: Boolean read FNavigationDone;
     property PDFNavigationSucceeded: Boolean read FNavigationSucceeded;
     property TabbedPDFMode: Boolean read FTabbedPDFMode write FTabbedPDFMode;
@@ -70,6 +71,14 @@ type
   end;
 implementation
 {$R *.dfm}
+procedure TPDFBrowserForm.SetFullScreenDisplay(AEnabled: Boolean);
+begin
+  if FToolbar <> nil then
+    FToolbar.Visible := not AEnabled;
+  if FPDFiumView <> nil then
+    FPDFiumView.SetFullScreenDisplay(AEnabled);
+end;
+
 function TPDFBrowserForm.ExecuteQpdf(
   const ACommandLine: string;
   out AExitCode: DWORD): Boolean;
@@ -512,9 +521,9 @@ begin
   // --------------------------------------------------
   FFindButton := TButton.Create(Self);
   FFindButton.Parent := FToolbar;
-  FFindButton.Caption := 'Text suchen';
+  FFindButton.Caption := 'Text suchen (F3: weiter)';
   FFindButton.ShowHint := True;
-  FFindButton.Hint := 'Suchbegriff für diese PDF eingeben';
+  FFindButton.Hint := 'Strg+F: PDF-Text suchen | F3: nächster Treffer | Umschalt+F3: vorheriger Treffer';
   FFindButton.Left := 178;
   FFindButton.Top := 6;
   FFindButton.Width := 94;

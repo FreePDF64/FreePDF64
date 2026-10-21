@@ -13,6 +13,13 @@ type
   private
     FTabs: TPageControl;
     FEmptyTabStrip: TPanel;
+    FViewerHeader: TPanel;
+    FFullScreen: Boolean;
+    FFullScreenBounds: TRect;
+    FFullScreenWindowState: TWindowState;
+    FFullScreenBorderStyle: TFormBorderStyle;
+    FFullScreenTabsVisible: Boolean;
+    FFullScreenEmptyStripVisible: Boolean;
     FUpdatingTabLayout: Boolean;
     FOriginalTabsWindowProc: TWndMethod;
     FClosedPDFs: TStringList;
@@ -91,6 +98,7 @@ type
     procedure RememberNormalBounds;
     procedure CloseActive(Sender: TObject);
     procedure ViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure ToggleFullScreen;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
     function IsShortCut(var Message: TWMKey): Boolean; override;
     procedure CreateParams(var Params: TCreateParams); override;
@@ -823,6 +831,7 @@ begin
   Position := poDesigned;
   DoubleBuffered := True;
   Header := TPanel.Create(Self);
+  FViewerHeader := Header;
   Header.Parent := Self;
   Header.Align := alTop;
   Header.Height := ButtonHeight + MulDiv(6, Dpi, 96);
@@ -1874,6 +1883,19 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
 begin
+  // F11 auch dann erfassen, wenn eine Schaltfläche oder PDF-Seite den Fokus hat.
+  if (Message.CharCode = VK_F11) and (GetForegroundWindow = Handle) then
+  begin
+    ToggleFullScreen;
+    Exit(True);
+  end;
+  // ESC verlässt im Vollbild zuerst den Vollbildmodus, statt den Tab zu schließen.
+  if (Message.CharCode = VK_ESCAPE) and FFullScreen and
+     (GetForegroundWindow = Handle) then
+  begin
+    ToggleFullScreen;
+    Exit(True);
+  end;
   // F3/Shift+F3 zentral behandeln, auch wenn eine Toolbar-Schaltfläche
   // oder die Registerkarte den Tastaturfokus hat.
   if (Message.CharCode = VK_F3) and (GetForegroundWindow = Handle) and
@@ -1949,6 +1971,61 @@ begin
   Result := inherited IsShortCut(Message);
 end;
 
+procedure TPDFTabsForm.ToggleFullScreen;
+var
+  M: TMonitor;
+  I, J: Integer;
+  PDF: TPDFBrowserForm;
+begin
+  if not FFullScreen then
+  begin
+    FFullScreenBounds := BoundsRect;
+    FFullScreenWindowState := WindowState;
+    FFullScreenBorderStyle := BorderStyle;
+    FFullScreenTabsVisible := FTabs.Visible;
+    FFullScreenEmptyStripVisible := FEmptyTabStrip.Visible;
+    M := Screen.MonitorFromWindow(Handle);
+    if M = nil then M := Screen.PrimaryMonitor;
+    FFullScreen := True;
+    // Zuerst alle Leisten ausblenden, dann auf Monitorgröße umschalten.
+    for I := 0 to FTabs.PageCount - 1 do
+      for J := 0 to FTabs.Pages[I].ControlCount - 1 do
+        if FTabs.Pages[I].Controls[J] is TPDFBrowserForm then
+        begin
+          PDF := TPDFBrowserForm(FTabs.Pages[I].Controls[J]);
+          PDF.SetFullScreenDisplay(True);
+        end;
+    FViewerHeader.Visible := False;
+    FEmptyTabStrip.Visible := False;
+    // Die Tab-Reiter verschwinden, der Seiteninhalt bleibt erhalten.
+    FTabs.Style := tsButtons;
+    FTabs.TabHeight := 1;
+    WindowState := wsNormal;
+    BorderStyle := bsNone;
+    SetBounds(M.BoundsRect.Left, M.BoundsRect.Top,
+      M.BoundsRect.Right - M.BoundsRect.Left,
+      M.BoundsRect.Bottom - M.BoundsRect.Top);
+  end
+  else
+  begin
+    FFullScreen := False;
+    BorderStyle := FFullScreenBorderStyle;
+    FTabs.Style := tsTabs;
+    FTabs.TabHeight := 0;
+    FViewerHeader.Visible := True;
+    FEmptyTabStrip.Visible := FFullScreenEmptyStripVisible;
+    for I := 0 to FTabs.PageCount - 1 do
+      for J := 0 to FTabs.Pages[I].ControlCount - 1 do
+        if FTabs.Pages[I].Controls[J] is TPDFBrowserForm then
+        begin
+          PDF := TPDFBrowserForm(FTabs.Pages[I].Controls[J]);
+          PDF.SetFullScreenDisplay(False);
+        end;
+    BoundsRect := FFullScreenBounds;
+    WindowState := FFullScreenWindowState;
+  end;
+end;
+
 procedure TPDFTabsForm.ViewerKeyDown(Sender: TObject; var Key: Word;
   Shift: TShiftState);
 var
@@ -1956,6 +2033,18 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
 begin
+  if (Key = VK_F11) and (Shift = []) then
+  begin
+    ToggleFullScreen;
+    Key := 0;
+    Exit;
+  end;
+  if (Key = VK_ESCAPE) and FFullScreen then
+  begin
+    ToggleFullScreen;
+    Key := 0;
+    Exit;
+  end;
   if (Key <> VK_ESCAPE) or (Shift <> []) then Exit;
   // Erst eine sichtbare Anlagenliste schließen, danach den PDF-Tab.
   Tab := FTabs.ActivePage;

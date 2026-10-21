@@ -146,6 +146,7 @@ type
     destructor Destroy; override;
     procedure OpenPDF(const AFileName: string);
     procedure RefreshPDFDisplay;
+    procedure SetFullScreenDisplay(AEnabled: Boolean);
     procedure ReleasePDFForExternalChange;
     procedure RotatePages(AFirstPage, ALastPage, AAngle: Integer);
     procedure ShowPage(APage: Integer);
@@ -163,6 +164,13 @@ type
   end;
 
 implementation
+
+procedure TFreePDF64PDFiumView.SetFullScreenDisplay(AEnabled: Boolean);
+begin
+  // Nur die PDF-Seiten sichtbar lassen; den Bearbeitungszustand bewahren.
+  FBar.Visible := not AEnabled;
+  FEditBar.Visible := (not AEnabled) and FEditVisible;
+end;
 
 constructor TFreePDF64PDFiumView.CreateInParent(AOwner: TComponent; AParent: TWinControl);
   function Btn(const S: string; X, W: Integer; Handler: TNotifyEvent): TButton;
@@ -1109,7 +1117,9 @@ begin
     'Drucken: PDF ausdrucken.' + sLineBreak + sLineBreak +
     'TASTATUR' + sLineBreak +
     'Strg+Umschalt+A: Registerkartensuche.' + sLineBreak +
-    'ESC: Anlagenfenster oder aktiven PDF-Tab schließen.',
+    'F11: Vollbildmodus ein- oder ausschalten.' + sLineBreak +
+    'ESC im Vollbild: Zur normalen Fensteransicht zurückkehren.' + sLineBreak +
+    'ESC sonst: Anlagenfenster oder aktiven PDF-Tab schließen.',
     mtInformation, [mbOK]);
   try
     Dlg.Caption := 'FreePDF64-Viewer - Hilfe';
