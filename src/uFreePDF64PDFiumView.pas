@@ -58,6 +58,8 @@ type
     FLoadedPages: array of Boolean;
     FRenderTimer: TTimer;
     FLastScrollPosition: Integer;
+    FResizePending: Boolean;
+    FLastResizeTick: UInt64;
     FStrokePage: Integer;
     FBar: TPanel;
     FEditBar: TPanel;
@@ -1832,7 +1834,13 @@ end;
 
 procedure TFreePDF64PDFiumView.ResizeView(Sender: TObject);
 begin
-  if FFitMode and not FRendering and (FCore.PageCount > 0) then PaintPage;
+  // Nicht bei jeder Mausbewegung alle PDF-Seiten neu layouten/rendern.
+  // Der bestehende Render-Timer erledigt das nach einer kurzen Ruhephase.
+  if FFitMode and (FCore.PageCount > 0) then
+  begin
+    FLastResizeTick := GetTickCount64;
+    FResizePending := True;
+  end;
 end;
 
 function TFreePDF64PDFiumView.PageImage(AIndex: Integer): TPDFiumImage;
@@ -1879,6 +1887,19 @@ procedure TFreePDF64PDFiumView.RenderTimerTick(Sender: TObject);
 var PositionNow: Integer;
 begin
   if FRendering or (FCore.PageCount = 0) then Exit;
+  if FResizePending then
+  begin
+    // 320 ms nach der letzten Groessenaenderung neu rendern.
+    // Verhindert teure LayoutAllPages-Aufrufe bei jedem WM_SIZE.
+    if GetTickCount64 - FLastResizeTick < 320 then Exit;
+    FResizePending := False;
+    if FFitMode then
+    begin
+      PaintPage;
+      FLastScrollPosition := FScroll.VertScrollBar.Position;
+      Exit;
+    end;
+  end;
   PositionNow := FScroll.VertScrollBar.Position;
   if PositionNow <> FLastScrollPosition then
   begin
