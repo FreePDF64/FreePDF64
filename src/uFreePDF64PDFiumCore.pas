@@ -1,4 +1,4 @@
-unit uFreePDF64PDFiumCore;
+﻿unit uFreePDF64PDFiumCore;
 
 interface
 
@@ -19,6 +19,10 @@ type
     PageIndex: Integer;
     CharIndex: Integer;
     CharCount: Integer;
+  end;
+  TPDFLinkTarget = record
+    URI: string;
+    PageIndex: Integer; // -1 bei externem Link
   end;
   TPDFInkStroke = class(TList<TPDFInkPoint>)
   public
@@ -72,6 +76,8 @@ type
     property Modified: Boolean read FModified;
     property Strokes: TObjectList<TPDFInkStroke> read FStrokes;
     property StrokePages: TList<Integer> read FStrokePages;
+    function LinkAtPoint(APageIndex, AWidth, AHeight, X, Y: Integer;
+      out ATarget: TPDFLinkTarget): Boolean;
     function PageSize(APageIndex: Integer; out AWidth, AHeight: Single): Boolean;
     function FindTextPage(const AText: string; AStartPage: Integer): Integer;
     function FindAllTextMatches(const AText: string): TArray<TPDFTextMatch>;
@@ -123,6 +129,19 @@ function FPDFBookmark_GetTitle(Bookmark, Buffer: Pointer; BufLen: Cardinal): Car
 function FPDFBookmark_GetDest(Doc, Bookmark: Pointer): Pointer; stdcall; external 'pdfium.dll';
 function FPDFBookmark_GetAction(Bookmark: Pointer): Pointer; stdcall; external 'pdfium.dll';
 function FPDFAction_GetType(Action: Pointer): Cardinal; stdcall; external 'pdfium.dll';
+function FPDFLink_GetLinkAtPoint(Page: Pointer; X, Y: Double): Pointer; stdcall; external 'pdfium.dll';
+function FPDFLink_LoadWebLinks(TextPage: Pointer): Pointer; stdcall; external 'pdfium.dll';
+function FPDFLink_CountWebLinks(LinkPage: Pointer): Integer; stdcall; external 'pdfium.dll';
+function FPDFLink_GetURL(LinkPage: Pointer; LinkIndex: Integer;
+  Buffer: PWideChar; BufLen: Integer): Integer; stdcall; external 'pdfium.dll';
+function FPDFLink_CountRects(LinkPage: Pointer; LinkIndex: Integer): Integer; stdcall; external 'pdfium.dll';
+function FPDFLink_GetRect(LinkPage: Pointer; LinkIndex, RectIndex: Integer;
+  var Left, Top, Right, Bottom: Double): Integer; stdcall; external 'pdfium.dll';
+procedure FPDFLink_CloseWebLinks(LinkPage: Pointer); stdcall; external 'pdfium.dll';
+function FPDFText_GetUnicode(TextPage: Pointer; Index: Integer): Cardinal; stdcall; external 'pdfium.dll';
+function FPDFLink_GetAction(Link: Pointer): Pointer; stdcall; external 'pdfium.dll';
+function FPDFLink_GetDest(Doc, Link: Pointer): Pointer; stdcall; external 'pdfium.dll';
+function FPDFAction_GetURIPath(Doc, Action, Buffer: Pointer; BufLen: Cardinal): Cardinal; stdcall; external 'pdfium.dll';
 function FPDFAction_GetDest(Doc, Action: Pointer): Pointer; stdcall; external 'pdfium.dll';
 function FPDFDest_GetDestPageIndex(Doc, Dest: Pointer): Integer; stdcall; external 'pdfium.dll';
 
@@ -384,6 +403,164 @@ begin
       X, Y, AX, AY) <> 0;
   finally
     FPDF_ClosePage(P);
+  end;
+end;
+
+function TFreePDF64PDFiumCore.LinkAtPoint(APageIndex, AWidth, AHeight,
+  X, Y: Integer; out ATarget: TPDFLinkTarget): Boolean;
+var
+  Page, Link, Action, Dest, TP, Web: Pointer;
+  I, J, K, Hit, A, B, AtPos, DotPos: Integer;
+  L, T, R, Bottom, CL, CR, CB, CT, NL, NR, NB, NT: Double;
+  TextURL, Fragment: string;
+  C: Cardinal;
+  WBuf: array of WideChar;
+  PX, PY: Double;
+  N: Cardinal;
+  Buf: TBytes;
+  URL: UTF8String;
+begin
+  Result := False;
+  ATarget.URI := '';
+  ATarget.PageIndex := -1;
+  if (FDocument = nil) or (APageIndex < 0) or (APageIndex >= FPageCount) or
+     (AWidth <= 0) or (AHeight <= 0) then Exit;
+  Page := FPDF_LoadPage(FDocument, APageIndex);
+  if Page = nil then Exit;
+  try
+    if FPDF_DeviceToPage(Page, 0, 0, AWidth, AHeight, 0,
+      X, Y, PX, PY) = 0 then Exit;
+    Link := FPDFLink_GetLinkAtPoint(Page, PX, PY);
+    if Link = nil then
+    begin
+      // Automatisch erkannte URLs sind oft keine PDF-Link-Annotationen.
+      TP := FPDFText_LoadPage(Page);
+      if TP = nil then Exit;
+      try
+        Web := FPDFLink_LoadWebLinks(TP);
+        if Web <> nil then
+        try
+          for I := 0 to FPDFLink_CountWebLinks(Web) - 1 do
+            for J := 0 to FPDFLink_CountRects(Web, I) - 1 do
+              if (FPDFLink_GetRect(Web, I, J, L, T, R, Bottom) <> 0) and
+                 (PX >= L) and (PX <= R) and (PY >= Bottom) and (PY <= T) then
+              begin
+                K := FPDFLink_GetURL(Web, I, nil, 0);
+                if (K > 1) and (K < 8192) then
+                begin
+                  SetLength(WBuf, K);
+                  FPDFLink_GetURL(Web, I, @WBuf[0], K);
+                  ATarget.URI := PWideChar(@WBuf[0]);
+                  // PDFium kann bei Textlinks ein www.-Ziel ohne Schema liefern.
+                  if ATarget.URI.StartsWith('www.', True) then
+                    ATarget.URI := 'https://' + ATarget.URI
+                  else if (Pos('@', ATarget.URI) > 1) and
+                          (Pos(':', ATarget.URI) = 0) then
+                    ATarget.URI := 'mailto:' + ATarget.URI;
+                  Exit(ATarget.URI <> '');
+                end;
+              end;
+        finally
+          FPDFLink_CloseWebLinks(Web);
+        end;
+
+        // Nur Zeichen derselben Textzeile verwenden. Word-PDFs koennen
+        // zusaetzliche Leerzeichen und Steuerzeichen in der Textschicht haben.
+        Hit := FPDFText_GetCharIndexAtPos(TP, PX, PY, 3, 3);
+        if Hit < 0 then Exit;
+        if FPDFText_GetCharBox(TP, Hit, CL, CR, CB, CT) = 0 then Exit;
+        A := Hit;
+        B := Hit;
+        while (A > 0) and (Hit - A < 256) do
+        begin
+          if FPDFText_GetCharBox(TP, A - 1, NL, NR, NB, NT) = 0 then Break;
+          if (Abs((NT + NB) / 2 - (CT + CB) / 2) > (CT - CB) * 0.45) or
+             (CL - NR > (CT - CB) * 0.9) then Break;
+          C := FPDFText_GetUnicode(TP, A - 1);
+          if (C = 10) or (C = 13) then Break;
+          Dec(A);
+          CL := NL;
+        end;
+        CL := 0;
+        while (B < FPDFText_CountChars(TP) - 1) and (B - Hit < 256) do
+        begin
+          if FPDFText_GetCharBox(TP, B, CL, CR, CB, CT) = 0 then Break;
+          if FPDFText_GetCharBox(TP, B + 1, NL, NR, NB, NT) = 0 then Break;
+          if (Abs((NT + NB) / 2 - (CT + CB) / 2) > (CT - CB) * 0.45) or
+             (NL - CR > (CT - CB) * 0.9) then Break;
+          C := FPDFText_GetUnicode(TP, B + 1);
+          if (C = 10) or (C = 13) then Break;
+          Inc(B);
+        end;
+        Fragment := '';
+        for K := A to B do
+        begin
+          C := FPDFText_GetUnicode(TP, K);
+          if (C > 32) and (C <= $FFFF) then
+            Fragment := Fragment + Char(C);
+        end;
+        TextURL := Fragment.Trim;
+        while (TextURL <> '') and CharInSet(TextURL[Length(TextURL)],
+          ['.', ',', ';', ')', '>', '"']) do
+          Delete(TextURL, Length(TextURL), 1);
+        AtPos := Pos('@', TextURL);
+        DotPos := LastDelimiter('.', TextURL);
+        if TextURL.StartsWith('mailto:', True) and (AtPos > 8) and
+           (DotPos > AtPos + 1) and (DotPos < Length(TextURL)) then
+          ATarget.URI := TextURL
+        else if (AtPos > 1) and (DotPos > AtPos + 1) and
+                (DotPos < Length(TextURL)) and
+                (Pos('://', TextURL) = 0) and (Pos(':', TextURL) = 0) then
+          ATarget.URI := 'mailto:' + TextURL
+        else if TextURL.StartsWith('www.', True) then
+          ATarget.URI := 'https://' + TextURL
+        else if TextURL.StartsWith('https://', True) or
+                TextURL.StartsWith('http://', True) then
+          ATarget.URI := TextURL;
+        Result := ATarget.URI <> '';
+      finally
+        FPDFText_ClosePage(TP);
+      end;
+      Exit;
+    end;
+    Action := FPDFLink_GetAction(Link);
+    if Action <> nil then
+    begin
+      case FPDFAction_GetType(Action) of
+        3: begin // PDFACTION_URI
+          N := FPDFAction_GetURIPath(FDocument, Action, nil, 0);
+          if (N = 0) or (N > 8192) then Exit;
+          SetLength(Buf, N);
+          N := FPDFAction_GetURIPath(FDocument, Action, @Buf[0], N);
+          if N = 0 then Exit;
+          SetString(URL, PAnsiChar(@Buf[0]), N);
+          ATarget.URI := string(URL).Trim;
+          if (ATarget.URI <> '') and (ATarget.URI[Length(ATarget.URI)] = #0) then
+            Delete(ATarget.URI, Length(ATarget.URI), 1);
+          if ATarget.URI.StartsWith('www.', True) then
+            ATarget.URI := 'https://' + ATarget.URI
+          else if (Pos('@', ATarget.URI) > 1) and
+                  (Pos(':', ATarget.URI) = 0) then
+            ATarget.URI := 'mailto:' + ATarget.URI;
+          Result := ATarget.URI <> '';
+        end;
+        1: begin // PDFACTION_GOTO
+          Dest := FPDFAction_GetDest(FDocument, Action);
+          if Dest <> nil then
+            ATarget.PageIndex := FPDFDest_GetDestPageIndex(FDocument, Dest);
+          Result := (ATarget.PageIndex >= 0) and (ATarget.PageIndex < FPageCount);
+        end;
+      end;
+    end
+    else
+    begin
+      Dest := FPDFLink_GetDest(FDocument, Link);
+      if Dest <> nil then
+        ATarget.PageIndex := FPDFDest_GetDestPageIndex(FDocument, Dest);
+      Result := (ATarget.PageIndex >= 0) and (ATarget.PageIndex < FPageCount);
+    end;
+  finally
+    FPDF_ClosePage(Page);
   end;
 end;
 

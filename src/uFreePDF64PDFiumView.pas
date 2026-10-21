@@ -3,7 +3,7 @@
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, Winapi.CommDlg, System.SysUtils, System.Classes, Vcl.Controls,
+  Winapi.Windows, Winapi.Messages, Winapi.CommDlg, Winapi.ShellAPI, System.SysUtils, System.Classes, Vcl.Controls,
   Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Graphics, Vcl.Forms, Vcl.Dialogs,
   Vcl.Printers, Vcl.Clipbrd, Vcl.ComCtrls, Vcl.Menus, System.Generics.Collections, Math, System.Types, uFreePDF64PDFiumCore;
 
@@ -146,6 +146,8 @@ type
     procedure MarkerClick(Sender: TObject);
     procedure ColorClick(Sender: TObject);
     procedure SaveClick(Sender: TObject);
+    function LinkAtImagePoint(Sender: TObject; X, Y: Integer;
+      out ATarget: TPDFLinkTarget): Boolean;
     procedure ImageMouseDown(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
     procedure ImageMouseMove(Sender: TObject; Shift: TShiftState; X, Y: Integer);
     procedure ImageMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
@@ -252,7 +254,7 @@ begin
   FViewSelect := TComboBox.Create(Self);
   FViewSelect.Parent := FBar;
   FViewSelect.Style := csDropDownList;
-  FViewSelect.SetBounds(597, 5, 156, 26);
+  FViewSelect.SetBounds(597, 5, 140, 26);
   FViewSelect.Items.Add('Seitenbreite');
   FViewSelect.Items.Add('Ganze Seite');
   FViewSelect.Items.Add('Originalgröße (100 %)');
@@ -284,6 +286,7 @@ begin
   FInfo.Font.Size := 12;
   FStatus := TLabel.Create(Self);
   FStatus.Parent := FBar;
+  FStatus.AutoSize := False;
   FStatus.SetBounds(160, 11, 100, 18);
   FZoomStatus := TLabel.Create(Self);
   FZoomStatus.Parent := FBar;
@@ -1443,7 +1446,7 @@ end;
 procedure TFreePDF64PDFiumView.LayoutToolbar(Sender: TObject);
 var
   X, Y, W, H, ButtonH, EditH, Gap, Margin, RowGap, RowH: Integer;
-  EditButtonW: Integer;
+  EditButtonW, StatusW: Integer;
   MeasureBitmap: TBitmap;
   function Px(AValue: Integer): Integer;
   begin
@@ -1493,6 +1496,9 @@ begin
   MeasureBitmap := TBitmap.Create;
   try
     MeasureBitmap.Canvas.Font.Assign(FEditToggle.Font);
+    MeasureBitmap.Canvas.Font.Assign(FStatus.Font);
+    StatusW := Max(Px(83), MeasureBitmap.Canvas.TextWidth(FStatus.Caption) + Px(8));
+    MeasureBitmap.Canvas.Font.Assign(FEditToggle.Font);
     EditButtonW := Max(Px(110),
       MeasureBitmap.Canvas.TextWidth('Bearbeiten ▼') + Px(30));
   finally
@@ -1505,26 +1511,38 @@ begin
   PlaceButton(FOutlineButton, 36);
   PlaceButton(FPrev, 60);
   PlaceButton(FNext, 60);
-  PlaceGroup(Px(145 + 44 + 72) + 3 * Gap);
-  PlaceControl(FStatus, Px(145), Px(22));
+  PlaceGroup(StatusW + Px(44 + 72) + 3 * Gap);
+  PlaceControl(FStatus, StatusW, Px(16));
   PlaceControl(FPageEdit, Px(44), EditH);
   PlaceButton(FGoPage, 72);
   PlaceGroup(Px(32 + 32 + 50 + 116) + 4 * Gap);
   PlaceButton(FMinus, 32);
   PlaceButton(FPlus, 32);
-  PlaceControl(FZoomStatus, Px(50), Px(22));
+  PlaceControl(FZoomStatus, Px(48), Px(16));
   PlaceButton(FFit, 116);
-  PlaceGroup(Px(156 + 82 + 122) + 3 * Gap);
-  PlaceControl(FViewSelect, Px(156), EditH);
+  PlaceGroup(Px(140 + 82 + 106) + 3 * Gap);
+  PlaceControl(FViewSelect, Px(140), EditH);
   PlaceButton(FTwoPageButton, 82);
-  PlaceControl(FFlowSelect, Px(122), EditH);
+  PlaceControl(FFlowSelect, Px(106), EditH);
   if FEditToggle.Parent = FBar then
     PlaceControl(FEditToggle, EditButtonW, ButtonH);
-  PlaceGroup(Px(34 + 135 + 86 + 34) + 4 * Gap);
-  PlaceButton(FInfo, 34);
-  PlaceButton(FQuickSave, 135);
-  PlaceButton(FPrint, 86);
-  PlaceButton(FHelp, 34);
+  // Aktionsgruppe als unteilbaren Block positionieren. Insbesondere darf
+  // die Hilfe-Schaltflaeche nicht allein in die naechste Zeile springen.
+  H := Px(34) + Px(135) + Px(86) + Px(34) + 3 * Gap;
+  if (X > Margin) and (X + H > W - Margin) then
+    NextRow;
+  X := Max(Margin, W - Margin - H);
+  FInfo.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(34), ButtonH);
+  Inc(X, Px(34) + Gap);
+  FQuickSave.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(135), ButtonH);
+  Inc(X, Px(135) + Gap);
+  FPrint.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(86), ButtonH);
+  Inc(X, Px(86) + Gap);
+  FHelp.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(34), ButtonH);
+  FInfo.Visible := True;
+  FQuickSave.Visible := True;
+  FPrint.Visible := True;
+  FHelp.Visible := True;
 
   // Panelhoehe erst nach der Anordnung bestimmen. Dadurch wird beim
   // Verkleinern eine weitere Zeile frei, beim Vergroessern wieder entfernt.
@@ -2413,10 +2431,39 @@ begin
   Clipboard.AsText := S;
 end;
 
+function TFreePDF64PDFiumView.LinkAtImagePoint(Sender: TObject;
+  X, Y: Integer; out ATarget: TPDFLinkTarget): Boolean;
+var
+  Img: TPDFiumImage;
+begin
+  Result := False;
+  if FMarkMode or FSelecting or (FCurrentStroke <> nil) or
+     not (Sender is TPDFiumImage) then Exit;
+  Img := TPDFiumImage(Sender);
+  Result := FCore.LinkAtPoint(Img.Tag, Img.Width, Img.Height, X, Y, ATarget);
+end;
+
 procedure TFreePDF64PDFiumView.ImageMouseDown(Sender: TObject;
   Button: TMouseButton; Shift: TShiftState; X, Y: Integer);
+var
+  Target: TPDFLinkTarget;
+  URL: string;
 begin
   if (Button <> mbLeft) or (FCore.PageCount = 0) then Exit;
+  if not (ssShift in Shift) and not (ssCtrl in Shift) and
+     LinkAtImagePoint(Sender, X, Y, Target) then
+  begin
+    if Target.PageIndex >= 0 then
+      ShowPage(Target.PageIndex)
+    else
+    begin
+      URL := LowerCase(Target.URI);
+      if URL.StartsWith('https://') or URL.StartsWith('http://') or
+         URL.StartsWith('mailto:') then
+        ShellExecute(0, 'open', PChar(Target.URI), nil, nil, SW_SHOWNORMAL);
+    end;
+    Exit;
+  end;
   if not FMarkMode then
   begin
     FSelAnchorChar := SelectionHit(Sender, X, Y);
@@ -2457,7 +2504,13 @@ end;
 
 procedure TFreePDF64PDFiumView.ImageMouseMove(Sender: TObject;
   Shift: TShiftState; X, Y: Integer);
+var
+  Target: TPDFLinkTarget;
 begin
+  if (not (ssLeft in Shift)) and LinkAtImagePoint(Sender, X, Y, Target) then
+    TPDFiumImage(Sender).Cursor := crHandPoint
+  else
+    TPDFiumImage(Sender).Cursor := crDefault;
   if FSelecting then
   begin
     if not (ssLeft in Shift) then Exit;
