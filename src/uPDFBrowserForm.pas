@@ -816,7 +816,10 @@ begin
     'Segoe UI');
   if FLoadingHintFont <> 0 then
     SendMessage(FLoadingHintWnd, WM_SETFONT, WPARAM(FLoadingHintFont), 0);
-  SetWindowPos(FLoadingHintWnd, HWND_TOPMOST, Pt.X, Pt.Y, HintW, HintH,
+  // Kein HWND_TOPMOST: sonst kann das Popup einen modalen
+  // Kennwortdialog verdecken. Das Fenster bleibt dem Hauptfenster
+  // zugeordnet und wird nur innerhalb dessen Fenstergruppe angehoben.
+  SetWindowPos(FLoadingHintWnd, HWND_TOP, Pt.X, Pt.Y, HintW, HintH,
     SWP_NOACTIVATE or SWP_SHOWWINDOW);
   UpdateWindow(FLoadingHintWnd);
 end;

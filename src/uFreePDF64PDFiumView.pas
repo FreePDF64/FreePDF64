@@ -530,16 +530,28 @@ function TFreePDF64PDFiumView.RequestPDFPassword(const AFileName: string;
   out APassword: string): Boolean;
 var
   Dialog: TForm;
+  ViewerWindow: TCustomForm;
   Prompt, PasswordHint: TLabel;
   Entry: TEdit;
   OKButton, CancelButton: TButton;
 begin
   APassword := '';
-  Dialog := TForm.CreateNew(nil);
+  ViewerWindow := GetParentForm(Self);
+  if ViewerWindow <> nil then
+    Dialog := TForm.CreateNew(ViewerWindow)
+  else
+    Dialog := TForm.CreateNew(nil);
   try
     Dialog.Caption := 'FreePDF64-Viewer – PDF-Kennwort';
     Dialog.BorderStyle := bsDialog;
-    Dialog.Position := poScreenCenter;
+    if ViewerWindow <> nil then
+    begin
+      Dialog.PopupMode := pmExplicit;
+      Dialog.PopupParent := ViewerWindow;
+      Dialog.Position := poOwnerFormCenter;
+    end
+    else
+      Dialog.Position := poScreenCenter;
     // Einheitliche Windows-Dialogschrift, ohne zusaetzliche Vergroesserung.
     Dialog.Font.Name := 'Segoe UI';
     Dialog.Font.Size := 9;
