@@ -1,3 +1,5 @@
+21.10.2026 V8.0.1
+Fix -> FreePDF64 Postscript-Drucker erzeugt bei Installationsfehler eine Diagnosedatei unter C:\ProgramData\FreePDF64\PrinterSetup_SetupAPI_Auszug.log.
 21.10.2026 V8.0
 Neu -> Umbau des FreePDF64-Viewers von WebView4Delphi zu PDFium, inkl. Markierungsfunktionen, bessere Textsuche, Löschen/Drehen von PDF-Seiten in der Miniaturansicht, etc.!
 19.10.2026 V7.2.0
