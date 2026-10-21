@@ -65,6 +65,8 @@ type
     procedure NextPDFSearchMatch(ADirection: Integer);
     procedure SelectAllPDFText;
     procedure CopyPDFText;
+    function HasUnsavedPDFChanges: Boolean;
+    function SaveUnsavedPDFChanges: Boolean;
     procedure SetFullScreenDisplay(AEnabled: Boolean);
     property PDFNavigationStarted: Boolean read FNavigationDone;
     property PDFNavigationSucceeded: Boolean read FNavigationSucceeded;
@@ -75,6 +77,16 @@ type
   end;
 implementation
 {$R *.dfm}
+function TPDFBrowserForm.HasUnsavedPDFChanges: Boolean;
+begin
+  Result := (FPDFiumView <> nil) and FPDFiumView.HasUnsavedChanges;
+end;
+
+function TPDFBrowserForm.SaveUnsavedPDFChanges: Boolean;
+begin
+  Result := (FPDFiumView = nil) or FPDFiumView.SaveUnsavedChanges;
+end;
+
 procedure TPDFBrowserForm.SetFullScreenDisplay(AEnabled: Boolean);
 begin
   if FToolbar <> nil then

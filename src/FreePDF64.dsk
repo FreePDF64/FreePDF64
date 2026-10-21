@@ -10,22 +10,22 @@ File_7=TSourceModule,'D:\Delphi\FreePDF64\Auswahl_Unit.pas',0,1,11,9,38,0,0,,
 File_8=TSourceModule,'D:\Delphi\FreePDF64\Encrypt_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\Info_Unit.pas
-Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
+Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module1=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
+Module2=D:\Delphi\FreePDF64\Info_Unit.pas
 Module3=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 Module4=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Module5=D:\Delphi\FreePDF64\uFreePDF64PDFiumCore.pas
 Count=6
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\Info_Unit.pas]
-ModuleType=TSourceModule
-
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas]
+ModuleType=TSourceModule
+
+[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFTabsForm.pas]
@@ -39,7 +39,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=6
-CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -126,9 +126,9 @@ EditViewName=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 [View4]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
-CursorX=14
-CursorY=716
-TopLine=689
+CursorX=40
+CursorY=204
+TopLine=182
 LeftCol=1
 Elisions=
 Bookmarks=

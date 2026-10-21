@@ -91,6 +91,7 @@ type
     procedure TabSearchDeactivate(Sender: TObject);
     procedure TabsFormClose(Sender: TObject; var Action: TCloseAction);
     procedure ClearAllPDFTabs;
+    function ConfirmCloseUnsavedPDFs(AOnlyActive: Boolean): Boolean;
     procedure ApplyShownWindowSettings(var Msg: TMessage); message WM_APP + 194;
     procedure TabsFormShow(Sender: TObject);
     procedure LoadWindowSettings;
@@ -1393,9 +1394,55 @@ begin
       mtError, [mbOK], 0);
 end;
 
+function TPDFTabsForm.ConfirmCloseUnsavedPDFs(AOnlyActive: Boolean): Boolean;
+var
+  I, J, Count, Choice: Integer;
+  Tab: TTabSheet;
+  PDF: TPDFBrowserForm;
+begin
+  Result := True;
+  if FTabs = nil then Exit;
+  Count := 0;
+  for I := 0 to FTabs.PageCount - 1 do
+  begin
+    Tab := FTabs.Pages[I];
+    if AOnlyActive and (Tab <> FTabs.ActivePage) then Continue;
+    for J := 0 to Tab.ControlCount - 1 do
+      if (Tab.Controls[J] is TPDFBrowserForm) and
+        TPDFBrowserForm(Tab.Controls[J]).HasUnsavedPDFChanges then
+        Inc(Count);
+  end;
+  if Count = 0 then Exit;
+  Choice := MessageDlg(Format(
+    '%d PDF-Datei(en) enthalten ungespeicherte Änderungen.' + sLineBreak +
+    'Möchten Sie die Änderungen vor dem Schließen speichern?' + sLineBreak +
+    'Ja = Alle speichern, Nein = Ohne Speichern schließen, Abbrechen = Zurück',
+    [Count]), mtConfirmation, [mbYes, mbNo, mbCancel], 0);
+  if Choice = mrCancel then Exit(False);
+  if Choice = mrNo then Exit(True);
+  if Choice <> mrYes then Exit(False);
+  for I := 0 to FTabs.PageCount - 1 do
+  begin
+    Tab := FTabs.Pages[I];
+    if AOnlyActive and (Tab <> FTabs.ActivePage) then Continue;
+    for J := 0 to Tab.ControlCount - 1 do
+      if Tab.Controls[J] is TPDFBrowserForm then
+      begin
+        PDF := TPDFBrowserForm(Tab.Controls[J]);
+        if PDF.HasUnsavedPDFChanges and not PDF.SaveUnsavedPDFChanges then
+          Exit(False);
+      end;
+  end;
+end;
+
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
+  if not ConfirmCloseUnsavedPDFs(False) then
+  begin
+    Action := caNone;
+    Exit;
+  end;
   // Fenster zuerst ausblenden, dann die PDFium-Registerkarten
   // unsichtbar abbauen. Sonst flackert der Viewer bei vielen PDFs.
   SaveWindowSettings;
@@ -2079,6 +2126,7 @@ var
 begin
   Tab := FTabs.ActivePage;
   if Tab = nil then Exit;
+  if not ConfirmCloseUnsavedPDFs(True) then Exit;
   ClosedIndex := Tab.PageIndex;
   // Ein noch ausstehender Wechsel darf nicht auf ein geschlossenes PDF zeigen.
   FActivationTimer.Enabled := False;

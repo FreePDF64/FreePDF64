@@ -10,11 +10,18 @@ uses
 type
   // TWinControl/VCL deklariert diese Events als protected.
   // Kleine Ableitungen machen sie fuer die programmatische Zuweisung zugaenglich.
-  // Zugriff auf die geschuetzten VCL-Eigenschaften fuer den Speicherstatus.
+  // Owner-Draw verhindert, dass das Windows-Theme die orange Farbe uebermalt.
   TPDFiumSaveButton = class(TButton)
+  private
+    FHighlighted: Boolean;
+    procedure CNDrawItem(var Message: TWMDrawItem); message CN_DRAWITEM;
+    procedure SetHighlighted(const Value: Boolean);
+    procedure PaintHighlighted;
+  protected
+    procedure WndProc(var Message: TMessage); override;
+    procedure CreateParams(var Params: TCreateParams); override;
   public
-    property ParentBackground;
-    property Color;
+    property Highlighted: Boolean read FHighlighted write SetHighlighted;
   end;
 
   TPDFiumScrollBox = class(TScrollBox)
@@ -186,12 +193,118 @@ type
     procedure SelectAllText;
     procedure CopySelectedText;
     function ConfirmUnsaved: Boolean;
+    function HasUnsavedChanges: Boolean;
+    function SaveUnsavedChanges: Boolean;
     property SearchMatchCount: Integer read FTotalSearchMatches;
     property OnSearchCountChanged: TNotifyEvent read FOnSearchCountChanged write FOnSearchCountChanged;
     property PageIndex: Integer read FPage;
   end;
 
 implementation
+
+procedure TPDFiumSaveButton.CreateParams(var Params: TCreateParams);
+begin
+  inherited CreateParams(Params);
+  Params.Style := (Params.Style and not $000F) or BS_OWNERDRAW;
+end;
+
+procedure TPDFiumSaveButton.SetHighlighted(const Value: Boolean);
+begin
+  if FHighlighted = Value then Exit;
+  FHighlighted := Value;
+  Invalidate;
+end;
+
+procedure TPDFiumSaveButton.PaintHighlighted;
+var
+  DC: HDC;
+  R: TRect;
+  Brush: HBRUSH;
+  OldFont: HGDIOBJ;
+  OldMode: Integer;
+  S: string;
+begin
+  if not FHighlighted or not Enabled or not HandleAllocated then Exit;
+  DC := GetDC(Handle);
+  if DC = 0 then Exit;
+  try
+    R := ClientRect;
+    Brush := CreateSolidBrush(RGB(255, 175, 65));
+    try
+      FillRect(DC, R, Brush);
+    finally
+      DeleteObject(Brush);
+    end;
+    DrawEdge(DC, R, EDGE_RAISED, BF_RECT);
+    OldMode := SetBkMode(DC, TRANSPARENT);
+    OldFont := SelectObject(DC, Font.Handle);
+    try
+      SetTextColor(DC, RGB(0, 0, 0));
+      S := Caption;
+      InflateRect(R, -5, -3);
+      DrawText(DC, PChar(S), Length(S), R,
+        DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_END_ELLIPSIS);
+    finally
+      SelectObject(DC, OldFont);
+      SetBkMode(DC, OldMode);
+    end;
+  finally
+    ReleaseDC(Handle, DC);
+  end;
+end;
+
+procedure TPDFiumSaveButton.WndProc(var Message: TMessage);
+begin
+  inherited WndProc(Message);
+  // VCL/Windows-Themes koennen die Owner-Draw-Farbe uebermalen.
+  // Nach dem nativen WM_PAINT wird die Warnfarbe deshalb direkt gezeichnet.
+  if (Message.Msg = WM_PAINT) and FHighlighted and Enabled then
+    PaintHighlighted;
+end;
+
+procedure TPDFiumSaveButton.CNDrawItem(var Message: TWMDrawItem);
+var
+  DC: HDC;
+  R: TRect;
+  Brush: HBRUSH;
+  TextFlags: Cardinal;
+  C: TColor;
+  OldBkMode: Integer;
+  S: string;
+begin
+  DC := Message.DrawItemStruct^.hDC;
+  R := Message.DrawItemStruct^.rcItem;
+  if FHighlighted then C := RGB(255, 175, 65) else C := clBtnFace;
+  if not Enabled then C := clBtnFace;
+  Brush := CreateSolidBrush(ColorToRGB(C));
+  try
+    FillRect(DC, R, Brush);
+  finally
+    DeleteObject(Brush);
+  end;
+  if (Message.DrawItemStruct^.itemState and ODS_SELECTED) <> 0 then
+    DrawEdge(DC, R, EDGE_SUNKEN, BF_RECT)
+  else
+    DrawEdge(DC, R, EDGE_RAISED, BF_RECT);
+  if Focused then
+  begin
+    InflateRect(R, -4, -4);
+    DrawFocusRect(DC, R);
+    InflateRect(R, 4, 4);
+  end;
+  OldBkMode := SetBkMode(DC, TRANSPARENT);
+  try
+    SetTextColor(DC, ColorToRGB(clBtnText));
+    SelectObject(DC, Font.Handle);
+    S := Caption;
+    TextFlags := DT_CENTER or DT_VCENTER or DT_SINGLELINE or DT_END_ELLIPSIS;
+    InflateRect(R, -4, -2);
+    DrawText(DC, PChar(S), Length(S), R, TextFlags);
+  finally
+    SetBkMode(DC, OldBkMode);
+  end;
+  Message.Result := 1;
+end;
 
 procedure TFreePDF64PDFiumView.SetFullScreenDisplay(AEnabled: Boolean);
 begin
@@ -203,7 +316,10 @@ end;
 constructor TFreePDF64PDFiumView.CreateInParent(AOwner: TComponent; AParent: TWinControl);
   function Btn(const S: string; X, W: Integer; Handler: TNotifyEvent): TButton;
   begin
-    Result := TButton.Create(Self);
+    if (S = 'Speichern unter ...') then
+      Result := TPDFiumSaveButton.Create(Self)
+    else
+      Result := TButton.Create(Self);
     Result.Parent := FBar;
     Result.SetBounds(X, 4, W, 28);
     Result.Caption := S;
@@ -1079,18 +1195,22 @@ procedure TFreePDF64PDFiumView.UpdateSaveState;
   procedure SetButtonState(B: TButton);
   begin
     if B = nil then Exit;
-    TPDFiumSaveButton(B).ParentBackground := False;
     if FCore.Modified then
     begin
-      TPDFiumSaveButton(B).Color := RGB(255, 175, 65);
+      TPDFiumSaveButton(B).Highlighted := True;
+      B.Caption := '● Speichern unter ...';
+      B.Font.Style := [fsBold];
       B.Hint := 'Änderungen nicht gespeichert – Speichern unter erforderlich';
     end
     else
     begin
-      TPDFiumSaveButton(B).Color := clBtnFace;
+      TPDFiumSaveButton(B).Highlighted := False;
+      B.Caption := 'Speichern unter ...';
+      B.Font.Style := [];
       B.Hint := 'PDF-Kopie unter neuem Namen speichern';
     end;
     B.ShowHint := True;
+    B.Invalidate;
   end;
 begin
   SetButtonState(FSave);
@@ -1903,6 +2023,11 @@ end;
 procedure TFreePDF64PDFiumView.RenderTimerTick(Sender: TObject);
 var PositionNow: Integer;
 begin
+  if (FQuickSave <> nil) and (FCore <> nil) then
+  begin
+    if FCore.Modified <> (Pos('●', FQuickSave.Caption) = 1) then
+      UpdateSaveState;
+  end;
   if FRendering or (FCore.PageCount = 0) then Exit;
   if FResizePending then
   begin
@@ -2700,6 +2825,19 @@ begin
       end;
     end;
   finally D.Free; end;
+end;
+
+function TFreePDF64PDFiumView.HasUnsavedChanges: Boolean;
+begin
+  Result := (FCore <> nil) and FCore.Modified;
+end;
+
+function TFreePDF64PDFiumView.SaveUnsavedChanges: Boolean;
+begin
+  if not HasUnsavedChanges then Exit(True);
+  SaveClick(nil);
+  // Abbruch und Fehler muessen das Schliessen verhindern.
+  Result := not HasUnsavedChanges;
 end;
 
 function TFreePDF64PDFiumView.ConfirmUnsaved: Boolean;
