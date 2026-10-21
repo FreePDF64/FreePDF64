@@ -1,6 +1,9 @@
 # FreePDF64 – Kostenlose PDF-Komplettlösung für Windows
 
-**PDFs erstellen, bearbeiten, konvertieren und verwalten – kostenlos für private und kommerzielle Nutzung.**
+**PDFs erstellen, bearbeiten, konvertieren und verwalten - mit dem besten PDF-Reader (der FreePDF64-Viewer)**
+
+**-> Kostenlos für private und kommerzielle Nutzung <-**
+
 
 ## 📥 Download
 
