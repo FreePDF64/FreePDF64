@@ -1440,64 +1440,54 @@ end;
 
 procedure TFreePDF64PDFiumView.LayoutToolbar(Sender: TObject);
 var
-  X, RightX, Gap, W, H, ButtonH, EditH, LabelY, ButtonY, EditY: Integer;
-  Compact: Boolean;
+  X, Y, W, H, ButtonH, EditH, Gap, Margin, RowGap, RowH: Integer;
   EditButtonW: Integer;
   MeasureBitmap: TBitmap;
   function Px(AValue: Integer): Integer;
   begin
     Result := MulDiv(AValue, CurrentPPI, 96);
   end;
+  procedure NextRow;
+  begin
+    X := Margin;
+    Inc(Y, RowH + RowGap);
+  end;
+  procedure EnsureRoom(AWidth: Integer);
+  begin
+    if (X > Margin) and (X + AWidth > W - Margin) then
+      NextRow;
+  end;
+  procedure PlaceControl(AControl: TControl; AWidth: Integer;
+    AHeight: Integer);
+  begin
+    EnsureRoom(AWidth);
+    AControl.SetBounds(X, Y + (RowH - AHeight) div 2, AWidth, AHeight);
+    AControl.Visible := True;
+    Inc(X, AWidth + Gap);
+  end;
   procedure PlaceButton(AButton: TButton; AWidth: Integer);
   begin
-    AButton.SetBounds(X, ButtonY, Px(AWidth), ButtonH);
-    Inc(X, Px(AWidth) + Gap);
+    PlaceControl(AButton, Px(AWidth), ButtonH);
+  end;
+  procedure PlaceGroup(AGroupWidth: Integer);
+  begin
+    EnsureRoom(AGroupWidth);
   end;
 begin
   if (FBar = nil) or (FInfo = nil) or (FEditBar = nil) then Exit;
-  // VCL skaliert Schrift und Bedienelemente bei 4K/WQHD. Die bisherige
-  // feste Leistenhoehe von 36 Pixeln schnitt dabei die Steuerelemente ab.
-  // Native VCL-Comboboxen legen ihre geschlossene Hoehe selbst fest.
-  // Diese tatsaechliche Hoehe als Referenz fuer alle Steuerelemente nehmen.
-  // Keine OwnerDraw-Umstellung und keine erzwungene ComboBox.Height.
-  ButtonH := FFlowSelect.Height;
-  if ButtonH < Px(24) then ButtonH := Px(24);
-  EditH := ButtonH;
-  H := Max(ButtonH, EditH) + Px(10);
-  if FBar.Height <> H then FBar.Height := H;
-  if FEditBar.Visible and (FEditBar.Height <> H) then FEditBar.Height := H;
   W := FBar.ClientWidth;
   if W < 1 then Exit;
-  Compact := W < Px(1080);
-  if Compact then Gap := Px(4) else Gap := Px(7);
-  ButtonY := (H - ButtonH) div 2;
-  EditY := (H - EditH) div 2;
-  LabelY := (H - Max(Px(14), Abs(FBar.Font.Height))) div 2;
-  X := Px(8);
-  PlaceButton(FOutlineButton, 36);
-  PlaceButton(FPrev, 60);
-  PlaceButton(FNext, 60);
-  FStatus.SetBounds(X, LabelY, Px(145), Px(22)); Inc(X, Px(145) + Gap);
-  FPageEdit.SetBounds(X, EditY, Px(44), EditH); Inc(X, Px(44) + Gap);
-  PlaceButton(FGoPage, 72);
-  Inc(X, Px(10));
-  PlaceButton(FMinus, 32);
-  PlaceButton(FPlus, 32);
-  FZoomStatus.SetBounds(X, LabelY, Px(50), Px(22)); Inc(X, Px(50) + Gap);
-  PlaceButton(FFit, 116);
-  if Compact then
-    FViewSelect.SetBounds(X, EditY, Px(128), EditH)
-  else
-    FViewSelect.SetBounds(X, EditY, Px(156), EditH);
-  Inc(X, FViewSelect.Width + Gap);
 
-  RightX := W - Px(8);
-  FHelp.SetBounds(RightX - Px(34), ButtonY, Px(34), ButtonH);
-  FPrint.SetBounds(FHelp.Left - Px(86) - Gap, ButtonY, Px(86), ButtonH);
-  FQuickSave.SetBounds(FPrint.Left - Px(135) - Gap, ButtonY, Px(135), ButtonH);
-  FInfo.SetBounds(FQuickSave.Left - Px(34) - Gap, ButtonY, Px(34), ButtonH);
-  // Breite aus dem tatsaechlichen Text inklusive Pfeil ermitteln.
-  // Auch bei 4K und geaenderter Systemschrift darf nichts abgeschnitten werden.
+  // Native Combobox-Hoehe beibehalten, damit High-DPI/VCL-Themes stimmen.
+  ButtonH := Max(FFlowSelect.Height, Px(24));
+  EditH := ButtonH;
+  RowH := Max(ButtonH, EditH);
+  Gap := Px(7);
+  RowGap := Px(6);
+  Margin := Px(8);
+  X := Margin;
+  Y := Px(5);
+
   MeasureBitmap := TBitmap.Create;
   try
     MeasureBitmap.Canvas.Font.Assign(FEditToggle.Font);
@@ -1506,33 +1496,54 @@ begin
   finally
     MeasureBitmap.Free;
   end;
-  if FEditToggle.Parent = FBar then
-    FEditToggle.SetBounds(FInfo.Left - EditButtonW - Gap, ButtonY, EditButtonW, ButtonH);
-  FViewSelect.Visible := FViewSelect.Left + FViewSelect.Width + Gap < FInfo.Left;
-  FFit.Visible := FFit.Left + FFit.Width + Gap < FInfo.Left;
-  if not FFit.Visible then FViewSelect.Visible := False;
-  if FViewSelect.Visible then
-    X := FViewSelect.Left + FViewSelect.Width + Gap
-  else if FFit.Visible then
-    X := FFit.Left + FFit.Width + Gap
-  else
-    X := FZoomStatus.Left + FZoomStatus.Width + Gap;
-  FTwoPageButton.SetBounds(X, ButtonY, Px(82), ButtonH);
-  FTwoPageButton.Visible := X + FTwoPageButton.Width + Gap < FInfo.Left;
-  Inc(X, FTwoPageButton.Width + Gap);
-  FFlowSelect.SetBounds(X, EditY, Px(122), EditH);
-  FFlowSelect.Visible := FTwoPageButton.Visible and
-    (X + FFlowSelect.Width + Gap < FInfo.Left);
 
-  X := Px(8);
-  FShapeSelect.SetBounds(X, EditY, Px(116), EditH); Inc(X, Px(116) + Gap);
-  FWidthSelect.SetBounds(X, EditY, Px(84), EditH); Inc(X, Px(84) + Gap);
-  FColorButton.SetBounds(X, ButtonY, Px(108), ButtonH); Inc(X, Px(113));
-  FColorSwatch.SetBounds(X, (H - Px(20)) div 2, Px(22), Px(20));
-  Inc(X, Px(36));
-  FSave.SetBounds(X, ButtonY, Px(153), ButtonH);
-  if FSave.Left + FSave.Width > W - Px(8) then
-    FSave.Left := Max(Px(8), W - FSave.Width - Px(8));
+  // Gruppen moeglichst zusammenhalten, bei sehr schmalem Fenster
+  // einzelne Controls dennoch umbrechen lassen.
+  PlaceGroup(Px(36 + 60 + 60) + 3 * Gap);
+  PlaceButton(FOutlineButton, 36);
+  PlaceButton(FPrev, 60);
+  PlaceButton(FNext, 60);
+  PlaceGroup(Px(145 + 44 + 72) + 3 * Gap);
+  PlaceControl(FStatus, Px(145), Px(22));
+  PlaceControl(FPageEdit, Px(44), EditH);
+  PlaceButton(FGoPage, 72);
+  PlaceGroup(Px(32 + 32 + 50 + 116) + 4 * Gap);
+  PlaceButton(FMinus, 32);
+  PlaceButton(FPlus, 32);
+  PlaceControl(FZoomStatus, Px(50), Px(22));
+  PlaceButton(FFit, 116);
+  PlaceGroup(Px(156 + 82 + 122) + 3 * Gap);
+  PlaceControl(FViewSelect, Px(156), EditH);
+  PlaceButton(FTwoPageButton, 82);
+  PlaceControl(FFlowSelect, Px(122), EditH);
+  if FEditToggle.Parent = FBar then
+    PlaceControl(FEditToggle, EditButtonW, ButtonH);
+  PlaceGroup(Px(34 + 135 + 86 + 34) + 4 * Gap);
+  PlaceButton(FInfo, 34);
+  PlaceButton(FQuickSave, 135);
+  PlaceButton(FPrint, 86);
+  PlaceButton(FHelp, 34);
+
+  // Panelhoehe erst nach der Anordnung bestimmen. Dadurch wird beim
+  // Verkleinern eine weitere Zeile frei, beim Vergroessern wieder entfernt.
+  H := Y + RowH + Px(5);
+  if FBar.Height <> H then FBar.Height := H;
+
+  // Bestehende Bearbeitungsleiste unveraendert belassen.
+  if FEditBar.Visible then
+  begin
+    H := RowH + Px(10);
+    if FEditBar.Height <> H then FEditBar.Height := H;
+    X := Margin;
+    Y := Px(5);
+    PlaceControl(FShapeSelect, Px(116), EditH);
+    PlaceControl(FWidthSelect, Px(84), EditH);
+    PlaceButton(FColorButton, 108);
+    PlaceControl(FColorSwatch, Px(22), Px(20));
+    PlaceButton(FSave, 153);
+    H := Y + RowH + Px(5);
+    if FEditBar.Height <> H then FEditBar.Height := H;
+  end;
 end;
 
 function DetectPDFEncryptionQPDF(const APDFFile: string): string;

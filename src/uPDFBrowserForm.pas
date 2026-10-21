@@ -44,6 +44,7 @@ type
     procedure MarkerClick(Sender: TObject);
     function ExecuteQpdf(const ACommandLine: string; out AExitCode: DWORD): Boolean;
     procedure BuildNavigationToolbar;
+    procedure ReflowNavigationToolbar;
     procedure NumberFieldMouseEnter(Sender: TObject);
     procedure FindTermClick(Sender: TObject);
     procedure UpdateSearchCount(Sender: TObject);
@@ -765,6 +766,7 @@ begin
   FPDFiumView.PlaceEditButton(FToolbar,
     FRotateButton.Left + FRotateButton.Width + MulDiv(8, CurrentPPI, 96),
     FRotateButton.Top, FRotateButton.Height);
+  ReflowNavigationToolbar;
   IniDat := TIniFile.Create(ExtractFilePath(Application.ExeName) + 'FreePDF64.ini');
   try
     Left := IniDat.ReadInteger('Position', 'PDFBrowserForm_Left', Left);
@@ -986,8 +988,83 @@ begin
   RefreshActiveTabPDF;
 end;
 
+procedure TPDFBrowserForm.ReflowNavigationToolbar;
+var
+  I, X, Y, Gap, Margin, RowHeight, RowGap, Required, NewHeight: Integer;
+  RotateLabel, AngleLabel, EditButton: TControl;
+  C: TControl;
+  function ScalePx(N: Integer): Integer;
+  begin
+    Result := MulDiv(N, CurrentPPI, 96);
+  end;
+  procedure NewRow;
+  begin
+    X := Margin;
+    Inc(Y, RowHeight + RowGap);
+  end;
+  procedure Reserve(AWidth: Integer);
+  begin
+    if (X > Margin) and (X + AWidth > FToolbar.ClientWidth - Margin) then
+      NewRow;
+  end;
+  procedure Put(AControl: TControl);
+  begin
+    if AControl = nil then Exit;
+    Reserve(AControl.Width);
+    AControl.SetBounds(X, Y + (RowHeight - AControl.Height) div 2,
+      AControl.Width, AControl.Height);
+    Inc(X, AControl.Width + Gap);
+  end;
+begin
+  if (FToolbar = nil) or (FRotateButton = nil) then Exit;
+  if FToolbar.ClientWidth <= 0 then Exit;
+  RotateLabel := nil;
+  AngleLabel := nil;
+  EditButton := nil;
+  for I := 0 to FToolbar.ControlCount - 1 do
+  begin
+    C := FToolbar.Controls[I];
+    if (C is TLabel) and (TLabel(C).Caption = 'Drehe Seite:') then
+      RotateLabel := C
+    else if (C is TLabel) and (TLabel(C).Caption = 'Winkel:') then
+      AngleLabel := C
+    else if (C is TButton) and (Pos('Bearbeiten', TButton(C).Caption) = 1) then
+      EditButton := C;
+  end;
+  Margin := ScalePx(8);
+  Gap := ScalePx(7);
+  RowGap := ScalePx(5);
+  RowHeight := ScalePx(28);
+  for I := 0 to FToolbar.ControlCount - 1 do
+    if FToolbar.Controls[I].Height > RowHeight then
+      RowHeight := FToolbar.Controls[I].Height;
+  X := Margin;
+  Y := ScalePx(4);
+  Put(FFindButton);
+  // Auch bei unsichtbarer Trefferanzeige den Platz beibehalten.
+  Put(FSearchCountLabel);
+  Put(FAttachmentsButton);
+  // Drehgruppe und Bearbeiten nach Moeglichkeit zusammen umbrechen.
+  Required := 0;
+  if RotateLabel <> nil then Inc(Required, RotateLabel.Width + Gap);
+  Inc(Required, FRotatePageEdit.Width + Gap);
+  if AngleLabel <> nil then Inc(Required, AngleLabel.Width + Gap);
+  Inc(Required, FRotateAngleCombo.Width + Gap + FRotateButton.Width);
+  if EditButton <> nil then Inc(Required, Gap + EditButton.Width);
+  if Required <= FToolbar.ClientWidth - 2 * Margin then Reserve(Required);
+  Put(RotateLabel);
+  Put(FRotatePageEdit);
+  Put(AngleLabel);
+  Put(FRotateAngleCombo);
+  Put(FRotateButton);
+  Put(EditButton);
+  NewHeight := Y + RowHeight + ScalePx(4);
+  if FToolbar.Height <> NewHeight then FToolbar.Height := NewHeight;
+end;
+
 procedure TPDFBrowserForm.FormResize(Sender: TObject);
 begin
+  ReflowNavigationToolbar;
   UpdateAttachmentWindowPosition;
 end;
 
