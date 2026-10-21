@@ -19,6 +19,8 @@ type
     procedure WMMoving(var aMessage: TMessage); message WM_MOVING;
   private
     FPDFiumView: TFreePDF64PDFiumView;
+    FLoadingHintWnd: HWND;
+    FLoadingHintFont: HFONT;
     FLoadRequested: Boolean;
     FPDFLoadInProgress: Boolean;
     FNavigationDone: Boolean;
@@ -37,6 +39,7 @@ type
     FRotatePageEdit: TEdit;
     FRotateAngleCombo: TComboBox;
     FRotateButton: TButton;
+    procedure SetLoadingHint(AVisible: Boolean);
     procedure RotatePageClick(Sender: TObject);
     procedure MarkerClick(Sender: TObject);
     function ExecuteQpdf(const ACommandLine: string; out AExitCode: DWORD): Boolean;
@@ -743,6 +746,8 @@ begin
   FNavigationSucceeded := False;
   FPendingFirstDisplay := False;
   FClosing := False;
+  FLoadingHintWnd := 0;
+  FLoadingHintFont := 0;
   FTabbedPDFMode := False;
   FStandalonePDFMode := False;
   FStandaloneHintShown := False;
@@ -767,6 +772,53 @@ begin
     Width := IniDat.ReadInteger('Position', 'PDFBrowserForm_Width', Width);
     Height := IniDat.ReadInteger('Position', 'PDFBrowserForm_Height', Height);
   finally IniDat.Free; end;
+end;
+
+procedure TPDFBrowserForm.SetLoadingHint(AVisible: Boolean);
+var
+  HintW, HintH, PPI: Integer;
+  Pt: TPoint;
+  OwnerWnd: HWND;
+begin
+  if not AVisible then
+  begin
+    if FLoadingHintWnd <> 0 then
+    begin
+      DestroyWindow(FLoadingHintWnd);
+      FLoadingHintWnd := 0;
+    end;
+    if FLoadingHintFont <> 0 then
+    begin
+      DeleteObject(FLoadingHintFont);
+      FLoadingHintFont := 0;
+    end;
+    Exit;
+  end;
+  if FClosing or (csDestroying in ComponentState) or not HandleAllocated then Exit;
+  if FLoadingHintWnd <> 0 then Exit;
+
+  PPI := CurrentPPI;
+  HintW := MulDiv(230, PPI, 96);
+  HintH := MulDiv(54, PPI, 96);
+  Pt := ClientToScreen(Point((ClientWidth - HintW) div 2,
+    (ClientHeight - HintH) div 2));
+  // Eigenes, nicht aktivierendes Popup-Fenster. Es ist kein Kindfenster
+  // des PDF-Viewers und kann daher nicht von diesem verdeckt werden.
+  OwnerWnd := GetAncestor(Handle, GA_ROOT);
+  FLoadingHintWnd := CreateWindowEx(WS_EX_TOOLWINDOW or WS_EX_NOACTIVATE,
+    'STATIC', 'PDF wird geöffnet ...', WS_POPUP or WS_BORDER or
+    SS_CENTER or SS_CENTERIMAGE, Pt.X, Pt.Y, HintW, HintH,
+    OwnerWnd, 0, HInstance, nil);
+  if FLoadingHintWnd = 0 then Exit;
+  FLoadingHintFont := CreateFont(-MulDiv(10, PPI, 72), 0, 0, 0,
+    FW_NORMAL, 0, 0, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+    CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH or FF_DONTCARE,
+    'Segoe UI');
+  if FLoadingHintFont <> 0 then
+    SendMessage(FLoadingHintWnd, WM_SETFONT, WPARAM(FLoadingHintFont), 0);
+  SetWindowPos(FLoadingHintWnd, HWND_TOPMOST, Pt.X, Pt.Y, HintW, HintH,
+    SWP_NOACTIVATE or SWP_SHOWWINDOW);
+  UpdateWindow(FLoadingHintWnd);
 end;
 
 procedure TPDFBrowserForm.RequestPDFLoad;
@@ -805,10 +857,13 @@ begin
   FPDFiumView.BringToFront;
   if (Parent is TTabSheet) and
      (TTabSheet(Parent).PageControl.ActivePage <> TTabSheet(Parent)) then Exit;
+  // Hinweis sofort zeichnen, ohne zusaetzlichen Timer-Tick.
+  // Keine Application.ProcessMessages: keine rekursiven Ladeaufrufe.
   // Ein modaler Kennwortdialog verarbeitet weiterhin Windows-Nachrichten.
   // Den Ladetimer deshalb vor dem Oeffnen deaktivieren und Rekursion sperren.
   FPDFLoadInProgress := True;
   TimerPDF.Enabled := False;
+  SetLoadingHint(True);
   try
     try
       FPDFiumView.OpenPDF(PDFFileName);
@@ -842,7 +897,8 @@ begin
     end;
     end;
   finally
-    FPDFLoadInProgress := False;
+    SetLoadingHint(False);
+      FPDFLoadInProgress := False;
   end;
 end;
 
@@ -936,6 +992,7 @@ procedure TPDFBrowserForm.FormClose(Sender: TObject; var Action: TCloseAction);
 var IniDat: TIniFile;
 begin
   FClosing := True;
+  SetLoadingHint(False);
   TimerPDF.Enabled := False;
   if Assigned(FPageNavigationTimer) then FPageNavigationTimer.Enabled := False;
   if not FTabbedPDFMode then
