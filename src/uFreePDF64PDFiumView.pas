@@ -72,6 +72,7 @@ type
     FEditBar: TPanel;
     FEditToggle: TButton;
     FEditVisible: Boolean;
+    FToolbarLayoutBusy: Boolean;
     FPrev, FNext, FMinus, FPlus, FFit, FPrint, FHelp: TButton;
     FStatus: TLabel;
     FZoomStatus: TLabel;
@@ -88,7 +89,7 @@ type
     FSearchRunning: Boolean;
     FOnSearchCountChanged: TNotifyEvent;
     FWheelAccum: Integer;
-    FMarker, FSave, FQuickSave: TButton;
+    FMarker, FQuickSave: TButton;
     FUndoMenuItem: TMenuItem;
     FShapeSelect: TComboBox;
     FWidthSelect: TComboBox;
@@ -448,7 +449,6 @@ begin
   FColorSwatch.OnClick := ColorClick;
   FColorButton.Hint := 'Farbe der neuen Markierungen auswählen';
   FColorButton.ShowHint := True;
-  FSave := Btn('Speichern unter ...', 1156, 153, SaveClick);
   FQuickSave := Btn('Speichern unter ...', 900, 135, SaveClick);
   FQuickSave.Hint := 'PDF-Kopie unter neuem Namen speichern';
   FQuickSave.ShowHint := True;
@@ -457,7 +457,6 @@ begin
   FWidthSelect.Parent := FEditBar;
   FColorButton.Parent := FEditBar;
   FColorSwatch.Parent := FEditBar;
-  FSave.Parent := FEditBar;
   FPageEdit := TEdit.Create(Self);
   FPageEdit.Parent := FBar;
   FPageEdit.SetBounds(163, 6, 48, 24);
@@ -1213,7 +1212,6 @@ procedure TFreePDF64PDFiumView.UpdateSaveState;
     B.Invalidate;
   end;
 begin
-  SetButtonState(FSave);
   SetButtonState(FQuickSave);
   if FUndoMenuItem <> nil then FUndoMenuItem.Enabled := FCore.CanUndo;
 end;
@@ -1506,12 +1504,28 @@ procedure TFreePDF64PDFiumView.ToggleEditBar(Sender: TObject);
 begin
   FEditVisible := not FEditVisible;
   FMarkMode := FEditVisible;
-  FEditBar.Visible := FEditVisible;
-  if FEditVisible then FEditBar.Height := 36
-  else FEditBar.Height := 0;
+  // Align dauerhaft beibehalten. Ein Wechsel zwischen alNone/alTop
+  // waehrend des Layouts kann unvorhersehbare Leerzeilen erzeugen.
+  FEditBar.DisableAlign;
+  try
+    FEditBar.Align := alTop;
+    if FEditVisible then
+    begin
+      FEditBar.Height := MulDiv(36, CurrentPPI, 96);
+      FEditBar.Visible := True;
+    end
+    else
+    begin
+      FEditBar.Visible := False;
+      FEditBar.Height := 0;
+    end;
+  finally
+    FEditBar.EnableAlign;
+  end;
   if FEditVisible then FEditToggle.Caption := 'Bearbeiten ▲'
   else FEditToggle.Caption := 'Bearbeiten ▼';
   LayoutToolbar(nil);
+  Realign;
 end;
 
 procedure TFreePDF64PDFiumView.HelpClick(Sender: TObject);
@@ -1600,6 +1614,9 @@ var
   end;
 begin
   if (FBar = nil) or (FInfo = nil) or (FEditBar = nil) then Exit;
+  if FToolbarLayoutBusy then Exit;
+  FToolbarLayoutBusy := True;
+  try
   W := FBar.ClientWidth;
   if W < 1 then Exit;
 
@@ -1670,8 +1687,9 @@ begin
   if FBar.Height <> H then FBar.Height := H;
 
   // Bestehende Bearbeitungsleiste unveraendert belassen.
-  if FEditBar.Visible then
+  if FEditVisible and FEditBar.Visible then
   begin
+    W := FEditBar.ClientWidth;
     H := RowH + Px(10);
     if FEditBar.Height <> H then FEditBar.Height := H;
     X := Margin;
@@ -1680,9 +1698,11 @@ begin
     PlaceControl(FWidthSelect, Px(84), EditH);
     PlaceButton(FColorButton, 108);
     PlaceControl(FColorSwatch, Px(22), Px(20));
-    PlaceButton(FSave, 153);
     H := Y + RowH + Px(5);
     if FEditBar.Height <> H then FEditBar.Height := H;
+  end;
+  finally
+    FToolbarLayoutBusy := False;
   end;
 end;
 
