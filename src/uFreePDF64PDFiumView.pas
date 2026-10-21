@@ -1629,10 +1629,10 @@ begin
       else if (Pos('rc4', Line) > 0) and (Method = '') then
         Method := 'RC4';
     end;
-    if Method = 'AES-256' then Result := 'AES-256 (256 Bit)'
-    else if Method = 'AES-128' then Result := 'AES-128 (128 Bit)'
-    else if (Method = 'RC4') and (Bits = 128) then Result := 'RC4-128 (128 Bit)'
-    else if (Method = 'RC4') and (Bits = 40) then Result := 'RC4-40 (40 Bit)'
+    if Method = 'AES-256' then Result := '256-Bit AES'
+    else if Method = 'AES-128' then Result := '128-Bit AES'
+    else if (Method = 'RC4') and (Bits = 128) then Result := '128-Bit RC4'
+    else if (Method = 'RC4') and (Bits = 40) then Result := '40-Bit RC4'
     else if Bits in [40, 128] then Result := IntToStr(Bits) + ' Bit (Verfahren unbekannt)'
     else if Bits = 256 then Result := '256 Bit (Verfahren unbekannt)';
   finally
@@ -1794,8 +1794,7 @@ begin
           2: EncryptionText := '40 Bit (PDF-Sicherheitsrevision 2)';
           3, 4: EncryptionText := '128 Bit (PDF-Sicherheitsrevision ' +
             IntToStr(FCore.SecurityRevision) + ')';
-          5, 6: EncryptionText := '256 Bit (PDF-Sicherheitsrevision ' +
-            IntToStr(FCore.SecurityRevision) + ')';
+          5, 6: EncryptionText := '256-Bit AES';
         end;
       end;
       AddField('Verschlüsselung:', EncryptionText);
