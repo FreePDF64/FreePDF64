@@ -879,7 +879,7 @@ begin
   FOpenButton.Parent := Header;
   FOpenButton.Align := alLeft;
   FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
-  FOpenButton.Caption := 'PDF-Datei(en) öffnen ...';
+  FOpenButton.Caption := 'PDF öffnen ...';
   FOpenButton.OnClick := OpenPDFClick;
   // Hauptprogramm im selben Prozess sichtbar machen.
   FMainProgramButton := TButton.Create(Self);
