@@ -1511,7 +1511,7 @@ begin
     FEditBar.Align := alTop;
     if FEditVisible then
     begin
-      FEditBar.Height := MulDiv(36, CurrentPPI, 96);
+      FEditBar.Height := MulDiv(30, CurrentPPI, 96);
       FEditBar.Visible := True;
     end
     else
@@ -1625,10 +1625,10 @@ begin
   EditH := ButtonH;
   RowH := Max(ButtonH, EditH);
   Gap := Px(7);
-  RowGap := Px(6);
+  RowGap := Px(2);
   Margin := Px(8);
   X := Margin;
-  Y := Px(5);
+  Y := Px(1);
 
   MeasureBitmap := TBitmap.Create;
   try
@@ -1683,22 +1683,22 @@ begin
 
   // Panelhoehe erst nach der Anordnung bestimmen. Dadurch wird beim
   // Verkleinern eine weitere Zeile frei, beim Vergroessern wieder entfernt.
-  H := Y + RowH + Px(5);
+  H := Y + RowH + Px(1);
   if FBar.Height <> H then FBar.Height := H;
 
   // Bestehende Bearbeitungsleiste unveraendert belassen.
   if FEditVisible and FEditBar.Visible then
   begin
     W := FEditBar.ClientWidth;
-    H := RowH + Px(10);
+    H := RowH + Px(2);
     if FEditBar.Height <> H then FEditBar.Height := H;
     X := Margin;
-    Y := Px(5);
+    Y := Px(1);
     PlaceControl(FShapeSelect, Px(116), EditH);
     PlaceControl(FWidthSelect, Px(84), EditH);
     PlaceButton(FColorButton, 108);
     PlaceControl(FColorSwatch, Px(22), Px(20));
-    H := Y + RowH + Px(5);
+    H := Y + RowH + Px(1);
     if FEditBar.Height <> H then FEditBar.Height := H;
   end;
   finally

@@ -10,22 +10,22 @@ File_7=TSourceModule,'D:\Delphi\FreePDF64\Auswahl_Unit.pas',0,1,11,9,38,0,0,,
 File_8=TSourceModule,'D:\Delphi\FreePDF64\Encrypt_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module1=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
-Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\Info_Unit.pas
+Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module2=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
 Module3=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 Module4=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Module5=D:\Delphi\FreePDF64\uFreePDF64PDFiumCore.pas
 Count=6
 EditWindowCount=1
 
+[D:\Delphi\FreePDF64\Info_Unit.pas]
+ModuleType=TSourceModule
+
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas]
-ModuleType=TSourceModule
-
-[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFTabsForm.pas]
@@ -39,7 +39,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=6
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -299,8 +299,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=-2039
+Top=336
 Width=273
 Height=362
 MaxLeft=-1
@@ -504,8 +504,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=505
+Top=1083
 Width=2855
 Height=3210
 MaxLeft=-1
@@ -618,8 +618,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=8
-Top=8
+Left=1270
+Top=36
 Width=3824
 Height=1420
 MaxLeft=-1
