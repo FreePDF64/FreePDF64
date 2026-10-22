@@ -1,6 +1,6 @@
 22.10.2026 V8.0.2
 Fix -> Codeoptimierungen durchgeführt.
-Fix -> Treiberinstallation des FreePDF64 Postscript-Drucker weiter verbessert (speziell Windows-Signaturprüfung/Signaturvalidierung im Driver StoreWenn der Tester erneut einen Fehler erhält, sind PrinterSetup.log und PrinterSetup_SetupAPI_Auszug.log weiterhin die wichtigsten Diagnoseinformationen.).
+Fix -> Treiberinstallation des FreePDF64 Postscript-Drucker weiter verbessert (speziell Windows-Signaturprüfung/Signaturvalidierung im Driver Store).
 21.10.2026 V8.0.1
 Fix -> FreePDF64 Postscript-Drucker erzeugt bei Installationsfehler eine Diagnosedatei unter C:\ProgramData\FreePDF64\PrinterSetup_SetupAPI_Auszug.log.
 21.10.2026 V8.0
