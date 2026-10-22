@@ -3,17 +3,35 @@
 interface
 
 uses
-  System.SysUtils, System.Classes, Winapi.Windows, Winapi.Messages, Winapi.CommCtrl,
+  System.SysUtils, System.Classes, System.Types, Winapi.Windows, Winapi.Messages, Winapi.CommCtrl, Winapi.ShellAPI,
   Vcl.Forms, Vcl.Controls, Vcl.ComCtrls, Vcl.StdCtrls, Vcl.ExtCtrls, Vcl.Graphics,
-  Vcl.Dialogs, Vcl.Menus, System.IniFiles, Math,
+  Vcl.Dialogs, Vcl.Menus, Vcl.Imaging.jpeg, System.IniFiles, System.Win.Registry, Math,
   uPDFBrowserForm;
 
 type
+  // Mausrad auch dann an den Hilfetext weitergeben, wenn der Schließen-Button
+  // den Tastaturfokus besitzt.
+  TViewerHelpForm = class(TForm)
+  public
+    HelpScroll: TScrollBox;
+  protected
+    function DoMouseWheel(Shift: TShiftState; WheelDelta: Integer;
+      MousePos: TPoint): Boolean; override;
+  end;
+
   TPDFTabsForm = class(TForm)
   private
     FTabs: TPageControl;
+    FWelcomePanel: TPanel;
+    FWelcomeImage: TImage;
+    FWelcomeTitle: TLabel;
+    FWelcomeHint: TLabel;
+    FWelcomeOpenButton: TButton;
     FEmptyTabStrip: TPanel;
     FViewerHeader: TPanel;
+    FTabActionsPanel: TPanel;
+    FFileMenu: TMenuItem;
+    FOptionsMenu: TMenuItem;
     FFullScreen: Boolean;
     FFullScreenBounds: TRect;
     FFullScreenWindowState: TWindowState;
@@ -29,10 +47,16 @@ type
     FReopenClosedItem: TMenuItem;
     FTabHintWindow: THintWindow;
     FHintTabIndex: Integer;
+    FHoverCloseTabIndex: Integer;
     FDragTabIndex: Integer;
     FDragStartPoint: TPoint;
     FDraggingTab: Boolean;
-    FCloseButton: TButton;
+    FHelpMainMenu: TMainMenu;
+    FTrayPopup: TPopupMenu;
+    FTrayMenuItem: TMenuItem;
+    FTrayEnabled: Boolean;
+    FTrayVisible: Boolean;
+    FExitFromTray: Boolean;
     FOpenButton: TButton;
     FMainProgramButton: TButton;
     FTabSearchButton: TButton;
@@ -55,10 +79,23 @@ type
     FInitialWindowOffscreen: Boolean;
     FInitialWindowBounds: TRect;
     FInitialWindowMaximized: Boolean;
+    procedure ShowModernInfo(AAbout: Boolean);
+    procedure ShowAboutViewer(Sender: TObject);
+    procedure PDFVerknuepfungClick(Sender: TObject);
+    procedure ToggleTrayMode(Sender: TObject);
+    procedure RestoreFromTray(Sender: TObject);
+    procedure ExitFromTray(Sender: TObject);
+    procedure SetTrayIcon(AVisible: Boolean);
+    procedure WMTrayCallback(var Msg: TMessage); message WM_APP + 195;
+    procedure ShowViewerHelp(Sender: TObject);
+    procedure UpdateWelcomeView;
+    procedure WelcomeResize(Sender: TObject);
+    procedure WMDropFiles(var Msg: TWMDropFiles); message WM_DROPFILES;
     procedure TabsWindowProc(var Msg: TMessage);
     procedure WMViewerActivate(var Msg: TWMActivate); message WM_ACTIVATE;
     procedure WMViewerHotKey(var Msg: TMessage); message WM_HOTKEY;
     procedure UpdateEmptyTabStrip;
+    procedure PositionTabActions;
     procedure TabsResized(Sender: TObject);
     procedure EmptyTabStripMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
@@ -98,6 +135,8 @@ type
     procedure SaveWindowSettings;
     procedure RememberNormalBounds;
     procedure CloseActive(Sender: TObject);
+    procedure CloseTabAt(AIndex: Integer);
+    function TabCloseRect(AIndex: Integer): TRect;
     procedure ViewerKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure ToggleFullScreen;
     procedure WMCopyData(var Msg: TWMCopyData); message WM_COPYDATA;
@@ -126,6 +165,7 @@ type
     procedure AddAttachmentPDF(APDF: TPDFBrowserForm; ASource: TPDFBrowserForm);
     procedure ActivatePDF(APDF: TPDFBrowserForm);
     procedure ShowCreatedPDFInForeground;
+    procedure HideAllAttachmentWindows;
     procedure GetOpenPDFFileNames(AFiles: TStrings);
     function ActivateExistingPDF(const AFileName: string): Boolean;
   end;
@@ -496,6 +536,8 @@ end;
 
 procedure TPDFTabsForm.TabsFormShow(Sender: TObject);
 begin
+  DragAcceptFiles(Handle, True);
+  UpdateWelcomeView;
   // Erst nach der VCL-Anzeige wiederherstellen: Explorer und F1 verwenden
   // unterschiedliche Startwege, aber beide durchlaufen OnShow.
   PostMessage(Handle, WM_APP + 194, 0, 0);
@@ -793,9 +835,641 @@ begin
   end;
 end;
 
+function ViewerExeVersion: string;
+var
+  InfoSize, Dummy: DWORD;
+  Info: TBytes;
+  FixedInfo: PVSFixedFileInfo;
+  FixedLen: UINT;
+begin
+  Result := 'nicht verfügbar';
+  InfoSize := GetFileVersionInfoSize(PChar(Application.ExeName), Dummy);
+  if InfoSize = 0 then Exit;
+  SetLength(Info, InfoSize);
+  if not GetFileVersionInfo(PChar(Application.ExeName), 0, InfoSize, @Info[0]) then Exit;
+  FixedInfo := nil;
+  FixedLen := 0;
+  if VerQueryValue(@Info[0], '\', Pointer(FixedInfo), FixedLen) and
+     (FixedInfo <> nil) and (FixedLen >= SizeOf(TVSFixedFileInfo)) and
+     (FixedInfo^.dwSignature = $FEEF04BD) then
+    Result := Format('%d.%d.%d.%d',
+      [HiWord(FixedInfo^.dwFileVersionMS), LoWord(FixedInfo^.dwFileVersionMS),
+       HiWord(FixedInfo^.dwFileVersionLS), LoWord(FixedInfo^.dwFileVersionLS)]);
+end;
+
+function TViewerHelpForm.DoMouseWheel(Shift: TShiftState;
+  WheelDelta: Integer; MousePos: TPoint): Boolean;
+var
+  NewPos, Step: Integer;
+begin
+  if HelpScroll = nil then
+  begin
+    Result := inherited DoMouseWheel(Shift, WheelDelta, MousePos);
+    Exit;
+  end;
+  Step := MulDiv(60, HelpScroll.CurrentPPI, 96);
+  NewPos := HelpScroll.VertScrollBar.Position - MulDiv(WheelDelta, Step, WHEEL_DELTA);
+  HelpScroll.VertScrollBar.Position := EnsureRange(NewPos, 0,
+    Max(0, HelpScroll.VertScrollBar.Range - HelpScroll.ClientHeight));
+  Result := True;
+end;
+
+procedure TPDFTabsForm.ShowModernInfo(AAbout: Boolean);
+var
+  D: TForm;
+  TopPanel, BottomPanel, BodyPanel: TPanel;
+  Scroll: TScrollBox;
+  TitleLabel, SubLabel: TLabel;
+  Btn: TButton;
+  Img: TImage;
+  Y, Scale: Integer;
+  function Px(V: Integer): Integer;
+  begin
+    Result := MulDiv(V, Scale, 96);
+  end;
+  procedure AddSection(const ATitle, ABody: string);
+  var
+    Card: TPanel;
+    Head, Body: TLabel;
+    BodyHeight, CardHeight, ContentWidth: Integer;
+  begin
+    ContentWidth := Max(Px(320), Scroll.ClientWidth - Px(62));
+    Card := TPanel.Create(D);
+    Card.Parent := Scroll;
+    Card.BevelOuter := bvNone;
+    Card.ParentBackground := False;
+    Card.Color := RGB(244, 248, 253);
+    Card.SetBounds(Px(22), Y + Px(12), ContentWidth, Px(90));
+
+    Head := TLabel.Create(D);
+    Head.Parent := Card;
+    Head.SetBounds(Px(18), Px(13), ContentWidth - Px(36), Px(24));
+    Head.Font.Name := 'Segoe UI';
+    Head.Font.Size := 11;
+    Head.Font.Style := [fsBold];
+    Head.Font.Color := RGB(24, 83, 150);
+    Head.ShowAccelChar := False;
+    Head.Caption := ATitle;
+
+    Body := TLabel.Create(D);
+    Body.Parent := Card;
+    Body.AutoSize := False;
+    Body.WordWrap := True;
+    Body.ShowAccelChar := False; // & ist Text, kein Zugriffstasten-Marker.
+    Body.Font.Name := 'Segoe UI';
+    Body.Font.Size := 10;
+    Body.Font.Color := RGB(44, 55, 70);
+    Body.SetBounds(Px(18), Px(43), ContentWidth - Px(36), Px(40));
+    Body.Caption := ABody;
+    // Calculate text wrapping using the label's preferred height.
+    Body.AutoSize := True;
+    Body.Width := ContentWidth - Px(36);
+    BodyHeight := Max(Px(30), Body.Height);
+    Body.AutoSize := False;
+    Body.Height := BodyHeight;
+    CardHeight := Px(51) + BodyHeight + Px(12);
+    Card.Height := CardHeight;
+    Inc(Y, CardHeight + Px(12));
+  end;
+begin
+  D := TViewerHelpForm.CreateNew(Self);
+  try
+    Scale := CurrentPPI;
+    if Scale < 96 then Scale := 96;
+    D.Font.Name := 'Segoe UI';
+    D.Font.Size := 10;
+    D.Color := clWhite;
+    D.Position := poOwnerFormCenter;
+    D.BorderStyle := bsSizeable;
+    D.Caption := 'FreePDF64-Viewer - ' + 'Hilfe';
+    if AAbout then D.Caption := 'Über FreePDF64-Viewer';
+    D.ClientWidth := Px(750);
+    D.ClientHeight := Px(620);
+    D.Constraints.MinWidth := Px(600);
+    D.Constraints.MinHeight := Px(400);
+    D.KeyPreview := True;
+
+    TopPanel := TPanel.Create(D);
+    TopPanel.Parent := D;
+    TopPanel.Align := alTop;
+    TopPanel.Height := Px(112);
+    TopPanel.BevelOuter := bvNone;
+    TopPanel.ParentBackground := False;
+    TopPanel.Color := RGB(19, 93, 169);
+
+    Img := TImage.Create(D);
+    Img.Parent := TopPanel;
+    Img.SetBounds(Px(24), Px(24), Px(54), Px(54));
+    Img.Picture.Icon.Assign(Application.Icon);
+    Img.Stretch := True;
+
+    TitleLabel := TLabel.Create(D);
+    TitleLabel.Parent := TopPanel;
+    TitleLabel.SetBounds(Px(95), Px(26), Px(555), Px(35));
+    TitleLabel.Font.Name := 'Segoe UI';
+    TitleLabel.Font.Size := 19;
+    TitleLabel.Font.Style := [fsBold];
+    TitleLabel.Font.Color := clWhite;
+    if AAbout then TitleLabel.Caption := 'FreePDF64-Viewer'
+    else TitleLabel.Caption := 'Funktionsübersicht';
+
+    SubLabel := TLabel.Create(D);
+    SubLabel.Parent := TopPanel;
+    SubLabel.SetBounds(Px(97), Px(68), Px(540), Px(24));
+    SubLabel.Font.Size := 10;
+    SubLabel.Font.Color := RGB(224, 237, 250);
+    if AAbout then SubLabel.Caption := 'Version ' + ViewerExeVersion + ' · Portable PDF-Anwendung für Windows 64-Bit'
+    else SubLabel.Caption := 'Alles Wichtige auf einen Blick';
+
+    BottomPanel := TPanel.Create(D);
+    BottomPanel.Parent := D;
+    BottomPanel.Align := alBottom;
+    BottomPanel.Height := Px(66);
+    BottomPanel.BevelOuter := bvNone;
+    BottomPanel.ParentBackground := False;
+    BottomPanel.Color := RGB(230, 239, 249);
+
+    Btn := TButton.Create(D);
+    Btn.Parent := BottomPanel;
+    Btn.Caption := 'Schließen';
+    Btn.ModalResult := mrOk;
+    Btn.Default := True;
+    Btn.Cancel := True; // ESC schließt beide Dialoge.
+    Btn.SetBounds(D.ClientWidth - Px(156), Px(15), Px(125), Px(35));
+    Btn.Anchors := [akRight, akTop];
+
+    BodyPanel := TPanel.Create(D);
+    BodyPanel.Parent := D;
+    BodyPanel.Align := alClient;
+    BodyPanel.BevelOuter := bvNone;
+    BodyPanel.Color := clWhite;
+    BodyPanel.ParentBackground := False;
+
+    Scroll := TScrollBox.Create(D);
+    TViewerHelpForm(D).HelpScroll := Scroll;
+    Scroll.Parent := BodyPanel;
+    Scroll.Align := alClient;
+    Scroll.BorderStyle := bsNone;
+    Scroll.Color := RGB(250, 252, 255);
+    Scroll.ParentBackground := False;
+    Scroll.VertScrollBar.Tracking := True;
+    Y := Px(6);
+    if AAbout then
+    begin
+      AddSection('Version', ViewerExeVersion);
+      AddSection('Über das Programm',
+        'Eigenständiger PDF-Viewer mit Registerkarten, Dokumenteigenschaften, Anlagenverwaltung und PDF-Werkzeugen.');
+      AddSection('Copyright und Kontakt',
+        'Copyright © 2026 FreePDF64' + sLineBreak + 'FreePDF64@outlook.com');
+      AddSection('Projektseite', 'https://github.com/FreePDF64');
+      AddSection('Zusatzprogramme und Bibliotheken',
+        'PDFium, qpdf und Xpdf (pdfdetach). Für diese Komponenten gelten die jeweiligen Lizenzbedingungen.');
+      AddSection('Einstellungsdatei',
+        IncludeTrailingPathDelimiter(ExtractFilePath(Application.ExeName)) + 'FreePDF64.ini');
+      AddSection('Programmdatei', Application.ExeName);
+    end
+    else
+    begin
+      AddSection('PDF-Dateien öffnen',
+        'Über „Datei → PDF öffnen …“, Strg+O oder per Drag&Drop. Mehrere PDFs werden in eigenen Tabs geöffnet.');
+      AddSection('Geschlossene PDFs und Sitzung wiederherstellen',
+        'Klicken Sie auf der leeren Startseite mit der rechten Maustaste. '
+        + 'Unter „Geschlossene PDFs wieder öffnen“ finden Sie zuletzt geschlossene Dokumente. '
+        + '„Letzte PDF-Sitzung wiederherstellen“ öffnet die zuvor gespeicherte Sitzung. '
+        + 'Nicht verfügbare Einträge sind ausgegraut.');
+      AddSection('Tabs verwalten',
+        'Das × im Tab, die mittlere Maustaste oder Strg+W schließen ein PDF. Bei ungespeicherten Änderungen erscheint eine Rückfrage.');
+      AddSection('Anzeige und Navigation',
+        'Mit der PDF-Werkzeugleiste Seiten wechseln, zoomen, Seiten einpassen, zwei Seiten oder die durchgehende Anzeige wählen.');
+      AddSection('Text suchen',
+        'Die Suchfunktion durchsucht das PDF. F3 springt zum nächsten Treffer.');
+      AddSection('Bearbeiten und Speichern',
+        '„Bearbeiten“ öffnet die Markierungs- und Zeichenwerkzeuge. Änderungen mit „Speichern unter ...“ sichern.');
+      AddSection('Anlagen und Dokumenteigenschaften',
+        'Die Viewer-Schaltflächen zeigen eingebettete Anlagen sowie Eigenschaften und Sicherheitsinformationen. Für das Extrahieren wird xpdf\bin64\pdfdetach.exe verwendet.');
+      AddSection('Drucken und Zusatzwerkzeuge',
+        'Drucken erfolgt über die PDF-Werkzeugleiste. Weitere Funktionen benötigen pdfium.dll und qpdf\bin\qpdf.exe.');
+      AddSection('Protokolldatei',
+        'Der Viewer protokolliert Aktionen der Anlagenverwaltung in der Datei FreePDF64ViewerLog.txt. '
+        + 'Sie liegt im selben Ordner wie die EXE und wird bei Bedarf angelegt oder ergänzt. '
+        + 'Der Ordner muss dafür beschreibbar sein.');
+      AddSection('Portable Einstellungen',
+        'FreePDF64.ini liegt neben der EXE. Unter „Optionen“ können Sie festlegen, ob der Viewer beim Schließen in den Infobereich wechseln soll. „Datei → Exit“ beendet den Viewer nach einer Sicherheitsabfrage vollständig.');
+    end;
+    Scroll.VertScrollBar.Range := Y + Px(35);
+    D.ShowModal;
+  finally
+    D.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.ShowAboutViewer(Sender: TObject);
+begin
+  ShowModernInfo(True);
+end;
+
+procedure TPDFTabsForm.ShowViewerHelp(Sender: TObject);
+begin
+  ShowModernInfo(False);
+end;
+
+procedure TPDFTabsForm.SetTrayIcon(AVisible: Boolean);
+var
+  Data: TNotifyIconDataW;
+begin
+  if AVisible = FTrayVisible then Exit;
+  FillChar(Data, SizeOf(Data), 0);
+  Data.cbSize := SizeOf(Data);
+  Data.Wnd := Handle;
+  Data.uID := 1;
+  if AVisible then
+  begin
+    Data.uFlags := NIF_MESSAGE or NIF_ICON or NIF_TIP;
+    Data.uCallbackMessage := WM_APP + 195;
+    Data.hIcon := Application.Icon.Handle;
+    StringToWideChar('FreePDF64-Viewer', @Data.szTip[0], Length(Data.szTip));
+    FTrayVisible := Shell_NotifyIconW(NIM_ADD, @Data);
+  end
+  else
+  begin
+    Shell_NotifyIconW(NIM_DELETE, @Data);
+    FTrayVisible := False;
+  end;
+end;
+
+procedure TPDFTabsForm.RestoreFromTray(Sender: TObject);
+begin
+  SetTrayIcon(False);
+  Show;
+  if WindowState = wsMinimized then WindowState := wsNormal;
+  BringToFront;
+  SetForegroundWindow(Handle);
+end;
+
+procedure TPDFTabsForm.ExitFromTray(Sender: TObject);
+begin
+  // Bewusstes Beenden: anders als beim Fenster-X nicht in den Tray wechseln.
+  FExitFromTray := True;
+  try
+    Close; // TabsFormClose führt die Sicherheitsabfragen aus.
+  finally
+    // Bei Abbrechen bleibt die Anwendung samt Tray-Funktion benutzbar.
+    FExitFromTray := False;
+  end;
+end;
+
+function ConfirmPDFViewerAssociation(AOwner: TCustomForm): Boolean;
+var
+  D: TViewerHelpForm;
+  Header, Footer, InfoCard: TPanel;
+  Content: TScrollBox;
+  IconImage: TImage;
+  L: TLabel;
+  YesButton, NoButton: TButton;
+  Scale: Integer;
+  function Px(V: Integer): Integer;
+  begin
+    Result := MulDiv(V, Scale, 96);
+  end;
+  procedure TextLine(AParent: TWinControl; const AText: string;
+    AX, AY, AWidth, AHeight, ASize: Integer; ABold: Boolean; AColor: TColor);
+  begin
+    L := TLabel.Create(D);
+    L.Parent := AParent;
+    L.SetBounds(Px(AX), Px(AY), Px(AWidth), Px(AHeight));
+    L.AutoSize := False;
+    L.WordWrap := True;
+    L.ShowAccelChar := False;
+    L.Caption := AText;
+    L.Font.Name := 'Segoe UI';
+    L.Font.Size := ASize;
+    L.Font.Color := AColor;
+    if ABold then L.Font.Style := [fsBold];
+  end;
+begin
+  Result := False;
+  D := TViewerHelpForm.CreateNew(AOwner);
+  try
+    Scale := AOwner.CurrentPPI;
+    if Scale < 96 then Scale := 96;
+    D.Caption := 'PDF-Dateien verknüpfen';
+    D.Position := poOwnerFormCenter;
+    D.BorderStyle := bsDialog;
+    D.Font.Name := 'Segoe UI';
+    D.Font.Size := 10;
+    D.Color := clWhite;
+    D.ClientWidth := Px(630);
+    D.ClientHeight := Px(460);
+    D.Constraints.MinWidth := Px(510);
+    D.Constraints.MinHeight := Px(300);
+    D.KeyPreview := True;
+
+    Header := TPanel.Create(D);
+    Header.Parent := D;
+    Header.Align := alTop;
+    Header.Height := Px(105);
+    Header.BevelOuter := bvNone;
+    Header.ParentBackground := False;
+    Header.Color := RGB(19, 93, 169);
+
+    IconImage := TImage.Create(D);
+    IconImage.Parent := Header;
+    IconImage.SetBounds(Px(24), Px(24), Px(54), Px(54));
+    IconImage.Picture.Icon.Assign(Application.Icon);
+    IconImage.Stretch := True;
+
+    TextLine(Header, 'PDF-Dateien verknüpfen', 95, 24, 505, 36,
+      19, True, clWhite);
+    TextLine(Header, 'FreePDF64-Viewer als Standard-App einrichten',
+      97, 67, 500, 23, 10, False, RGB(224, 237, 250));
+
+    Footer := TPanel.Create(D);
+    Footer.Parent := D;
+    Footer.Align := alBottom;
+    Footer.Height := Px(68);
+    Footer.BevelOuter := bvNone;
+    Footer.ParentBackground := False;
+    Footer.Color := RGB(230, 239, 249);
+
+    NoButton := TButton.Create(D);
+    NoButton.Parent := Footer;
+    NoButton.Caption := 'Abbrechen';
+    NoButton.ModalResult := mrCancel;
+    NoButton.Cancel := True;
+    NoButton.SetBounds(Px(475), Px(16), Px(130), Px(36));
+    NoButton.Anchors := [akRight, akTop];
+
+    YesButton := TButton.Create(D);
+    YesButton.Parent := Footer;
+    YesButton.Caption := 'Weiter';
+    YesButton.ModalResult := mrYes;
+    YesButton.Default := True;
+    YesButton.SetBounds(Px(325), Px(16), Px(135), Px(36));
+    YesButton.Anchors := [akRight, akTop];
+
+    Content := TScrollBox.Create(D);
+    Content.Parent := D;
+    Content.Align := alClient;
+    Content.BorderStyle := bsNone;
+    Content.ParentBackground := False;
+    Content.Color := RGB(250, 252, 255);
+    Content.VertScrollBar.Visible := True;
+    Content.VertScrollBar.Tracking := True;
+    Content.HorzScrollBar.Visible := False;
+    Content.AutoScroll := True;
+    D.HelpScroll := Content;
+
+    TextLine(Content, 'PDF-Dateien direkt im Viewer öffnen',
+      28, 22, 565, 29, 13, True, RGB(24, 83, 150));
+    TextLine(Content,
+      'Der FreePDF64-Viewer wird für Ihr Windows-Benutzerkonto als PDF-Anwendung registriert.',
+      28, 65, 560, 48, 10, False, RGB(44, 55, 70));
+
+    InfoCard := TPanel.Create(D);
+    InfoCard.Parent := Content;
+    InfoCard.SetBounds(Px(25), Px(127), Px(580), Px(112));
+    InfoCard.BevelOuter := bvNone;
+    InfoCard.ParentBackground := False;
+    InfoCard.Color := RGB(233, 243, 253);
+    TextLine(InfoCard, 'So geht es weiter', 18, 13, 530, 26,
+      11, True, RGB(24, 83, 150));
+    TextLine(InfoCard,
+      '1. Der Viewer wird in Windows registriert.' + sLineBreak +
+      '2. Die Windows-Einstellungen für Standard-Apps werden geöffnet.' + sLineBreak +
+      '3. Dort wählen Sie den FreePDF64-Viewer für PDF-Dateien aus.',
+      18, 43, 540, 65, 10, False, RGB(44, 55, 70));
+
+    TextLine(Content, 'Hinweis zur portablen Version',
+      28, 260, 555, 27, 11, True, RGB(24, 83, 150));
+    TextLine(Content,
+      'Wenn Sie die EXE-Datei verschieben oder den Laufwerksbuchstaben ändern, müssen Sie die Verknüpfung erneut einrichten.',
+      28, 292, 560, 56, 10, False, RGB(44, 55, 70));
+
+    // Inhalt reicht über die sichtbare Fläche hinaus und kann mit
+    // Scrollleiste, Mausrad oder Tastatur vollständig gelesen werden.
+    Content.VertScrollBar.Range := Px(390);
+    Result := D.ShowModal = mrYes;
+  finally
+    D.Free;
+  end;
+end;
+
+procedure ShowRegistrationInfoDialog(AOwner: TForm; ASettingsOpened: Boolean); forward;
+
+procedure TPDFTabsForm.PDFVerknuepfungClick(Sender: TObject);
+const
+  // Eigenstaendige Registrierung: keine Kollision mit FreePDF64.PDF.
+  ProgId = 'FreePDF64ViewerPortable.PDF';
+  Capabilities = 'Software\FreePDF64ViewerPortable\Capabilities';
+var
+  Reg: TRegistry;
+  ExePath, ExeName, CommandLine: string;
+
+  procedure WriteValue(const KeyName, ValueName, Value: string);
+  begin
+    if not Reg.OpenKey(KeyName, True) then
+      raise Exception.Create('Registry-Schlüssel kann nicht angelegt werden: ' + KeyName);
+    try
+      Reg.WriteString(ValueName, Value);
+    finally
+      Reg.CloseKey;
+    end;
+  end;
+begin
+  if not ConfirmPDFViewerAssociation(Self) then Exit;
+
+  ExePath := ExpandFileName(Application.ExeName);
+  ExeName := ExtractFileName(ExePath);
+  CommandLine := '"' + ExePath + '" "%1"';
+  Reg := TRegistry.Create(KEY_READ or KEY_WRITE);
+  try
+    Reg.RootKey := HKEY_CURRENT_USER;
+    try
+      WriteValue('Software\Classes\' + ProgId, '', 'FreePDF64-Viewer PDF-Dokument');
+      WriteValue('Software\Classes\' + ProgId + '\DefaultIcon', '', '"' + ExePath + '",0');
+      WriteValue('Software\Classes\' + ProgId + '\shell\open\command', '', CommandLine);
+      WriteValue('Software\Classes\Applications\' + ExeName + '\SupportedTypes', '.pdf', '');
+      WriteValue('Software\Classes\Applications\' + ExeName + '\shell\open\command', '', CommandLine);
+      WriteValue(Capabilities, 'ApplicationName', 'FreePDF64-Viewer');
+      WriteValue(Capabilities, 'ApplicationDescription', 'Portabler PDF-Viewer von FreePDF64');
+      WriteValue(Capabilities, 'ApplicationIcon', '"' + ExePath + '",0');
+      WriteValue(Capabilities + '\FileAssociations', '.pdf', ProgId);
+      WriteValue('Software\RegisteredApplications', 'FreePDF64-Viewer', Capabilities);
+    except
+      on E: Exception do
+      begin
+        MessageDlg('Die Registrierung des PDF-Viewers ist fehlgeschlagen:' +
+          sLineBreak + E.Message, mtError, [mbOK], 0);
+        Exit;
+      end;
+    end;
+  finally
+    Reg.Free;
+  end;
+
+  // Keine direkte Manipulation der geschuetzten Windows-UserChoice-Zuordnung.
+  // Windows 10/11 verlangen eine bewusste Auswahl durch den Benutzer.
+  ShowRegistrationInfoDialog(Self,
+    ShellExecute(Handle, 'open', 'ms-settings:defaultapps', nil, nil,
+      SW_SHOWNORMAL) > 32);
+end;
+
+procedure ShowRegistrationInfoDialog(AOwner: TForm; ASettingsOpened: Boolean);
+var
+  D: TViewerHelpForm;
+  Header, Footer: TPanel;
+  Content: TScrollBox;
+  TitleLabel, SubTitle, Heading, BodyText, NoteText: TLabel;
+  IconImage: TImage;
+  CloseButton: TButton;
+  Scale: Integer;
+
+  function Px(V: Integer): Integer;
+  begin
+    Result := MulDiv(V, Scale, 96);
+  end;
+
+  function AddText(AParent: TWinControl; const AText: string;
+    AX, AY, AW, AH, ASize: Integer; ABold: Boolean; AColor: TColor): TLabel;
+  begin
+    Result := TLabel.Create(D);
+    Result.Parent := AParent;
+    Result.SetBounds(Px(AX), Px(AY), Px(AW), Px(AH));
+    Result.AutoSize := False;
+    Result.WordWrap := True;
+    Result.ShowAccelChar := False;
+    Result.Caption := AText;
+    Result.Font.Name := 'Segoe UI';
+    Result.Font.Size := ASize;
+    Result.Font.Color := AColor;
+    if ABold then
+      Result.Font.Style := [fsBold];
+  end;
+
+begin
+  D := TViewerHelpForm.CreateNew(AOwner);
+  try
+    Scale := AOwner.CurrentPPI;
+    if Scale < 96 then Scale := 96;
+    D.Caption := 'PDF-Verknüpfung eingerichtet';
+    D.Position := poOwnerFormCenter;
+    D.BorderStyle := bsDialog;
+    D.Font.Name := 'Segoe UI';
+    D.Font.Size := 10;
+    D.Color := clWhite;
+    D.ClientWidth := Px(610);
+    D.ClientHeight := Px(340);
+    D.KeyPreview := True;
+
+    Header := TPanel.Create(D);
+    Header.Parent := D;
+    Header.Align := alTop;
+    Header.Height := Px(105);
+    Header.BevelOuter := bvNone;
+    Header.ParentBackground := False;
+    Header.Color := RGB(19, 93, 169);
+
+    IconImage := TImage.Create(D);
+    IconImage.Parent := Header;
+    IconImage.SetBounds(Px(24), Px(25), Px(54), Px(54));
+    IconImage.Picture.Icon.Assign(Application.Icon);
+    IconImage.Proportional := True;
+    IconImage.Stretch := True;
+
+    TitleLabel := AddText(Header, 'Registrierung erfolgreich',
+      100, 28, 475, 38, 18, True, clWhite);
+    SubTitle := AddText(Header, 'FreePDF64-Viewer',
+      102, 69, 465, 25, 10, False, RGB(223, 238, 255));
+
+    Footer := TPanel.Create(D);
+    Footer.Parent := D;
+    Footer.Align := alBottom;
+    Footer.Height := Px(67);
+    Footer.BevelOuter := bvNone;
+    Footer.ParentBackground := False;
+    Footer.Color := RGB(232, 241, 251);
+
+    CloseButton := TButton.Create(D);
+    CloseButton.Parent := Footer;
+    CloseButton.SetBounds(Px(453), Px(15), Px(130), Px(37));
+    CloseButton.Caption := 'OK';
+    CloseButton.ModalResult := mrOk;
+    CloseButton.Default := True;
+    CloseButton.Cancel := True;
+
+    Content := TScrollBox.Create(D);
+    Content.Parent := D;
+    Content.Align := alClient;
+    Content.BorderStyle := bsNone;
+    Content.Color := clWhite;
+    Content.ParentBackground := False;
+    Content.HorzScrollBar.Visible := False;
+    Content.AutoScroll := True;
+    D.HelpScroll := Content;
+
+    Heading := AddText(Content, 'Der Viewer wurde in Windows registriert.',
+      27, 17, 550, 30, 13, True, RGB(24, 83, 150));
+    if ASettingsOpened then
+      BodyText := AddText(Content,
+        'Die Windows-Einstellungen für Standard-Apps wurden geöffnet.' +
+        sLineBreak + 'Wählen Sie dort den FreePDF64-Viewer für den Dateityp .pdf aus.',
+        27, 57, 545, 63, 11, False, RGB(44, 55, 70))
+    else
+      BodyText := AddText(Content,
+        'Öffnen Sie Windows-Einstellungen > Apps > Standard-Apps.' +
+        sLineBreak + 'Wählen Sie dort den FreePDF64-Viewer für den Dateityp .pdf aus.',
+        27, 57, 545, 63, 11, False, RGB(44, 55, 70));
+
+    NoteText := AddText(Content,
+      'Wichtig: Erst nach Ihrer Bestätigung in Windows wird die Zuordnung wirksam.',
+      27, 130, 545, 46, 11, True, RGB(24, 83, 150));
+    AddText(Content,
+      'Bei einer portablen Version muss die Verknüpfung nach dem Verschieben der EXE erneut eingerichtet werden.',
+      27, 187, 545, 48, 10, False, RGB(44, 55, 70));
+    Content.VertScrollBar.Range := Px(255);
+    D.ShowModal;
+  finally
+    D.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.ToggleTrayMode(Sender: TObject);
+var
+  Ini: TIniFile;
+begin
+  FTrayEnabled := not FTrayEnabled;
+  if FTrayMenuItem <> nil then FTrayMenuItem.Checked := FTrayEnabled;
+  Ini := TIniFile.Create(TabsIniFileName);
+  try
+    Ini.WriteBool('Viewer', 'BeimSchliessenInTray', FTrayEnabled);
+  finally
+    Ini.Free;
+  end;
+end;
+
+procedure TPDFTabsForm.WMTrayCallback(var Msg: TMessage);
+var
+  P: TPoint;
+begin
+  case Msg.LParam of
+    WM_LBUTTONDBLCLK, WM_LBUTTONUP: RestoreFromTray(nil);
+    WM_RBUTTONUP, WM_CONTEXTMENU:
+      begin
+        GetCursorPos(P);
+        SetForegroundWindow(Handle);
+        FTrayPopup.Popup(P.X, P.Y);
+        PostMessage(Handle, WM_NULL, 0, 0);
+      end;
+  end;
+  Msg.Result := 0;
+end;
+
 constructor TPDFTabsForm.Create(AOwner: TComponent);
 var
   Header: TPanel;
+  HelpRoot, HelpItem: TMenuItem;
+  Ini: TIniFile;
+  MenuInfo: TMenuItemInfo;
   SearchArea: TPanel;
   Dpi: Integer;
   ButtonHeight: Integer;
@@ -811,6 +1485,80 @@ begin
   FSessionPDFs := TStringList.Create;
   LoadClosedPDFs;
   LoadPDFSession;
+  // Eigenstaendiges Hilfe-Menue des portablen Viewers.
+  FHelpMainMenu := TMainMenu.Create(Self);
+  Menu := FHelpMainMenu;
+  FFileMenu := TMenuItem.Create(FHelpMainMenu);
+  FFileMenu.Caption := 'Datei';
+  FHelpMainMenu.Items.Add(FFileMenu);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := 'PDF öffnen ...';
+  HelpItem.ShortCut := ShortCut(Ord('O'), [ssCtrl]);
+  HelpItem.OnClick := OpenPDFClick;
+  FFileMenu.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := '-';
+  FFileMenu.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := 'Exit';
+  HelpItem.ShortCut := ShortCut(VK_F4, [ssAlt]);
+  HelpItem.OnClick := ExitFromTray;
+  FFileMenu.Add(HelpItem);
+  // Einstellungen in einem eigenen Hauptmenü bündeln.
+  FOptionsMenu := TMenuItem.Create(FHelpMainMenu);
+  FOptionsMenu.Caption := 'Optionen';
+  FHelpMainMenu.Items.Add(FOptionsMenu);
+  FTrayMenuItem := TMenuItem.Create(FHelpMainMenu);
+  FTrayMenuItem.Caption := 'Beim Schließen in den Infobereich';
+  FTrayMenuItem.AutoCheck := False;
+  FTrayMenuItem.OnClick := ToggleTrayMode;
+  FOptionsMenu.Add(FTrayMenuItem);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := 'FreePDF64 öffnen';
+  HelpItem.OnClick := OpenMainProgramClick;
+  FOptionsMenu.Add(HelpItem);
+  HelpRoot := TMenuItem.Create(FHelpMainMenu);
+  HelpRoot.Caption := 'Hilfe';
+  FHelpMainMenu.Items.Add(HelpRoot);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := 'Funktionsübersicht';
+  HelpItem.OnClick := ShowViewerHelp;
+  HelpRoot.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := '-';
+  HelpRoot.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FHelpMainMenu);
+  HelpItem.Caption := 'Über FreePDF64-Viewer ...';
+  HelpItem.OnClick := ShowAboutViewer;
+  HelpRoot.Add(HelpItem);
+  Ini := TIniFile.Create(TabsIniFileName);
+  try
+    FTrayEnabled := Ini.ReadBool('Viewer', 'BeimSchliessenInTray', False);
+  finally
+    Ini.Free;
+  end;
+  FTrayMenuItem.Checked := FTrayEnabled;
+  // Hilfe bleibt als dritter Hauptmenüpunkt rechtsbündig.
+  FillChar(MenuInfo, SizeOf(MenuInfo), 0);
+  MenuInfo.cbSize := SizeOf(MenuInfo);
+  MenuInfo.fMask := MIIM_FTYPE;
+  MenuInfo.fType := MFT_STRING or MFT_RIGHTJUSTIFY;
+  SetMenuItemInfo(FHelpMainMenu.Handle, 2, True, MenuInfo);
+  DrawMenuBar(Handle);
+
+  FTrayPopup := TPopupMenu.Create(Self);
+  HelpItem := TMenuItem.Create(FTrayPopup);
+  HelpItem.Caption := 'FreePDF64-Viewer anzeigen';
+  HelpItem.Default := True;
+  HelpItem.OnClick := RestoreFromTray;
+  FTrayPopup.Items.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FTrayPopup);
+  HelpItem.Caption := '-';
+  FTrayPopup.Items.Add(HelpItem);
+  HelpItem := TMenuItem.Create(FTrayPopup);
+  HelpItem.Caption := 'FreePDF64-Viewer beenden';
+  HelpItem.OnClick := ExitFromTray;
+  FTrayPopup.Items.Add(HelpItem);
   FTabContextMenu := TPopupMenu.Create(Self);
   FTabContextMenu.OnPopup := TabContextPopup;
   FReopenClosedItem := TMenuItem.Create(FTabContextMenu);
@@ -835,14 +1583,61 @@ begin
   FViewerHeader := Header;
   Header.Parent := Self;
   Header.Align := alTop;
-  Header.Height := ButtonHeight + MulDiv(6, Dpi, 96);
+  Header.Height := 0;
+  Header.Visible := False;
   Header.BevelOuter := bvNone;
-  FCloseButton := TButton.Create(Self);
-  FCloseButton.Parent := Header;
-  FCloseButton.Align := alRight;
-  FCloseButton.Width := Max(MulDiv(185, Dpi, 96), Canvas.TextWidth('Aktiven Tab schließen') + MulDiv(28, Dpi, 96));
-  FCloseButton.Caption := 'Aktiven Tab schließen';
-  FCloseButton.OnClick := CloseActive;
+  FWelcomePanel := TPanel.Create(Self);
+  FWelcomePanel.Parent := Self;
+  FWelcomePanel.Align := alClient;
+  FWelcomePanel.BevelOuter := bvNone;
+  FWelcomePanel.Color := clWindow;
+  FWelcomePanel.ParentBackground := False;
+  // Auch ohne geöffnete PDF steht der vorhandene Wiederherstellungsverlauf
+  // über das Kontextmenü zur Verfügung.
+  FWelcomePanel.PopupMenu := FTabContextMenu;
+
+  // Das Startbild liegt portabel neben der EXE.
+  FWelcomeImage := TImage.Create(Self);
+  FWelcomeImage.Parent := FWelcomePanel;
+  FWelcomeImage.PopupMenu := FTabContextMenu;
+  FWelcomeImage.Proportional := True;
+  FWelcomeImage.Stretch := True;
+  FWelcomeImage.Center := True;
+  FWelcomeImage.Transparent := True;
+  if FileExists(ExtractFilePath(ParamStr(0)) + 'FreePDF64Viewer_Startbild.jpg') then
+    try
+      FWelcomeImage.Picture.LoadFromFile(
+        ExtractFilePath(ParamStr(0)) + 'FreePDF64Viewer_Startbild.jpg');
+    except
+      FWelcomeImage.Visible := False;
+    end
+  else
+    FWelcomeImage.Visible := False;
+
+  FWelcomeTitle := TLabel.Create(Self);
+  FWelcomeTitle.Parent := FWelcomePanel;
+  FWelcomeTitle.PopupMenu := FTabContextMenu;
+  FWelcomeTitle.AutoSize := True;
+  FWelcomeTitle.Font.Size := 19;
+  FWelcomeTitle.Font.Style := [fsBold];
+  FWelcomeTitle.Caption := 'Willkommen beim FreePDF64-Viewer';
+
+  FWelcomeHint := TLabel.Create(Self);
+  FWelcomeHint.Parent := FWelcomePanel;
+  FWelcomeHint.PopupMenu := FTabContextMenu;
+  FWelcomeHint.AutoSize := True;
+  FWelcomeHint.Font.Size := 11;
+  FWelcomeHint.Caption := 'PDF öffnen oder eine PDF-Datei hierher ziehen (Strg+O)';
+
+  FWelcomeOpenButton := TButton.Create(Self);
+  FWelcomeOpenButton.Parent := FWelcomePanel;
+  FWelcomeOpenButton.PopupMenu := FTabContextMenu;
+  FWelcomeOpenButton.Caption := 'PDF öffnen ...';
+  FWelcomeOpenButton.Width := MulDiv(190, Dpi, 96);
+  FWelcomeOpenButton.Height := MulDiv(38, Dpi, 96);
+  FWelcomeOpenButton.OnClick := OpenPDFClick;
+  FWelcomePanel.OnResize := WelcomeResize;
+
   FTabs := TPageControl.Create(Self);
   FTabs.Parent := Self;
   // Das native Register-Control verarbeitet den freien Streifen selbst.
@@ -859,6 +1654,7 @@ begin
   FTabs.ShowHint := False; // Pfad niemals als vererbbarer VCL-Hint
   FTabHintWindow := THintWindow.Create(Self);
   FHintTabIndex := -1;
+  FHoverCloseTabIndex := -1;
   FTabs.OnMouseMove := TabsMouseMove;
   FTabs.OnMouseLeave := TabsMouseLeave;
   FTabs.OnChange := TabsChange;
@@ -876,12 +1672,6 @@ begin
   FEmptyTabStrip.Cursor := crDefault;
   FEmptyTabStrip.OnMouseUp := EmptyTabStripMouseUp;
   UpdateEmptyTabStrip;
-  FOpenButton := TButton.Create(Self);
-  FOpenButton.Parent := Header;
-  FOpenButton.Align := alLeft;
-  FOpenButton.Width := Max(MulDiv(180, Dpi, 96), Canvas.TextWidth('Datei(en) öffnen ...') + MulDiv(28, Dpi, 96));
-  FOpenButton.Caption := 'PDF öffnen ...';
-  FOpenButton.OnClick := OpenPDFClick;
   // Hauptprogramm im selben Prozess sichtbar machen.
   FMainProgramButton := TButton.Create(Self);
   FMainProgramButton.Parent := Header;
@@ -892,12 +1682,15 @@ begin
   FMainProgramButton.Hint := 'FreePDF64-Hauptprogramm öffnen';
   FMainProgramButton.ShowHint := True;
   FMainProgramButton.OnClick := OpenMainProgramClick;
+  FMainProgramButton.Visible := False; // Im Menü Optionen verfügbar
   // Eigener rechter Bereich: feste Positionen unabhaengig von der
   // VCL-Ausrichtungsreihenfolge anderer Header-Steuerelemente.
   SearchArea := TPanel.Create(Self);
-  SearchArea.Parent := Header;
-  SearchArea.Align := alRight;
+  SearchArea.Parent := FTabs;
+  SearchArea.Align := alNone;
   SearchArea.Width := MulDiv(90, Dpi, 96);
+  SearchArea.Height := MulDiv(28, Dpi, 96);
+  FTabActionsPanel := SearchArea;
   SearchArea.BevelOuter := bvNone;
   FTabCountBadge := TPaintBox.Create(Self);
   FTabCountBadge.Parent := SearchArea;
@@ -991,8 +1784,84 @@ begin
   C.Pen.Style := psSolid;
 end;
 
+procedure TPDFTabsForm.WelcomeResize(Sender: TObject);
+var
+  C, Y, LogoSize, ContentHeight, Gap: Integer;
+begin
+  if FWelcomePanel = nil then Exit;
+  C := FWelcomePanel.ClientWidth div 2;
+  Gap := MulDiv(16, CurrentPPI, 96);
+  LogoSize := MulDiv(220, CurrentPPI, 96);
+  // Bei kleineren Fenstern das Bild verkleinern, ohne die Bedienelemente
+  // aus dem sichtbaren Bereich zu schieben.
+  LogoSize := Min(LogoSize, Max(0, FWelcomePanel.ClientHeight - MulDiv(180, CurrentPPI, 96)));
+  LogoSize := Min(LogoSize, Max(0, FWelcomePanel.ClientWidth - MulDiv(40, CurrentPPI, 96)));
+  if not FWelcomeImage.Visible then LogoSize := 0;
+  ContentHeight := LogoSize + MulDiv(150, CurrentPPI, 96);
+  Y := Max(MulDiv(12, CurrentPPI, 96),
+    (FWelcomePanel.ClientHeight - ContentHeight) div 2);
+
+  FWelcomeImage.SetBounds(C - LogoSize div 2, Y, LogoSize, LogoSize);
+  FWelcomeTitle.Left := C - FWelcomeTitle.Width div 2;
+  FWelcomeTitle.Top := Y + LogoSize + Gap;
+  FWelcomeHint.Left := C - FWelcomeHint.Width div 2;
+  FWelcomeHint.Top := FWelcomeTitle.Top + FWelcomeTitle.Height + Gap;
+  FWelcomeOpenButton.Left := C - FWelcomeOpenButton.Width div 2;
+  FWelcomeOpenButton.Top := FWelcomeHint.Top + FWelcomeHint.Height + Gap;
+end;
+
+procedure TPDFTabsForm.UpdateWelcomeView;
+var
+  Empty: Boolean;
+begin
+  if (FTabs = nil) or (FWelcomePanel = nil) then Exit;
+  Empty := FTabs.PageCount = 0;
+  FWelcomePanel.Visible := Empty;
+  FTabs.Visible := not Empty;
+  if FTabSearchButton <> nil then FTabSearchButton.Enabled := not Empty;
+  if Empty then
+  begin
+    FWelcomePanel.BringToFront;
+    WelcomeResize(nil);
+  end;
+end;
+
+procedure TPDFTabsForm.WMDropFiles(var Msg: TWMDropFiles);
+var
+  I, Count, Len: UINT;
+  FileName: string;
+  PDF: TPDFBrowserForm;
+begin
+  Count := DragQueryFile(Msg.Drop, $FFFFFFFF, nil, 0);
+  try
+    for I := 0 to Count - 1 do
+    begin
+      Len := DragQueryFile(Msg.Drop, I, nil, 0);
+      SetLength(FileName, Len + 1);
+      if Len > 0 then
+        DragQueryFile(Msg.Drop, I, PChar(FileName), Len + 1);
+      SetLength(FileName, Len);
+      if SameText(ExtractFileExt(FileName), '.pdf') and FileExists(FileName) then
+      begin
+        PDF := TPDFBrowserForm.Create(nil);
+        try
+          PDF.PDFFileName := FileName;
+          PDF.StandalonePDFMode := False;
+          AddPDF(PDF);
+        except
+          PDF.Free;
+          raise;
+        end;
+      end;
+    end;
+  finally
+    DragFinish(Msg.Drop);
+  end;
+end;
+
 procedure TPDFTabsForm.UpdateTabCount;
 begin
+  UpdateWelcomeView;
   UpdateEmptyTabStrip;
   if FTabCountBadge <> nil then
     FTabCountBadge.Invalidate;
@@ -1209,6 +2078,7 @@ end;
 
 destructor TPDFTabsForm.Destroy;
 begin
+  SetTrayIcon(False);
   if FLocalTextSearchHotkeyRegistered then
   begin
     UnregisterHotKey(Handle, LOCAL_TEXT_SEARCH_HOTKEY_ID);
@@ -1438,6 +2308,18 @@ end;
 procedure TPDFTabsForm.TabsFormClose(Sender: TObject;
   var Action: TCloseAction);
 begin
+  if FTrayEnabled and not FExitFromTray then
+  begin
+    SetTrayIcon(True);
+    if FTrayVisible then
+    begin
+      SaveWindowSettings;
+      HideAllAttachmentWindows;
+      Hide;
+      Action := caNone;
+      Exit;
+    end;
+  end;
   if not ConfirmCloseUnsavedPDFs(False) then
   begin
     Action := caNone;
@@ -1447,13 +2329,18 @@ begin
   // unsichtbar abbauen. Sonst flackert der Viewer bei vielen PDFs.
   SaveWindowSettings;
   SavePDFSession;
+  HideAllAttachmentWindows;
   Action := caHide;
   if FTabSearchForm <> nil then
     FTabSearchForm.Hide;
   Hide;
   ClearAllPDFTabs;
-  if PDFTabsExplorerOnlyProcess and not PDFTabsMainFormWasShown then
+  if FExitFromTray or
+     (PDFTabsExplorerOnlyProcess and not PDFTabsMainFormWasShown) then
+  begin
+    SetTrayIcon(False);
     Application.Terminate;
+  end;
 end;
 
 procedure TPDFTabsForm.WMLoadActivePDF(var Msg: TMessage);
@@ -1546,6 +2433,30 @@ begin
   PostMessage(Handle, WM_APP + 193, 0, 0);
 end;
 
+procedure TPDFTabsForm.HideAllAttachmentWindows;
+var
+  I, J: Integer;
+  Tab: TTabSheet;
+  Wnd: HWND;
+begin
+  if FTabs = nil then Exit;
+  for I := 0 to FTabs.PageCount - 1 do
+  begin
+    Tab := FTabs.Pages[I];
+    for J := 0 to Tab.ControlCount - 1 do
+      if Tab.Controls[J] is TPDFBrowserForm then
+      begin
+        Wnd := TPDFBrowserForm(Tab.Controls[J]).AttachmentWindowHandle;
+        if IsWindow(Wnd) then
+        begin
+          ShowWindow(Wnd, SW_HIDE);
+          SetWindowPos(Wnd, HWND_NOTOPMOST, 0, 0, 0, 0,
+            SWP_NOMOVE or SWP_NOSIZE or SWP_NOACTIVATE);
+        end;
+      end;
+  end;
+end;
+
 procedure TPDFTabsForm.RefreshAttachmentPositions;
 var
   I, J: Integer;
@@ -1597,11 +2508,49 @@ begin
     end;
 end;
 
+function TPDFTabsForm.TabCloseRect(AIndex: Integer): TRect;
+var
+  R: TRect;
+  Size, Padding: Integer;
+begin
+  Result := System.Types.Rect(0, 0, 0, 0);
+  if (FTabs = nil) or (AIndex < 0) or (AIndex >= FTabs.PageCount) then Exit;
+  R := FTabs.TabRect(AIndex);
+  // Chrome-aehnliche 18px Klickflaeche, skaliert mit Monitor-DPI.
+  Size := Max(18, MulDiv(18, CurrentPPI, 96));
+  Padding := Max(5, MulDiv(6, CurrentPPI, 96));
+  Result := System.Types.Rect(R.Right - Padding - Size,
+    R.Top + (R.Bottom - R.Top - Size) div 2,
+    R.Right - Padding,
+    R.Top + (R.Bottom - R.Top - Size) div 2 + Size);
+end;
+
+procedure TPDFTabsForm.CloseTabAt(AIndex: Integer);
+begin
+  if (AIndex < 0) or (AIndex >= FTabs.PageCount) then Exit;
+  FTabs.ActivePageIndex := AIndex;
+  CloseActive(Self); // vorhandene Sicherheitsabfrage beibehalten
+end;
+
 procedure TPDFTabsForm.TabMouseUp(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
   if Button = mbLeft then
   begin
+    // Nur bei einem echten Klick auf das X schliessen, nicht nach Tab-Drag.
+    if not FDraggingTab then
+    begin
+      var CloseIndex: Integer;
+      CloseIndex := FTabs.IndexOfTabAt(X, Y);
+      if (CloseIndex >= 0) and PtInRect(TabCloseRect(CloseIndex), Point(X, Y)) then
+      begin
+        FDragTabIndex := -1;
+        FDraggingTab := False;
+        FHoverCloseTabIndex := -1;
+        CloseTabAt(CloseIndex);
+        Exit;
+      end;
+    end;
     FDragTabIndex := -1;
     FDraggingTab := False;
     PostMessage(Handle, WM_APP + 193, 0, 0);
@@ -1611,6 +2560,26 @@ end;
 procedure TPDFTabsForm.TabsResized(Sender: TObject);
 begin
   UpdateEmptyTabStrip;
+  PositionTabActions;
+end;
+
+procedure TPDFTabsForm.PositionTabActions;
+var
+  H: Integer;
+begin
+  if (FTabs = nil) or (FTabActionsPanel = nil) then Exit;
+  // Innerhalb der Reiterhoehe bleiben; nicht die gesamte TabRect-Hoehe
+  // als Schaltflaechenhoehe uebernehmen (sonst unten abgeschnitten).
+  H := MulDiv(26, CurrentPPI, 96);
+  if (FTabs.PageCount > 0) and FTabs.HandleAllocated then
+    H := Min(H, Max(MulDiv(20, CurrentPPI, 96),
+      FTabs.TabRect(0).Bottom - MulDiv(4, CurrentPPI, 96)));
+  // Suchschaltfläche und PDF-Anzahl rechtsbündig in der Tab-Leiste.
+  // Nur 2 DPI-skalierte Pixel Abstand zum rechten Rand.
+  FTabActionsPanel.SetBounds(
+    Max(0, FTabs.ClientWidth - FTabActionsPanel.Width - MulDiv(2, CurrentPPI, 96)),
+    MulDiv(2, CurrentPPI, 96), FTabActionsPanel.Width, H);
+  FTabActionsPanel.BringToFront;
 end;
 
 procedure TPDFTabsForm.UpdateEmptyTabStrip;
@@ -1626,7 +2595,7 @@ begin
     // Unterhalb der Mindestbreite verwendet Windows die nativen Scrollpfeile.
     MinTabWidth := MulDiv(120, CurrentPPI, 96);
     MaxTabWidth := MulDiv(260, CurrentPPI, 96);
-    AvailableWidth := Max(1, FTabs.ClientWidth - MulDiv(8, CurrentPPI, 96));
+    AvailableWidth := Max(1, FTabs.ClientWidth - MulDiv(112, CurrentPPI, 96));
     if FTabs.PageCount > 0 then
     begin
       NewTabWidth := Max(MinTabWidth,
@@ -1652,17 +2621,18 @@ begin
   // Sobald die letzte Registerkarte den rechten Rand erreicht oder
   // darueber hinausreicht, den freien Streifen ganz ausblenden.
   if (FTabs.PageCount > 0) and
-     (LeftEdge >= FTabs.ClientWidth - MulDiv(48, CurrentPPI, 96)) then
+     (LeftEdge >= FTabs.ClientWidth - MulDiv(140, CurrentPPI, 96)) then
   begin
     FEmptyTabStrip.Visible := False;
     Exit;
   end;
 
   FEmptyTabStrip.SetBounds(LeftEdge, 0,
-    Max(0, FTabs.ClientWidth - LeftEdge), StripHeight);
+    Max(0, FTabs.ClientWidth - LeftEdge - MulDiv(104, CurrentPPI, 96)), StripHeight);
   FEmptyTabStrip.Visible := FEmptyTabStrip.Width > 0;
   if FEmptyTabStrip.Visible then
     FEmptyTabStrip.BringToFront;
+  PositionTabActions;
   finally
     FUpdatingTabLayout := False;
   end;
@@ -1737,6 +2707,9 @@ var
   R: TRect;
   S: string;
   VisualActive: Boolean;
+  CloseR, TextR: TRect;
+  CX, CY, Arm: Integer;
+  Hovered: Boolean;
 begin
   if (TabIndex < 0) or (TabIndex >= FTabs.PageCount) then Exit;
   R := Rect;
@@ -1761,9 +2734,35 @@ begin
   end;
   FTabs.Canvas.FillRect(R);
   S := FTabs.Pages[TabIndex].Caption;
-  InflateRect(R, -7, -2);
-  DrawText(FTabs.Canvas.Handle, PChar(S), Length(S), R,
-    DT_SINGLELINE or DT_VCENTER or DT_CENTER or DT_END_ELLIPSIS);
+  CloseR := TabCloseRect(TabIndex);
+  TextR := R;
+  Inc(TextR.Left, MulDiv(9, CurrentPPI, 96));
+  TextR.Right := CloseR.Left - MulDiv(5, CurrentPPI, 96);
+  DrawText(FTabs.Canvas.Handle, PChar(S), Length(S), TextR,
+    DT_SINGLELINE or DT_VCENTER or DT_LEFT or DT_END_ELLIPSIS);
+  // Chrome-aehnliches Schliessen-X: dezentes X, bei Hover runder
+  // Hintergrund und Hand-Cursor. Der gesamte Bereich ist klickbar.
+  Hovered := TabIndex = FHoverCloseTabIndex;
+  if Hovered then
+  begin
+    FTabs.Canvas.Brush.Color := RGB(204, 210, 218);
+    FTabs.Canvas.Pen.Style := psClear;
+    FTabs.Canvas.RoundRect(CloseR.Left, CloseR.Top, CloseR.Right,
+      CloseR.Bottom, MulDiv(7, CurrentPPI, 96), MulDiv(7, CurrentPPI, 96));
+    FTabs.Canvas.Pen.Style := psSolid;
+  end;
+  CX := (CloseR.Left + CloseR.Right) div 2;
+  CY := (CloseR.Top + CloseR.Bottom) div 2;
+  Arm := Max(4, MulDiv(5, CurrentPPI, 96));
+  if Hovered then
+    FTabs.Canvas.Pen.Color := RGB(35, 42, 50)
+  else
+    FTabs.Canvas.Pen.Color := RGB(93, 101, 111);
+  FTabs.Canvas.Pen.Width := Max(1, MulDiv(1, CurrentPPI, 96));
+  FTabs.Canvas.MoveTo(CX - Arm, CY - Arm);
+  FTabs.Canvas.LineTo(CX + Arm, CY + Arm);
+  FTabs.Canvas.MoveTo(CX + Arm, CY - Arm);
+  FTabs.Canvas.LineTo(CX - Arm, CY + Arm);
 end;
 
 procedure TPDFTabsForm.TabsMouseMove(Sender: TObject;
@@ -1806,6 +2805,25 @@ begin
     Exit;
   end;
 
+  // Hover nur beim Ueberfahren der X-Klickflaeche aktualisieren.
+  var NewHoverCloseTabIndex: Integer;
+  NewHoverCloseTabIndex := -1;
+  if PtInRect(TabCloseRect(TabIndex), Point(X, Y)) then
+    NewHoverCloseTabIndex := TabIndex;
+  if NewHoverCloseTabIndex <> FHoverCloseTabIndex then
+  begin
+    FHoverCloseTabIndex := NewHoverCloseTabIndex;
+    FTabs.Invalidate;
+  end;
+  if FHoverCloseTabIndex >= 0 then
+  begin
+    FTabs.Cursor := crHandPoint;
+    if Assigned(FTabHintWindow) then FTabHintWindow.ReleaseHandle;
+    FHintTabIndex := -1;
+    Exit;
+  end;
+  FTabs.Cursor := crDefault;
+
   if TabIndex = FHintTabIndex then
     Exit;
 
@@ -1828,6 +2846,12 @@ end;
 
 procedure TPDFTabsForm.TabsMouseLeave(Sender: TObject);
 begin
+  if FHoverCloseTabIndex <> -1 then
+  begin
+    FHoverCloseTabIndex := -1;
+    FTabs.Invalidate;
+  end;
+  FTabs.Cursor := crDefault;
   FHintTabIndex := -1;
   if Assigned(FTabHintWindow) then
     FTabHintWindow.ReleaseHandle;
@@ -1841,6 +2865,7 @@ begin
     FDeferredActivePDF := nil;
   end;
   RefreshAttachmentPositions;
+  UpdateWelcomeView;
   PostMessage(Handle, WM_APP + 193, 0, 0); // Tastaturwechsel.
 end;
 
@@ -1855,7 +2880,10 @@ procedure TPDFTabsForm.WindowSized(var Msg: TWMSize);
 begin
   inherited;
   RememberNormalBounds;
-  RefreshAttachmentPositions;
+  if Msg.SizeType = SIZE_MINIMIZED then
+    HideAllAttachmentWindows
+  else
+    RefreshAttachmentPositions;
 end;
 
 procedure TPDFTabsForm.TabContextPopup(Sender: TObject);
@@ -1930,6 +2958,13 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
 begin
+  if (Message.CharCode = Ord('W')) and (GetForegroundWindow = Handle) and
+     (GetKeyState(VK_CONTROL) < 0) and (GetKeyState(VK_MENU) >= 0) and
+     (GetKeyState(VK_SHIFT) >= 0) then
+  begin
+    CloseActive(Self);
+    Exit(True);
+  end;
   // F11 auch dann erfassen, wenn eine Schaltfläche oder PDF-Seite den Fokus hat.
   if (Message.CharCode = VK_F11) and (GetForegroundWindow = Handle) then
   begin
@@ -2080,6 +3115,18 @@ var
   I: Integer;
   PDF: TPDFBrowserForm;
 begin
+  if (Key = Ord('W')) and (Shift = [ssCtrl]) then
+  begin
+    CloseActive(Self);
+    Key := 0;
+    Exit;
+  end;
+  if (Key = Ord('O')) and (Shift = [ssCtrl]) then
+  begin
+    OpenPDFClick(Self);
+    Key := 0;
+    Exit;
+  end;
   if (Key = VK_F11) and (Shift = []) then
   begin
     ToggleFullScreen;
@@ -2189,7 +3236,7 @@ begin
         Close;
     end
     else if Application.MainForm = Self then
-      Close
+      UpdateWelcomeView
     else
       Hide;
   end;
@@ -2217,6 +3264,9 @@ begin
   if Button = mbLeft then
   begin
     FDragTabIndex := FTabs.IndexOfTabAt(X, Y);
+    if (FDragTabIndex >= 0) and
+       PtInRect(TabCloseRect(FDragTabIndex), Point(X, Y)) then
+      FDragTabIndex := -1;
     FDragStartPoint := Point(X, Y);
     FDraggingTab := False;
     Exit;
@@ -2253,7 +3303,7 @@ begin
       CloseHandle(PI.hProcess);
       Exit;
     end;
-    MessageDlg('Der eigenstaendige PDF-Anzeiger konnte nicht gestartet werden.',
+    MessageDlg('Der eigenständige PDF-Anzeiger konnte nicht gestartet werden.',
       mtError, [mbOK], 0);
     Exit;
   end;

@@ -6431,6 +6431,8 @@ begin
       OpenFiles.Free;
     end;
   end;
+  if PDFTabsWindow <> nil then
+    PDFTabsWindow.HideAllAttachmentWindows;
   if KlickaufX.Checked and not FExplicitExit then
   begin
     CanClose := False;
@@ -6724,6 +6726,9 @@ procedure TFreePDF64_Form.FormResize(Sender: TObject);
 var
   Laenge: Integer;
 begin
+  if (WindowState = wsMinimized) and (PDFTabsWindow <> nil) then
+    PDFTabsWindow.HideAllAttachmentWindows;
+
   // Ist die FreePDF64_Form nun sichtbar?
   if FormLoaded = True then
   begin

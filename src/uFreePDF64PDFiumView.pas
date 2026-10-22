@@ -394,6 +394,7 @@ begin
   FFlowSelect.OnChange := FlowModeChange;
   FPrint := Btn('Drucken', 1025, 86, PrintClick);
   FHelp := Btn('?', 1120, 34, HelpClick);
+  FHelp.Visible := False;
   FHelp.Hint := 'Hilfe zur PDF-Anzeige';
   FHelp.ShowHint := True;
   FInfo := Btn('ⓘ', 1120, 34, InfoClick);
@@ -1665,7 +1666,7 @@ begin
     PlaceControl(FEditToggle, EditButtonW, ButtonH);
   // Aktionsgruppe als unteilbaren Block positionieren. Insbesondere darf
   // die Hilfe-Schaltflaeche nicht allein in die naechste Zeile springen.
-  H := Px(34) + Px(135) + Px(86) + Px(34) + 3 * Gap;
+  H := Px(34) + Px(135) + Px(86) + 2 * Gap;
   if (X > Margin) and (X + H > W - Margin) then
     NextRow;
   X := Max(Margin, W - Margin - H);
@@ -1675,11 +1676,10 @@ begin
   Inc(X, Px(135) + Gap);
   FPrint.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(86), ButtonH);
   Inc(X, Px(86) + Gap);
-  FHelp.SetBounds(X, Y + (RowH - ButtonH) div 2, Px(34), ButtonH);
   FInfo.Visible := True;
   FQuickSave.Visible := True;
   FPrint.Visible := True;
-  FHelp.Visible := True;
+  FHelp.Visible := False;
 
   // Panelhoehe erst nach der Anordnung bestimmen. Dadurch wird beim
   // Verkleinern eine weitere Zeile frei, beim Vergroessern wieder entfernt.
