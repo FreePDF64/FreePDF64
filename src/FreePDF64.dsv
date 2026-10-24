@@ -1,8 +1,8 @@
 ﻿[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjRfVW5pdC5wYXM=]
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=19
-CursorY=105
-TopLine=78
+CursorX=114
+CursorY=3940
+TopLine=3911
 LeftCol=1
 Elisions=
 Bookmarks={0,6979,1}
@@ -30,8 +30,8 @@ EditViewName=D:\Delphi\FreePDF64\Anleitung_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxJbmZvX1VuaXQucGFz]
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=47
-CursorY=83
+CursorX=15
+CursorY=103
 TopLine=81
 LeftCol=1
 Elisions=
@@ -110,9 +110,9 @@ EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjQuZHBy]
 Module=D:\Delphi\FreePDF64\FreePDF64.dpr
-CursorX=34
-CursorY=173
-TopLine=158
+CursorX=30
+CursorY=36
+TopLine=23
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -130,9 +130,9 @@ EditViewName=D:\Delphi\FreePDF64\Suche_Info_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFx1UERGVGFic0Zvcm0ucGFz]
 Module=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-CursorX=31
-CursorY=882
-TopLine=859
+CursorX=110
+CursorY=981
+TopLine=960
 LeftCol=1
 Elisions=
 Bookmarks=

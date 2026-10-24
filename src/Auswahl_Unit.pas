@@ -1,4 +1,4 @@
-//
+Ôªø//
 // Programmname: FreePDF64
 //
 
@@ -52,7 +52,7 @@ implementation
 
 uses
   FreePDF64_Unit, Einstellungen_Unit, DokuInfo_Unit, FreePDF64_Notify_Unit,
-  uPDFBrowserForm, uPDFTabsForm;
+  uPortableViewerLauncher;
 
 {$R *.DFM}
 
@@ -68,7 +68,7 @@ end;
 
 procedure TAuswahl_Form.EntfernenBitBtnClick(Sender: TObject);
 begin
-// markierte Eintr‰ge aus Liste entfernen.
+// markierte Eintr√§ge aus Liste entfernen.
   with FileList do
     while Selected <> NIL do
       Items.Delete(Items.IndexOf(Selected));
@@ -99,14 +99,14 @@ end;
 
 procedure TAuswahl_Form.FormShow(Sender: TObject);
 begin
-  // Komplette FileList lˆschen.
+  // Komplette FileList l√∂schen.
   FileList.Items.Clear;
   Hinzufuegen.SetFocus;
   FileList.Columns[0].Caption := 'Datei(en): ' + IntToStr(FileList.Items.Count) + AUSGABE;
-  Auswahl_Form.Caption := 'Dateien ausw‰hlen! Zielname ist: ' + MinimizeName(MERGEDATEI, Auswahl_Form.Canvas, 100);
+  Auswahl_Form.Caption := 'Dateien ausw√§hlen! Zielname ist: ' + MinimizeName(MERGEDATEI, Auswahl_Form.Canvas, 100);
   ABBRUCH := False;
   MergeViewer.Hint := 'Markierte Datei anzeigen...' + #10#13 +
-                      '- wenn Ghostscript Image -> [ Eingabetaste ] f¸r Weiter, [ STRG+C ] f¸r Abbrechen';
+                      '- wenn Ghostscript Image -> [ Eingabetaste ] f√ºr Weiter, [ STRG+C ] f√ºr Abbrechen';
 end;
 
 procedure TAuswahl_Form.HinzufuegenClick(Sender: TObject);
@@ -163,7 +163,7 @@ begin
   end else
   begin
     FileList.Selected := NIL;
-    ShowMessage('Nur eine Datei zum Verschieben ausw‰hlen!');
+    ShowMessage('Nur eine Datei zum Verschieben ausw√§hlen!');
     ABBRUCH := True;
   end;
 end;
@@ -176,9 +176,9 @@ begin
 
   FreePDF64_Form.StatusBar1.SimpleText := 'Drucker: ' + printer.printers[printer.printerindex];
   if FreePDF64_Notify.LMDShellNotify.Active then
-    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | ‹berwachung: AN'
+    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | √úberwachung: AN'
   else
-    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | ‹berwachung: AUS';
+    FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | √úberwachung: AUS';
   if Einstellungen_Form.AnzeigenCB.Checked then
     FreePDF64_Form.StatusBar1.SimpleText := FreePDF64_Form.StatusBar1.SimpleText + ' | Anzeigen: AN'
   else
@@ -209,7 +209,7 @@ begin
     Item1 := FileList.Selected;
     if (not Assigned(Item1)) or (Item1.Index = FileList.Items.Count - 1) then Exit;
 
-    // Wenn das n‰chste Feld leer ist, dann...
+    // Wenn das n√§chste Feld leer ist, dann...
     if FileList.Items[Item1.Index + 1] = NIL then Exit;
 
     Item2 := FileList.Items[Item1.Index + 1];
@@ -222,7 +222,7 @@ begin
   end else
   begin
     FileList.Selected := NIL;
-    ShowMessage('Jeweils nur eine Datei zum Verschieben ausw‰hlen!');
+    ShowMessage('Jeweils nur eine Datei zum Verschieben ausw√§hlen!');
     ABBRUCH := True;
   end;
 end;
@@ -240,7 +240,7 @@ begin
     ModalResult := mrOK
   else
   begin
-    ShowMessage('Keine Datei(en) hinzugef¸gt!');
+    ShowMessage('Keine Datei(en) hinzugef√ºgt!');
     ABBRUCH := True;
     Exit;
   end;
@@ -251,7 +251,7 @@ begin
   Close;
 end;
 
-// Task schlieﬂen (hier Ghostscript)
+// Task schlie√üen (hier Ghostscript)
 procedure KillTask(ExeFileName: string);
 var
   H: HWND;
@@ -264,62 +264,31 @@ end;
 // Vorschau
 procedure TAuswahl_Form.MergeViewerClick(Sender: TObject);
 var
-  i, Offset, BaseOffset: Integer;
-  PDFForm: TPDFBrowserForm;
-  LastPDFForm: TPDFBrowserForm;
+  I: Integer;
+  OpenedPDF: Boolean;
 begin
-  // Wo liegt das Ghostscript-Programm?
   Ghostscript := Einstellungen_Form.Edit1.Text;
-
-  // Grundversatz bei 100 % DPI
-  BaseOffset := 20;
-
-  for i := 0 to FileList.Items.Count - 1 do
+  OpenedPDF := False;
+  for I := 0 to FileList.Items.Count - 1 do
   begin
-    Auswahl := FileList.Items[i].Caption;
-    if FileList.Items[i].Selected then
+    if not FileList.Items[I].Selected then Continue;
+    Auswahl := FileList.Items[I].Caption;
+    if SameText(ExtractFileExt(Auswahl), '.pdf') then
     begin
-      if Uppercase(ExtractFileExt(Auswahl)) <> ('.PDF') then
-      begin
-        Application.ProcessMessages;
-        // Ghostscript aufrufen...
-        ShellExecute(Application.Handle, 'open', PChar(Ghostscript), PChar('-dSAFER -dBATCH -r120 "' + Auswahl + '"'),'', SW_HIDE);
-        MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
-        KillTask(Ghostscript);
-        FileList.Items[i].Selected := False;
-        if FileList.SelCount > 0 then
-          if MessageDlgCenter('Abbruch?', mtInformation, [mbYes, mbNo]) = mrYes then
-            Break;
-      end else
-      begin
-        // PDF als Registerkarte im vorhandenen PDF-Anzeigefenster oeffnen.
-        PDFForm := TPDFBrowserForm.Create(nil);
-        PDFForm.PDFFileName := Auswahl;
-        ShowPDFInTabs(PDFForm);
-
-        // Die zentrale Tab-Initialisierung kann je nach Startweg
-        // noch nicht registriert sein. Nur bei fehlendem Anlagenfenster
-        // die Anlagenliste fuer diese PDF explizit erstellen.
-        if (PDFForm.AttachmentWindowHandle = 0) or
-           (not IsWindow(PDFForm.AttachmentWindowHandle)) then
-          ShowPDFEmbeddedAttachments(PDFForm.PDFFileName,
-            PDFForm, PDFForm.FAttachmentsButton);
-
-        LastPDFForm := PDFForm;
-
-       Application.ProcessMessages;
-       FileList.Items[i].Selected := False;
-     end;
+      OpenPDFPortable(Auswahl);
+      OpenedPDF := True;
+    end
+    else
+    begin
+      Application.ProcessMessages;
+      ShellExecute(Application.Handle, 'open', PChar(Ghostscript),
+        PChar('-dSAFER -dBATCH -r120 "' + Auswahl + '"'), '', SW_HIDE);
+      MessageDlgCenter('Anzeigen beendet!', mtInformation, [mbOk]);
+      KillTask(Ghostscript);
     end;
+    FileList.Items[I].Selected := False;
   end;
-  if Assigned(LastPDFForm) then
-  begin
-    if LastPDFForm.HandleAllocated then
-      SetForegroundWindow(GetAncestor(LastPDFForm.Handle, GA_ROOT));
-  end
-  else
-    Hinzufuegen.SetFocus;
+  if not OpenedPDF then Hinzufuegen.SetFocus;
 end;
 
 end.
-

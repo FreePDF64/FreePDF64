@@ -2,6 +2,8 @@
 
 uses
   Winapi.Windows,
+  Winapi.Messages,
+  uPortableViewerLauncher in 'uPortableViewerLauncher.pas',
   System.SysUtils,
   System.Classes,
   Vcl.Forms,
@@ -27,9 +29,38 @@ uses
   Suchen in 'Suchen.pas' {Suche_Form},
   Anleitung_Unit in 'Anleitung_Unit.pas' {Anleitung_Form},
   Suche_Info_Unit in 'Suche_Info_Unit.pas' {Suche_Info},
-  uPDFBrowserForm in 'uPDFBrowserForm.pas' {PDFBrowserForm},
-  uPDFTabsForm in 'uPDFTabsForm.pas',
   FreePDF64PrinterConfig in '..\FreePDF64_PostScriptPrinter\Source\FreePDF64PrinterConfig.pas';
+
+
+const
+  MainProgramWindowMarker = 'FreePDF64.MainProgram.Window.v1';
+  WM_ACTIVATE_FREEPDF_MAIN = $8000 + 194;
+
+function FindMainProgramWindow(Wnd: HWND; Data: LPARAM): BOOL; stdcall;
+begin
+  Result := True;
+  if GetProp(Wnd, PChar(MainProgramWindowMarker)) <> 0 then
+  begin
+    PHandle(Data)^ := Wnd;
+    Result := False;
+  end;
+end;
+
+function ActivateRunningMainProgram: Boolean;
+var
+  Wnd: HWND;
+  TargetPID: DWORD;
+begin
+  Wnd := 0;
+  EnumWindows(@FindMainProgramWindow, LPARAM(@Wnd));
+  Result := (Wnd <> 0) and IsWindow(Wnd);
+  if not Result then Exit;
+  TargetPID := 0;
+  GetWindowThreadProcessId(Wnd, @TargetPID);
+  if TargetPID <> 0 then
+    AllowSetForegroundWindow(TargetPID);
+  PostMessage(Wnd, WM_ACTIVATE_FREEPDF_MAIN, 0, 0);
+end;
 
 type
   TPDFExceptionHandler = class
@@ -47,27 +78,20 @@ end;
 
 var
   hMutex: THandle;
-  hPDFStartMutex: THandle;
-  PDFMutexWait: DWORD;
   MutexName: string;
   ForceMainMode: Boolean;
   PDFDatei: string;
-  PDFBrowserForm: TPDFBrowserForm;
-  PDFTabsForm: TPDFTabsForm;
   PDFModus: Boolean;
-  IndependentViewer: Boolean;
   EmptyIndependentViewer: Boolean;
   PDFDateien: TStringList;
   I: Integer;
   ExceptionHandler: TPDFExceptionHandler;
 begin
   hMutex := 0;
-  hPDFStartMutex := 0;
   // Wurde FreePDF64 mit einem PDF-Dateipfad gestartet
   // (z. B. durch Doppelklick im Windows-Explorer)?
   PDFDatei := '';
   PDFModus := False;
-  IndependentViewer := False;
   EmptyIndependentViewer := False;
   ForceMainMode := False;
 
@@ -82,13 +106,11 @@ begin
       end;
       if SameText(ParamStr(I), '--viewer-empty') then
       begin
-        IndependentViewer := True;
         EmptyIndependentViewer := True;
         Continue;
       end;
       if SameText(ParamStr(I), '--viewer-independent') then
       begin
-        IndependentViewer := True;
         Continue;
       end;
       PDFDatei := ExpandFileName(ParamStr(I));
@@ -98,47 +120,16 @@ begin
     PDFModus := ((PDFDateien.Count > 0) or EmptyIndependentViewer) and
       not ForceMainMode;
 
-    // Explorer startet bei Mehrfachauswahl oft mehrere Prozesse gleichzeitig.
-    // Der Mutex serialisiert die Entscheidung "an bestehende Tabs senden
-    // oder selbst ein Tabfenster erstellen".
-    if PDFModus and not IndependentViewer then
+    // PDF-Dateien niemals im Hauptprozess darstellen.
+    if PDFModus then
     begin
-      hPDFStartMutex := CreateMutex(nil, False,
-        'Local\FreePDF64_PDFTabs_Explorer_Start');
-      if hPDFStartMutex <> 0 then
-      begin
-        PDFMutexWait := WaitForSingleObject(hPDFStartMutex, 10000);
-        if not (PDFMutexWait in [WAIT_OBJECT_0, WAIT_ABANDONED]) then
-        begin
-          CloseHandle(hPDFStartMutex);
-          hPDFStartMutex := 0;
-        end;
-      end;
+      for I := 0 to PDFDateien.Count - 1 do
+        OpenPDFPortable(PDFDateien[I]);
+      if EmptyIndependentViewer and (PDFDateien.Count = 0) then
+        OpenPortableViewer;
+      Halt(0);
     end;
 
-    // Alle Explorer-Dateien uebergeben, nicht nur ParamStr(1).
-    // Wenn nicht alle angenommen werden, bleiben sie fuer den lokalen Start.
-    if PDFModus and not IndependentViewer then
-    begin
-      I := 0;
-      while I < PDFDateien.Count do
-        if SendPDFToExistingTabs(PDFDateien[I]) then
-          PDFDateien.Delete(I)
-        else
-          Inc(I);
-      if PDFDateien.Count = 0 then
-      begin
-        if hPDFStartMutex <> 0 then
-        begin
-          ReleaseMutex(hPDFStartMutex);
-          CloseHandle(hPDFStartMutex);
-          hPDFStartMutex := 0;
-        end;
-        Halt(0);
-      end;
-    end;
-
-  if not PDFModus then
   begin
     MutexName := 'Local\FreePDF64_MainProgram_SingleInstance_v2';
     hMutex := CreateMutex(nil, True, PChar(MutexName));
@@ -165,21 +156,16 @@ begin
   Application.Initialize;
   // Nur der eigenstaendige Explorer-Prozess beendet sich mit dem letzten PDF.
   // Ein regulaer gestartetes Hauptprogramm bleibt im Speicher.
-  PDFTabsExplorerOnlyProcess := PDFModus;
   ExceptionHandler := TPDFExceptionHandler.Create;
   Application.OnException := ExceptionHandler.HandleException;
   Application.MainFormOnTaskbar := True;
   Application.Title := 'FreePDF64';
 
-  // Beide Startarten verwenden denselben Initialisierungsweg.
-  // Bei Explorer-Aufruf ist das Hauptformular nur der unsichtbare VCL-Host;
-  // die PDF wird im Registerkartenfenster angezeigt.
-  if PDFModus then
-    Application.ShowMainForm := False;
+  // PDF-Dateien werden vor der Initialisierung bereits an den externen
+  // FreePDF64ViewerPortable weitergeleitet. Hier startet nur das Hauptprogramm.
 
   Application.CreateForm(TFreePDF64_Form, FreePDF64_Form);
-  if not PDFModus then
-    MarkMainProgramWindow(FreePDF64_Form.Handle);
+  SetProp(FreePDF64_Form.Handle, PChar('FreePDF64.MainProgram.Window.v1'), THandle(1));
   Application.CreateForm(TEinstellungen_Form, Einstellungen_Form);
   Application.CreateForm(TAuswahl_Form, Auswahl_Form);
   Application.CreateForm(TEncrypt_Form, Encrypt_Form);
@@ -199,34 +185,6 @@ begin
   Application.CreateForm(TAnleitung_Form, Anleitung_Form);
   Application.CreateForm(TSuche_Info, Suche_Info);
 
-  if PDFTabsWindow = nil then
-    PDFTabsWindow := TPDFTabsForm.Create(Application);
-  PDFTabsWindow.HandleNeeded;
-
-  if PDFModus then
-  begin
-    // Zuerst den regulaeren Hauptprogramm-Kontext initialisieren,
-    // erst danach den ersten PDF-Tab erzeugen.
-    PDFBrowserForm := nil;
-    for I := 0 to PDFDateien.Count - 1 do
-    begin
-      PDFBrowserForm := TPDFBrowserForm.Create(nil);
-      PDFBrowserForm.PDFFileName := PDFDateien[I];
-      PDFBrowserForm.StandalonePDFMode := False;
-      PDFTabsWindow.AddPDF(PDFBrowserForm);
-    end;
-    if PDFBrowserForm <> nil then
-      PDFTabsWindow.ActivatePDF(PDFBrowserForm);
-    PDFTabsWindow.Show;
-  end;
-
-  if hPDFStartMutex <> 0 then
-  begin
-    ReleaseMutex(hPDFStartMutex);
-    CloseHandle(hPDFStartMutex);
-    hPDFStartMutex := 0;
-  end;
-
   try
     Application.Run;
   finally
@@ -243,12 +201,6 @@ begin
       ;
   end;
   finally
-    // Auch beim vorzeitigen Abbruch der Initialisierung freigeben.
-    if hPDFStartMutex <> 0 then
-    begin
-      ReleaseMutex(hPDFStartMutex);
-      CloseHandle(hPDFStartMutex);
-    end;
     PDFDateien.Free;
   end;
 end.
