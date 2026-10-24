@@ -14,7 +14,7 @@
 
 **Lizenz:** Freeware – private und kommerzielle Nutzung kostenlos  
 **Betriebssystem:** Windows 10/11  
-**Aktuelle Version:** 7.2.0
+**Aktuelle Version:** 8.1.0
 
 ## ⭐ Die wichtigsten Funktionen auf einen Blick
 
