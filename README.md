@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="images/freepdf64-logo.png" alt="FreePDF64 – Programmsymbol" width="250">
+<img src="images/FreePDF64-Logo.png" alt="FreePDF64 – Programmsymbol" width="250">
 
 # FreePDF64 – Kostenlose PDF-Komplettlösung für Windows
 
