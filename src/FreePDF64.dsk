@@ -10,25 +10,25 @@ File_7=TSourceModule,'D:\Delphi\FreePDF64\Auswahl_Unit.pas',0,1,11,9,38,0,0,,
 File_8=TSourceModule,'D:\Delphi\FreePDF64\Encrypt_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\Info_Unit.pas
+Module0=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 Module1=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-Module2=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
-Module3=D:\Delphi\FreePDF64\uPDFTabsForm.pas
+Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module3=D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas
 Module4=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 Module5=D:\Delphi\FreePDF64\uFreePDF64PDFiumCore.pas
 Count=6
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\Info_Unit.pas]
+[D:\Delphi\FreePDF64\uPDFTabsForm.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas]
+[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
-[D:\Delphi\FreePDF64\uPDFTabsForm.pas]
+[D:\Delphi\FreePDF64\uFreePDF64PDFiumView.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\uPDFBrowserForm.pas]
@@ -39,7 +39,7 @@ ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=6
-CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\uPDFTabsForm.pas
 View0=0
 View1=1
 View2=2
@@ -68,13 +68,13 @@ BorlandEditorCodeExplorer=BorlandEditorCodeExplorer@EditWindow0
 TopPanelSize=0
 LeftPanelSize=1895
 LeftPanelClients=PropertyInspector,DockSite3
-LeftPanelData=000008000101000000001B1300000000000001670700000000000001000000005A0E000009000000446F636B53697465330100000000F62100001100000050726F7065727479496E73706563746F72FFFFFFFF
+LeftPanelData=00000800010100000000980F00000000000001670700000000000001000000005A0E000009000000446F636B53697465330100000000B91B00001100000050726F7065727479496E73706563746F72FFFFFFFF
 RightPanelSize=1996
 RightPanelClients=DockSite2,DockSite4
-RightPanelData=000008000101000000001B1300000000000001CC0700000000000001000000004912000009000000446F636B53697465320100000000F621000009000000446F636B5369746534FFFFFFFF
-BottomPanelSize=0
+RightPanelData=00000800010100000000980F00000000000001CC0700000000000001000000004912000009000000446F636B53697465320100000000B91B000009000000446F636B5369746534FFFFFFFF
+BottomPanelSize=1528
 BottomPanelClients=MessageView,DockSite1
-BottomPanelData=000008000102020000000F0000004D65737361676556696577466F726D09000000446F636B53697465311534000000000000022806000000000000FFFFFFFF
+BottomPanelData=0000080001020100000009000000446F636B5369746531E74400000000000002F8050000000000000100000000E74400000F0000004D65737361676556696577466F726DFFFFFFFF
 BottomMiddlePanelSize=0
 BottomMiddlePanelClients=DockSite0,GraphDrawingModel
 BottomMiddelPanelData=0000080001020200000009000000446F636B536974653010000000477261706844726177696E67566965779F1D00000000000002F206000000000000FFFFFFFF
@@ -82,9 +82,9 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=15
-CursorY=3255
-TopLine=3234
+CursorX=19
+CursorY=105
+TopLine=78
 LeftCol=1
 Elisions=
 Bookmarks={0,6979,1}
@@ -115,9 +115,9 @@ EditViewName=D:\Delphi\FreePDF64\uPDFBrowserForm.pas
 [View3]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\uPDFTabsForm.pas
-CursorX=31
-CursorY=882
-TopLine=884
+CursorX=110
+CursorY=981
+TopLine=960
 LeftCol=1
 Elisions=
 Bookmarks=
@@ -217,18 +217,18 @@ StayOnTop=0
 [MessageView]
 PercentageSizes=1
 Create=1
-Visible=0
+Visible=1
 Docked=1
 State=0
 Left=0
 Top=36
-Width=2770
-Height=1420
+Width=9922
+Height=1333
 MaxLeft=-1
 MaxTop=-1
-ClientWidth=2770
-ClientHeight=1420
-TBDockHeight=1420
+ClientWidth=9922
+ClientHeight=1333
+TBDockHeight=1333
 LRDockWidth=2770
 Dockable=1
 StayOnTop=0
@@ -242,11 +242,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=3928
+Height=2261
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=3928
+ClientHeight=2261
 TBDockHeight=7152
 LRDockWidth=1996
 Dockable=1
@@ -261,23 +261,18 @@ State=0
 Left=0
 Top=565
 Width=1895
-Height=4978
+Height=3312
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1895
-ClientHeight=4978
+ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
-SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Caption,OnClick
-ExpandedItems=Anchors=0,Constraints=0,Font=0,LiveBindings=0
+SplitPos=115
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -288,11 +283,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=8543
+Height=6464
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=8543
+ClientHeight=6464
 TBDockHeight=5957
 LRDockWidth=2512
 Dockable=1
@@ -304,8 +299,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=-2039
+Top=336
 Width=273
 Height=362
 MaxLeft=-1
@@ -316,8 +311,8 @@ TBDockHeight=362
 LRDockWidth=273
 Dockable=1
 StayOnTop=0
-Name=96
-Description=267
+Name=62
+Description=171
 filter=1
 
 [DebugLogView]
@@ -428,11 +423,11 @@ State=0
 Left=0
 Top=0
 Width=2340
-Height=1210
+Height=978
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=2340
-ClientHeight=1210
+ClientHeight=978
 TBDockHeight=2319
 LRDockWidth=2824
 Dockable=1
@@ -493,11 +488,11 @@ State=0
 Left=0
 Top=0
 Width=1996
-Height=8543
+Height=6464
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=8543
+ClientHeight=6464
 TBDockHeight=4884
 LRDockWidth=7148
 Dockable=1
@@ -509,8 +504,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=505
+Top=1083
 Width=2855
 Height=3210
 MaxLeft=-1
@@ -623,8 +618,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=8
-Top=8
+Left=1270
+Top=36
 Width=3824
 Height=1420
 MaxLeft=-1
@@ -704,11 +699,11 @@ State=0
 Left=0
 Top=710
 Width=1996
-Height=3928
+Height=2261
 MaxLeft=-1
 MaxTop=-1
 ClientWidth=1996
-ClientHeight=3928
+ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
 TBDockHeight=8812

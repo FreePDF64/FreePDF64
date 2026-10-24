@@ -1,8 +1,8 @@
 ﻿[ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxGcmVlUERGNjRfVW5pdC5wYXM=]
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=15
-CursorY=3255
-TopLine=3234
+CursorX=19
+CursorY=105
+TopLine=78
 LeftCol=1
 Elisions=
 Bookmarks={0,6979,1}
@@ -30,9 +30,9 @@ EditViewName=D:\Delphi\FreePDF64\Anleitung_Unit.pas
 
 [ClosedView_RDpcRGVscGhpXEZyZWVQREY2NFxJbmZvX1VuaXQucGFz]
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=15
-CursorY=103
-TopLine=75
+CursorX=47
+CursorY=83
+TopLine=81
 LeftCol=1
 Elisions=
 Bookmarks=

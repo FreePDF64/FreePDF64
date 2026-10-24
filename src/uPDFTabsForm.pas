@@ -978,7 +978,7 @@ begin
     SubLabel.SetBounds(Px(97), Px(68), Px(540), Px(24));
     SubLabel.Font.Size := 10;
     SubLabel.Font.Color := RGB(224, 237, 250);
-    if AAbout then SubLabel.Caption := 'Version ' + ViewerExeVersion + ' · Portable PDF-Anwendung für Windows 64-Bit'
+    if AAbout then SubLabel.Caption := 'Version ' + ViewerExeVersion + ' · Interner PDF-Viewer von FreePDF64'
     else SubLabel.Caption := 'Alles Wichtige auf einen Blick';
 
     BottomPanel := TPanel.Create(D);

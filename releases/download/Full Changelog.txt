@@ -1,4 +1,4 @@
-22.10.2026 V8.0.2
+24.10.2026 V8.0.2
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Treiberinstallation des FreePDF64 Postscript-Drucker weiter verbessert (speziell Windows-Signaturprüfung/Signaturvalidierung im Driver Store).
 21.10.2026 V8.0.1
