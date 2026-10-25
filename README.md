@@ -1,13 +1,12 @@
 <div align="center">
-
-<img src="images/FreePDF64-Logo.png" alt="FreePDF64 – Programmsymbol" width="250">
+  <img src="images/FreePDF64-Logo.png" alt="FreePDF64 – Programmsymbol" width="250">
+</div>
 
 # FreePDF64 – Kostenlose PDF-Komplettlösung für Windows
 
-**PDFs erstellen, bearbeiten, konvertieren und verwalten - mit dem besten PDF-Readerersatz (diesen gibt es auch als Portable Version: siehe eigene [**Projektseite**](https://github.com/FreePDF64/FreePDF64ViewerPortable) !!**)
+PDFs erstellen, bearbeiten, konvertieren und verwalten – alles in einer kostenlosen Windows-Anwendung. Eine separate portable Version des Viewers ist ebenfalls verfügbar: [FreePDF64-Viewer Portable](https://github.com/FreePDF64/FreePDF64ViewerPortable).
 
-
-**-> Beide kostenlos für private und kommerzielle Nutzung <-**
+**Beide Programme sind für die private und kommerzielle Nutzung kostenlos.**
 
 
 ## 📥 Download
