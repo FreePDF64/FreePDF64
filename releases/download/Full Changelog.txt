@@ -1,4 +1,4 @@
-24.10.2026 V8.1.0
+25.10.2026 V8.1.0
 Neu -> Entfernen des internen PDF-Viewers aus dem Programmcode. Es wird für die Anzeige von PDF-Dateien nur noch der externe "FreePDF64-Viewer Portable" genutzt - er befindet sich im gleichen Programmverzeichnis wie FreePDF64. Das macht den Code schlanker und die Weiterentwicklung einfacher. Der "FreePDF64-Viewer Portable" ist auch standalone nutzbar!
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Treiberinstallation des FreePDF64 Postscript-Drucker weiter verbessert (speziell Windows-Signaturprüfung/Signaturvalidierung im Driver Store).
