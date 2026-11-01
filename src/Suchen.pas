@@ -798,50 +798,30 @@ end;
 // Alle markierten PDFs in einem Aufruf an den portablen Viewer uebergeben.
 procedure TSuche_Form.Btn_8Click(Sender: TObject);
 var
-  I, PDFCount: Integer;
-  S, Params, ViewerExe: string;
+  I: Integer;
+  S: string;
+  PDFs: TStringList;
 begin
   if ListBox1.SelCount = 0 then Exit;
-  PDFCount := 0;
-  Params := '';
-  for I := 0 to ListBox1.Count - 1 do
-  begin
-    if not ListBox1.Selected[I] then Continue;
-    S := FSearchResults[I];
-    if (Length(S) > 0) and (S[1] = '[') then Delete(S, 1, 1);
-    if (Length(S) > 0) and (S[Length(S)] = ']') then
-      Delete(S, Length(S), 1);
-    if SameText(ExtractFileExt(S), '.pdf') and FileExists(S) then
+  PDFs := TStringList.Create;
+  try
+    for I := 0 to ListBox1.Count - 1 do
     begin
-      S := ExpandFileName(S);
-      // Windows-Kommandozeilen besitzen eine Laengenbegrenzung.
-      if Length(Params) + Length(S) + 3 > 30000 then
-      begin
-        ShowMessage('Zu viele bzw. zu lange PDF-Dateipfade fuer einen Startvorgang. ' +
-          'Bitte weniger Dateien markieren.');
-        Exit;
-      end;
-      if Params <> '' then Params := Params + ' ';
-      Params := Params + '"' + S + '"';
-      Inc(PDFCount);
+      if not ListBox1.Selected[I] then Continue;
+      S := FSearchResults[I];
+      if (Length(S) > 0) and (S[1] = '[') then Delete(S, 1, 1);
+      if (Length(S) > 0) and (S[Length(S)] = ']') then
+        Delete(S, Length(S), 1);
+      if SameText(ExtractFileExt(S), '.pdf') and FileExists(S) then
+        PDFs.Add(ExpandFileName(S));
     end;
+    if PDFs.Count = 0 then
+      ShowMessage('Es wurden keine PDF-Dateien ausgewaehlt!')
+    else
+      OpenPDFsPortable(PDFs);
+  finally
+    PDFs.Free;
   end;
-  if PDFCount = 0 then
-  begin
-    ShowMessage('Es wurden keine PDF-Dateien ausgewaehlt!');
-    Exit;
-  end;
-
-  ViewerExe := PortableViewerExe;
-  if not FileExists(ViewerExe) then
-  begin
-    ShowMessage('Der portable PDF-Viewer fehlt:' + sLineBreak + ViewerExe);
-    Exit;
-  end;
-  if ShellExecute(0, 'open', PChar(ViewerExe), PChar(Params),
-    PChar(ExtractFilePath(ViewerExe)), SW_SHOWNORMAL) <= 32 then
-    ShowMessage('Der portable PDF-Viewer konnte nicht gestartet werden:' +
-      sLineBreak + ViewerExe);
 end;
 
 procedure TSuche_Form.Markieren1Click(Sender: TObject);
@@ -4720,7 +4700,12 @@ begin
     s := FSearchResults[ListBox1.ItemIndex];
 
     if FileExists(s) then
-      ShellExecute(Handle, 'open', PChar(s), nil, nil, SW_SHOWNORMAL);
+    begin
+      if SameText(ExtractFileExt(s), '.pdf') then
+        OpenPDFPortable(s)
+      else
+        ShellExecute(Handle, 'open', PChar(s), nil, nil, SW_SHOWNORMAL);
+    end;
 
     Exit;
   end;

@@ -123,8 +123,8 @@ begin
     // PDF-Dateien niemals im Hauptprozess darstellen.
     if PDFModus then
     begin
-      for I := 0 to PDFDateien.Count - 1 do
-        OpenPDFPortable(PDFDateien[I]);
+      if PDFDateien.Count > 0 then
+        OpenPDFsPortable(PDFDateien);
       if EmptyIndependentViewer and (PDFDateien.Count = 0) then
         OpenPortableViewer;
       Halt(0);

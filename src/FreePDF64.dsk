@@ -10,24 +10,24 @@ File_7=TSourceModule,'D:\Delphi\FreePDF64\Auswahl_Unit.pas',0,1,11,9,38,0,0,,
 File_8=TSourceModule,'D:\Delphi\FreePDF64\Encrypt_Unit.pas',0,1,1,1,1,0,0,,
 
 [Modules]
-Module0=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+Module0=D:\Delphi\FreePDF64\Info_Unit.pas
 Module1=D:\Delphi\FreePDF64\FreePDF64.dproj
-Module2=D:\Delphi\FreePDF64\Info_Unit.pas
+Module2=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 Count=3
 EditWindowCount=1
 
-[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
+[D:\Delphi\FreePDF64\Info_Unit.pas]
 ModuleType=TSourceModule
 
 [D:\Delphi\FreePDF64\FreePDF64.dproj]
 ModuleType=TBaseProject
 
-[D:\Delphi\FreePDF64\Info_Unit.pas]
+[D:\Delphi\FreePDF64\FreePDF64_Unit.pas]
 ModuleType=TSourceModule
 
 [EditWindow0]
 ViewCount=3
-CurrentEditView=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
+CurrentEditView=D:\Delphi\FreePDF64\Info_Unit.pas
 View0=0
 View1=1
 View2=2
@@ -67,13 +67,13 @@ BottomMiddelPanelData=0000080001020200000009000000446F636B5369746530100000004772
 [View0]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
-CursorX=22
-CursorY=10541
-TopLine=10523
+CursorX=18
+CursorY=2295
+TopLine=2267
 LeftCol=1
 Elisions=
 Bookmarks={0,6983,1}
-EditViewName=Borland.FormDesignerView
+EditViewName=D:\Delphi\FreePDF64\FreePDF64_Unit.pas
 
 [View1]
 CustomEditViewType=TEditView
@@ -89,7 +89,7 @@ EditViewName=D:\Delphi\FreePDF64\FreePDF64.dpr
 [View2]
 CustomEditViewType=TEditView
 Module=D:\Delphi\FreePDF64\Info_Unit.pas
-CursorX=15
+CursorX=18
 CursorY=103
 TopLine=81
 LeftCol=1
@@ -220,16 +220,11 @@ ClientWidth=1895
 ClientHeight=3312
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
 SplitPos=111
-
-[PropInspDesignerSelection]
-ArrangeBy=Name
-SelectedItem=Name,
-ExpandedItems=LiveBindings-Designer=0
 
 [frmDesignPreview]
 PercentageSizes=1
@@ -256,8 +251,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=-2039
+Top=336
 Width=273
 Height=362
 MaxLeft=-1
@@ -461,8 +456,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=0
-Top=0
+Left=505
+Top=1083
 Width=2855
 Height=3210
 MaxLeft=-1
@@ -575,8 +570,8 @@ Create=1
 Visible=0
 Docked=1
 State=0
-Left=8
-Top=8
+Left=1270
+Top=36
 Width=3824
 Height=1420
 MaxLeft=-1
@@ -611,7 +606,7 @@ ClientWidth=1996
 ClientHeight=4551
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0
@@ -637,7 +632,7 @@ ClientWidth=1895
 ClientHeight=3500
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1895
 Dockable=1
 StayOnTop=0
@@ -663,7 +658,7 @@ ClientWidth=1996
 ClientHeight=2261
 PixelsPerInch=120
 MonitorNum=0
-TBDockHeight=9014
+TBDockHeight=8812
 LRDockWidth=1996
 Dockable=1
 StayOnTop=0

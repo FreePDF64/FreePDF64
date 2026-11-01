@@ -715,7 +715,6 @@
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
-      ExplicitWidth = 1024
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1031,7 +1030,7 @@
       end
       object FavLbR: TListBox
         Left = 134
-        Top = 813
+        Top = 812
         Width = 140
         Height = 32
         TabStop = False
@@ -1054,7 +1053,6 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 795
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1446,8 +1444,8 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1110
-      Top = 817
+      Left = 1111
+      Top = 816
       Width = 140
       Height = 32
       TabStop = False
@@ -1470,8 +1468,6 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 1101
-      ExplicitTop = 799
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1656,7 +1652,6 @@
         TabStop = False
         OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
-        ExplicitLeft = 252
       end
       object Quelllabel: TPanel
         Left = 65
