@@ -1,3 +1,5 @@
+07.11.2026 V8.2.0
+Fix -> Codeoptimierungen durchgeführt. Flüssigere Anzeige bei Verzeichniswechsel.
 01.11.2026 V8.1.1
 Fix -> Codeoptimierungen durchgeführt.
 Fix -> Update ExifTool auf neueste Version.

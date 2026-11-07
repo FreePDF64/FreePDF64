@@ -41,6 +41,7 @@ interface
 uses
   Winapi.Windows,
   Winapi.Messages,
+  Winapi.CommCtrl,
   System.SysUtils,
   System.Variants,
   System.Classes,
@@ -666,6 +667,12 @@ type
       FDirectoryNavigation1: Boolean;
       F2Pressed: Boolean;
       FExplicitExit: Boolean;
+      // Patch 19: nur die sichtbare Größenspalte zeichnen.
+      FList1OldWndProc, FList2OldWndProc: TWndMethod;
+      procedure List1DrawProbe(var Msg: TMessage);
+      procedure List2DrawProbe(var Msg: TMessage);
+      procedure DrawSizeCell(AList: TLMDShellList; var Msg: TMessage);
+
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
       procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
@@ -2064,6 +2071,12 @@ var
   IniFile: String;
   I: Integer;
 begin
+  // Vor dem Freigeben der Komponenten die originalen Handler herstellen.
+  if Assigned(FList1OldWndProc) then
+    LMDShellList1.WindowProc := FList1OldWndProc;
+  if Assigned(FList2OldWndProc) then
+    LMDShellList2.WindowProc := FList2OldWndProc;
+
   // Der eigenstaendige Viewer darf keine Hauptprogramm-Daten
   // mit seinem (ggf. veralteten) Zustand ueberschreiben.
   if FindCmdLineSwitch('viewer-independent', ['-'], True) or
@@ -2292,7 +2305,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '01.11.2026';
+  Datum := '07.11.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -5415,6 +5428,141 @@ begin
   Msg.Result := 1;
 end;
 
+// Patch 18: Testet, ob LMDShell CustomDraw-Benachrichtigungen
+// an das jeweilige ListView-Fenster reflektiert. Keine Zeichenänderungen.
+procedure TFreePDF64_Form.DrawSizeCell(AList: TLMDShellList; var Msg: TMessage);
+var
+  CD: PNMLVCustomDraw;
+  ItemIndex: Integer;
+  Bytes: Int64;
+  SizeText: string;
+  R: TRect;
+  Selected: Boolean;
+  OldBkMode: Integer;
+  OldColor: COLORREF;
+  Brush: HBRUSH;
+  State: LRESULT;
+  SampleColor: COLORREF;
+  SampleX, SampleY: Integer;
+  FocusedRow: Boolean;
+  BorderPen, OldPen: HPEN;
+  CellRect: TRect;
+begin
+  // Nur die Groessenspalte (erste Unterspalte) zeichnen.
+  if (Msg.Msg <> CN_NOTIFY) and (Msg.Msg <> WM_NOTIFY) then Exit;
+  if Msg.LParam = 0 then Exit;
+  if PNMHDR(Msg.LParam)^.code <> NM_CUSTOMDRAW then Exit;
+  CD := PNMLVCustomDraw(Msg.LParam);
+  if CD^.nmcd.dwDrawStage <> (CDDS_ITEMPREPAINT or CDDS_SUBITEM) then Exit;
+  if CD^.iSubItem <> 1 then Exit;
+
+  ItemIndex := Integer(CD^.nmcd.dwItemSpec);
+  if (ItemIndex < 0) or (ItemIndex >= AList.Items.Count) then Exit;
+  if AList.Items[ItemIndex].SubItems.Count = 0 then Exit;
+  if not TryStrToInt64(Trim(AList.Items[ItemIndex].SubItems[0]), Bytes) then Exit;
+  if Bytes < 0 then Exit;
+
+  if Bytes < 1024 then
+    SizeText := Format('%d Byte', [Bytes])
+  else if Bytes < 1024 * 1024 then
+    SizeText := FormatFloat('0.00', Bytes / 1024.0) + ' KB'
+  else if Bytes < Int64(1024) * 1024 * 1024 then
+    SizeText := FormatFloat('0.00', Bytes / (1024.0 * 1024.0)) + ' MB'
+  else if Bytes < Int64(1024) * 1024 * 1024 * 1024 then
+    SizeText := FormatFloat('0.00', Bytes / (1024.0 * 1024.0 * 1024.0)) + ' GB'
+  else
+    SizeText := FormatFloat('0.00', Bytes / (1024.0 * 1024.0 * 1024.0 * 1024.0)) + ' TB';
+
+  FocusedRow := (SendMessage(AList.Handle, LVM_GETITEMSTATE,
+    WPARAM(ItemIndex), LPARAM(LVIS_FOCUSED)) and LVIS_FOCUSED) <> 0;
+
+  // Rechteck des Subitems vom nativen ListView abfragen.
+  R.Left := LVIR_BOUNDS;
+  R.Top := 1;
+  if SendMessage(AList.Handle, LVM_GETSUBITEMRECT, WPARAM(ItemIndex),
+    LPARAM(@R)) = 0 then Exit;
+
+  CellRect := R;
+
+  // Die LMDShellList zeichnet Auswahl- und HotTrack-Hintergruende selbst.
+  // Immer die bereits gezeichnete Nachbarzelle abtasten, auch bei Hover
+  // ohne Auswahl. Dadurch wird kein eigener weisser Streifen erzeugt.
+  // Keine erneuten Shell-Abfragen und keine Veraenderung der Listeneintraege.
+  State := SendMessage(AList.Handle, LVM_GETITEMSTATE,
+    WPARAM(ItemIndex), LPARAM(LVIS_SELECTED));
+  Selected := (State and LVIS_SELECTED) <> 0;
+  SampleX := R.Left - 3;
+  SampleY := R.Top + (R.Bottom - R.Top) div 2;
+  SampleColor := CLR_INVALID;
+  if SampleX >= 0 then
+    SampleColor := GetPixel(CD^.nmcd.hdc, SampleX, SampleY);
+
+  if SampleColor <> CLR_INVALID then
+  begin
+    Brush := CreateSolidBrush(SampleColor);
+    FillRect(CD^.nmcd.hdc, R, Brush);
+    DeleteObject(Brush);
+    if (GetRValue(SampleColor) * 299 + GetGValue(SampleColor) * 587 +
+        GetBValue(SampleColor) * 114) < 128000 then
+      OldColor := SetTextColor(CD^.nmcd.hdc, RGB(255, 255, 255))
+    else
+      OldColor := SetTextColor(CD^.nmcd.hdc, GetSysColor(COLOR_WINDOWTEXT));
+  end
+  else
+  begin
+    // Nur bei fehlgeschlagenem Sampling auf Systemfarben zurueckfallen.
+    if Selected then
+    begin
+      Brush := GetSysColorBrush(COLOR_HIGHLIGHT);
+      OldColor := SetTextColor(CD^.nmcd.hdc, GetSysColor(COLOR_HIGHLIGHTTEXT));
+    end
+    else
+    begin
+      Brush := GetSysColorBrush(COLOR_WINDOW);
+      OldColor := SetTextColor(CD^.nmcd.hdc, GetSysColor(COLOR_WINDOWTEXT));
+    end;
+    FillRect(CD^.nmcd.hdc, R, Brush);
+  end;
+  OldBkMode := SetBkMode(CD^.nmcd.hdc, TRANSPARENT);
+  InflateRect(R, -5, 0);
+  DrawText(CD^.nmcd.hdc, PChar(SizeText), Length(SizeText), R,
+    DT_RIGHT or DT_VCENTER or DT_SINGLELINE or DT_NOPREFIX or DT_END_ELLIPSIS);
+  SetBkMode(CD^.nmcd.hdc, OldBkMode);
+  SetTextColor(CD^.nmcd.hdc, OldColor);
+  // Patch 23: Die native Fokusbegrenzung der Zeile wird durch das
+  // CustomDraw der Groessenspalte unterbrochen. Nur fuer das fokussierte
+  // Listenelement die obere/untere Linie in dieser Zelle fortsetzen.
+  // Keine weitere Neuzeichnung und keine Aenderung von Auswahlfarben.
+  if FocusedRow then
+  begin
+    BorderPen := CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
+    if BorderPen <> 0 then
+    begin
+      OldPen := SelectObject(CD^.nmcd.hdc, BorderPen);
+      MoveToEx(CD^.nmcd.hdc, CellRect.Left, CellRect.Top, nil);
+      LineTo(CD^.nmcd.hdc, CellRect.Right, CellRect.Top);
+      MoveToEx(CD^.nmcd.hdc, CellRect.Left, CellRect.Bottom - 1, nil);
+      LineTo(CD^.nmcd.hdc, CellRect.Right, CellRect.Bottom - 1);
+      SelectObject(CD^.nmcd.hdc, OldPen);
+      DeleteObject(BorderPen);
+    end;
+  end;
+  // Nur diese Zelle ueberspringt das Standardzeichnen; andere bleiben LMD.
+  Msg.Result := CDRF_SKIPDEFAULT;
+end;
+
+procedure TFreePDF64_Form.List1DrawProbe(var Msg: TMessage);
+begin
+  if Assigned(FList1OldWndProc) then FList1OldWndProc(Msg);
+  DrawSizeCell(LMDShellList1, Msg);
+end;
+
+procedure TFreePDF64_Form.List2DrawProbe(var Msg: TMessage);
+begin
+  if Assigned(FList2OldWndProc) then FList2OldWndProc(Msg);
+  DrawSizeCell(LMDShellList2, Msg);
+end;
+
 procedure TFreePDF64_Form.FormCreate(Sender: TObject);
 var
   I: Integer;
@@ -5576,6 +5724,12 @@ begin
 
   Btn_Delete.Align := alClient;
   Btn_Delete.Width := I;
+  // Diagnose erst nach der Initialisierung aktivieren.
+  FList1OldWndProc := LMDShellList1.WindowProc;
+  FList2OldWndProc := LMDShellList2.WindowProc;
+  LMDShellList1.WindowProc := List1DrawProbe;
+  LMDShellList2.WindowProc := List2DrawProbe;
+
 end;
 
 procedure TFreePDF64_Form.QuellBtnClick(Sender: TObject);

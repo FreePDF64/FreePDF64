@@ -968,14 +968,14 @@
           item
             Alignment = taRightJustify
             DataType = cdSize
-            Caption = 'Type'
+            Caption = 'Gr'#246#223'e'
             MaxWidth = 300
             Visible = True
           end
           item
             Alignment = taRightJustify
-            DataType = cdCustom
-            Caption = 'Size'
+            DataType = cdTypeName
+            Caption = 'Elementtyp'
             MaxWidth = 300
             Visible = True
           end
@@ -986,7 +986,7 @@
             Visible = True
           end>
         StoreSettings = False
-        DefaultColumns = True
+        DefaultColumns = False
         AutoContextMenus = False
         AutoSortSupport = True
         OnFilterItem = LMDShellList2FilterItem
@@ -1030,7 +1030,7 @@
       end
       object FavLbR: TListBox
         Left = 134
-        Top = 812
+        Top = 811
         Width = 140
         Height = 32
         TabStop = False
@@ -1398,14 +1398,14 @@
         item
           Alignment = taRightJustify
           DataType = cdSize
-          Caption = 'Type'
+          Caption = 'Gr'#246#223'e'
           MaxWidth = 300
           Visible = True
         end
         item
           Alignment = taRightJustify
-          DataType = cdCustom
-          Caption = 'Size'
+          DataType = cdTypeName
+          Caption = 'Elementtyp'
           MaxWidth = 300
           Visible = True
         end
@@ -1416,7 +1416,7 @@
           Visible = True
         end>
       StoreSettings = False
-      DefaultColumns = True
+      DefaultColumns = False
       AutoContextMenus = False
       AutoSortSupport = True
       OnFilterItem = LMDShellList1FilterItem
@@ -1444,8 +1444,8 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1111
-      Top = 816
+      Left = 1112
+      Top = 815
       Width = 140
       Height = 32
       TabStop = False
