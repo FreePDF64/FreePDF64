@@ -669,10 +669,18 @@ type
       FExplicitExit: Boolean;
       // Patch 19: nur die sichtbare Größenspalte zeichnen.
       FList1OldWndProc, FList2OldWndProc: TWndMethod;
+      FSelectAfterDeleteIndex: Integer;
+      FDeleteSelectionList: TLMDShellList;
+      FDeleteSelectionOldCount: Integer;
+      FDeleteSelectionChecks: Integer;
+      FDeleteSelectionTimer: TTimer;
+      FDeleteTreeRedrawTimer: TTimer;
+      FDeleteTreeRedrawSide: Integer;
+      procedure DeleteTreeRedrawTimerTick(Sender: TObject);
+      procedure DeleteSelectionTimerTick(Sender: TObject);
       procedure List1DrawProbe(var Msg: TMessage);
       procedure List2DrawProbe(var Msg: TMessage);
       procedure DrawSizeCell(AList: TLMDShellList; var Msg: TMessage);
-
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
       procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
@@ -729,6 +737,65 @@ uses
 
 {$R *.DFM}
 {$R FreePDF64.res}
+
+procedure TFreePDF64_Form.DeleteTreeRedrawTimerTick(Sender: TObject);
+begin
+  FDeleteTreeRedrawTimer.Enabled := False;
+  case FDeleteTreeRedrawSide of
+    1:
+      begin
+        LMDShellTree1.Perform(WM_SETREDRAW, 1, 0);
+        LMDShellTree1.Invalidate;
+      end;
+    2:
+      begin
+        LMDShellTree2.Perform(WM_SETREDRAW, 1, 0);
+        LMDShellTree2.Invalidate;
+      end;
+  end;
+  FDeleteTreeRedrawSide := 0;
+end;
+
+procedure TFreePDF64_Form.DeleteSelectionTimerTick(Sender: TObject);
+var
+  Index: Integer;
+begin
+  if not Assigned(FDeleteSelectionTimer) then
+    Exit;
+
+  Inc(FDeleteSelectionChecks);
+  if (not Assigned(FDeleteSelectionList)) or
+     (csDestroying in ComponentState) then
+  begin
+    FDeleteSelectionTimer.Enabled := False;
+    Exit;
+  end;
+
+  // Auf die tatsächliche Änderung der Eintragszahl warten.
+  // Nach Abbruch des Löschdialogs keine Auswahl erzwingen.
+  if FDeleteSelectionList.Items.Count >= FDeleteSelectionOldCount then
+  begin
+    if FDeleteSelectionChecks >= 60 then
+      FDeleteSelectionTimer.Enabled := False;
+    Exit;
+  end;
+
+  FDeleteSelectionTimer.Enabled := False;
+  if FDeleteSelectionList.Items.Count = 0 then
+    Exit;
+
+  Index := FSelectAfterDeleteIndex;
+  if Index >= FDeleteSelectionList.Items.Count then
+    Index := FDeleteSelectionList.Items.Count - 1;
+  if Index < 0 then
+    Exit;
+
+  FDeleteSelectionList.SetFocus;
+  FDeleteSelectionList.Selected := FDeleteSelectionList.Items[Index];
+  FDeleteSelectionList.Items[Index].Selected := True;
+  FDeleteSelectionList.Items[Index].Focused := True;
+  FDeleteSelectionList.Items[Index].MakeVisible(False);
+end;
 
 procedure TFreePDF64_Form.WMStartInTray(var Msg: TMessage);
 begin
@@ -1077,7 +1144,7 @@ begin
   SetAutoSize(a);
 
   Sleep(100);
-  RefreshBt.Click;
+//  RefreshBt.Click;
 end;
 
 // Doppelklick auf Splitter3
@@ -1912,7 +1979,7 @@ begin
   LMDShellList1.Update;
   LMDShellList2.Update;
 
-  RefreshBt.Click;
+//  RefreshBt.Click;
 end;
 
 procedure TFreePDF64_Form.AutoSpalteClick(Sender: TObject);
@@ -2305,7 +2372,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '07.11.2026';
+  Datum := '09.11.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -2814,7 +2881,6 @@ end;
 procedure TFreePDF64_Form.RefreshBtClick(Sender: TObject);
 begin
   FavClose;
-
   // Zeichnen während des gesamten Refresh-Vorgangs abschalten
   LMDShellList1.Perform(WM_SETREDRAW, 0, 0);
   LMDShellList2.Perform(WM_SETREDRAW, 0, 0);
@@ -4775,15 +4841,74 @@ begin
 end;
 
 procedure TFreePDF64_Form.Btn_DeleteClick(Sender: TObject);
+var
+  Liste: TLMDShellList;
 begin
-  if LMDShellList1.Focused and (LMDShellList1.SelCount > 0) then
-    LMDShellList1.DeleteItems
-  else if LMDShellList2.Focused and (LMDShellList2.SelCount > 0) then
-    LMDShellList2.DeleteItems;
+  // Der Löschen-Button kann den Fokus von der Dateiliste übernehmen.
+  Liste := nil;
+  if LMDShellList1.Focused then
+    Liste := LMDShellList1
+  else if LMDShellList2.Focused then
+    Liste := LMDShellList2
+  else if wcPrevious = LMDShellList1 then
+    Liste := LMDShellList1
+  else if wcPrevious = LMDShellList2 then
+    Liste := LMDShellList2;
 
-  RefreshBt.Click;
-  // Einmal Taste DOWN drücken für Markierung des ersten Eintrags
-  keybd_event(VK_DOWN, MapVirtualKey(VK_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
+  if (Liste = nil) or (Liste.SelCount = 0) or
+     (Liste.Selected = nil) then
+    Exit;
+
+  if not Assigned(FDeleteSelectionTimer) then
+  begin
+    FDeleteSelectionTimer := TTimer.Create(Self);
+    FDeleteSelectionTimer.Enabled := False;
+    FDeleteSelectionTimer.Interval := 50;
+    FDeleteSelectionTimer.OnTimer := DeleteSelectionTimerTick;
+  end;
+  FDeleteSelectionTimer.Enabled := False;
+
+  FDeleteSelectionList := Liste;
+  FDeleteSelectionOldCount := Liste.Items.Count;
+  FSelectAfterDeleteIndex := Liste.Selected.Index;
+  FDeleteSelectionChecks := 0;
+
+  // Die Shell kann den zugehoerigen Tree auch kurz nach DeleteItems
+  // asynchron aktualisieren. Daher Zeichnen erst verzoegert freigeben.
+  if not Assigned(FDeleteTreeRedrawTimer) then
+  begin
+    FDeleteTreeRedrawTimer := TTimer.Create(Self);
+    FDeleteTreeRedrawTimer.Enabled := False;
+    FDeleteTreeRedrawTimer.Interval := 200;
+    FDeleteTreeRedrawTimer.OnTimer := DeleteTreeRedrawTimerTick;
+  end;
+
+  // Bei unmittelbar aufeinanderfolgenden Loeschvorgaengen die alte
+  // Zeichensperre sauber aufheben, bevor eine neue gesetzt wird.
+  if FDeleteTreeRedrawTimer.Enabled then
+    DeleteTreeRedrawTimerTick(FDeleteTreeRedrawTimer);
+
+  if Liste = LMDShellList1 then
+  begin
+    FDeleteTreeRedrawSide := 1;
+    LMDShellTree1.Perform(WM_SETREDRAW, 0, 0);
+  end
+  else
+  begin
+    FDeleteTreeRedrawSide := 2;
+    LMDShellTree2.Perform(WM_SETREDRAW, 0, 0);
+  end;
+
+  try
+    Liste.DeleteItems;
+  finally
+    // Auch bei einer Ausnahme die Zeichensperre wieder freigeben.
+    FDeleteTreeRedrawTimer.Enabled := True;
+  end;
+
+  // LMDShell aktualisiert die Liste gegebenenfalls erst nach DeleteItems.
+  // Der Timer wartet auf die geänderte Eintragszahl (maximal 3 Sekunden).
+  FDeleteSelectionTimer.Enabled := True;
 end;
 
 procedure TFreePDF64_Form.Btn_DeleteMouseDown(Sender: TObject;
@@ -4959,7 +5084,7 @@ begin
     LMDShellList1.PasteFromClipboard;
     LMDShellList2.SetFocus;
   end;
-  RefreshBt.Click;
+//  RefreshBt.Click;
   keybd_event(VK_DOWN, MapVirtualKey(VK_DOWN, 0), KEYEVENTF_EXTENDEDKEY, 0);
 end;
 
@@ -5444,9 +5569,9 @@ var
   State: LRESULT;
   SampleColor: COLORREF;
   SampleX, SampleY: Integer;
-  FocusedRow: Boolean;
-  BorderPen, OldPen: HPEN;
-  CellRect: TRect;
+  EdgeY: Integer;
+  EdgeColor: COLORREF;
+  EdgeRect: TRect;
 begin
   // Nur die Groessenspalte (erste Unterspalte) zeichnen.
   if (Msg.Msg <> CN_NOTIFY) and (Msg.Msg <> WM_NOTIFY) then Exit;
@@ -5473,16 +5598,11 @@ begin
   else
     SizeText := FormatFloat('0.00', Bytes / (1024.0 * 1024.0 * 1024.0 * 1024.0)) + ' TB';
 
-  FocusedRow := (SendMessage(AList.Handle, LVM_GETITEMSTATE,
-    WPARAM(ItemIndex), LPARAM(LVIS_FOCUSED)) and LVIS_FOCUSED) <> 0;
-
   // Rechteck des Subitems vom nativen ListView abfragen.
   R.Left := LVIR_BOUNDS;
   R.Top := 1;
   if SendMessage(AList.Handle, LVM_GETSUBITEMRECT, WPARAM(ItemIndex),
     LPARAM(@R)) = 0 then Exit;
-
-  CellRect := R;
 
   // Die LMDShellList zeichnet Auswahl- und HotTrack-Hintergruende selbst.
   // Immer die bereits gezeichnete Nachbarzelle abtasten, auch bei Hover
@@ -5523,30 +5643,35 @@ begin
     end;
     FillRect(CD^.nmcd.hdc, R, Brush);
   end;
+  // Die vom nativen ListView gezeichneten oberen/unteren Linien
+  // in der Groessenspalte fortsetzen, statt eigene Rahmen zu erfinden.
+  // Die Farbe wird je Randpixel aus der direkt linken Spalte uebernommen.
+  if Selected and (SampleX >= 0) then
+  begin
+    EdgeRect := R;
+    for EdgeY := 0 to 1 do
+    begin
+      if EdgeY = 0 then
+        SampleY := R.Top
+      else
+        SampleY := R.Bottom - 1;
+      EdgeColor := GetPixel(CD^.nmcd.hdc, SampleX, SampleY);
+      if EdgeColor <> CLR_INVALID then
+      begin
+        Brush := CreateSolidBrush(EdgeColor);
+        EdgeRect.Top := SampleY;
+        EdgeRect.Bottom := SampleY + 1;
+        FillRect(CD^.nmcd.hdc, EdgeRect, Brush);
+        DeleteObject(Brush);
+      end;
+    end;
+  end;
   OldBkMode := SetBkMode(CD^.nmcd.hdc, TRANSPARENT);
   InflateRect(R, -5, 0);
   DrawText(CD^.nmcd.hdc, PChar(SizeText), Length(SizeText), R,
     DT_RIGHT or DT_VCENTER or DT_SINGLELINE or DT_NOPREFIX or DT_END_ELLIPSIS);
   SetBkMode(CD^.nmcd.hdc, OldBkMode);
   SetTextColor(CD^.nmcd.hdc, OldColor);
-  // Patch 23: Die native Fokusbegrenzung der Zeile wird durch das
-  // CustomDraw der Groessenspalte unterbrochen. Nur fuer das fokussierte
-  // Listenelement die obere/untere Linie in dieser Zelle fortsetzen.
-  // Keine weitere Neuzeichnung und keine Aenderung von Auswahlfarben.
-  if FocusedRow then
-  begin
-    BorderPen := CreatePen(PS_SOLID, 1, RGB(0, 0, 0));
-    if BorderPen <> 0 then
-    begin
-      OldPen := SelectObject(CD^.nmcd.hdc, BorderPen);
-      MoveToEx(CD^.nmcd.hdc, CellRect.Left, CellRect.Top, nil);
-      LineTo(CD^.nmcd.hdc, CellRect.Right, CellRect.Top);
-      MoveToEx(CD^.nmcd.hdc, CellRect.Left, CellRect.Bottom - 1, nil);
-      LineTo(CD^.nmcd.hdc, CellRect.Right, CellRect.Bottom - 1);
-      SelectObject(CD^.nmcd.hdc, OldPen);
-      DeleteObject(BorderPen);
-    end;
-  end;
   // Nur diese Zelle ueberspringt das Standardzeichnen; andere bleiben LMD.
   Msg.Result := CDRF_SKIPDEFAULT;
 end;
@@ -5571,6 +5696,10 @@ var
   Entry: string;
   PDFMenuItem, PDFCheckMenuItem, PDFLastReportMenuItem: TMenuItem;
 begin
+  // Dateiliste rechts gepuffert zeichnen; keine zeitgesteuerte
+  // WM_SETREDRAW-Sperre beim Verzeichniswechsel.
+  LMDShellList1.DoubleBuffered := True;
+  LMDShellList2.DoubleBuffered := True;
   // Menüeintrag zur Windows-PDF-Verknüpfung dynamisch ergänzen.
   PDFMenuItem := TMenuItem.Create(MainMenu1);
   PDFMenuItem.Caption := 'PDF-Dateien mit dem FreePDF64-Viewer verknüpfen...';
@@ -5961,7 +6090,7 @@ begin
     LMDShellList1.ClearSelection;
     LMDShellList1.PasteFromClipboard;
   end;
-  RefreshBt.Click;
+//  RefreshBt.Click;
 end;
 
 function ComputerName: String;
@@ -6520,7 +6649,7 @@ begin
       'LMB: Ansehen im unteren Anzeigefenster' + #13 +
       'RMB: Ansehen im externen Editor';
     ToolButtonPDFViewer.Hint :=
-      'LMB: Öffnet den leeren FreePDF64-Viewer' + #13 +
+      'LMB: FreePDF64-Viewer aufrufen...' + #13 +
       'RMB: PDF-Dateien mit dem FreePDF64-Viewer verknüpfen...';
 
     FreePDF64_Notify.LMDShellNotify.WatchFolder := Trim(IncludeTrailingBackslash(FreePDF64_Notify.MonitoringFolder.Text));

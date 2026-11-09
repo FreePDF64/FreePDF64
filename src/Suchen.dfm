@@ -1,14 +1,18 @@
 object Suche_Form: TSuche_Form
   Left = 0
   Top = 0
+  Margins.Left = 2
+  Margins.Top = 2
+  Margins.Right = 2
+  Margins.Bottom = 2
   Anchors = [akLeft, akTop, akRight]
   Caption = 'Suchen nach Datei(en)/Verzeichnis(se)'
-  ClientHeight = 675
-  ClientWidth = 1078
+  ClientHeight = 540
+  ClientWidth = 862
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -15
+  Font.Height = -12
   Font.Name = 'Segoe UI'
   Font.Style = []
   KeyPreview = True
@@ -19,72 +23,52 @@ object Suche_Form: TSuche_Form
   OnKeyPress = FormKeyPress
   OnResize = FormResize
   OnShow = FormShow
-  PixelsPerInch = 120
-  TextHeight = 20
+  TextHeight = 15
   object Panel_oben: TPanel
     Left = 0
     Top = 0
-    Width = 1078
-    Height = 241
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Width = 862
+    Height = 193
     Align = alTop
     TabOrder = 0
     OnEnter = Panel_obenEnter
+    ExplicitWidth = 860
     DesignSize = (
-      1078
-      241)
+      862
+      193)
     object Label1: TLabel
-      Left = 14
-      Top = 19
-      Width = 85
-      Height = 20
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 11
+      Top = 15
+      Width = 71
+      Height = 15
       Caption = 'Suchen nach:'
     end
     object Label2: TLabel
-      Left = 14
-      Top = 53
-      Width = 66
-      Height = 20
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 11
+      Top = 42
+      Width = 55
+      Height = 15
       Caption = 'Suchen in:'
     end
     object Label4: TLabel
-      Left = 256
-      Top = 172
-      Width = 25
-      Height = 20
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 205
+      Top = 138
+      Width = 21
+      Height = 15
       Caption = 'und'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
     end
     object Clear: TSpeedButton
-      Left = 388
-      Top = 203
-      Width = 29
-      Height = 27
+      Left = 310
+      Top = 162
+      Width = 24
+      Height = 22
       Hint = 'Auswahl Dateigr'#246#223'e zur'#252'cksetzen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       ImageIndex = 88
       ImageName = 'trashcan'
       Images = FreePDF64_Form.VirtualImageList1
@@ -94,71 +78,51 @@ object Suche_Form: TSuche_Form
       OnClick = ClearClick
     end
     object LabelTextCB: TLabel
-      Left = 105
-      Top = 121
-      Width = 301
-      Height = 20
+      Left = 84
+      Top = 97
+      Width = 241
+      Height = 16
       Hint = 
         'Textsuche geht nur bei "Zeige nur Dateien" und ohne "Datumssuche' +
         '"'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       AutoSize = False
       Caption = 'Label'
       ParentShowHint = False
       ShowHint = True
     end
     object DateigroesseLabel: TLabel
-      Left = 107
-      Top = 185
-      Width = 44
-      Height = 28
+      Left = 86
+      Top = 148
+      Width = 35
+      Height = 22
       Hint = 
         'Suche nach bestimmter Dateigr'#246#223'e geht nur bei "Zeige nur Dateien' +
         '"'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       AutoSize = False
       ParentShowHint = False
       ShowHint = True
     end
     object TextLb: TLabel
-      Left = 14
-      Top = 115
-      Width = 79
-      Height = 20
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 11
+      Top = 92
+      Width = 65
+      Height = 15
       Caption = 'Text suchen:'
     end
     object DirCheckbox: TCheckBox
-      Left = 392
-      Top = 87
-      Width = 177
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 314
+      Top = 70
+      Width = 141
+      Height = 16
       Caption = 'Inkl. Unterverzeichnisse'
       TabOrder = 6
     end
     object ButtonHoch: TButton
-      Left = 834
-      Top = 50
-      Width = 27
-      Height = 28
+      Left = 667
+      Top = 40
+      Width = 22
+      Height = 22
       Hint = 'Eine Ebene h'#246'her'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       Caption = '..'
       ImageAlignment = iaCenter
@@ -167,17 +131,14 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 3
       OnClick = ButtonHochClick
+      ExplicitLeft = 665
     end
     object Browse: TButton
-      Left = 865
-      Top = 50
-      Width = 40
-      Height = 28
+      Left = 692
+      Top = 40
+      Width = 32
+      Height = 22
       Hint = 'Laufwerk/Verzeichnis ausw'#228'hlen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       ImageAlignment = iaCenter
       ImageIndex = 8
@@ -187,23 +148,20 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 4
       OnClick = BrowseClick
+      ExplicitLeft = 690
     end
     object FileField: TComboBox
-      Left = 105
-      Top = 16
-      Width = 799
-      Height = 28
+      Left = 84
+      Top = 13
+      Width = 639
+      Height = 23
       Hint = 'F'#252'r Hilfe bitte das Fragezeichen anklicken'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       AutoDropDownWidth = True
       Anchors = [akLeft, akTop, akRight]
       DropDownCount = 20
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -212,23 +170,20 @@ object Suche_Form: TSuche_Form
       TabOrder = 0
       OnCloseUp = FileFieldCloseUp
       OnDropDown = FileFieldDropDown
+      ExplicitWidth = 637
     end
     object SearchField: TComboBox
-      Left = 105
-      Top = 50
-      Width = 693
-      Height = 28
+      Left = 84
+      Top = 40
+      Width = 554
+      Height = 23
       Hint = 'Hier nur einen Anfangspfad f'#252'r die Suche angeben'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       AutoDropDownWidth = True
       Anchors = [akLeft, akTop, akRight]
       DropDownCount = 20
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -236,21 +191,18 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 1
       OnDropDown = SearchFieldDropDown
+      ExplicitWidth = 552
     end
     object StopSearchButton: TBitBtn
-      Left = 912
-      Top = 50
-      Width = 156
-      Height = 35
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 730
+      Top = 40
+      Width = 124
+      Height = 28
       Anchors = [akTop, akRight]
       Caption = 'Abbrechen'
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       Glyph.Data = {
@@ -356,22 +308,19 @@ object Suche_Form: TSuche_Form
       ParentFont = False
       TabOrder = 20
       OnClick = StopSearchButtonClick
+      ExplicitLeft = 728
     end
     object StartSearchButton: TBitBtn
-      Left = 912
-      Top = 12
-      Width = 156
-      Height = 35
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 730
+      Top = 10
+      Width = 124
+      Height = 28
       Anchors = [akTop, akRight]
       Caption = 'Suche starten'
       Default = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       Glyph.Data = {
@@ -477,16 +426,13 @@ object Suche_Form: TSuche_Form
       ParentFont = False
       TabOrder = 19
       OnClick = StartSearchButtonClick
+      ExplicitLeft = 728
     end
     object HiddenCheckbox: TCheckBox
-      Left = 577
-      Top = 87
-      Width = 145
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 462
+      Top = 70
+      Width = 116
+      Height = 16
       AllowGrayed = True
       Caption = 'Versteckt+System'
       Checked = True
@@ -496,68 +442,52 @@ object Suche_Form: TSuche_Form
       TabOrder = 7
     end
     object SearchMaxDate: TDateTimePicker
-      Left = 286
-      Top = 169
-      Width = 98
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 229
+      Top = 135
+      Width = 78
+      Height = 23
       Date = 38156.00000000000000000
       Time = 0.99998842592322040
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
       TabOrder = 12
     end
     object SearchMinDate: TDateTimePicker
-      Left = 153
-      Top = 169
-      Width = 98
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 122
+      Top = 135
+      Width = 79
+      Height = 23
       Date = 45705.00000000000000000
       Time = 0.00001157407677965
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
       TabOrder = 11
     end
     object DatumCheckBox: TCheckBox
-      Left = 14
-      Top = 172
-      Width = 137
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 11
+      Top = 138
+      Width = 110
+      Height = 16
       Caption = 'Datum zwischen:'
       TabOrder = 10
       OnClick = DatumCheckBoxClick
     end
     object ButtonRoot: TButton
-      Left = 803
-      Top = 50
-      Width = 27
-      Height = 28
+      Left = 642
+      Top = 40
+      Width = 22
+      Height = 22
       Hint = 'Sprung zu Root'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       Caption = '\'
       ImageAlignment = iaCenter
@@ -566,16 +496,13 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 2
       OnClick = ButtonRootClick
+      ExplicitLeft = 640
     end
     object FilesFoldersCB: TComboBox
-      Left = 105
-      Top = 84
-      Width = 279
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 84
+      Top = 67
+      Width = 223
+      Height = 23
       Style = csDropDownList
       DoubleBuffered = False
       ItemIndex = 1
@@ -589,18 +516,14 @@ object Suche_Form: TSuche_Form
         'Zeige nur Verzeichnisse')
     end
     object FileSizeCombo: TComboBox
-      Left = 153
-      Top = 203
-      Width = 40
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 122
+      Top = 162
+      Width = 32
+      Height = 23
       Style = csDropDownList
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ItemIndex = 1
@@ -613,18 +536,14 @@ object Suche_Form: TSuche_Form
         '<')
     end
     object SizeAuswahl: TComboBox
-      Left = 324
-      Top = 203
-      Width = 60
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 259
+      Top = 162
+      Width = 48
+      Height = 23
       Style = csDropDownList
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ItemIndex = 1
@@ -638,38 +557,30 @@ object Suche_Form: TSuche_Form
         'GB')
     end
     object UmbenennenCB: TCheckBox
-      Left = 392
-      Top = 127
-      Width = 316
-      Height = 21
+      Left = 314
+      Top = 102
+      Width = 252
+      Height = 16
       Hint = 
         'Beim Kopieren/Bewegen wird nicht nachgefragt, bevor eine Datei a' +
         'utomatisch umbenannt wird'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Caption = 'Bei Kopieren/Bewegen autom. umbenennen'
       ParentShowHint = False
       ShowHint = True
       TabOrder = 9
     end
     object SuchergebnisBtn: TBitBtn
-      Left = 912
-      Top = 204
-      Width = 156
-      Height = 26
+      Left = 730
+      Top = 163
+      Width = 124
+      Height = 21
       Hint = 'Suchergebnis speichern und anzeigen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       Caption = 'Suchergebnis'
       Default = True
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ModalResult = 1
@@ -679,21 +590,18 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 22
       OnClick = SuchergebnisBtnClick
+      ExplicitLeft = 728
     end
     object TextCB: TComboBox
-      Left = 105
-      Top = 123
-      Width = 279
-      Height = 28
+      Left = 84
+      Top = 98
+      Width = 223
+      Height = 23
       Hint = 'Suche geht nur bei "Zeige nur Dateien" und ohne "Datumssuche"'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       AutoDropDownWidth = True
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -703,15 +611,11 @@ object Suche_Form: TSuche_Form
       OnDropDown = TextCBDropDown
     end
     object Info: TButton
-      Left = 996
-      Top = 88
-      Width = 72
-      Height = 32
+      Left = 797
+      Top = 70
+      Width = 57
+      Height = 26
       Hint = 'Hilfe zum Suchefenster'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Anchors = [akTop, akRight]
       BiDiMode = bdLeftToRight
       ImageAlignment = iaCenter
@@ -723,34 +627,27 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 21
       OnClick = InfoClick
+      ExplicitLeft = 795
     end
     object AlterCB: TCheckBox
-      Left = 392
-      Top = 172
-      Width = 119
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 314
+      Top = 138
+      Width = 95
+      Height = 16
       Caption = 'Nicht '#228'lter als:'
       TabOrder = 13
       OnClick = AlterCBClick
     end
     object AgeAuswahl: TComboBox
-      Left = 573
-      Top = 169
-      Width = 93
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 458
+      Top = 135
+      Width = 75
+      Height = 23
       Style = csDropDownList
       Enabled = False
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ItemIndex = 1
@@ -765,14 +662,10 @@ object Suche_Form: TSuche_Form
         'Jahr(e)')
     end
     object AgeSizeEdit: TSpinEdit
-      Left = 514
-      Top = 167
-      Width = 51
-      Height = 31
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 411
+      Top = 134
+      Width = 41
+      Height = 24
       Enabled = False
       MaxValue = 365
       MinValue = 0
@@ -780,14 +673,10 @@ object Suche_Form: TSuche_Form
       Value = 1
     end
     object FileSize: TSpinEdit
-      Left = 201
-      Top = 202
-      Width = 116
-      Height = 31
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 161
+      Top = 162
+      Width = 93
+      Height = 24
       MaxValue = 2147483647
       MinValue = 0
       TabOrder = 17
@@ -797,14 +686,10 @@ object Suche_Form: TSuche_Form
       OnKeyPress = FileSizeKeyPress
     end
     object DTP: TDateTimePicker
-      Left = 752
-      Top = 148
-      Width = 173
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 602
+      Top = 118
+      Width = 138
+      Height = 23
       Date = 45704.00000000000000000
       Time = 0.60402040509507060
       Kind = dtkDateTime
@@ -813,44 +698,33 @@ object Suche_Form: TSuche_Form
       Visible = False
     end
     object DateiCheckBox: TCheckBox
-      Left = 14
-      Top = 206
-      Width = 121
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 11
+      Top = 165
+      Width = 97
+      Height = 17
       Caption = 'Dateigr'#246#223'e:'
       TabOrder = 24
       OnClick = DateiCheckBoxClick
     end
     object SuchergebnisCB: TCheckBox
-      Left = 697
-      Top = 206
-      Width = 204
-      Height = 21
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 558
+      Top = 165
+      Width = 163
+      Height = 17
       Anchors = [akTop, akRight]
       Caption = 'Suche im Suchergebnis [F2]'
       ParentShowHint = False
       ShowHint = False
       TabOrder = 25
       OnClick = SuchergebnisCBClick
+      ExplicitLeft = 556
     end
     object PDFCB: TCheckBox
-      Left = 14
-      Top = 136
-      Width = 85
-      Height = 21
+      Left = 11
+      Top = 109
+      Width = 68
+      Height = 17
       Hint = 'Auch PDF-Dateien durchsuchen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Caption = 'inkl. PDF'
       ParentShowHint = False
       ShowHint = True
@@ -859,44 +733,35 @@ object Suche_Form: TSuche_Form
   end
   object Suchpanel: TPanel
     Left = 0
-    Top = 241
-    Width = 1078
-    Height = 383
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Top = 193
+    Width = 862
+    Height = 306
     Align = alClient
     TabOrder = 1
     OnResize = SuchpanelResize
+    ExplicitWidth = 860
+    ExplicitHeight = 298
     object Splitter1: TSplitter
       Left = 1
       Top = 1
-      Height = 381
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
-      ExplicitHeight = 400
+      Width = 2
+      Height = 304
+      MinSize = 24
+      ExplicitHeight = 305
     end
     object ListBox1: TListBox
-      Left = 4
+      Left = 3
       Top = 1
-      Width = 1073
-      Height = 381
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Width = 858
+      Height = 304
       Style = lbOwnerDrawFixed
       Align = alClient
       DoubleBuffered = False
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
-      ItemHeight = 20
       MultiSelect = True
       ParentDoubleBuffered = False
       ParentFont = False
@@ -907,16 +772,14 @@ object Suche_Form: TSuche_Form
       OnDblClick = ListBox1DblClick
       OnDrawItem = ListBox1DrawItem
       OnMouseDown = ListBox1MouseDown
+      ExplicitWidth = 856
+      ExplicitHeight = 296
     end
     object SucheEdit: TEdit
-      Left = 772
-      Top = 347
-      Width = 197
-      Height = 28
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Left = 618
+      Top = 278
+      Width = 157
+      Height = 23
       TabStop = False
       BevelKind = bkTile
       BevelOuter = bvRaised
@@ -925,15 +788,11 @@ object Suche_Form: TSuche_Form
       OnChange = SucheEditChange
     end
     object AnzeigenPanel: TPanel
-      Left = 969
-      Top = 349
-      Width = 105
-      Height = 26
+      Left = 775
+      Top = 279
+      Width = 84
+      Height = 21
       Hint = 'Gefundene Eintr'#228'ge ganz oben im Suchergebnis anzeigen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       ParentCustomHint = False
       BevelKind = bkFlat
       BiDiMode = bdLeftToRight
@@ -942,7 +801,7 @@ object Suche_Form: TSuche_Form
       DoubleBuffered = False
       Font.Charset = ANSI_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI Semibold'
       Font.Style = [fsBold]
       ParentBiDiMode = False
@@ -959,32 +818,26 @@ object Suche_Form: TSuche_Form
   end
   object StatusBar1: TStatusBar
     Left = 0
-    Top = 652
-    Width = 1078
-    Height = 23
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Top = 522
+    Width = 862
+    Height = 18
     Panels = <
       item
-        Width = 100
+        Width = 80
       end
       item
-        Width = 100
+        Width = 80
       end>
     ParentShowHint = False
     ShowHint = False
+    ExplicitTop = 514
+    ExplicitWidth = 860
   end
   object PanelBottom: TPanel
     Left = 0
-    Top = 624
-    Width = 1078
-    Height = 28
-    Margins.Left = 4
-    Margins.Top = 4
-    Margins.Right = 4
-    Margins.Bottom = 4
+    Top = 499
+    Width = 862
+    Height = 23
     Align = alBottom
     BevelOuter = bvLowered
     DoubleBuffered = False
@@ -992,22 +845,20 @@ object Suche_Form: TSuche_Form
     ParentShowHint = False
     ShowHint = True
     TabOrder = 3
+    ExplicitTop = 491
+    ExplicitWidth = 860
     object Btn_2: TSpeedButton
-      Left = 241
+      Left = 193
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 'Kopieren mit Dialog'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F5 Kopieren'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1015,24 +866,19 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_2Click
-      ExplicitHeight = 27
     end
     object Btn_6: TSpeedButton
-      Left = 721
+      Left = 577
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 'Gehe zur Datei/zum Verzeichnis (auch per Doppelklick m'#246'glich)'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F10 Gehe zu'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1040,24 +886,19 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = ListBox1DblClick
-      ExplicitHeight = 27
     end
     object Btn_1: TSpeedButton
-      Left = 121
+      Left = 97
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 'Datei(en) im Editor '#246'ffnen'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F4 Editor'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1065,27 +906,22 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_1Click
-      ExplicitHeight = 27
     end
     object Btn_5: TSpeedButton
-      Left = 841
+      Left = 673
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 
         'Datei(en) ins '#220'berwachungs-Quellverzeichnis kopieren:'#13#10'Wenn auto' +
         'matische '#220'berwachung aktiv ist, startet die  '#13#10'sofortige Erstell' +
         'ung in PDF-Datei(en)'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'Copy -> Quell'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1093,24 +929,19 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = DateiinsQuellverzeichniskopieren1Click
-      ExplicitHeight = 27
     end
     object Btn_4: TSpeedButton
-      Left = 481
+      Left = 385
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 'L'#246'schen von Datei(en)/Verzeichnis(se)'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F8 L'#246'schen'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1118,24 +949,19 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_4Click
-      ExplicitHeight = 27
     end
     object Btn_3: TSpeedButton
-      Left = 361
+      Left = 289
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 'Verschieben mit Dialog'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F6 Bewegen'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1143,27 +969,22 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_3Click
-      ExplicitHeight = 27
     end
     object Btn_0: TSpeedButton
-      Left = 601
+      Left = 481
       Top = 1
-      Width = 120
-      Height = 26
+      Width = 96
+      Height = 21
       Hint = 
         'Umfangreiche Datei-Informationen (Metadaten) anzeigen:'#13#10'RMB im u' +
         'nteren Anzeigefenster der Hauptform zeigt'#13#10'die Metadaten im exte' +
         'rnen Editor an'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F9 Datei-Info'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1171,24 +992,19 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_0Click
-      ExplicitHeight = 27
     end
     object Btn_8: TSpeedButton
       Left = 1
       Top = 1
-      Width = 120
-      Height = 26
-      Hint = 'PDF-Dateien anzeigen im integrierten FreePDF64-Viewer'
-      Margins.Left = 4
-      Margins.Top = 4
-      Margins.Right = 4
-      Margins.Bottom = 4
+      Width = 96
+      Height = 21
+      Hint = 'PDF-Dateien anzeigen im FreePDF64-Viewer'
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F3 PDF anzeigen'
       Font.Charset = DEFAULT_CHARSET
       Font.Color = clWindowText
-      Font.Height = -15
+      Font.Height = -12
       Font.Name = 'Segoe UI'
       Font.Style = []
       ParentFont = False
@@ -1196,7 +1012,6 @@ object Suche_Form: TSuche_Form
       ParentBiDiMode = False
       ShowHint = True
       OnClick = Btn_8Click
-      ExplicitHeight = 27
     end
   end
   object LMDShellSysBrowseDialog1: TLMDShellSysBrowseDialog

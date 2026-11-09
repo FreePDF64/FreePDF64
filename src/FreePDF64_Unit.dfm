@@ -517,9 +517,9 @@
       Width = 120
       Height = 26
       Hint = 
-        '- PDF-Dateien werden mit dem internen FreePDF64-Viewer angezeigt' +
-        #13#10'- PS-Dateien werden mit Ghostscript angezeigt'#13#10'- Bilder werden' +
-        ' im jeweils gegen'#252'berliegenden Fenster angezeigt'
+        '- PDF-Dateien werden mit dem FreePDF64-Viewer angezeigt'#13#10'- PS-Da' +
+        'teien werden mit Ghostscript angezeigt'#13#10'- Bilder werden im jewei' +
+        'ls gegen'#252'berliegenden Fenster angezeigt'
       Align = alLeft
       BiDiMode = bdLeftToRight
       Caption = 'F3 Anzeigen'
@@ -715,6 +715,7 @@
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
+      ExplicitWidth = 1024
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1030,7 +1031,7 @@
       end
       object FavLbR: TListBox
         Left = 134
-        Top = 811
+        Top = 808
         Width = 140
         Height = 32
         TabStop = False
@@ -1053,6 +1054,7 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 790
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1444,8 +1446,8 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1112
-      Top = 815
+      Left = 1115
+      Top = 812
       Width = 140
       Height = 32
       TabStop = False
@@ -1468,6 +1470,8 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 1106
+      ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1652,6 +1656,7 @@
         TabStop = False
         OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
+        ExplicitLeft = 252
       end
       object Quelllabel: TPanel
         Left = 65
@@ -2400,7 +2405,7 @@
       OnClick = SearchBtnClick
     end
     object FreePDF64Viewerffnen1: TMenuItem
-      Caption = 'PDF-Viewer '#246'ffnen'
+      Caption = 'FreePDF64-Viewer '#246'ffnen'
       ImageIndex = 11
       ImageName = 'FreePDF64Viewer'
       OnClick = FreePDF64Viewerffnen1Click
