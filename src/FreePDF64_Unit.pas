@@ -380,8 +380,6 @@ type
     PaneloverPrgB: TPanel;
     VirtualImageList2: TVirtualImageList;
     ShowNetworkShares: TMenuItem;
-    ViewStyleBtn1: TSpeedButton;
-    ViewStyleBtn2: TSpeedButton;
     AutoFormat: TMenuItem;
     Bereinigung1: TMenuItem;
     N20: TMenuItem;
@@ -633,8 +631,6 @@ type
     procedure LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure LMDShellTree2FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
     procedure ShowNetworkSharesClick(Sender: TObject);
-    procedure ViewStyleBtn2Click(Sender: TObject);
-    procedure ViewStyleBtn1Click(Sender: TObject);
     procedure LMDShellList1InfoTip(Sender: TObject; Item: TListItem;
       var InfoTip: string);
     procedure LMDShellList2InfoTip(Sender: TObject; Item: TListItem;
@@ -2351,22 +2347,6 @@ begin
   SB_Right;
 end;
 
-procedure TFreePDF64_Form.ViewStyleBtn1Click(Sender: TObject);
-begin
-  if LMDShellList1.ViewStyle = vsReport then
-    LMDShellList1.ViewStyle := vsList
-  else
-    LMDShellList1.ViewStyle := vsReport;
-end;
-
-procedure TFreePDF64_Form.ViewStyleBtn2Click(Sender: TObject);
-begin
-  if LMDShellList2.ViewStyle = vsReport then
-    LMDShellList2.ViewStyle := vsList
-  else
-    LMDShellList2.ViewStyle := vsReport;
-end;
-
 // Aufruf der Github-Release-Seite von FreePDF64
 procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
@@ -2799,9 +2779,6 @@ begin
     WriteInteger('Start', 'ColumnsR Width1', LMDShellList2.Column[1].Width);
     WriteInteger('Start', 'ColumnsR Width2', LMDShellList2.Column[2].Width);
     WriteInteger('Start', 'ColumnsR Width3', LMDShellList2.Column[3].Width);
-    // Counter wird separat mit SaveCounter gesichert.
-    WriteInteger('Start', 'ViewStyle_Left', Ord(LMDShellList1.ViewStyle));
-    WriteInteger('Start', 'ViewStyle_Right', Ord(LMDShellList2.ViewStyle));
   end;
   // Speicher wird wieder freigeben
   IniDat.Free;
@@ -6337,11 +6314,6 @@ begin
       FSortAscending  := ReadBool('Start', 'SortDir ColumnL', FSortAscending);
       FSortAscending2 := ReadBool('Start', 'SortDir ColumnR', FSortAscending2);
 
-      VS_Left := ReadInteger('Start', 'ViewStyle_Left', Ord(vsReport));
-      LMDShellList1.ViewStyle := TViewStyle(VS_Left);
-      VS_Right := ReadInteger('Start', 'ViewStyle_Right', Ord(vsReport));
-      LMDShellList2.ViewStyle := TViewStyle(VS_Right);
-
       if FreePDF64_Notify.MonitoringFolder.Text = '' then
         FreePDF64_Notify.MonitoringFolder.Text := 'C:\FreePDF64\Quellverzeichnis\';
 
@@ -7487,56 +7459,6 @@ var
 begin
   InfoTip := '';
 
-  if LMDShellList1.ViewStyle = vsList then
-  begin
-    FilePath := IncludeTrailingBackslash(LMDShellFolder1.ActiveFolder.PathName) + Item.Caption;
-    RealPath := ResolveRealFolderPath(Item.Caption, FilePath);
-
-    // Normale Dateiattribute
-    if FindFirst(RealPath, faAnyFile, SR) = 0 then
-    begin
-      IsDir := (SR.Attr and faDirectory) <> 0;
-      FindClose(SR);
-    end
-    else
-    begin
-      // ? Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
-      FreePDF64_Form.StatusBar_Left.SimpleText :=
-        Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
-      Exit;
-    end;
-
-    // Ordner
-    if IsDir then
-    begin
-      ModifiedDT := GetFileModifiedTime(RealPath);
-
-      if ModifiedDT = 0 then
-      begin
-        FreePDF64_Form.StatusBar_Left.SimpleText :=
-          Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
-        Exit;
-      end;
-
-      ModifiedStr := FormatDateTime('dd.mm.yyyy hh:nn:ss', ModifiedDT);
-
-      FreePDF64_Form.StatusBar_Left.SimpleText :=
-        Item.Caption + ', Dateiordner, Geändert: ' + ModifiedStr;
-    end
-
-    // Datei
-    else
-    begin
-      ModifiedDT  := GetFileModifiedTime(RealPath);
-      ModifiedStr := FormatDateTime('dd.mm.yyyy hh:nn:ss', ModifiedDT);
-      TypeName    := GetFileTypeName(RealPath);
-
-      FreePDF64_Form.StatusBar_Left.SimpleText :=
-        Item.Caption + ', ' +
-        FormatByteString(SR.Size) + ', ' +
-        TypeName + ', ' + ModifiedStr;
-    end;
-  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2InfoTip(Sender: TObject; Item: TListItem;
@@ -7552,56 +7474,6 @@ var
 begin
   InfoTip := '';
 
-  if LMDShellList2.ViewStyle = vsList then
-  begin
-    FilePath := IncludeTrailingBackslash(LMDShellFolder2.ActiveFolder.PathName) + Item.Caption;
-    RealPath := ResolveRealFolderPath(Item.Caption, FilePath);
-
-    // Normale Dateiattribute
-    if FindFirst(RealPath, faAnyFile, SR) = 0 then
-    begin
-      IsDir := (SR.Attr and faDirectory) <> 0;
-      FindClose(SR);
-    end
-    else
-    begin
-      // ? Spezialfall: Ordner nicht lesbar (Programme, WindowsApps, PerfLogs, Junctions)
-      FreePDF64_Form.StatusBar_Right.SimpleText :=
-        Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
-      Exit;
-    end;
-
-    // Ordner
-    if IsDir then
-    begin
-      ModifiedDT := GetFileModifiedTime(RealPath);
-
-      if ModifiedDT = 0 then
-      begin
-        FreePDF64_Form.StatusBar_Right.SimpleText :=
-          Item.Caption + ', Dateiordner, Datum in dieser Ansicht nicht lesbar';
-        Exit;
-      end;
-
-      ModifiedStr := FormatDateTime('dd.mm.yyyy hh:nn:ss', ModifiedDT);
-
-      FreePDF64_Form.StatusBar_Right.SimpleText :=
-        Item.Caption + ', Dateiordner, Geändert: ' + ModifiedStr;
-    end
-
-    // Datei
-    else
-    begin
-      ModifiedDT  := GetFileModifiedTime(RealPath);
-      ModifiedStr := FormatDateTime('dd.mm.yyyy hh:nn:ss', ModifiedDT);
-      TypeName    := GetFileTypeName(RealPath);
-
-      FreePDF64_Form.StatusBar_Right.SimpleText :=
-        Item.Caption + ', ' +
-        FormatByteString(SR.Size) + ', ' +
-        TypeName + ', ' + ModifiedStr;
-    end;
-  end;
 end;
 
 procedure TFreePDF64_Form.LMDShellList1Change(Sender: TObject; Item: TListItem;

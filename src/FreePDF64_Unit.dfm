@@ -1031,7 +1031,7 @@
       end
       object FavLbR: TListBox
         Left = 134
-        Top = 808
+        Top = 807
         Width = 140
         Height = 32
         TabStop = False
@@ -1054,7 +1054,7 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 790
+        ExplicitTop = 789
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1086,7 +1086,7 @@
         ParentFont = False
         TabOrder = 4
         object RootR: TSpeedButton
-          Left = 33
+          Left = 21
           Top = 1
           Width = 16
           Height = 22
@@ -1105,9 +1105,10 @@
           ParentShowHint = False
           ShowHint = True
           OnClick = RootRClick
+          ExplicitLeft = 33
         end
         object ParentFolderR: TSpeedButton
-          Left = 49
+          Left = 37
           Top = 1
           Width = 16
           Height = 22
@@ -1125,6 +1126,7 @@
           ParentShowHint = False
           ShowHint = True
           OnClick = ParentFolderRClick
+          ExplicitLeft = 49
         end
         object FavSpR: TSpeedButton
           Left = 235
@@ -1196,29 +1198,6 @@
           OnClick = ZielBtnClick
           OnMouseEnter = ZielBtnMouseEnter
         end
-        object ViewStyleBtn2: TSpeedButton
-          Left = 21
-          Top = 1
-          Width = 12
-          Height = 22
-          Hint = 'Umschalten zwischen den Ansichten Details und Liste'
-          Align = alLeft
-          ImageIndex = 9
-          ImageName = 'Item10'
-          Images = VirtualImageList1
-          Flat = True
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clWindowText
-          Font.Height = -11
-          Font.Name = 'MS Sans Serif'
-          Font.Style = [fsBold]
-          Layout = blGlyphRight
-          NumGlyphs = 2
-          ParentFont = False
-          ParentShowHint = False
-          ShowHint = True
-          OnClick = ViewStyleBtn2Click
-        end
         object ComboBoxR: TComboBox
           Left = 269
           Top = 1
@@ -1241,9 +1220,9 @@
           OnDropDown = ComboBoxRDropDown
         end
         object Ziellabel: TPanel
-          Left = 65
+          Left = 53
           Top = 1
-          Width = 170
+          Width = 182
           Height = 22
           Cursor = crHandPoint
           Align = alClient
@@ -1259,6 +1238,8 @@
           TabOrder = 1
           OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
+          ExplicitLeft = 65
+          ExplicitWidth = 170
         end
       end
     end
@@ -1446,7 +1427,7 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1115
+      Left = 1116
       Top = 812
       Width = 140
       Height = 32
@@ -1470,7 +1451,7 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 1106
+      ExplicitLeft = 1107
       ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
@@ -1505,7 +1486,7 @@
       TabOrder = 3
       ExplicitWidth = 271
       object RootL: TSpeedButton
-        Left = 33
+        Left = 21
         Top = 1
         Width = 16
         Height = 22
@@ -1524,9 +1505,10 @@
         ParentShowHint = False
         ShowHint = True
         OnClick = RootLClick
+        ExplicitLeft = 33
       end
       object ParentFolderL: TSpeedButton
-        Left = 49
+        Left = 37
         Top = 1
         Width = 16
         Height = 22
@@ -1544,6 +1526,7 @@
         ParentShowHint = False
         ShowHint = True
         OnClick = ParentFolderLClick
+        ExplicitLeft = 49
       end
       object QuellBtn: TSpeedButton
         Left = 1
@@ -1613,29 +1596,6 @@
         ShowHint = True
         OnClick = FavLinksClick
       end
-      object ViewStyleBtn1: TSpeedButton
-        Left = 21
-        Top = 1
-        Width = 12
-        Height = 22
-        Hint = 'Umschalten zwischen den Ansichten Details und Liste'
-        Align = alLeft
-        ImageIndex = 9
-        ImageName = 'Item10'
-        Images = VirtualImageList1
-        Flat = True
-        Font.Charset = DEFAULT_CHARSET
-        Font.Color = clWindowText
-        Font.Height = -11
-        Font.Name = 'MS Sans Serif'
-        Font.Style = [fsBold]
-        Layout = blGlyphRight
-        NumGlyphs = 2
-        ParentFont = False
-        ParentShowHint = False
-        ShowHint = True
-        OnClick = ViewStyleBtn1Click
-      end
       object ComboBoxL: TComboBox
         Left = 254
         Top = 1
@@ -1659,9 +1619,9 @@
         ExplicitLeft = 252
       end
       object Quelllabel: TPanel
-        Left = 65
+        Left = 53
         Top = 1
-        Width = 154
+        Width = 166
         Height = 22
         Cursor = crHandPoint
         Align = alClient
@@ -1678,6 +1638,7 @@
         TabOrder = 1
         OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
+        ExplicitLeft = 65
         ExplicitWidth = 152
       end
     end
