@@ -17,7 +17,7 @@ PDFs erstellen, bearbeiten, konvertieren und verwalten – alles in einer kosten
 
 **Lizenz:** Freeware – private und kommerzielle Nutzung kostenlos  
 **Betriebssystem:** Windows 10/11  
-**Aktuelle Version:** 8.1.0
+**Aktuelle Version:** 8.2.1
 
 ## ⭐ Die wichtigsten Funktionen auf einen Blick
 
