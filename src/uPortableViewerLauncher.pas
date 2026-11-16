@@ -19,8 +19,9 @@ begin
     'FreePDF64ViewerPortable.exe';
 end;
 
-// PDFs exakt wie beim Explorer per Dateizuordnung oeffnen.
-// Keine direkte EXE-Startlogik, keine Fensteraktivierung, kein TOPMOST.
+// PDFs wie beim Explorer ausschliesslich ueber die Windows-Dateizuordnung oeffnen.
+// Dem zugeordneten Viewer die Vordergrundaktivierung erlauben, ohne
+// eine bestimmte Viewer-EXE zu erzwingen oder TOPMOST zu setzen.
 procedure OpenPDFPortable(const AFileName: string);
 var
   PDF: string;
@@ -38,6 +39,8 @@ begin
   ExecInfo.lpParameters := nil;
   ExecInfo.lpDirectory := PChar(ExtractFilePath(PDF));
   ExecInfo.nShow := SW_SHOWNORMAL;
+  // ASFW_ANY = DWORD(-1); kompatibel mit aelteren Delphi-Versionen.
+  AllowSetForegroundWindow(DWORD(-1));
   if not ShellExecuteEx(@ExecInfo) then
     MessageDlg('Die PDF-Datei konnte ueber die Windows-Dateizuordnung nicht geoeffnet werden:' +
       sLineBreak + PDF + sLineBreak + SysErrorMessage(GetLastError),

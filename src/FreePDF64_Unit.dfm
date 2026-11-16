@@ -78,21 +78,6 @@
       ShowHint = True
       TabOrder = 0
       ExplicitWidth = 772
-      object AutoSize: TToolButton
-        Left = 0
-        Top = 0
-        Hint = 
-          'Experimentell:'#13#10'Schnelles Autosize beider Name-Spalten (nicht an' +
-          'wendbar bei maximiertem Fenster)'
-        Margins.Left = 2
-        Margins.Top = 2
-        Margins.Right = 2
-        Margins.Bottom = 2
-        Caption = 'AutoSize'
-        ImageIndex = 60
-        ImageName = 'Item64'
-        OnClick = AutoSizeClick
-      end
       object FolderBtn: TToolButton
         Left = 32
         Top = 0
@@ -715,7 +700,6 @@
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
-      ExplicitWidth = 1024
     end
     object BottomPanel: TPanel
       Left = 0
@@ -962,7 +946,6 @@
           item
             DataType = cdName
             Caption = 'Name'
-            MaxWidth = 400
             MinWidth = 40
             Visible = True
           end
@@ -1011,6 +994,7 @@
         OnKeyDown = LMDShellList2KeyDown
         OnMouseDown = LMDShellList2MouseDown
         OnInfoTip = LMDShellList2InfoTip
+        OnResize = PanelRResize
         OnSelectItem = LMDShellList2SelectItem
       end
       object ListBoxR: TListBox
@@ -1054,7 +1038,6 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 789
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1374,7 +1357,6 @@
         item
           DataType = cdName
           Caption = 'Name'
-          MaxWidth = 400
           MinWidth = 40
           Visible = True
         end
@@ -1424,6 +1406,7 @@
       OnKeyDown = LMDShellList1KeyDown
       OnMouseDown = LMDShellList1MouseDown
       OnInfoTip = LMDShellList1InfoTip
+      OnResize = PanelLResize
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
@@ -1451,8 +1434,6 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 1107
-      ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1616,7 +1597,6 @@
         TabStop = False
         OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
-        ExplicitLeft = 252
       end
       object Quelllabel: TPanel
         Left = 53
@@ -1947,10 +1927,6 @@
         Checked = True
         OnClick = Gitternetzlinien1Click
       end
-      object AutoSpalte: TMenuItem
-        Caption = 'Autosize der Name-Spalten'
-        OnClick = AutoSpalteClick
-      end
       object ResizeEqual: TMenuItem
         Caption = 'Bei Resize gleiche Fenstergr'#246#223'en'
         Checked = True
@@ -2069,11 +2045,6 @@
       end
       object Oberflche1: TMenuItem
         Caption = 'Oberfl'#228'che'
-        object AutoSizeBtn: TMenuItem
-          Caption = 'AutoSize-Button anzeigen'
-          Checked = True
-          OnClick = AutoSizeBtnClick
-        end
         object UPD: TMenuItem
           Caption = 'Umbenennen per Doppelklick erlauben'
           OnClick = UPDClick

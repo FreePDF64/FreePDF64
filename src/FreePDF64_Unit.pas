@@ -284,7 +284,6 @@ type
     RefreshBt: TToolButton;
     ProgressBar1: TProgressBar;
     StatusBar_Right: TStatusBar;
-    AutoSpalte: TMenuItem;
     WZSTTB: TToolButton;
     Wasserzeichen1: TMenuItem;
     CopyTo: TMenuItem;
@@ -341,7 +340,6 @@ type
     Formatverz_OnlyDate: TMenuItem;
     ResizeEqual: TMenuItem;
     Nullstellung: TMenuItem;
-    AutoSizeBtn: TMenuItem;
     PanelL: TPanel;
     Image2: TImage;
     LMDShellList1: TLMDShellList;
@@ -371,7 +369,6 @@ type
     VerwendeteSchriftartenauflisten1: TMenuItem;
     PDFkomprimieren1: TMenuItem;
     LMDShellRestartDialog1: TLMDShellRestartDialog;
-    AutoSize: TToolButton;
     ToolButton1: TToolButton;
     ToolButton7: TToolButton;
     MemoBtn: TToolButton;
@@ -500,7 +497,6 @@ type
     procedure LMDShellList1SelectItem(Sender: TObject; Item: TListItem;
       Selected: Boolean);
     procedure Btn_DeleteClick(Sender: TObject);
-    procedure AutoSpalteClick(Sender: TObject);
     procedure PanelRResize(Sender: TObject);
     procedure PanelLResize(Sender: TObject);
     procedure WZSTTBClick(Sender: TObject);
@@ -575,8 +571,6 @@ type
     procedure LMDShellList1ColumnClick(Sender: TObject; Column: TListColumn);
     procedure RootLClick(Sender: TObject);
     procedure RootRClick(Sender: TObject);
-    procedure AutoSizeClick(Sender: TObject);
-    procedure AutoSizeBtnClick(Sender: TObject);
     procedure Btn_ViewMouseUp(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure Btn_ViewMouseDown(Sender: TObject; Button: TMouseButton;
@@ -679,6 +673,8 @@ type
       procedure DrawSizeCell(AList: TLMDShellList; var Msg: TMessage);
       function FreePDF64Speicher: UInt64;
       procedure StatusBarAnpassen;
+      procedure FitShellListColumns(AList: TLMDShellList);
+      procedure WMFitShellListColumns(var Msg: TMessage); message WM_APP + 173;
       procedure WMStartInTray(var Msg: TMessage); message WM_START_IN_TRAY;
       procedure WMActivateFreePDFMain(var Msg: TMessage); message WM_ACTIVATE_FREEPDF_MAIN;
     public
@@ -711,7 +707,7 @@ var
   ParaJN, Versch1, Vol1, Vol2, PDFPanelH, MHA, Counter: Integer;
   ABBRUCH, LI, RE, LF, RF, Versch6, Versch7, Versch8, Versch9, Versch10,
     Versch11, Do1, In1, Überwachung_Erstellung, Links, Rechts,
-    Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf, AutospalteJN,
+    Windows_Session_End, FAbbrechen, Splash, Tray1, Popup_Aufruf,
     ShowVomTray, Suche_ItemAnzeigen, Info_Anzeigen: Boolean;
   Baum: Byte;
   Hochkommata: String[1];
@@ -733,6 +729,15 @@ uses
 
 {$R *.DFM}
 {$R FreePDF64.res}
+
+// Beim automatischen Anzeigen einer erzeugten PDF darf der gestartete
+// Viewer die Vordergrundaktivierung von FreePDF64 übernehmen.
+// Keine Wartezeit, kein erneutes Aktivieren des FreePDF64-Hauptfensters.
+procedure OpenCreatedPDFInViewer(const AFileName: string);
+begin
+  AllowSetForegroundWindow(DWORD(-1));
+  OpenPDFPortable(AFileName);
+end;
 
 procedure TFreePDF64_Form.DeleteTreeRedrawTimerTick(Sender: TObject);
 begin
@@ -1114,14 +1119,6 @@ procedure TFreePDF64_Form.SplDblClick(Sender: TObject);
     showList.Visible := True;
   end;
 
-  procedure SetAutoSize(All: Boolean);
-  begin
-    LMDShellList1.Column[0].AutoSize := All;
-    LMDShellList2.Column[0].AutoSize := All;
-  end;
-
-var
-  a: Boolean;
 begin
   // JPEG-Fenster schließen
   if Image1.Visible then
@@ -1129,15 +1126,11 @@ begin
   else if Image2.Visible then
     HideImage(Image2, LMDShellList1);
 
-  // AutoSize temporär aktivieren
-  a := LMDShellList1.Column[0].AutoSize;
-  SetAutoSize(True);
-
   // Splitter soll sich in der Mitte befinden
   PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
 
-  // AutoSize zurücksetzen
-  SetAutoSize(a);
+  FitShellListColumns(LMDShellList1);
+  FitShellListColumns(LMDShellList2);
 
   Sleep(100);
 //  RefreshBt.Click;
@@ -1914,90 +1907,11 @@ begin
     HinweisAutoFormat := False;
 end;
 
-procedure TFreePDF64_Form.AutoSizeBtnClick(Sender: TObject);
-begin
-  AutoSizeBtn.Checked := Not AutoSizeBtn.Checked;
-  if AutoSizeBtn.Checked then
-    AutoSize.Visible := True
-  else
-    AutoSize.Visible := False;
-end;
-
-procedure TFreePDF64_Form.AutoSizeClick(Sender: TObject);
-var
-  a: Boolean;
-begin
-  // JPEG-Fenster vorher schließen
-  if Image1.Visible or Image2.Visible then
-  begin
-    SplDblClick(Sender);
-    Exit;
-  end;
-
-  // Aktuellen AutoSize-Zustand merken
-  a := LMDShellList1.Column[0].AutoSize;
-
-  // Beide Listen während der gesamten Änderung nicht neu zeichnen
-  LMDShellList1.Perform(WM_SETREDRAW, 0, 0);
-  LMDShellList2.Perform(WM_SETREDRAW, 0, 0);
-
-  try
-    // Spalten automatisch anpassen
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-
-    // Splitter soll sich in der Mitte befinden
-    PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
-
-    // Erzwingt die Neuberechnung der Fenstergröße
-    FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
-    FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
-
-    // Ursprünglichen AutoSize-Zustand wiederherstellen
-    LMDShellList1.Column[0].AutoSize := a;
-    LMDShellList2.Column[0].AutoSize := a;
-
-  except
-    on E: Exception do
-      ShowMessage(
-        'Eine Ausnahme ist aufgetreten: ' + E.Message
-      );
-  end;
-
-  // Zeichnen wieder einschalten
-  LMDShellList1.Perform(WM_SETREDRAW, 1, 0);
-  LMDShellList2.Perform(WM_SETREDRAW, 1, 0);
-
-  // Nur den endgültigen Zustand anzeigen
-  LMDShellList1.Invalidate;
-  LMDShellList2.Invalidate;
-
-  LMDShellList1.Update;
-  LMDShellList2.Update;
-
-//  RefreshBt.Click;
-end;
-
-procedure TFreePDF64_Form.AutoSpalteClick(Sender: TObject);
-begin
-  AutoSpalte.Checked := Not AutoSpalte.Checked;
-  if AutoSpalte.Checked then
-  begin
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-    FreePDF64_Form.Height := FreePDF64_Form.Height + 1;
-    FreePDF64_Form.Height := FreePDF64_Form.Height - 1;
-  end
-  else
-  begin
-    LMDShellList1.Column[0].AutoSize := False;
-    LMDShellList2.Column[0].AutoSize := False;
-  end;
-end;
-
 procedure TFreePDF64_Form.ResizeEqualClick(Sender: TObject);
 begin
   ResizeEqual.Checked := Not ResizeEqual.Checked;
+  if ResizeEqual.Checked and FormLoaded then
+    PostMessage(Handle, WM_APP + 173, 0, 0);
 end;
 
 procedure TFreePDF64_Form.RootLClick(Sender: TObject);
@@ -2352,7 +2266,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '09.11.2026';
+  Datum := '16.11.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -2742,7 +2656,6 @@ begin
     WriteBool('Folder', 'Gridlines', LMDShellList1.GridLines);
     WriteBool('Folder', 'Gridlines', LMDShellList2.GridLines);
     WriteBool('Folder', 'ResizeEqual', ResizeEqual.Checked);
-    WriteBool('Folder', 'Autosize Name', AutoSpalte.Checked);
     WriteBool('Folder', 'ShowHidden', VersteckteDateienanzeigen1.Checked);
     // Counter wird separat mit SaveCounter gesichert.
     WriteInteger('Start', 'Sort ColumnL', FSortColumn);
@@ -2751,7 +2664,6 @@ begin
     WriteBool('Start', 'SortDir ColumnR', FSortAscending2);
 
     WriteBool('Start', 'Logdatei', Logdatei.Checked);
-    WriteBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
     WriteBool('Start', 'Rename by double-clicking', UPD.Checked);
     WriteBool('Start', 'ShowNetworkShares Button', ShowNetworkShares.Checked);
     WriteInteger('Start', 'ShowFolders', Baum);
@@ -2771,11 +2683,9 @@ begin
     WriteBool('Start', 'Watermark bg', Wasserzeichen_Form.bgWatermark.Checked);
     WriteBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
     // Linke, rechte Column-Breite schreiben
-    WriteInteger('Start', 'ColumnsL Width0', LMDShellList1.Column[0].Width);
     WriteInteger('Start', 'ColumnsL Width1', LMDShellList1.Column[1].Width);
     WriteInteger('Start', 'ColumnsL Width2', LMDShellList1.Column[2].Width);
     WriteInteger('Start', 'ColumnsL Width3', LMDShellList1.Column[3].Width);
-    WriteInteger('Start', 'ColumnsR Width0', LMDShellList2.Column[0].Width);
     WriteInteger('Start', 'ColumnsR Width1', LMDShellList2.Column[1].Width);
     WriteInteger('Start', 'ColumnsR Width2', LMDShellList2.Column[2].Width);
     WriteInteger('Start', 'ColumnsR Width3', LMDShellList2.Column[3].Width);
@@ -3395,7 +3305,7 @@ var
     begin
       // Keine feste Wartezeit vor dem Viewer-Start: Der aufrufende Ablauf
       // hat die Verarbeitung bereits abgeschlossen.
-      OpenPDFPortable(FileName);
+      OpenCreatedPDFInViewer(FileName);
 
       Application.ProcessMessages;
     end;
@@ -4194,7 +4104,7 @@ var
     if Einstellungen_Form.AnzeigenCB.Checked then
     begin
       // Keine feste Wartezeit vor dem Viewer-Start.
-      OpenPDFPortable(Filename);
+      OpenCreatedPDFInViewer(Filename);
 
       Application.ProcessMessages;
     end;
@@ -4303,15 +4213,6 @@ begin
 
   // Hide the system tray icon and show the window, setting its state property to wsNormal
   TrayIcon1.Visible := False;
-
-  if AutospalteJN then
-  begin
-    AutoSpalte.Checked := True;
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-  end
-  else
-    AutoSpalte.Checked := False;
 
   WindowState := wsNormal;
   FreePDF64_Form.BringToFront;
@@ -5505,10 +5406,6 @@ begin
   if KlickaufX.Checked and not FExplicitExit then
   begin
     CanClose := False;
-    if AutoSpalte.Checked then
-      AutospalteJN := True
-    else
-      AutospalteJN := False;
 
     if Systray_Taskleiste.Checked then
     begin
@@ -5689,7 +5586,6 @@ begin
 
   // Grundzustände
   PDFPanelH := PDFPanel.Height;
-  AutospalteJN := False;
   ShowVomTray := False;
   Suche_ItemAnzeigen := False;
   Baum := 0;
@@ -5721,7 +5617,7 @@ begin
       Width  := Ini.ReadInteger('Position', 'Width', Width);
       Height := Ini.ReadInteger('Position', 'Height', Height);
 
-      Panel_Left.Width  := Ini.ReadInteger('Position', 'Left T7ree Width', Panel_Left.Width);
+      Panel_Left.Width  := Ini.ReadInteger('Position', 'Left Tree Width', Panel_Left.Width);
       PDFPanel.Height   := Ini.ReadInteger('Position', 'Memo Panel Height', PDFPanel.Height);
       PanelR.Width      := Ini.ReadInteger('Position', 'Right Panel Width', PanelR.Width);
       PDFPanelH         := PDFPanel.Height;
@@ -5746,8 +5642,6 @@ begin
 
       Logdatei.Checked := Ini.ReadBool('Start', 'Logdatei', Logdatei.Checked);
 
-      AutoSizeBtn.Checked := Ini.ReadBool('Start', 'AutoSize Button', AutoSizeBtn.Checked);
-      AutoSize.Enabled := AutoSizeBtn.Checked;
 
       UPD.Checked := Ini.ReadBool('Start', 'Rename by double-clicking', UPD.Checked);
 
@@ -5830,7 +5724,6 @@ begin
 
   Btn_Delete.Align := alClient;
   Btn_Delete.Width := I;
-  // Diagnose erst nach der Initialisierung aktivieren.
   FList1OldWndProc := LMDShellList1.WindowProc;
   FList2OldWndProc := LMDShellList2.WindowProc;
   LMDShellList1.WindowProc := List1DrawProbe;
@@ -5932,21 +5825,12 @@ procedure TFreePDF64_Form.FormResize(Sender: TObject);
 var
   Laenge: Integer;
 begin
-  // Ist die FreePDF64_Form nun sichtbar?
-  if FormLoaded = True then
+  // Auch bei wsMaximized ausgleichen; nicht nur bei wsNormal.
+  if FormLoaded and ResizeEqual.Checked then
   begin
-    if ResizeEqual.Checked and Panel_Right.Visible then
-      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2;
-  end;
-
-  // Fenster hat wieder die normale Größe
-  if WindowState = wsNormal then
-  begin
-    // Splitter soll sich in der Mitte befinden.
-    if ResizeEqual.Checked and Panel_Right.Visible then
+    if Panel_Right.Visible then
       PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
     else
-    if ResizeEqual.Checked and not Panel_Right.Visible then
       PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
   end;
 
@@ -5969,6 +5853,8 @@ begin
 
   // Anzeige der Arbeitsspeicherbelegung anpassen
   StatusBarAnpassen;
+  if FormLoaded then
+    PostMessage(Handle, WM_APP + 173, 0, 0);
 end;
 
 procedure TFreePDF64_Form.HilfezudenEinstellungen1Click(Sender: TObject);
@@ -6109,10 +5995,6 @@ begin
   // Fenster wurde minimiert
   if Message.CmdType and $FFF0 = SC_MINIMIZE then
   begin
-    if AutoSpalte.Checked then
-      AutospalteJN := True
-    else
-      AutospalteJN := False;
 
     if FreePDF64_Form.Visible then
     begin
@@ -6232,11 +6114,9 @@ begin
       IniDat := TIniFile.Create(IniFile);
       with IniDat do
       begin
-        WriteInteger('Start', 'ColumnsL Width0', 100);
         WriteInteger('Start', 'ColumnsL Width1', 100);
         WriteInteger('Start', 'ColumnsL Width2', 70);
         WriteInteger('Start', 'ColumnsL Width3', 100);
-        WriteInteger('Start', 'ColumnsR Width0', 100);
         WriteInteger('Start', 'ColumnsR Width1', 100);
         WriteInteger('Start', 'ColumnsR Width2', 70);
         WriteInteger('Start', 'ColumnsR Width3', 100);
@@ -6298,14 +6178,23 @@ begin
     with IniDat do
     begin
       // Spaltenbreiten
-      LMDShellList1.Column[0].Width := ReadInteger('Start', 'ColumnsL Width0', c);
       LMDShellList1.Column[1].Width := ReadInteger('Start', 'ColumnsL Width1', c);
       LMDShellList1.Column[2].Width := ReadInteger('Start', 'ColumnsL Width2', c);
       LMDShellList1.Column[3].Width := ReadInteger('Start', 'ColumnsL Width3', c);
-      LMDShellList2.Column[0].Width := ReadInteger('Start', 'ColumnsR Width0', c);
       LMDShellList2.Column[1].Width := ReadInteger('Start', 'ColumnsR Width1', c);
       LMDShellList2.Column[2].Width := ReadInteger('Start', 'ColumnsR Width2', c);
       LMDShellList2.Column[3].Width := ReadInteger('Start', 'ColumnsR Width3', c);
+       LMDShellList1.Column[0].AutoSize := False;
+       LMDShellList2.Column[0].AutoSize := False;
+       // Keine LMD-AutoSize-Aenderungen der Informationsspalten.
+       // Nur die Namensspalte wird von FitShellListColumns berechnet.
+       for I := 1 to 3 do
+       begin
+         LMDShellList1.Column[I].AutoSize := False;
+         LMDShellList2.Column[I].AutoSize := False;
+       end;
+       // Die Startverzeichnisse werden erst weiter unten geladen.
+       // Daher hier noch keine Spaltenberechnung ausfuehren.
 
       FSortAscending  := True;
       FSortAscending2 := True;
@@ -6365,7 +6254,6 @@ begin
       Wasserzeichen_Form.vgStamp.Checked :=
         ReadBool('Start', 'Stamp fg', Wasserzeichen_Form.vgStamp.Checked);
 
-      AutoSpalte.Checked := ReadBool('Folder', 'Autosize Name', AutoSpalte.Checked);
       Autostart.Checked := ReadBool('Start', 'Autostart', Autostart.Checked);
 
       Dateianlage_Form.Datei1.Text :=
@@ -6536,14 +6424,6 @@ begin
 
     Gitternetzlinien1.Checked := LMDShellList1.GridLines;
 
-    if AutoSpalte.Checked then
-    begin
-      LMDShellList1.Column[0].AutoSize := True;
-      LMDShellList2.Column[0].AutoSize := True;
-      Height := Height + 1;
-      Height := Height - 1;
-    end;
-
     tmpt  := LMDShellList1.Options;
     tmpt2 := LMDShellTree1.Options;
     if VersteckteDateienanzeigen1.Checked then
@@ -6694,6 +6574,9 @@ begin
     ZielBtn.Click;
 
     FormLoaded := True;
+    // Erst nach der vollstaendigen Initialisierung und dem Layout
+    // beide Namensspalten auf die verbleibende Breite setzen.
+    PostMessage(Handle, WM_APP + 173, 0, 0);
 
     // Beim Start in den SysTray verschwinden?
     if InDenTray.Checked then
@@ -6717,9 +6600,14 @@ end;
 
 procedure TFreePDF64_Form.LMDShellFolder1Change(Sender: TObject);
 var
+  SavedWidths: array[1..3] of Integer;
+  ColIndex: Integer;
   I, j: Integer;
   s: String;
 begin
+  // Aktuelle, auch manuell eingestellte Informationsspalten sichern.
+  for ColIndex := 1 to 3 do
+    SavedWidths[ColIndex] := LMDShellList1.Column[ColIndex].Width;
   try
     // ------------------------------------------------------------
     // Index des vorherigen Verzeichnisses bestimmen
@@ -6807,16 +6695,6 @@ begin
       SB_Left;
 
     // ------------------------------------------------------------
-    // AutoSize:
-    // Bei einem Suchsprung nicht durchführen.
-    // ------------------------------------------------------------
-    if (not Suche_ItemAnzeigen) and AutoSpalte.Checked then
-    begin
-      LMDShellList1.Column[0].AutoSize := True;
-      LMDShellList2.Column[0].AutoSize := True;
-    end;
-
-    // ------------------------------------------------------------
     // Reset für Suche
     // ------------------------------------------------------------
     Suche_ItemAnzeigen := False;
@@ -6827,6 +6705,12 @@ begin
     QL;
 
   finally
+    // LMD darf beim Ordnerwechsel keine Informationsspalten verbreitern.
+    for ColIndex := 1 to 3 do
+      if LMDShellList1.Column[ColIndex].Width <> SavedWidths[ColIndex] then
+        LMDShellList1.Column[ColIndex].Width := SavedWidths[ColIndex];
+    if FormLoaded then
+      PostMessage(Handle, WM_APP + 173, 0, 0);
     // ------------------------------------------------------------
     // Wurde der Change durch einen Doppelklick auf ein
     // Verzeichnis ausgelöst?
@@ -6850,9 +6734,14 @@ end;
 
 procedure TFreePDF64_Form.LMDShellFolder2Change(Sender: TObject);
 var
+  SavedWidths: array[1..3] of Integer;
+  ColIndex: Integer;
   I, j: Integer;
   s, fileName: String;
 begin
+  // Aktuelle, auch manuell eingestellte Informationsspalten sichern.
+  for ColIndex := 1 to 3 do
+    SavedWidths[ColIndex] := LMDShellList2.Column[ColIndex].Width;
   // ------------------------------------------------------------
   // Zeichnen der LMDShellList2 während des Verzeichniswechsels
   // unterdrücken, um Flackern zu vermeiden.
@@ -6946,16 +6835,6 @@ begin
       SB_Right;
 
     // ------------------------------------------------------------
-    // AutoSize:
-    // Bei einem Suchsprung nicht durchführen.
-    // ------------------------------------------------------------
-    if (not Suche_ItemAnzeigen) and AutoSpalte.Checked then
-    begin
-      LMDShellList1.Column[0].AutoSize := True;
-      LMDShellList2.Column[0].AutoSize := True;
-    end;
-
-    // ------------------------------------------------------------
     // Reset für Suche
     // ------------------------------------------------------------
     Suche_ItemAnzeigen := False;
@@ -6966,6 +6845,12 @@ begin
     ZL;
 
   finally
+    // LMD darf beim Ordnerwechsel keine Informationsspalten verbreitern.
+    for ColIndex := 1 to 3 do
+      if LMDShellList2.Column[ColIndex].Width <> SavedWidths[ColIndex] then
+        LMDShellList2.Column[ColIndex].Width := SavedWidths[ColIndex];
+    if FormLoaded then
+      PostMessage(Handle, WM_APP + 173, 0, 0);
     // ------------------------------------------------------------
     // Zeichnen wieder einschalten
     // ------------------------------------------------------------
@@ -8548,7 +8433,7 @@ begin
   if ((Einstellungen_Form.AuswahlRG.ItemIndex = 0) and // PDF
     (Einstellungen_Form.AnzeigenCB.Checked)) then
   begin
-    OpenPDFPortable(IncludeTrailingBackslash(Ziel) + ExtractFileName(s));
+    OpenCreatedPDFInViewer(IncludeTrailingBackslash(Ziel) + ExtractFileName(s));
 
     Application.ProcessMessages;
   end;
@@ -8704,22 +8589,74 @@ begin
   FreePDF64_Notify.OkBitBtn.Click;
 end;
 
+procedure TFreePDF64_Form.WMFitShellListColumns(var Msg: TMessage);
+var
+  Pending: TMsg;
+begin
+  // Viele Resize-Ereignisse zu einer einzigen Anpassung zusammenfassen.
+  while PeekMessage(Pending, Handle, WM_APP + 173, WM_APP + 173, PM_REMOVE) do
+    ;
+  if not FormLoaded then
+    Exit;
+  // Nach Abschluss des VCL-Alignments (auch Maximieren) zentrieren.
+  if ResizeEqual.Checked then
+  begin
+    if Panel_Right.Visible then
+      PanelR.Width := (PanelL.Width + Panel_Right.Width + PanelR.Width) div 2
+    else
+      PanelR.Width := (PanelL.Width + PanelR.Width) div 2;
+  end;
+  FitShellListColumns(LMDShellList1);
+  FitShellListColumns(LMDShellList2);
+end;
+
+procedure TFreePDF64_Form.FitShellListColumns(AList: TLMDShellList);
+var
+  Available, OtherTotal, I, NameWidth, ActualNameWidth: Integer;
+  HeaderHandle: HWND;
+begin
+  if (AList = nil) or not AList.HandleAllocated or (AList.ClientWidth <= 0) then
+    Exit;
+
+  HeaderHandle := SendMessage(AList.Handle, LVM_GETHEADER, 0, 0);
+  if (HeaderHandle = 0) or
+     (SendMessage(HeaderHandle, HDM_GETITEMCOUNT, 0, 0) < 4) then
+    Exit;
+
+  // Entscheidend: Die von LMD gemeldeten Column[].Width-Werte koennen
+  // von den tatsaechlichen Win32-ListView-Spaltenbreiten abweichen.
+  // Deshalb ausschliesslich die real angezeigten Breiten summieren.
+  OtherTotal := 0;
+  for I := 1 to 3 do
+    Inc(OtherTotal, SendMessage(AList.Handle, LVM_GETCOLUMNWIDTH, I, 0));
+
+  Available := AList.ClientWidth;
+  NameWidth := Available - OtherTotal;
+  if NameWidth < 40 then
+    NameWidth := 40;
+
+  ActualNameWidth := SendMessage(AList.Handle, LVM_GETCOLUMNWIDTH, 0, 0);
+  if ActualNameWidth <> NameWidth then
+  begin
+    if AList.Column[0].Width <> NameWidth then
+      AList.Column[0].Width := NameWidth;
+    if SendMessage(AList.Handle, LVM_GETCOLUMNWIDTH, 0, 0) <> NameWidth then
+      SendMessage(AList.Handle, LVM_SETCOLUMNWIDTH, 0, NameWidth);
+  end;
+
+
+end;
+
 procedure TFreePDF64_Form.PanelLResize(Sender: TObject);
 begin
-  if AutoSpalte.Checked then
-  begin
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-  end;
+  if FormLoaded then
+    PostMessage(Handle, WM_APP + 173, 0, 0);
 end;
 
 procedure TFreePDF64_Form.PanelRResize(Sender: TObject);
 begin
-  if AutoSpalte.Checked then
-  begin
-    LMDShellList1.Column[0].AutoSize := True;
-    LMDShellList2.Column[0].AutoSize := True;
-  end;
+  if FormLoaded then
+    PostMessage(Handle, WM_APP + 173, 0, 0);
 end;
 
 procedure TFreePDF64_Form.Papierkorb1Click(Sender: TObject);
@@ -10287,12 +10224,12 @@ begin
             begin
               if (Encrypt_Form.EncryptCombo.ItemIndex = 1) and FileExists(Ziel) then
               begin
-                OpenPDFPortable(Ziel);
+                OpenCreatedPDFInViewer(Ziel);
                 CreatedPDFViewerRequested := True;
               end
               else if FileExists(Zielanz) then
               begin
-                OpenPDFPortable(Zielanz);
+                OpenCreatedPDFInViewer(Zielanz);
                 CreatedPDFViewerRequested := True;
               end;
             end
@@ -10301,7 +10238,7 @@ begin
               // Kein PDF: die bisherige Ausgabe-/Anzeigelogik separat erhalten.
               if SameText(ExtractFileExt(Ziel), '.pdf') then
               begin
-                OpenPDFPortable(Ziel);
+                OpenCreatedPDFInViewer(Ziel);
                 CreatedPDFViewerRequested := True;
               end;
             end else
@@ -10382,7 +10319,8 @@ begin
   // Nach einer normalen manuellen Erstellung wieder ins
   // LMDShellList1 gehen. Bei der automatischen Überwachung darf
   // die aktuelle Benutzeransicht nicht verändert werden.
-  if (not UeberwachungsAufruf) and FreePDF64_Form.Visible then
+  if (not UeberwachungsAufruf) and (not CreatedPDFViewerRequested) and
+    FreePDF64_Form.Visible then
   begin
     LMDShellList1.SetFocus;
     keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0);
