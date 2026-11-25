@@ -170,7 +170,6 @@ object Suche_Form: TSuche_Form
       TabOrder = 0
       OnCloseUp = FileFieldCloseUp
       OnDropDown = FileFieldDropDown
-      ExplicitWidth = 637
     end
     object SearchField: TComboBox
       Left = 84
@@ -191,7 +190,6 @@ object Suche_Form: TSuche_Form
       ShowHint = True
       TabOrder = 1
       OnDropDown = SearchFieldDropDown
-      ExplicitWidth = 552
     end
     object StopSearchButton: TBitBtn
       Left = 730
@@ -772,8 +770,6 @@ object Suche_Form: TSuche_Form
       OnDblClick = ListBox1DblClick
       OnDrawItem = ListBox1DrawItem
       OnMouseDown = ListBox1MouseDown
-      ExplicitWidth = 856
-      ExplicitHeight = 296
     end
     object SucheEdit: TEdit
       Left = 618

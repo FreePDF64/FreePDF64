@@ -1670,30 +1670,32 @@ begin
 
   SuchText :=
     'Suchen nach:' + #13 +
-    '- Ein Stern * für eine beliebige Anzahl Zeichen' + #13 +
-    '- Beispiel: Test oder *Test* findet alle Dateien und Verzeichnisse, die Test im Namen enthalten' + #13 +
-    '- Beispiel: Test. findet nur den exakten Namen Test' + #13 + #13 +
-    '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis' + #13 +
+    '- Ein Stern * für eine beliebige Anzahl Zeichen.' + #13 +
+    '- Beispiel: Test oder *Test* findet alle Dateien und Verzeichnisse, die Test im Namen enthalten.' + #13 +
+    '- Beispiel: Test. findet nur den exakten Namen Test.' + #13 + #13 +
+    '- Ein Fragezeichen ? steht für ein beliebiges Zeichen. Mehrere Fragezeichen ? stehen für: von - bis.' + #13 +
     '- Beispiel: Test?.log findet u.a.: Test1.log, Test8.log, usw.' + #13 +
     '- Beispiel: Test??.log findet u.a.: Test1.log, Test8.log, TestA3.log, Test45.log, usw.' + #13 + #13 +
-    '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden' + #13 +
+    '- Mehrere Suchmasken müssen direkt durch das Pipe-Zeichen | getrennt eingegeben werden.' + #13 +
     '- Beispiel: Lights at the*|Lake* findet u.a.: Lights at the Night Circus.jpg sowie Lake Mist.txt, usw.' + #13 +
     '- Beispiel: *.pdf|*.prn findet alle Dateien mit der Endung pdf und prn.' + #13 + #13 +
     'Versteckt+System:' + #13 +
-    '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Hidden (H) und System (S)' + #13 +
-    '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt' + #13 +
-    '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D]' + #13 + #13 +
+    '- [✓] Zeigt auch alle Datei(en)/Verzeichnis(se) an mit dem Attribut Hidden (H) und System (S).' + #13 +
+    '- [-] Es werden zusätzlich alle Dateiattribute zum markiertem Eintrag angezeigt.' + #13 +
+    '- Dateiattribute: Archive [A], Hidden [H], ReadOnly [R], System [S], Directory [D].' + #13 + #13 +
     'Text suchen:' + #13 +
-    '- Läßt sich nur bei "Zeige nur Dateien" nutzen' + #13 +
-    '- Bei Auswahl "[X] inkl. PDF" werden auch PDF-Dateien durchsucht' + #13 + #13 +
+    '- Läßt sich nur bei "Zeige nur Dateien" nutzen.' + #13 +
+    '- Bei Auswahl "[X] inkl. PDF" werden auch PDF-Dateien durchsucht.' + #13 + #13 +
     'Suchergebnis:' + #13 +
-    '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt' + #13 +
+    '- Angezeigt werden sortiert Datei(en) zuerst, Verzeichnis(se) zuletzt.' + #13 +
     '- Zur Suche die Checkbox "Suche im Suchergebnis" anklicken (oder F2) und dann einfach' + #13 +
-    '  Suchbegriff in Suchfeld unten links eingeben' + #13 +
-    '- Alt+linker Mausklick öffnet markierte Datei des Suchergebnisses' + #13 +
-    '- Rechter Mausklick öffnet Standard-Kontextmenü der markierten Datei/Verzeichnis' + #13 +
-    '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis' + #13 +
-    '- Strg+A markiert alle Dateien des Suchergebnisses';
+    '  Suchbegriff in Suchfeld unten links eingeben.' + #13 +
+    '- Alt+linker Mausklick öffnet markierte Datei des Suchergebnisses.' + #13 +
+    '- Rechter Mausklick öffnet Standard-Kontextmenü der markierten Datei/Verzeichnis.' + #13 +
+    '- Doppelklick mit der Maus geht direkt im Hauptfenster zur markierten Datei/Verzeichnis.' + #13 +
+    '  Handelt es sich um eine PDF-Datei, wird diese im FreePDF64-Viewer angezeigt. Mit F10' + #13 +
+    '  geht man auch bei PDF-Dateien im Hauptfenster zur markierten Datei.' + #13 +
+    '- Strg+A markiert alle Dateien des Suchergebnisses.';
 
   // Gesamten Text in das RichEdit schreiben.
   Suche_Info.RichEdit1.PlainText := False;
