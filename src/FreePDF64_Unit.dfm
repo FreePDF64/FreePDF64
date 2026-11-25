@@ -79,7 +79,7 @@
       TabOrder = 0
       ExplicitWidth = 772
       object FolderBtn: TToolButton
-        Left = 32
+        Left = 0
         Top = 0
         Hint = 'Baumansichten wechseln'
         Caption = 'Baumansichten'
@@ -88,7 +88,7 @@
         OnClick = FolderBtnClick
       end
       object ToolButton1: TToolButton
-        Left = 64
+        Left = 32
         Top = 0
         Width = 4
         Margins.Left = 2
@@ -101,7 +101,7 @@
         Style = tbsSeparator
       end
       object RefreshBt: TToolButton
-        Left = 68
+        Left = 36
         Top = 0
         Hint = 'Aktualisieren'
         Caption = 'RefreshBt'
@@ -111,7 +111,7 @@
         OnClick = RefreshBtClick
       end
       object BackBtn: TToolButton
-        Left = 100
+        Left = 68
         Top = 0
         Hint = 'Zur'#252'ck'
         Caption = 'BackBtn'
@@ -122,7 +122,7 @@
         OnClick = BackBtnClick
       end
       object FwdBtn: TToolButton
-        Left = 132
+        Left = 100
         Top = 0
         Hint = 'Vorw'#228'rts'
         Caption = 'FwdBtn'
@@ -133,7 +133,7 @@
         OnClick = FwdBtnClick
       end
       object ToolButton3: TToolButton
-        Left = 164
+        Left = 132
         Top = 0
         Width = 4
         Caption = 'ToolButton3'
@@ -142,7 +142,7 @@
         Style = tbsSeparator
       end
       object TauschenTB: TToolButton
-        Left = 168
+        Left = 136
         Top = 0
         Hint = 'Fenster tauschen'
         Caption = 'TauschenTB'
@@ -151,7 +151,7 @@
         OnClick = TauschenTBClick
       end
       object AngleichenTB: TToolButton
-        Left = 200
+        Left = 168
         Top = 0
         Hint = 'Fenster angleichen'
         Caption = 'AngleichenTB'
@@ -160,7 +160,7 @@
         OnClick = AngleichenTBClick
       end
       object PropertiesBtn: TToolButton
-        Left = 232
+        Left = 200
         Top = 0
         Hint = 'Eigenschaften anzeigen [LEERTASTE]'
         Caption = 'Eigenschaften anzeigen'
@@ -171,7 +171,7 @@
         OnClick = PropertiesBtnClick
       end
       object MailBtn: TToolButton
-        Left = 264
+        Left = 232
         Top = 0
         Hint = 'Markierte Datei(en) versenden (Senden an > E-Mail-Empf'#228'nger)'
         Caption = 'MailBtn'
@@ -180,7 +180,7 @@
         OnClick = Sendenan1Click
       end
       object ToolButton4: TToolButton
-        Left = 296
+        Left = 264
         Top = 0
         Width = 4
         Caption = 'ToolButton4'
@@ -189,7 +189,7 @@
         Style = tbsSeparator
       end
       object VerbindenBt: TToolButton
-        Left = 300
+        Left = 268
         Top = 0
         Hint = 'PS/PDF zusammenf'#252'gen'
         Caption = 'Verbinden'
@@ -198,7 +198,7 @@
         OnClick = VerbindenBtClick
       end
       object WZSTTB: TToolButton
-        Left = 332
+        Left = 300
         Top = 0
         Hint = 'PDF Wasserzeichen/Stempel einf'#252'gen'
         Caption = 'PDF Wasserzeichen/Stempel'
@@ -207,7 +207,7 @@
         OnClick = WZSTTBClick
       end
       object ToolButton2: TToolButton
-        Left = 364
+        Left = 332
         Top = 0
         Width = 4
         Margins.Left = 2
@@ -220,7 +220,7 @@
         Style = tbsSeparator
       end
       object PDFAttachment: TToolButton
-        Left = 368
+        Left = 336
         Top = 0
         Hint = 'PDF Anlage(n) anzeigen und extrahieren'
         Margins.Left = 2
@@ -233,7 +233,7 @@
         OnClick = PDFAttachmentClick
       end
       object ExtractBtn: TToolButton
-        Left = 400
+        Left = 368
         Top = 0
         Hint = 'PDF Bilder extrahieren'
         Caption = 'Bilder extrahieren'
@@ -242,7 +242,7 @@
         OnClick = ExtractBtnClick
       end
       object HTMLBtn: TToolButton
-        Left = 432
+        Left = 400
         Top = 0
         Hint = 'PDF zu HTML'
         Margins.Left = 2
@@ -255,7 +255,7 @@
         OnClick = HTMLBtnClick
       end
       object PDFdecrypt: TToolButton
-        Left = 464
+        Left = 432
         Top = 0
         Hint = 'PDF Passwortschutz entfernen'
         Margins.Left = 2
@@ -268,7 +268,7 @@
         OnClick = PDFdecryptClick
       end
       object PDF_Kompress: TToolButton
-        Left = 496
+        Left = 464
         Top = 0
         Hint = 'PDF komprimieren'
         Margins.Left = 2
@@ -281,7 +281,7 @@
         OnClick = PDF_KompressClick
       end
       object PDFFontsBtn: TToolButton
-        Left = 528
+        Left = 496
         Top = 0
         Hint = 'PDF Schriftarten auflisten'
         Margins.Left = 2
@@ -294,7 +294,7 @@
         OnClick = PDFFontsBtnClick
       end
       object ToolButton5: TToolButton
-        Left = 560
+        Left = 528
         Top = 0
         Width = 4
         Caption = 'ToolButton5'
@@ -303,7 +303,7 @@
         Style = tbsSeparator
       end
       object ToolButtonPDFViewer: TToolButton
-        Left = 564
+        Left = 532
         Top = 0
         Margins.Left = 2
         Margins.Top = 2
@@ -315,7 +315,7 @@
         OnMouseDown = ToolButtonPDFViewerMouseDown
       end
       object ToolButton6: TToolButton
-        Left = 596
+        Left = 564
         Top = 0
         Width = 4
         Margins.Left = 2
@@ -328,7 +328,7 @@
         Style = tbsSeparator
       end
       object SearchBtn: TToolButton
-        Left = 600
+        Left = 568
         Top = 0
         Hint = 'Suchen...'
         Margins.Left = 2
@@ -341,7 +341,7 @@
         OnClick = SearchBtnClick
       end
       object PDFInfoBtn: TToolButton
-        Left = 632
+        Left = 600
         Top = 0
         Hint = 
           'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'RM' +
@@ -356,7 +356,7 @@
         OnClick = PDFInfoBtnClick
       end
       object PrüfBtn: TToolButton
-        Left = 664
+        Left = 632
         Top = 0
         Hint = 'PDF-Pr'#252'fbericht: PDF pr'#252'fen...'
         Margins.Left = 2
@@ -369,7 +369,7 @@
         OnClick = PrüfBtnClick
       end
       object ToolButton7: TToolButton
-        Left = 696
+        Left = 664
         Top = 0
         Width = 4
         Margins.Left = 2
@@ -382,7 +382,7 @@
         Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 700
+        Left = 668
         Top = 0
         Caption = 'LogBt'
         ImageIndex = 74
@@ -390,7 +390,7 @@
         OnMouseDown = LogBtMouseDown
       end
       object MemoBtn: TToolButton
-        Left = 732
+        Left = 700
         Top = 0
         Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         Margins.Left = 2
@@ -700,6 +700,7 @@
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
+      ExplicitWidth = 1024
     end
     object BottomPanel: TPanel
       Left = 0
@@ -1038,6 +1039,7 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
+        ExplicitTop = 789
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1221,8 +1223,6 @@
           TabOrder = 1
           OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
-          ExplicitLeft = 65
-          ExplicitWidth = 170
         end
       end
     end
@@ -1410,7 +1410,7 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1116
+      Left = 1118
       Top = 812
       Width = 140
       Height = 32
@@ -1434,6 +1434,8 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
+      ExplicitLeft = 1109
+      ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1597,6 +1599,7 @@
         TabStop = False
         OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
+        ExplicitLeft = 252
       end
       object Quelllabel: TPanel
         Left = 53
@@ -1618,8 +1621,7 @@
         TabOrder = 1
         OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
-        ExplicitLeft = 65
-        ExplicitWidth = 152
+        ExplicitWidth = 164
       end
     end
   end

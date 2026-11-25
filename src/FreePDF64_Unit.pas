@@ -7457,6 +7457,7 @@ begin
   begin
     if IsIconic(Suche_Form.Handle) then
       Suche_Form.WindowState := wsNormal;
+    keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0);
   end;
 
   if (Key = VK_DELETE) and (LMDShellList1.IsEditing = False) then
@@ -7504,6 +7505,7 @@ begin
   begin
     if IsIconic(Suche_Form.Handle) then
       Suche_Form.WindowState := wsNormal;
+    keybd_event(VK_SPACE, MapVirtualKey(VK_SPACE, 0), KEYEVENTF_EXTENDEDKEY, 0);
   end;
 
   if (Key = VK_DELETE) and (LMDShellList2.IsEditing = False) then
@@ -7938,18 +7940,6 @@ begin
   Handled := True;
 end;
 
-procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
-  Shift: TShiftState);
-begin
-  if Key = VK_ESCAPE then
-  begin
-    if IsIconic(Suche_Form.Handle) then
-      Suche_Form.WindowState := wsNormal;
-  end;
-
-  MemoBtn.Click;
-end;
-
 procedure TFreePDF64_Form.Memo1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
 begin
@@ -7994,6 +7984,18 @@ begin
   StatusBar1.Panels[0].Text := 'Standarddrucker: ' + Printer.Printers
     [Printer.printerindex] + ' | Erstellte Dateien (seit Nullstellung): ' +
     IntToStr(Counter);
+end;
+
+procedure TFreePDF64_Form.Memo1KeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if Key = VK_ESCAPE then
+  begin
+    if IsIconic(Suche_Form.Handle) then
+      Suche_Form.WindowState := wsNormal;
+  end;
+
+  MemoBtn.Click;
 end;
 
 procedure TFreePDF64_Form.MergeClick(Sender: TObject);
