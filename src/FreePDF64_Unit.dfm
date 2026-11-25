@@ -1073,7 +1073,7 @@
         object RootR: TSpeedButton
           Left = 21
           Top = 1
-          Width = 16
+          Width = 20
           Height = 22
           Hint = 'Sprung zu Root'
           ParentCustomHint = False
@@ -1090,12 +1090,11 @@
           ParentShowHint = False
           ShowHint = True
           OnClick = RootRClick
-          ExplicitLeft = 33
         end
         object ParentFolderR: TSpeedButton
-          Left = 37
+          Left = 41
           Top = 1
-          Width = 16
+          Width = 20
           Height = 22
           Hint = 'Eine Ebene h'#246'her'
           ParentCustomHint = False
@@ -1111,7 +1110,6 @@
           ParentShowHint = False
           ShowHint = True
           OnClick = ParentFolderRClick
-          ExplicitLeft = 49
         end
         object FavSpR: TSpeedButton
           Left = 235
@@ -1205,9 +1203,9 @@
           OnDropDown = ComboBoxRDropDown
         end
         object Ziellabel: TPanel
-          Left = 53
+          Left = 61
           Top = 1
-          Width = 182
+          Width = 174
           Height = 22
           Cursor = crHandPoint
           Align = alClient
@@ -1223,6 +1221,8 @@
           TabOrder = 1
           OnClick = ZiellabelClick
           OnMouseEnter = ZiellabelMouseEnter
+          ExplicitLeft = 53
+          ExplicitWidth = 182
         end
       end
     end
@@ -1410,7 +1410,7 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1118
+      Left = 1119
       Top = 812
       Width = 140
       Height = 32
@@ -1434,7 +1434,7 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 1109
+      ExplicitLeft = 1110
       ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
@@ -1471,7 +1471,7 @@
       object RootL: TSpeedButton
         Left = 21
         Top = 1
-        Width = 16
+        Width = 20
         Height = 22
         Hint = 'Sprung zu Root'
         ParentCustomHint = False
@@ -1488,12 +1488,11 @@
         ParentShowHint = False
         ShowHint = True
         OnClick = RootLClick
-        ExplicitLeft = 33
       end
       object ParentFolderL: TSpeedButton
-        Left = 37
+        Left = 41
         Top = 1
-        Width = 16
+        Width = 20
         Height = 22
         Hint = 'Eine Ebene h'#246'her'
         ParentCustomHint = False
@@ -1509,7 +1508,6 @@
         ParentShowHint = False
         ShowHint = True
         OnClick = ParentFolderLClick
-        ExplicitLeft = 49
       end
       object QuellBtn: TSpeedButton
         Left = 1
@@ -1602,9 +1600,9 @@
         ExplicitLeft = 252
       end
       object Quelllabel: TPanel
-        Left = 53
+        Left = 61
         Top = 1
-        Width = 166
+        Width = 158
         Height = 22
         Cursor = crHandPoint
         Align = alClient
@@ -1621,6 +1619,7 @@
         TabOrder = 1
         OnClick = QuelllabelClick
         OnMouseEnter = QuelllabelMouseEnter
+        ExplicitLeft = 53
         ExplicitWidth = 164
       end
     end

@@ -1,3 +1,5 @@
+25.11.2026 V8.2.2
+Fix -> Codeoptimierungen durchgeführt..
 16.11.2026 V8.2.1
 Fix -> Codeoptimierungen durchgeführt. Autosize der Namensspalte funktioniert endlich wie gewünscht - die restlichen Spaltenbreiten kann man manuell anpassen.
 09.11.2026 V8.2.0

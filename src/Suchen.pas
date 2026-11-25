@@ -4681,7 +4681,7 @@ begin
   AltLeftDown := (Button = mbLeft) and (ssAlt in Shift);
 end;
 
-// Gehe zum Verzeichnis des Eintrags in der Listbox
+// Gehe zum Verzeichnis des Eintrags in der Listbox, wenn PDF dann öffnen im Viewer
 procedure TSuche_Form.ListBox1DblClick(Sender: TObject);
 var
   i: Integer;
@@ -4842,6 +4842,11 @@ begin
   // Wenn im Tray → nach vorne holen
   if FreePDF64_Form.TrayIcon1.Visible then
     FreePDF64_Form.TrayIcon1Click(Sender);
+
+  // PDF nur bei Doppelklick auf die ListBox öffnen
+  if (Sender = ListBox1) and FileExists(s) and
+     SameText(ExtractFileExt(s), '.pdf') then
+    Btn_8Click(Sender);
 
   Close;
 end;
