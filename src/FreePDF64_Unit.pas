@@ -2309,6 +2309,7 @@ end;
 procedure TFreePDF64_Form.LMDShellTree2Click(Sender: TObject);
 begin
   FavClose;
+  LMDShellList2.SetFocus;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1Editing(Sender: TObject; Node: TTreeNode;
@@ -7611,6 +7612,7 @@ end;
 procedure TFreePDF64_Form.LMDShellTree1Click(Sender: TObject);
 begin
   FavClose;
+  LMDShellList1.SetFocus;
 end;
 
 procedure TFreePDF64_Form.LMDShellTree1FilterItem(Sender: TObject; ShellItem: TLMDCustomShellItem; var Accept: Boolean);
