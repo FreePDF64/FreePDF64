@@ -11,7 +11,7 @@ PDFs erstellen, bearbeiten, konvertieren und verwalten – alles in einer kosten
 
 ## 📥 Download
 
-**➡️ [FreePDF64 herunterladen – Downloads und Installationsdateien](https://github.com/FreePDF64/FreePDF64/tree/main/releases/download)**
+**➡️ [FreePDF64 herunterladen – Download](https://github.com/FreePDF64/FreePDF64/releases)**
 
 [Benutzerhandbuch (PDF)](https://github.com/FreePDF64/FreePDF64/blob/main/releases/download/FreePDF64-HowTo.pdf) · [GitHub-Projekt](https://github.com/FreePDF64/FreePDF64)
 
