@@ -1930,6 +1930,7 @@ begin
 
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
+  LMDShellList1.SetFocus;
 end;
 
 procedure TFreePDF64_Form.RootRClick(Sender: TObject);
@@ -1947,6 +1948,7 @@ begin
 
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
+  LMDShellList2.SetFocus;
 end;
 
 procedure TFreePDF64_Form.AutostartClick(Sender: TObject);
@@ -5767,6 +5769,7 @@ begin
 
     if LMDShellList1.Selected = NIL then
       LMDShellList1.ItemIndex := 0;
+    LMDShellList1.SetFocus;
   end;
 end;
 
@@ -5804,7 +5807,8 @@ begin
     end;
     if LMDShellList2.Selected = NIL then
       LMDShellList2.ItemIndex := 0;
-  end;
+      LMDShellList2.SetFocus;
+    end;
 end;
 
 procedure TFreePDF64_Form.QuellBtnMouseEnter(Sender: TObject);
@@ -8674,6 +8678,7 @@ begin
   LMDShellFolder1.LevelUp;
   if LMDShellList1.Selected = NIL then
     LMDShellList1.ItemIndex := 0;
+  LMDShellList1.SetFocus;
 end;
 
 procedure TFreePDF64_Form.ParentFolderRClick(Sender: TObject);
@@ -8682,6 +8687,7 @@ begin
   LMDShellFolder2.LevelUp;
   if LMDShellList2.Selected = NIL then
     LMDShellList2.ItemIndex := 0;
+  LMDShellList2.SetFocus;
 end;
 
 procedure TFreePDF64_Form.FreePDF64inibearbeiten1Click(Sender: TObject);
