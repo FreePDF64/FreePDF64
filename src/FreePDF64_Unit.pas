@@ -400,7 +400,6 @@ type
     N22: TMenuItem;
     PrüfBtn: TToolButton;
     ToolButtonPDFViewer: TToolButton;
-    ToolButton6: TToolButton;
     function IsShortCut(var Message: TWMKey): Boolean; override;
     procedure BackBtnClick(Sender: TObject);
     procedure FwdBtnClick(Sender: TObject);
@@ -666,8 +665,15 @@ type
       FDeleteSelectionTimer: TTimer;
       FDeleteTreeRedrawTimer: TTimer;
       FDeleteTreeRedrawSide: Integer;
+      FParentDummy: string;
+      FParentBusy: Boolean;
+      FParentInputBusy: Boolean;
+      FParentFailed: Boolean;
       procedure DeleteTreeRedrawTimerTick(Sender: TObject);
       procedure DeleteSelectionTimerTick(Sender: TObject);
+      procedure ParentBeforeCount(AList: TLMDShellList; AFolder: TLMDShellFolder; var Msg: TMessage);
+      function ParentInput(AList: TLMDShellList; var Msg: TMessage): Boolean;
+      procedure ParentNavigate(AList: TLMDShellList);
       procedure List1DrawProbe(var Msg: TMessage);
       procedure List2DrawProbe(var Msg: TMessage);
       procedure DrawSizeCell(AList: TLMDShellList; var Msg: TMessage);
@@ -725,7 +731,7 @@ uses
   Info_Unit, FreePDF64_Notify_Unit, Einstellungen_Hilfe_Unit,
   Wasserzeichen_Unit, Zusatz_Unit, Splashscreen_Unit,
   Dateianlage_Unit, Status_Unit, Anleitung_Unit, Suchen,
-  FreePDF64PrinterConfig, uPortableViewerLauncher;
+  FreePDF64PrinterConfig, uPortableViewerLauncher, System.Rtti, System.TypInfo; 
 
 {$R *.DFM}
 {$R FreePDF64.res}
@@ -733,6 +739,8 @@ uses
 // Beim automatischen Anzeigen einer erzeugten PDF darf der gestartete
 // Viewer die Vordergrundaktivierung von FreePDF64 übernehmen.
 // Keine Wartezeit, kein erneutes Aktivieren des FreePDF64-Hauptfensters.
+// Navigationseintrag: niemals das echte Elternverzeichnis als Shell-Objekt
+// registrieren. Ein eigener leerer temporärer Ordner dient als Platzhalter.
 procedure OpenCreatedPDFInViewer(const AFileName: string);
 begin
   AllowSetForegroundWindow(DWORD(-1));
@@ -2050,6 +2058,7 @@ var
   IniFile: String;
   I: Integer;
 begin
+  if FParentDummy <> '' then RemoveDir(FParentDummy);
   // Vor dem Freigeben der Komponenten die originalen Handler herstellen.
   if Assigned(FList1OldWndProc) then
     LMDShellList1.WindowProc := FList1OldWndProc;
@@ -2268,7 +2277,7 @@ procedure TFreePDF64_Form.AbfrageaufeinneuesUpdate1Click(Sender: TObject);
 var
   Datum: String;
 begin
-  Datum := '25.11.2026';
+  Datum := '27.11.2026';
   Delete(Datum, 11, 9); // Entfernt die letzten 9 Zeichen
   if MessageDlgCenter('Aktuell genutzt wird:' + ' Version ' +
     LMDVersionInfo1.ProductVersion + ' - 64 bit (' + Datum + ')' +
@@ -5553,14 +5562,156 @@ begin
   Msg.Result := CDRF_SKIPDEFAULT;
 end;
 
+procedure TFreePDF64_Form.ParentNavigate(AList: TLMDShellList);
+var
+  Folder: TLMDShellFolder;
+  Child: string;
+  I: Integer;
+begin
+  if AList = LMDShellList1 then Folder := LMDShellFolder1
+  else Folder := LMDShellFolder2;
+  Child := ExtractFileName(ExcludeTrailingPathDelimiter(Folder.ActiveFolder.PathName));
+  if AList = LMDShellList1 then ParentFolderLClick(Self)
+  else ParentFolderRClick(Self);
+  for I := 0 to AList.Items.Count - 1 do
+    if SameText(AList.Items[I].Caption, Child) then
+    begin
+      AList.ItemIndex := I;
+      Break;
+    end;
+end;
+
+function TFreePDF64_Form.ParentInput(AList: TLMDShellList; var Msg: TMessage): Boolean;
+var
+  P: TPoint;
+  Item: TListItem;
+begin
+  Result := False;
+  case Msg.Msg of
+    WM_LBUTTONDOWN, WM_LBUTTONDBLCLK, WM_RBUTTONDOWN, WM_RBUTTONDBLCLK, WM_KEYDOWN: ;
+  else
+    Exit;
+  end;
+  if not FormLoaded or not Visible or FParentInputBusy or FParentBusy or FParentFailed or (FParentDummy = '') then Exit;
+  FParentInputBusy := True;
+  try
+  if (AList.Items.Count = 0) or (AList.Items[0].Caption <> '..') then Exit;
+  case Msg.Msg of
+    WM_LBUTTONDOWN, WM_LBUTTONDBLCLK, WM_RBUTTONDOWN, WM_RBUTTONDBLCLK:
+      begin
+        P.X := SmallInt(LoWord(Msg.LParam));
+        P.Y := SmallInt(HiWord(Msg.LParam));
+        Item := AList.GetItemAt(P.X, P.Y);
+        if (Item = nil) or (Item.Index <> 0) then Exit;
+        Result := True;
+        if Msg.Msg = WM_LBUTTONDBLCLK then ParentNavigate(AList)
+        else if Msg.Msg = WM_LBUTTONDOWN then
+        begin
+          AList.SetFocus;
+          Item.Focused := True;
+        end;
+      end;
+    WM_KEYDOWN:
+      if Assigned(AList.ItemFocused) and (AList.ItemFocused.Index = 0) then
+      begin
+        if Msg.WParam = VK_RETURN then
+        begin
+          Result := True;
+          ParentNavigate(AList);
+        end
+        else if not (Word(Msg.WParam) in [VK_UP, VK_DOWN, VK_HOME, VK_END, VK_TAB, VK_ESCAPE, VK_BACK]) then
+          Result := True;
+      end;
+  end;
+  if Result then Msg.Result := 0;
+  finally
+    FParentInputBusy := False;
+  end;
+end;
+
+procedure TFreePDF64_Form.ParentBeforeCount(AList: TLMDShellList;
+  AFolder: TLMDShellFolder; var Msg: TMessage);
+var
+  Ctx: TRttiContext;
+  F, NameField, ExtField: TRttiField;
+  M, InsertMethod, GetMethod: TRttiMethod;
+  Cache: TObject;
+  Item, ParentItem: TLMDCustomShellItem;
+  Count, I: Integer;
+  Path, ParentPath: string;
+  Inserted: Boolean;
+begin
+  // The count notification also occurs during parent navigation and startup.
+  // No delayed insertion after the native list has already been painted.
+  if FParentBusy or FParentFailed or (FParentDummy = '') or
+     (csDestroying in ComponentState) then Exit;
+  if not Assigned(AFolder.ActiveFolder) then Exit;
+  Path := ExcludeTrailingPathDelimiter(AFolder.ActiveFolder.PathName);
+  if (Length(Path) <= 3) or not DirectoryExists(Path) then Exit;
+  ParentPath := ExtractFileDir(Path);
+  if (ParentPath = '') or SameText(Path, ParentPath) or not DirectoryExists(ParentPath) then Exit;
+  Count := Integer(Msg.WParam);
+  if Count < 0 then Exit;
+  FParentBusy := True;
+  Ctx := TRttiContext.Create;
+  try
+    try
+      F := Ctx.GetType(AList.ClassType).GetField('FItemsCache');
+      if F = nil then Exit;
+      Cache := F.GetValue(AList).AsObject;
+      if Cache = nil then Exit;
+      if Ctx.GetType(Cache.ClassType).GetProperty('Count').GetValue(Cache).AsInteger <> Count then Exit;
+      InsertMethod := nil;
+      GetMethod := nil;
+      for M in Ctx.GetType(Cache.ClassType).GetMethods do
+      begin
+        if (M.Name = 'Insert') and (Length(M.GetParameters) = 2) then InsertMethod := M;
+        if (M.Name = 'GetItem') and (Length(M.GetParameters) = 1) then GetMethod := M;
+      end;
+      if (InsertMethod = nil) or (GetMethod = nil) then Exit;
+      for I := 0 to Count - 1 do
+      begin
+        Item := TLMDCustomShellItem(GetMethod.Invoke(Cache, [TValue.From<Integer>(I)]).AsObject);
+        if Assigned(Item) and (Item.DisplayName = '..') then Exit;
+      end;
+      ParentItem := AFolder.CreateShellItem(FParentDummy);
+      if ParentItem = nil then Exit;
+      Inserted := False;
+      try
+        NameField := Ctx.GetType(ParentItem.ClassType).GetField('FDisplayName');
+        ExtField := Ctx.GetType(ParentItem.ClassType).GetField('FExtDisplayName');
+        if (NameField = nil) or (ExtField = nil) then Exit;
+        NameField.SetValue(ParentItem, TValue.From<string>('..'));
+        ExtField.SetValue(ParentItem, TValue.From<string>('..'));
+        InsertMethod.Invoke(Cache, [TValue.From<Integer>(0), TValue.From<TLMDCustomShellItem>(ParentItem)]);
+        Inserted := True;
+        Msg.WParam := Count + 1;
+      finally
+        if not Inserted then ParentItem.Free;
+      end;
+    except
+      on E: Exception do OutputDebugString(PChar('FreePDF64 parent count: ' + E.Message));
+    end;
+  finally
+    Ctx.Free;
+    FParentBusy := False;
+  end;
+end;
+
 procedure TFreePDF64_Form.List1DrawProbe(var Msg: TMessage);
 begin
+  if ParentInput(LMDShellList1, Msg) then Exit;
+  if Msg.Msg = LVM_SETITEMCOUNT then
+    ParentBeforeCount(LMDShellList1, LMDShellFolder1, Msg);
   if Assigned(FList1OldWndProc) then FList1OldWndProc(Msg);
   DrawSizeCell(LMDShellList1, Msg);
 end;
 
 procedure TFreePDF64_Form.List2DrawProbe(var Msg: TMessage);
 begin
+  if ParentInput(LMDShellList2, Msg) then Exit;
+  if Msg.Msg = LVM_SETITEMCOUNT then
+    ParentBeforeCount(LMDShellList2, LMDShellFolder2, Msg);
   if Assigned(FList2OldWndProc) then FList2OldWndProc(Msg);
   DrawSizeCell(LMDShellList2, Msg);
 end;
@@ -5571,6 +5722,7 @@ var
   Ini: TIniFile;
   IniPath, S: string;
   Entry: string;
+  ParentGuid: TGUID;
   PDFMenuItem, PDFCheckMenuItem, PDFLastReportMenuItem: TMenuItem;
 begin
   // Dateiliste rechts gepuffert zeichnen; keine zeitgesteuerte
@@ -5731,6 +5883,10 @@ begin
   FList2OldWndProc := LMDShellList2.WindowProc;
   LMDShellList1.WindowProc := List1DrawProbe;
   LMDShellList2.WindowProc := List2DrawProbe;
+  CreateGUID(ParentGuid);
+  FParentDummy := IncludeTrailingPathDelimiter(GetEnvironmentVariable('TEMP')) +
+    'FreePDF64_Navigation_' + GUIDToString(ParentGuid);
+  if not ForceDirectories(FParentDummy) then FParentDummy := '';
 
 end;
 
@@ -6045,6 +6201,7 @@ begin
     ShowVomTray := False;
     Exit;
   end;
+
 
   if not UPD.Checked then
   begin
@@ -7547,6 +7704,11 @@ end;
 procedure TFreePDF64_Form.LMDShellList1SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
+  if Selected and Assigned(Item) and (Item.Caption = '..') then
+  begin
+    Item.Selected := False;
+    Exit;
+  end;
   // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
   if not PDFReportActive then
   begin
@@ -7576,6 +7738,11 @@ end;
 procedure TFreePDF64_Form.LMDShellList2SelectItem(Sender: TObject;
   Item: TListItem; Selected: Boolean);
 begin
+  if Selected and Assigned(Item) and (Item.Caption = '..') then
+  begin
+    Item.Selected := False;
+    Exit;
+  end;
   // Den PDF-Prüfbericht nicht durch automatische Auswahlereignisse schließen.
   if not PDFReportActive then
   begin

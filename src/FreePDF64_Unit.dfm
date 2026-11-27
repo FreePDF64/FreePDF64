@@ -77,6 +77,7 @@
       AllowTextButtons = True
       ShowHint = True
       TabOrder = 0
+      ExplicitWidth = 772
       object FolderBtn: TToolButton
         Left = 0
         Top = 0
@@ -313,21 +314,8 @@
         ImageName = 'Item33'
         Style = tbsSeparator
       end
-      object ToolButton6: TToolButton
-        Left = 564
-        Top = 0
-        Width = 4
-        Margins.Left = 2
-        Margins.Top = 2
-        Margins.Right = 2
-        Margins.Bottom = 2
-        Caption = 'ToolButton6'
-        ImageIndex = 74
-        ImageName = 'Item78'
-        Style = tbsSeparator
-      end
       object SearchBtn: TToolButton
-        Left = 568
+        Left = 564
         Top = 0
         Hint = 'Suchen...'
         Margins.Left = 2
@@ -340,7 +328,7 @@
         OnClick = SearchBtnClick
       end
       object PDFInfoBtn: TToolButton
-        Left = 600
+        Left = 596
         Top = 0
         Hint = 
           'Umfangreiche Datei/Ordnerinformationen (Metadaten) anzeigen:'#13#10'RM' +
@@ -355,7 +343,7 @@
         OnClick = PDFInfoBtnClick
       end
       object PrüfBtn: TToolButton
-        Left = 632
+        Left = 628
         Top = 0
         Hint = 'PDF-Pr'#252'fbericht: PDF pr'#252'fen...'
         Margins.Left = 2
@@ -368,7 +356,7 @@
         OnClick = PrüfBtnClick
       end
       object ToolButton7: TToolButton
-        Left = 664
+        Left = 660
         Top = 0
         Width = 4
         Margins.Left = 2
@@ -381,7 +369,7 @@
         Style = tbsSeparator
       end
       object LogBt: TToolButton
-        Left = 668
+        Left = 664
         Top = 0
         Caption = 'LogBt'
         ImageIndex = 74
@@ -389,7 +377,7 @@
         OnMouseDown = LogBtMouseDown
       end
       object MemoBtn: TToolButton
-        Left = 700
+        Left = 696
         Top = 0
         Hint = 'Unteres Anzeigefenster schlie'#223'en [ESC]'
         Margins.Left = 2
@@ -699,7 +687,6 @@
       OnContextPopup = Memo1ContextPopup
       OnKeyDown = Memo1KeyDown
       OnMouseDown = Memo1MouseDown
-      ExplicitWidth = 1024
     end
     object BottomPanel: TPanel
       Left = 0
@@ -907,7 +894,6 @@
       Align = alClient
       BevelOuter = bvLowered
       TabOrder = 1
-      ExplicitHeight = 353
       DesignSize = (
         291
         361)
@@ -1038,7 +1024,6 @@
         OnClick = FavLbRClick
         OnMouseDown = FavLbRMouseDown
         OnMouseMove = FavLbRMouseMove
-        ExplicitTop = 789
       end
       object StatusBar_Right: TStatusBar
         Left = 1
@@ -1312,8 +1297,6 @@
     BevelOuter = bvLowered
     TabOrder = 5
     OnResize = PanelLResize
-    ExplicitWidth = 273
-    ExplicitHeight = 355
     DesignSize = (
       275
       363)
@@ -1407,7 +1390,7 @@
       OnSelectItem = LMDShellList1SelectItem
     end
     object FavLbL: TListBox
-      Left = 1120
+      Left = 1124
       Top = 812
       Width = 140
       Height = 32
@@ -1431,8 +1414,6 @@
       OnClick = FavLbLClick
       OnMouseDown = FavLbLMouseDown
       OnMouseMove = FavLbLMouseMove
-      ExplicitLeft = 1111
-      ExplicitTop = 794
     end
     object StatusBar_Left: TStatusBar
       Left = 1
@@ -1464,7 +1445,6 @@
       Font.Style = []
       ParentFont = False
       TabOrder = 3
-      ExplicitWidth = 271
       object RootL: TSpeedButton
         Left = 21
         Top = 1
@@ -1594,7 +1574,6 @@
         TabStop = False
         OnCloseUp = ComboBoxLCloseUp
         OnDropDown = ComboBoxLDropDown
-        ExplicitLeft = 252
       end
       object Quelllabel: TPanel
         Left = 61
