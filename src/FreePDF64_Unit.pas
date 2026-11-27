@@ -43,6 +43,7 @@ uses
   Winapi.Messages,
   Winapi.CommCtrl,
   System.SysUtils,
+  System.Generics.Collections,
   System.Variants,
   System.Classes,
   System.Types,
@@ -669,9 +670,14 @@ type
       FParentBusy: Boolean;
       FParentInputBusy: Boolean;
       FParentFailed: Boolean;
+      FFolderSortPending1, FFolderSortPending2: Boolean;
+      FFolderOrder1, FFolderOrder2: TArray<string>;
+      FFolderOrderPath1, FFolderOrderPath2: string;
+      procedure CaptureFolderOrder(AList: TLMDShellList; AFolder: TLMDShellFolder;
+        var Msg: TMessage; var AOrder: TArray<string>; var APath: string);
       procedure DeleteTreeRedrawTimerTick(Sender: TObject);
       procedure DeleteSelectionTimerTick(Sender: TObject);
-      procedure ParentBeforeCount(AList: TLMDShellList; AFolder: TLMDShellFolder; var Msg: TMessage);
+      procedure ParentBeforeCount(AList: TLMDShellList; AFolder: TLMDShellFolder; var Msg: TMessage; ARegroupOnly: Boolean = False);
       function ParentInput(AList: TLMDShellList; var Msg: TMessage): Boolean;
       procedure ParentNavigate(AList: TLMDShellList);
       procedure List1DrawProbe(var Msg: TMessage);
@@ -5629,17 +5635,59 @@ begin
   end;
 end;
 
+procedure TFreePDF64_Form.CaptureFolderOrder(AList: TLMDShellList;
+  AFolder: TLMDShellFolder; var Msg: TMessage;
+  var AOrder: TArray<string>; var APath: string);
+var
+  I, Col: Integer;
+begin
+  if FParentBusy or not FormLoaded or (Msg.LParam = 0) then Exit;
+  if not ((Msg.Msg = WM_NOTIFY) or (Msg.Msg = CN_NOTIFY)) then Exit;
+  if PNMHdr(Msg.LParam)^.code <> LVN_COLUMNCLICK then Exit;
+  Col := PNMListView(Msg.LParam)^.iSubItem;
+  AOrder := nil;
+  APath := '';
+  // Size and type must not change the currently visible folder order.
+  if not (Col in [1, 2]) or not Assigned(AFolder.ActiveFolder) then Exit;
+  FParentBusy := True;
+  try
+    APath := ExcludeTrailingPathDelimiter(AFolder.ActiveFolder.PathName);
+    SetLength(AOrder, AList.Items.Count);
+    for I := 0 to High(AOrder) do
+      AOrder[I] := AList.Items[I].Caption;
+  finally
+    FParentBusy := False;
+  end;
+end;
+
 procedure TFreePDF64_Form.ParentBeforeCount(AList: TLMDShellList;
-  AFolder: TLMDShellFolder; var Msg: TMessage);
+  AFolder: TLMDShellFolder; var Msg: TMessage; ARegroupOnly: Boolean);
 var
   Ctx: TRttiContext;
-  F, NameField, ExtField: TRttiField;
+  F, NameField, ExtField, ListField: TRttiField;
   M, InsertMethod, GetMethod: TRttiMethod;
-  Cache: TObject;
+  Cache, ListObject: TObject;
+  RawList: TList;
+  Ordered: array of Pointer;
+  Groups: array of Byte;
   Item, ParentItem: TLMDCustomShellItem;
-  Count, I: Integer;
+  Count, I, J, Group: Integer;
+  HasParent, CanAddParent: Boolean;
   Path, ParentPath: string;
-  Inserted: Boolean;
+  Inserted, ReverseView: Boolean;
+  FirstItem, LastItem: TLMDCustomShellItem;
+  FirstCaption, LastCaption: string;
+  SavedOrder: TArray<string>;
+  SavedPath: string;
+  Ranks: TDictionary<string, Integer>;
+  FolderSlots: array of Pointer;
+  Used: array of Boolean;
+  K, Rank, Step, StartIndex, EndIndex: Integer;
+  function Matches(const Caption: string; ShellItem: TLMDCustomShellItem): Boolean;
+  begin
+    Result := Assigned(ShellItem) and
+      (SameText(Caption, ShellItem.DisplayName) or SameText(Caption, ShellItem.ExtDisplayName));
+  end;
 begin
   // The count notification also occurs during parent navigation and startup.
   // No delayed insertion after the native list has already been painted.
@@ -5647,9 +5695,9 @@ begin
      (csDestroying in ComponentState) then Exit;
   if not Assigned(AFolder.ActiveFolder) then Exit;
   Path := ExcludeTrailingPathDelimiter(AFolder.ActiveFolder.PathName);
-  if (Length(Path) <= 3) or not DirectoryExists(Path) then Exit;
   ParentPath := ExtractFileDir(Path);
-  if (ParentPath = '') or SameText(Path, ParentPath) or not DirectoryExists(ParentPath) then Exit;
+  CanAddParent := (Length(Path) > 3) and DirectoryExists(Path) and
+    (ParentPath <> '') and not SameText(Path, ParentPath) and DirectoryExists(ParentPath);
   Count := Integer(Msg.WParam);
   if Count < 0 then Exit;
   FParentBusy := True;
@@ -5660,7 +5708,9 @@ begin
       if F = nil then Exit;
       Cache := F.GetValue(AList).AsObject;
       if Cache = nil then Exit;
-      if Ctx.GetType(Cache.ClassType).GetProperty('Count').GetValue(Cache).AsInteger <> Count then Exit;
+      if ARegroupOnly then
+        Count := Ctx.GetType(Cache.ClassType).GetProperty('Count').GetValue(Cache).AsInteger
+      else if Ctx.GetType(Cache.ClassType).GetProperty('Count').GetValue(Cache).AsInteger <> Count then Exit;
       InsertMethod := nil;
       GetMethod := nil;
       for M in Ctx.GetType(Cache.ClassType).GetMethods do
@@ -5669,11 +5719,129 @@ begin
         if (M.Name = 'GetItem') and (Length(M.GetParameters) = 1) then GetMethod := M;
       end;
       if (InsertMethod = nil) or (GetMethod = nil) then Exit;
+      // Preserve LMD's column order within each group. Reorder pointers only;
+      // no shell item is deleted, recreated or transferred to another owner.
+      HasParent := False;
+      ListField := Ctx.GetType(Cache.ClassType).GetField('FList');
+      if ListField = nil then Exit;
+      ListObject := ListField.GetValue(Cache).AsObject;
+      if not (ListObject is TList) then Exit;
+      RawList := TList(ListObject);
+      if RawList.Count <> Count then Exit;
+      ReverseView := False;
+      if ARegroupOnly and (Count > 1) then
+      begin
+        if AList.Items.Count <> Count then Exit;
+        FirstItem := TLMDCustomShellItem(RawList[0]);
+        LastItem := TLMDCustomShellItem(RawList[Count - 1]);
+        FirstCaption := AList.Items[0].Caption;
+        LastCaption := AList.Items[Count - 1].Caption;
+        // LMD may reverse the virtual index mapping instead of the cache.
+        ReverseView := Matches(FirstCaption, LastItem) and
+          Matches(LastCaption, FirstItem) and
+          not (Matches(FirstCaption, FirstItem) and Matches(LastCaption, LastItem));
+      end;
+      SetLength(Ordered, Count);
+      SetLength(Groups, Count);
       for I := 0 to Count - 1 do
       begin
         Item := TLMDCustomShellItem(GetMethod.Invoke(Cache, [TValue.From<Integer>(I)]).AsObject);
-        if Assigned(Item) and (Item.DisplayName = '..') then Exit;
+        if (Item = nil) or (RawList[I] <> Pointer(Item)) then Exit;
+        if Item.DisplayName = '..' then
+        begin
+          Groups[I] := 0;
+          HasParent := True;
+        end
+        else if Item.IsFolder then Groups[I] := 1
+        else Groups[I] := 2;
       end;
+      J := 0;
+      for Group := 0 to 2 do
+        for I := 0 to Count - 1 do
+          if ((not ReverseView) and (Groups[I] = Group)) or
+             (ReverseView and (Groups[I] = 2 - Group)) then
+          begin
+            Ordered[J] := RawList[I];
+            Inc(J);
+          end;
+      // Preserve the folder sequence captured before the column click.
+      // Work in visible order, then translate back to LMD's cache order.
+      if AList = LMDShellList1 then
+      begin
+        SavedOrder := FFolderOrder1;
+        SavedPath := FFolderOrderPath1;
+      end
+      else
+      begin
+        SavedOrder := FFolderOrder2;
+        SavedPath := FFolderOrderPath2;
+      end;
+      if ARegroupOnly and (Length(SavedOrder) > 0) and SameText(Path, SavedPath) then
+      begin
+        Ranks := TDictionary<string, Integer>.Create;
+        try
+          SetLength(FolderSlots, Length(SavedOrder));
+          SetLength(Used, Count);
+          for I := 0 to High(SavedOrder) do
+            Ranks.AddOrSetValue(LowerCase(SavedOrder[I]), I);
+          for I := 0 to Count - 1 do
+            if Groups[I] = 1 then
+            begin
+              Item := TLMDCustomShellItem(RawList[I]);
+              if Ranks.TryGetValue(LowerCase(Item.DisplayName), Rank) or
+                 Ranks.TryGetValue(LowerCase(Item.ExtDisplayName), Rank) then
+                if FolderSlots[Rank] = nil then
+                begin
+                  FolderSlots[Rank] := RawList[I];
+                  Used[I] := True;
+                end;
+            end;
+          // Locate the folder block in the already grouped cache.
+          J := 0;
+          if ReverseView then
+          begin
+            J := Count - 1;
+            if HasParent then Dec(J);
+            Step := -1;
+          end
+          else
+          begin
+            if HasParent then Inc(J);
+            Step := 1;
+          end;
+          for K := 0 to High(FolderSlots) do
+            if FolderSlots[K] <> nil then
+            begin
+              Ordered[J] := FolderSlots[K];
+              Inc(J, Step);
+            end;
+          if ReverseView then
+          begin
+            StartIndex := Count - 1;
+            EndIndex := -1;
+          end
+          else
+          begin
+            StartIndex := 0;
+            EndIndex := Count;
+          end;
+          I := StartIndex;
+          while I <> EndIndex do
+          begin
+            if (Groups[I] = 1) and not Used[I] then
+            begin
+              Ordered[J] := RawList[I];
+              Inc(J, Step);
+            end;
+            Inc(I, Step);
+          end;
+        finally
+          Ranks.Free;
+        end;
+      end;
+      for I := 0 to Count - 1 do
+        if RawList[I] <> Ordered[I] then RawList[I] := Ordered[I];
+      if ARegroupOnly or HasParent or not CanAddParent then Exit;
       ParentItem := AFolder.CreateShellItem(FParentDummy);
       if ParentItem = nil then Exit;
       Inserted := False;
@@ -5699,20 +5867,50 @@ begin
 end;
 
 procedure TFreePDF64_Form.List1DrawProbe(var Msg: TMessage);
+var
+  CountMsg: TMessage;
 begin
+  // Group the final cache before painting, not inside the column event.
+  if (Msg.Msg = WM_PAINT) and FFolderSortPending1 and not FParentBusy then
+  begin
+    FFolderSortPending1 := False;
+    CountMsg := Default(TMessage);
+    ParentBeforeCount(LMDShellList1, LMDShellFolder1, CountMsg, True);
+    FFolderOrder1 := nil;
+    FFolderOrderPath1 := '';
+  end;
   if ParentInput(LMDShellList1, Msg) then Exit;
   if Msg.Msg = LVM_SETITEMCOUNT then
     ParentBeforeCount(LMDShellList1, LMDShellFolder1, Msg);
+  CaptureFolderOrder(LMDShellList1, LMDShellFolder1, Msg, FFolderOrder1, FFolderOrderPath1);
   if Assigned(FList1OldWndProc) then FList1OldWndProc(Msg);
+  if ((Msg.Msg = WM_NOTIFY) or (Msg.Msg = CN_NOTIFY)) and (Msg.LParam <> 0) then
+    if PNMHdr(Msg.LParam)^.code = LVN_COLUMNCLICK then
+      FFolderSortPending1 := True;
   DrawSizeCell(LMDShellList1, Msg);
 end;
 
 procedure TFreePDF64_Form.List2DrawProbe(var Msg: TMessage);
+var
+  CountMsg: TMessage;
 begin
+  // Group the final cache before painting, not inside the column event.
+  if (Msg.Msg = WM_PAINT) and FFolderSortPending2 and not FParentBusy then
+  begin
+    FFolderSortPending2 := False;
+    CountMsg := Default(TMessage);
+    ParentBeforeCount(LMDShellList2, LMDShellFolder2, CountMsg, True);
+    FFolderOrder2 := nil;
+    FFolderOrderPath2 := '';
+  end;
   if ParentInput(LMDShellList2, Msg) then Exit;
   if Msg.Msg = LVM_SETITEMCOUNT then
     ParentBeforeCount(LMDShellList2, LMDShellFolder2, Msg);
+  CaptureFolderOrder(LMDShellList2, LMDShellFolder2, Msg, FFolderOrder2, FFolderOrderPath2);
   if Assigned(FList2OldWndProc) then FList2OldWndProc(Msg);
+  if ((Msg.Msg = WM_NOTIFY) or (Msg.Msg = CN_NOTIFY)) and (Msg.LParam <> 0) then
+    if PNMHdr(Msg.LParam)^.code = LVN_COLUMNCLICK then
+      FFolderSortPending2 := True;
   DrawSizeCell(LMDShellList2, Msg);
 end;
 
@@ -7571,6 +7769,7 @@ begin
     FSortColumn := Column.Index;
     FSortAscending := True;
   end;
+  FFolderSortPending1 := True;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2ColumnClick(Sender: TObject;
@@ -7583,6 +7782,7 @@ begin
     FSortColumn2 := Column.Index;
     FSortAscending2 := True;
   end;
+  FFolderSortPending2 := True;
 end;
 
 procedure TFreePDF64_Form.LMDShellList2Enter(Sender: TObject);
